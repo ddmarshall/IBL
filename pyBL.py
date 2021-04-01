@@ -10,7 +10,7 @@ import inspect    # used to return source code of h,s
 import pandas as pd
 from scipy.integrate import cumtrapz
 import numpy as np
-
+import warnings
 
 def _function_of_lambda_property_setter(f):
     try:
@@ -27,9 +27,9 @@ def _function_of_lambda_property_setter(f):
 
 def _default_s(lam):
     if lam >= 0 and lam <= .1:
-        return .22+1.57*lam-1.8*pow(lam, 2)
+        return .22 + 1.57 * lam - 1.8 * pow(lam, 2)
     elif lam >= -.1 and lam <= 0:
-        return .22+1.402*lam+(.018*lam)/(.107+lam)
+        return .22 + 1.402 * lam + (.018 * lam) / (.107 + lam)
     else:
         pass  # I'll deal with this later
 
@@ -42,6 +42,8 @@ def _default_h(lam):
     else:
         pass  # I'll deal with this later
 
+# def _rect_int(x,y):
+    
 
 class ThwaitesSimData:
     def __init__(self,
@@ -97,43 +99,44 @@ class ThwaitesSimData:
 
     char_length = property(fget=lambda self: self._char_length,
                            fset=lambda self, new_char_length: setattr(self,
-                                                                        '_char_length',
-                                                                        new_char_length))
+                                                                      '_char_length',
+                                                                      new_char_length))
 
 
 class ThwaitesSim:
     def __init__(self, thwaites_sim_data):
-        
-        u_e_star_series = pd.Series(thwaites_sim_data.u_e) / thwaites_sim_data.u_inf
-        x_star_series = pd.Series(thwaites_sim_data.x) / thwaites_sim_data.char_length
 
-        integrand_series = pd.Series(pow(u_e_star_series,5))
-        integral_series = pd.Series(cumtrapz(integrand_series,x_star_series,initial=0))
+        #u_e_star_series = pd.Series(thwaites_sim_data.u_e) / thwaites_sim_data.u_inf
+        #x_star_series = pd.Series(thwaites_sim_data.x) / thwaites_sim_data.char_length
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore")
+            integrand_vec = pow(thwaites_sim_data.u_e,5)
+            integral_vec = cumtrapz(integrand_vec, thwaites_sim_data.x, initial=0)
+            
+            self._eq5_6_16_vec  = (.45 / pow(thwaites_sim_data.u_e, 6)) *integral_vec
+            self._theta_vec = pow(self._eq5_6_16_vec * thwaites_sim_data.nu, .5)
+            self._lam_vec = (pow(self._theta_vec, 2) *np.gradient(thwaites_sim_data.u_e, thwaites_sim_data.x) /thwaites_sim_data.nu)
+            self._h_vec = np.array([thwaites_sim_data.h(lam) for lam in self._lam_vec],dtype=np.float)
+            self._s_vec = np.array([thwaites_sim_data.s(lam) for lam in self._lam_vec],dtype=np.float)
+            
+            self._cf_vec = (2 *
+                            thwaites_sim_data.nu *
+                            self._s_vec /
+                            (thwaites_sim_data.u_e *
+                            self._theta_vec))
+            self._del_star_vec = self._h_vec*self._theta_vec
+            self._wall_shear_vec = (thwaites_sim_data.nu * 
+                                    self._s_vec * 
+                                    pow(thwaites_sim_data.u_e / 
+                                        thwaites_sim_data.u_inf, 
+                                        2) / 
+                                    (thwaites_sim_data.u_e*self._theta_vec))
         
-        self._eq5_6_18_series  = (.45 / pow(u_e_star_series, 6)) *integral_series
-        self._theta_series = (thwaites_sim_data.char_length *
-                              pow(self._eq5_6_18_series / thwaites_sim_data.re,
-                                  .5))
-        self._lam_series = (pow(self._theta_series, 2) *np.gradient(thwaites_sim_data.u_e, thwaites_sim_data.x) /thwaites_sim_data.nu)
-        #self._lam_series = self._eq5_6_18_series*np.gradient(thwaites_sim_data.u_e,thwaites_sim_data.x)
-        h_tuple=()
-        s_tuple=()
-        for lam in self._lam_series:
-            h_tuple += (thwaites_sim_data.h(lam),)
-            s_tuple += (thwaites_sim_data.s(lam),)
-        self._h_series = pd.Series(h_tuple)
-        self._s_series = pd.Series(s_tuple)
-        self._cf_series = (2 *
-                           thwaites_sim_data.nu *
-                           self._s_series /
-                           (thwaites_sim_data.u_e *
-                            self._theta_series))
-        self._del_star_series = self._h_series*thwaites_sim_data.char_length*pow(self._eq5_6_18_series,.5)/pow(thwaites_sim_data.re,.5)
-        
-    eq5_6_18_series = property(fget=lambda self: self._eq5_6_18_series)
-    theta_series = property(fget=lambda self: self._theta_series)
-    lam_series = property(fget=lambda self: self._lam_series)
-    h_series = property(fget=lambda self: self._h_series)
-    s_series = property(fget=lambda self: self._s_series)
-    cf_series = property(fget=lambda self: self._cf_series)
-    del_star_series = property(fget=lambda self: self._del_star_series)
+    #eq5_6_16_vec = property(fget=lambda self: self._eq5_6_16_vec)
+    theta_vec = property(fget=lambda self: self._theta_vec)
+    lam_vec = property(fget=lambda self: self._lam_vec)
+    h_vec = property(fget=lambda self: self._h_vec)
+    s_vec = property(fget=lambda self: self._s_vec)
+    cf_vec = property(fget=lambda self: self._cf_vec)
+    del_star_vec = property(fget=lambda self: self._del_star_vec)
+    wall_shear_vec =  property(fget=lambda self: self._wall_shear_vec)
