@@ -85,149 +85,168 @@ plotx = np.linspace(x_vec[0],x_vec[-1])
 
 #u_e comparison
 
+#Change Font for Plots to Times New Roman
+plt.rcParams["font.family"] = "Times New Roman"
+plt.rcParams["mathtext.default"] = "regular" #make math text also tnr (not italic - probably need LaTeX)
+plt.rcParams["legend.edgecolor"] = "0" #sold legend edge
+plt.rcParams["legend.framealpha"] = "1" #legend transparency - solid
 
 fig,ax = plt.subplots()
 #plotx = np.linspace(x_vec[0],x_vec[-1])
-ax.plot(plotx, hs.u_e(plotx),label='u_e spline')
-ax.plot(plotx, hs_smooth.u_e(plotx),label='u_e spline from smoothed u_e')
-ax.plot(plotx, hs_smooth_der.u_e(plotx),label='u_e spline from smoothed du_e/dx')
-ax.plot(x_vec,u_e_vec,'o',label='u_e tabulated points')
-ax.plot(smooth_x,smooth_u_e,'o',label='u_e points from plot')
-ax.set(xlabel='x(m)', ylabel='u_e')
+ax.plot(plotx, hs.u_e(plotx),label=r'$u_e$ spline')
+ax.plot(plotx, hs_smooth.u_e(plotx),label=r'$u_e$ spline from smoothed $u_e$')
+ax.plot(plotx, hs_smooth_der.u_e(plotx),label=r'$u_e$ spline from smoothed $\frac{du_e}{dx}$')
+ax.plot(x_vec,u_e_vec,'o',label=r'$u_e$ tabulated points')
+ax.plot(smooth_x,smooth_u_e,'o',label=r'$u_e$ points from plot')
+ax.set(xlabel='x(m)', ylabel='$u_e$')
 ax.legend(loc='upper right', ncol=1)
+plt.title(r'$u_e$ values')
 
 #duedx comparison
 fig,ax = plt.subplots()
 plotx = np.linspace(x_vec[0],x_vec[-1])
-ax.plot(plotx, hs.du_edx(plotx),label='du_e/dx spline from tabulated u_e data')
-ax.plot(x_vec,du_edx_tab,'o',label = 'tabulated du_e/dx (DUI)' )
-ax.plot(plotx, hs_smooth.du_edx(plotx),label='du_e/dx spline from smoothed u_e')
-ax.plot(plotx, hs_smooth_der.du_edx(plotx),label='du_e/dx spline from smoothed du_e/dx')
-ax.plot(smooth_x,smooth_du_edx,'o',label='du_e/dx points from plot')
-ax.plot(x_vec[:-1],approx_du_edx,'o',label='simple derivative approximation')
-ax.plot(smooth_x[:-1],approx_du_edx_smooth,'o',label='simple derivative approximation (from smooth data)')
-ax.set(xlabel='x(m)', ylabel='du_e/dx',ylim=[2,-5.2])
+midx = (x_vec[1:] + x_vec[:-1]) / 2 #for simple derivative approximation
+midx_smooth = (smooth_x[1:] + smooth_x[:-1]) / 2
+ax.plot(plotx, hs.du_edx(plotx),label=r'$\frac{du_e}{dx}$ spline from tabulated $u_e$ data')
+ax.plot(x_vec,du_edx_tab,'o',label = r'tabulated $\frac{du_e}{dx}$ (DUI)' )
+ax.plot(plotx, hs_smooth.du_edx(plotx),label=r'$\frac{du_e}{dx}$ spline from smoothed $u_e$')
+ax.plot(plotx, hs_smooth_der.du_edx(plotx),label=r'$\frac{du_e}{dx}$ spline from smoothed $\frac{du_e}{dx}$')
+ax.plot(smooth_x,smooth_du_edx,'o',label=r'$\frac{du_e}{dx}$ points from plot')
+#ax.plot(midx,approx_du_edx,'o',label='simple derivative approximation')
+#ax.plot(midx_smooth,approx_du_edx_smooth,'o',label=r'simple derivative approximation $\frac{u_{e(i+1)}-u_{e(i)}}{x_{i+1}-x_i}$ (from smooth data)')
+ax.set(xlabel=r'x(m)',ylim=[2,-5.2])#, ylabel=r'$\frac{du_e}{dx}$',ylim=[2,-5.2])
+ax.set_ylabel(r'$\frac{du_e}{dx}$',rotation=0,labelpad=15)
+plt.title(r'$\frac{du_e}{dx}$ Comparison')
 ax.legend(loc='lower right', ncol=1)
 
 #Theta Comparison
 fig,ax = plt.subplots()
-ax.plot(plotx, hs.theta(plotx),label='Simulation Theta (from tabulated data)')
-ax.plot(plotx, hs_smooth.theta(plotx),label='Simulation Theta (from smoothed u_e data)')
-ax.plot(plotx, hs_smooth_der.theta(plotx),label='Simulation Theta (from smoothed derivative)')
+ax.plot(plotx, hs.theta(plotx),label=r'Simulation $\theta$ (from tabulated data)')
+ax.plot(plotx, hs_smooth.theta(plotx),label=r'Simulation $\theta$ (from smoothed $u_e$ data)')
+ax.plot(plotx, hs_smooth_der.theta(plotx),label=r'Simulation Theta (from smoothed $\frac{du_e}{dx}$)')
 #theta_tab = np.array([.276,.413,.606,.811,1.074,1.276,1.432,1.614,1.773,2.005,2.246,2.528])/100
-ax.plot(x_vec,theta_tab,'o',label='Tabulated Theta')
-ax.set(xlabel='x(m)', ylabel='theta(m)')
+ax.plot(x_vec,theta_tab,'o',label=r'Tabulated $\theta$')
+ax.set(xlabel='x(m)') #, ylabel=r'$\theta$(m)')
+ax.set_ylabel(r'$\theta$(m)',rotation=0)
 ax.legend(loc='upper left', ncol=1)
+plt.title(r'$\theta$ comparison')
 
 #C_f Comparison
 fig,ax = plt.subplots()
-ax.plot(plotx, hs.c_f(plotx),label='Simulation c_f (from tabulated data)')
-ax.plot(plotx, hs_smooth.c_f(plotx),label='Simulation c_f (from smoothed u_e data)')
-ax.plot(plotx, hs_smooth_der.c_f(plotx),label='Simulation Theta (from smoothed derivative)')
+ax.plot(plotx, hs.c_f(plotx),label=r'Simulation $c_f$ (from tabulated data)')
+ax.plot(plotx, hs_smooth.c_f(plotx),label=r'Simulation $c_f$ (from smoothed $u_e$ data)')
+ax.plot(plotx, hs_smooth_der.c_f(plotx),label=r'Simulation Theta (from smoothed $\frac{du_e}{dx}$)')
 #c_f_tab = np.array([.00285,.00249,.00221,.00205,.00180,.00168,.00162,.00150,.00141,.00133,.00124,.00117])
-ax.plot(x_vec,c_f_tab,'o',label='Tabulated c_f')
+ax.plot(x_vec,c_f_tab,'o',label=r'Tabulated $c_f$')
 #c_f_lt_tab = np.array([.00276,.00246,.00222,.00202,.00181,.00167,.00161,.00151,.00142,.00133,.00124,.00117])
-ax.plot(x_vec,c_f_lt_tab,'o',label='Tabulated c_f LT')
-ax.set(xlabel='x(m)', ylabel='c_f')
+ax.plot(x_vec,c_f_lt_tab,'o',label=r'Tabulated $c_{fLT}$')
+ax.set(xlabel=r'x(m)', ylabel=r'$c_f$')
 ax.legend(loc='upper right', ncol=1)
+plt.title(r'$c_f$ Comparison')
 
 #H comparison
 fig,ax = plt.subplots()
 ax.plot(plotx, hs.h(plotx),label='Simulation H (from tabulated data)')
-ax.plot(plotx, hs_smooth.h(plotx),label='Simulation H (from smoothed u_e data)')
-ax.plot(plotx, hs_smooth_der.h(plotx),label='Simulation H (from smoothed derivative)')
+ax.plot(plotx, hs_smooth.h(plotx),label=r'Simulation H (from smoothed $u_e$ data)')
+ax.plot(plotx, hs_smooth_der.h(plotx),label=r'Simulation H (from smoothed $\frac{du_e}{dx}$)')
 #c_f_tab = np.array([.00285,.00249,.00221,.00205,.00180,.00168,.00162,.00150,.00141,.00133,.00124,.00117])
 ax.plot(x_vec,h_tab,'o',label='Tabulated H')
 #c_f_lt_tab = np.array([.00276,.00246,.00222,.00202,.00181,.00167,.00161,.00151,.00142,.00133,.00124,.00117])
 
 ax.set(xlabel='x(m)', ylabel='Shape Factor H')
 ax.legend(loc='lower left', ncol=1)
+plt.title('H Comparison')
+
 
 #displacement thickness comparison
 fig,ax = plt.subplots()
-ax.plot(plotx, hs.h(plotx)*hs.theta(plotx),label='Simulation del (from tabulated data)')
-ax.plot(plotx, hs_smooth.h(plotx)*hs_smooth.theta(plotx),label='Simulation del (from smoothed u_e data)')
-ax.plot(plotx, hs_smooth_der.h(plotx)*hs_smooth_der.theta(plotx),label='Simulation del (from smoothed derivative)')
+ax.plot(plotx, hs.h(plotx)*hs.theta(plotx),label=r'Simulation $\delta$ (from tabulated data)')
+ax.plot(plotx, hs_smooth.h(plotx)*hs_smooth.theta(plotx),label=r'Simulation $\delta$ (from smoothed $u_e$ data)')
+ax.plot(plotx, hs_smooth_der.h(plotx)*hs_smooth_der.theta(plotx),label=r'Simulation $\delta$ (from smoothed $\frac{du_e}{dx}$)')
 #c_f_tab = np.array([.00285,.00249,.00221,.00205,.00180,.00168,.00162,.00150,.00141,.00133,.00124,.00117])
-ax.plot(x_vec,del_tab,'o',label='Tabulated Displacement Thickness')
+ax.plot(x_vec,del_tab,'o',label=r'Tabulated $\delta$')
 #c_f_lt_tab = np.array([.00276,.00246,.00222,.00202,.00181,.00167,.00161,.00151,.00142,.00133,.00124,.00117])
 
-ax.set(xlabel='x(m)', ylabel='del (m)')
+ax.set(xlabel='x(m)', ylabel=r'$\delta$ (m)')
+plt.title(r'$\delta$ Comparison')
 ax.legend(loc='upper left', ncol=1)
 
 
-#Transpiratoin Velocity Comparison
+#Transpiration Velocity Comparison
 #transpiration_velocity_tab = CubicSpline(plotx,hs.u_e(plotx)*hs.h(plotx)*hs.theta(plotx))(plotx,1)
 transpiration_velocity_tab = (hs.du_edx(plotx)*hs.h(plotx)*hs.theta(plotx) + 
                               hs.u_e(plotx)*hs.yp(plotx)[:,1]*hs.theta(plotx) +
                               hs.u_e(plotx)*hs.h(plotx)*hs.yp(plotx)[:,0])
 #transpiration_velocity_smooth_u_e = CubicSpline(plotx,hs_smooth.u_e(plotx)*hs_smooth.h(plotx)*hs_smooth.theta(plotx))(plotx,1)
 transpiration_velocity_smooth_u_e = (hs_smooth.du_edx(plotx)*hs_smooth.h(plotx)*hs_smooth.theta(plotx) + 
-                                     hs_smooth.u_e(plotx)*hs_smooth.yp(plotx)[:,1]*hs_smooth.theta(plotx) +
-                                     hs_smooth.u_e(plotx)*hs_smooth.h(plotx)*hs_smooth.yp(plotx)[:,0])
+                                      hs_smooth.u_e(plotx)*hs_smooth.yp(plotx)[:,1]*hs_smooth.theta(plotx) +
+                                      hs_smooth.u_e(plotx)*hs_smooth.h(plotx)*hs_smooth.yp(plotx)[:,0])
 
 #transpiration_velocity_smooth_der = CubicSpline(plotx,hs_smooth_der.u_e(plotx)*hs_smooth_der.h(plotx)*hs_smooth_der.theta(plotx))(plotx,1)
 transpiration_velocity_smooth_der = (hs_smooth_der.du_edx(plotx)*hs_smooth_der.h(plotx)*hs_smooth_der.theta(plotx) + 
-                                     hs_smooth_der.u_e(plotx)*hs_smooth_der.yp(plotx)[:,1]*hs_smooth_der.theta(plotx) +
-                                     hs_smooth_der.u_e(plotx)*hs_smooth_der.h(plotx)*hs_smooth_der.yp(plotx)[:,0])
+                                      hs_smooth_der.u_e(plotx)*hs_smooth_der.yp(plotx)[:,1]*hs_smooth_der.theta(plotx) +
+                                      hs_smooth_der.u_e(plotx)*hs_smooth_der.h(plotx)*hs_smooth_der.yp(plotx)[:,0])
 fig,ax = plt.subplots()
 ax.plot(plotx,transpiration_velocity_tab,label='Tabulated')
-ax.plot(plotx,transpiration_velocity_smooth_u_e,label='Smooth u_e')
-ax.plot(plotx,transpiration_velocity_smooth_der,label='Smooth du_e/dx')
+ax.plot(plotx,transpiration_velocity_smooth_u_e,label=r'Smooth $u_e$')
+ax.plot(plotx,transpiration_velocity_smooth_der,label=r'Smooth $\frac{du_e}{dx}$')
 ax.legend(loc = 'lower right')
-ax.set(xlabel ='x(m)',ylabel='Transpiration U (m/s)')
+ax.set(xlabel ='x(m)',ylabel='Transpiration U (m/s)') ##need better notation
+plt.title('Transpiration Velocity Comparison')
 
-#Figure 3a from NACA TM 1285
-fig,ax = plt.subplots()
+# #Figure 3a from NACA TM 1285
+# fig,ax = plt.subplots()
 
-fig3a_smooth_y = np.tile(10,len(x_vec))+np.log10(hs_smooth.c_f(x_vec))
-fig3a_smooth_x = np.log10(hs_smooth.rtheta(x_vec))
+# fig3a_smooth_y = np.tile(10,len(x_vec))+np.log10(hs_smooth.c_f(x_vec))
+# fig3a_smooth_x = np.log10(hs_smooth.rtheta(x_vec))
 
-fig3a_smooth_der_y = np.tile(10,len(x_vec))+np.log10(hs_smooth_der.c_f(x_vec))
-fig3a_smooth_der_x = np.log10(hs_smooth_der.rtheta(x_vec))
+# fig3a_smooth_der_y = np.tile(10,len(x_vec))+np.log10(hs_smooth_der.c_f(x_vec))
+# fig3a_smooth_der_x = np.log10(hs_smooth_der.rtheta(x_vec))
 
-fig3a_tabx = np.log10(u_e_vec*theta_tab/nu)
-fig3a_taby = np.tile(10,len(u_e_vec))+ np.log10(c_f_tab)
-fig3a_taby_lt = np.tile(10,len(u_e_vec))+ np.log10(c_f_lt_tab)
+# fig3a_tabx = np.log10(u_e_vec*theta_tab/nu)
+# fig3a_taby = np.tile(10,len(u_e_vec))+ np.log10(c_f_tab)
+# fig3a_taby_lt = np.tile(10,len(u_e_vec))+ np.log10(c_f_lt_tab)
 
-ax.plot(fig3a_smooth_x,fig3a_smooth_y,label='smooth data')
-ax.plot(fig3a_smooth_der_x,fig3a_smooth_der_y,label='smooth derivative')
-ax.plot(fig3a_tabx,fig3a_taby,'o',label='Values from Tabulated Data')
-ax.plot(fig3a_tabx,fig3a_taby_lt,'o',label='Values from Tabulated Data (CFLT)')
-ax.set(xlabel='Log10 RTheta',ylabel='10+log10(c_f)',label = 'Vlues ')
-ax.grid(True, linewidth=0.5,  color = '#000000', linestyle='-') #plt.grid(True, linewidth=0.5, color='#ff0000', linestyle='-')
-ax.legend(loc='lower left')
-#Return Theta Derivative
-fig,ax = plt.subplots()
-ax.plot(plotx,hs.yp(plotx)[:,0],label='Derivative from simulation')
-ax.plot(plotx,hs_smooth.yp(plotx)[:,0],label='Derivative from smooth data y spline')
-ax.plot(plotx,hs_smooth_der.yp(plotx)[:,0],label='Derivative from smooth derivative y spline')
-approx_dthetadx_tab = (hs.y(plotx[:-1])[:,0]-hs.y(plotx[1:])[:,0])/(plotx[:-1]-plotx[1:])
-#ax.plot(plotx[:-1]+.5*(plotx[1:]-plotx[:-1]),approx_dthetadx_tab,label='Derivative from simple approximation (tabular data)')
-approx_dthetadx = (hs_smooth_der.y(plotx[:-1])[:,0]-hs_smooth_der.y(plotx[1:])[:,0])/(plotx[:-1]-plotx[1:])
-ax.plot(plotx[:-1]+.5*(plotx[1:]-plotx[:-1]),approx_dthetadx,label='Derivative from simple approximation (smooth derivative)')
-ax.legend(loc = 'lower right')
-ax.set(xlabel='x(m)', ylabel='dtheta/dx')
+# ax.plot(fig3a_smooth_x,fig3a_smooth_y,label='smooth data')
+# ax.plot(fig3a_smooth_der_x,fig3a_smooth_der_y,label='smooth derivative')
+# ax.plot(fig3a_tabx,fig3a_taby,'o',label='Values from Tabulated Data')
+# ax.plot(fig3a_tabx,fig3a_taby_lt,'o',label='Values from Tabulated Data (CFLT)')
+# ax.set(xlabel='Log10 RTheta',ylabel='10+log10(c_f)',label = 'Vlues ')
+# ax.grid(True, linewidth=0.5,  color = '#000000', linestyle='-') #plt.grid(True, linewidth=0.5, color='#ff0000', linestyle='-')
+# ax.legend(loc='lower left')
+# #Return Theta Derivative
+# fig,ax = plt.subplots()
+# ax.plot(plotx,hs.yp(plotx)[:,0],label='Derivative from simulation')
+# ax.plot(plotx,hs_smooth.yp(plotx)[:,0],label='Derivative from smooth data y spline')
+# ax.plot(plotx,hs_smooth_der.yp(plotx)[:,0],label='Derivative from smooth derivative y spline')
+# approx_dthetadx_tab = (hs.y(plotx[:-1])[:,0]-hs.y(plotx[1:])[:,0])/(plotx[:-1]-plotx[1:])
+# #ax.plot(plotx[:-1]+.5*(plotx[1:]-plotx[:-1]),approx_dthetadx_tab,label='Derivative from simple approximation (tabular data)')
+# approx_dthetadx = (hs_smooth_der.y(plotx[:-1])[:,0]-hs_smooth_der.y(plotx[1:])[:,0])/(plotx[:-1]-plotx[1:])
+# ax.plot(plotx[:-1]+.5*(plotx[1:]-plotx[:-1]),approx_dthetadx,label='Derivative from simple approximation (smooth derivative)')
+# ax.legend(loc = 'lower right')
+# ax.set(xlabel='x(m)', ylabel='dtheta/dx')
 
-#Figure 3a-b
-fig,ax = plt.subplots()
-smooth_c_f = hs_smooth.c_f(x_vec)
-smooth_rtheta = hs_smooth.rtheta(x_vec)
-smooth_der_c_f = hs_smooth_der.c_f(x_vec)
-smooth_der_rtheta = hs_smooth_der.rtheta(x_vec)
-ax.plot(smooth_rtheta,smooth_c_f,label ='smooth data')
-ax.plot(smooth_der_rtheta,smooth_der_c_f,label = 'smooth derivative')
-ax.plot(u_e_vec*theta_tab/nu,c_f_tab,label='tabulated cf')
-ax.plot(u_e_vec*theta_tab/nu,c_f_lt_tab,label = 'tabulated cflt')
-ax.legend(loc='lower left')
-ax.set(xlabel='Rtheta',ylabel='Cf')
+# #Figure 3a-b
+# fig,ax = plt.subplots()
+# smooth_c_f = hs_smooth.c_f(x_vec)
+# smooth_rtheta = hs_smooth.rtheta(x_vec)
+# smooth_der_c_f = hs_smooth_der.c_f(x_vec)
+# smooth_der_rtheta = hs_smooth_der.rtheta(x_vec)
+# ax.plot(smooth_rtheta,smooth_c_f,label ='smooth data')
+# ax.plot(smooth_der_rtheta,smooth_der_c_f,label = 'smooth derivative')
+# ax.plot(u_e_vec*theta_tab/nu,c_f_tab,label='tabulated cf')
+# ax.plot(u_e_vec*theta_tab/nu,c_f_lt_tab,label = 'tabulated cflt')
+# ax.legend(loc='lower left')
+# ax.set(xlabel='Rtheta',ylabel='Cf')
 
 
 
 #Return H derivative
 fig,ax = plt.subplots()
-ax.plot(plotx,hs_smooth_der.yp(plotx)[:,1],label='Derivative from y spline')
+ax.plot(plotx,hs_smooth_der.yp(plotx)[:,1],label=r'$\frac{dH}{dx}$ from y spline')
 approx_dthetadx = (hs_smooth_der.y(plotx[:-1])[:,1]-hs_smooth_der.y(plotx[1:])[:,1])/(plotx[:-1]-plotx[1:])
-ax.plot(plotx[:-1]+.5*(plotx[1:]-plotx[:-1]),approx_dthetadx,label='Derivative from simple approximation')
+ax.plot(plotx[:-1]+.5*(plotx[1:]-plotx[:-1]),approx_dthetadx,label=r'$\frac{dH}{dx}$ from simple approximation')
 ax.legend(loc = 'lower right')
-ax.set(xlabel='x(m)', ylabel='dH/dx')
+ax.set(xlabel='x(m)')
+ax.set_ylabel(r'$\frac{dH}{dx}$',rotation=0)
+plt.title('Shape Factor Derivative')
