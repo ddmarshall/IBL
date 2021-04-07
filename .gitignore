@@ -1,0 +1,4 @@
+.spyproject/ 
+-a 
+__pycache__/ 
+-a 
