@@ -11,7 +11,26 @@ import numpy as np
 #import warnings
 from scipy.interpolate import CubicSpline
 from scipy.integrate import RK45
+from scipy.optimize import root #used for x_tr root finding in Thwaites (Michel)
 
+
+
+# def input_decorator(func):
+#     #this decorator will help all f(x) accept values cleanly - when it works
+    
+#     def inner(x=None):
+#         if type(x)!=np.ndarray and  x==None:
+#             return fun(sim.x_vec) 
+#         if type(x) == np.ndarray:
+#             return fun(x)
+#         elif type(x) == list:
+#             return fun(np.array(x))
+#         elif type(x) == float or type(x) == int:
+#             return fun(np.array([x]))
+#     return inner
+
+
+    
 class IBLSimData:
     def __init__(self,
                  x_vec,
@@ -54,6 +73,7 @@ class IBLSimData:
         
 class IBLSim:
     def __init__(self,iblsimdata,derivatives,x0,y0,x_bound):
+        self._data = iblsimdata
         self._sim = RK45(fun=derivatives,t0=x0, t_bound=x_bound, y0=y0 ) #y0=np.array([y0] t_bound = np.array([ x_bound])
         self._x_vec = np.array([self._sim.t])
         self._dense_output_vec = np.array([])
@@ -63,7 +83,7 @@ class IBLSim:
         self.u_e = iblsimdata.u_e #holds reference to u_e(x) from IBLSimData
         self.du_edx = iblsimdata.du_edx
         #self._x_u_e_spline = CubicSpline(iblsimdata.x_vec, iblsimdata.u_e_vec)
-        
+    data = property(fget = lambda self: self._data) 
     x_vec = property(fget = lambda self: self._x_vec)
     status = property(fget = lambda self: self._sim.status)
     dense_output_vec = property(fget = lambda self: self._dense_output_vec)
@@ -98,14 +118,90 @@ class IBLSim:
         #conds = np.array([[(x[i] >= self.x_vec[j]) & (x[i] <= self.x_vec[j+1]) for j in range(len(self.x_vec)-1)] for i in range(len(x))])
         
         #return np.array([[self._piecewise_funs[j](x[i]) for j in range(len(self.x_vec)-1) if (x[i] >= self.x_vec[j]) & (x[i] <= self.x_vec[j+1])] for i in range(len(x))])
-        
+
+
+    #@staticmethod
+    # def input_decorator(fun):
+    #     #this decorator will help all f(x) accept values cleanly - when it works
+    #     def returnfun(x=None):
+    #         if x==None:
+    #            return fun(self.x_vec) 
+    #         if type(x) == np.ndarray:
+    #             return fun(x)
+    #         elif type(x) == list:
+    #             return fun(np.array(x))
+    #         elif type(x) == float or type(x) == int:
+    #             return fun(np.array([x]))
+    #     return returnfun
 
 # class IBLSimProfile:
 #     def __init__(self,IBLSimData,t,y):
 #         self
+class TransitionModel:
+    def __init__(self,iblsim,criteria,h0calc):
+        #iblsim: instance of a laminar ibl sim 
+        #criteria: f(iblsim), returns difference from criteria at last point. Positive if transitioned.
+        self._iblsim = iblsim
         
-#Thwaites Default Functions
+        self._criteria = lambda x=None: criteria(self.iblsim,x) #x is none by default
+        self._h0calc = h0calc
+        #self._transitioned = False
+        self._x_tr = None
+        self._h0 = None
+    #criteria = property(fget = lambda self:self._criteria)
+    # def criteria(self,x=None):
+    #     return self._criteria(x)
+    iblsim = property(fget = lambda self:self._iblsim)
+    transitioned = property(fget = lambda self:self.x_tr!=None) #returns true if x_tr not none
+    status = property(fget = lambda self: self.iblsim.status)
+    
+    # def step(self): ######Ultimately unnecessary, does nothing unique
+    #     self.iblsim.step()
+        
+    @property
+    def x_tr(self):
+        if self._x_tr == None and np.any(self._criteria()>0):
+            self._transitioned = True
+            best_guess = np.argmax(self._criteria()>0)
+            find_x_tr = root(lambda xpt:float(self._criteria(np.array([xpt]))),x0=best_guess)
+            self._x_tr = find_x_tr.x
+        return self._x_tr
 
+    @property
+    def h0(self):
+        #checks whether x_tr is None ()
+        if self.x_tr!=None and self._h0==None: #also checks if h0 has already been calculated
+            self._h0 = self._h0calc(self.iblsim,self.x_tr)
+            #self._h0= 1.4754/np.log(self.iblsim.rtheta(self.x_tr)) +.9698
+        return self._h0
+        
+    #x_tr = property(fget = _get_x_tr)
+    #h0 = property(fget = _get_h0)
+                #     if self._x_tr==None and np.any(self.michel(self.x_vec)):
+    #         best_guess = np.argmax(self.michel(self.x_vec)>0)
+    #         find_x_tr = root(lambda xpt:float(self.michel_difference(np.array([xpt]))),x0=best_guess)
+    #         return find_x_tr.x
+            
+#Thwaites Default Functions
+class Michel(TransitionModel):
+    def __init__(self,iblsim):
+        def michel_difference(iblsim,x=None):
+            #michel line for transition prediction
+            #returns all points for x = None or no x provided
+            if type(x)!=np.ndarray and x ==None:
+                x = iblsim.x_vec
+            return iblsim.rtheta(x) - 2.9*pow(iblsim.u_e(x)*x/iblsim.nu,.4)
+        def h0calc(iblsim,x_tr):
+            return 1.4754/np.log(iblsim.rtheta(x_tr)) +.9698
+        super().__init__(iblsim,michel_difference,h0calc)
+        
+# class PMARCTransition(Transition):
+#     def __init__(self,iblsim):
+        
+        
+        
+        
+        
 def _function_of_lambda_property_setter(f):
     try:
         sig = inspect.signature(f)
@@ -230,7 +326,6 @@ class ThwaitesSimData(IBLSimData):
 class ThwaitesSim(IBLSim):
     def __init__(self, thwaites_sim_data):
         
-        
         self.u_e = thwaites_sim_data.u_e #f(x)
         self.u_inf = thwaites_sim_data.u_inf
         self.re = thwaites_sim_data.re
@@ -238,6 +333,8 @@ class ThwaitesSim(IBLSim):
         self.h = thwaites_sim_data.h
         self.nu = thwaites_sim_data.nu
         self.char_length = thwaites_sim_data.char_length
+        
+        self._x_tr = None 
         def derivatives(t,y):
             x = t
             u_e = self.u_e(x)
@@ -251,8 +348,8 @@ class ThwaitesSim(IBLSim):
         
         super().__init__(thwaites_sim_data, derivatives, self.x0, self.y0, self.x_bound)
         self.u_e = thwaites_sim_data.u_e
-        
 
+    
 
     
     def u_e_star(self,x):
@@ -289,7 +386,8 @@ class ThwaitesSim(IBLSim):
     def s_x(self,x):
         #s as a function of x (simulation completed)
         return np.array([self.s(lam) for lam in self.lam(x)])
-    def c_f(self,x)   :
+    def c_f(self,x,q=None):
+        #q - scalar
         #skin friction
         #return 2 *self.nu*self.s(self.lam(x))/(self.u_e(x)*self.theta(x))
         return 2 *self.nu*self.s_x(x) / (self.u_e(x)*self.theta(x))
@@ -320,10 +418,23 @@ class ThwaitesSim(IBLSim):
     # cf_vec = property(fget=lambda self: self._cf_vec)
     # del_star_vec = property(fget=lambda self: self._del_star_vec)
     # wall_shear_vec =  property(fget=lambda self: self._wall_shear_vec)
+    # def michel_line(self,x):
+    #     #michel line for transition prediction
+    #     return 2.9*pow(self.u_e(x)*x/self.nu,.4)
     
-    def michel(self,x):
-        return np.array(self.rtheta(x)>2.9*pow(self.u_e(x)*x/self.nu,.4))
-        #more efficient: np.where(x>x_tr)
+    # def michel_difference(self,x):
+    #     return self.rtheta(x)-self.michel_line(x)
+    # #@IBLSim.input_decorator
+    # def michel(self,x):
+    #     #return np.array(self.rtheta(x)>self.michel_line(x))
+    #     return self.michel_difference(x)>0
+    #     #more efficient: x>x_tr
+    # @property
+    # def x_tr(self):
+    #     if self._x_tr==None and np.any(self.michel(self.x_vec)):
+    #         best_guess = np.argmax(self.michel(self.x_vec)>0)
+    #         find_x_tr = root(lambda xpt:float(self.michel_difference(np.array([xpt]))),x0=best_guess)
+    #         return find_x_tr.x
     
     
 class HeadSimData(IBLSimData):
