@@ -4,7 +4,7 @@
 """
 import numpy as np
 import matplotlib.pyplot as plt
-from PyBL6 import HeadSimData, HeadSim #, TransitionModel
+from pyBL import HeadSimData, HeadSim #, TransitionModel
 from scipy.interpolate import CubicSpline #for smoothed derivative experiment
 
 

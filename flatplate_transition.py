@@ -12,7 +12,7 @@ from scipy.integrate import RK45
 
 from scipy.optimize import root #for finding optimal blasius eta
 
-from PyBL5 import ThwaitesSimData, ThwaitesSim, HeadSimData, HeadSim, Michel
+from pyBL import ThwaitesSimData, ThwaitesSim, HeadSimData, HeadSim, Michel
 
 #Inviscid Flate Plate
 u_inf = 6 #m/sec
