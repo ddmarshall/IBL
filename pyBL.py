@@ -42,6 +42,7 @@ class IBLSimData:
         self.u_inf = u_inf
         self.nu = nu
         self._x_u_e_spline = CubicSpline(x_vec, u_e_vec)
+        #self._x_u_e_spline = CubicSpline(x_vec, u_e_vec,bc_type='natural') #replace line above for 'natural' bc's instead of 'not-a-knot'
         #self.derivatives = derivatives
         #self.profile = profile
     
@@ -115,6 +116,36 @@ class IBLSim:
                     y_array[i,:] = self.dense_output_vec[j](x_array[i])
                     break
         return y_array
+    
+    def yp(self,x):
+        x_array = x #must be array
+        #x_array = np.array([x])
+        yp_array = np.zeros([len(x),len(self._sim.y)])
+        for i in range(len(x_array)):
+            for j in range(len(self.dense_output_vec)): #-1
+                if (x_array[i] >= self.x_vec[j]) & (x_array[i] <= self.x_vec[j+1]):
+                    #y_array = np.append(y_array, [[self._piecewise_funs[j](x_array[i])]],axis=0)
+                    #print(x_array[i])
+                    #y_array[i,:] = self._piecewise_funs[j](x_array[i])
+                    xdist = (x_array[i] - self.dense_output_vec[j].t_old) / self.dense_output_vec[j].h
+                    if np.array(x_array[i]).ndim == 0:
+                                #p = np.tile(x, testfit.order + 1)
+                                p = np.tile(xdist, self.dense_output_vec[j].order + 1)
+                                p = np.cumprod(p)/p
+                    else:
+                                p = np.tile(xdist, (self.dense_output_vec[j].order + 1, 1))
+                                p = np.cumprod(p, axis=0)/p
+                    #term1 = self.dense_output_vec[j].h h actually disappears
+                    term2 = np.arange(1,self.dense_output_vec[j].order+2)
+                    term3 = self.dense_output_vec[j].Q
+                    term4 = p
+                    #yp_array[i,:] = self.dense_output_vec[j].h * np.dot(np.arange(1,self.dense_output_vec[j].order+2)*self.dense_output_vec[j].Q, p)  
+                    #yp_array[i,:] = term1 * np.dot(term2*term3, term4) 
+                    yp_array[i,:] = np.dot(term2*term3, term4) 
+                                        #yp_array[i,:] = self.dense_output_vec[j](x_array[i])
+                    
+                    break
+        return yp_array        
         #conds = np.array([[(x[i] >= self.x_vec[j]) & (x[i] <= self.x_vec[j+1]) for j in range(len(self.x_vec)-1)] for i in range(len(x))])
         
         #return np.array([[self._piecewise_funs[j](x[i]) for j in range(len(self.x_vec)-1) if (x[i] >= self.x_vec[j]) & (x[i] <= self.x_vec[j+1])] for i in range(len(x))])
@@ -496,11 +527,17 @@ class HeadSim(IBLSim):
         
     def theta(self,x):
         return self.y(x)[:,0]
+    def thetap(self,x):
+        return self.yp(x)[:,0]
     def h(self,x):
         #shape factor
         return self.y(x)[:,1]
+    def hp(self,x):
+        return self.yp(x)[:,1]
+    
     def rtheta(self,x):
         return self.u_e(x)*self.theta(x)/self.nu
     def c_f(self,x):
         return .246*pow(10,-.678*self.h(x))*pow(self.rtheta(x),-.268)
+    #def c_fp(self,x):
         
