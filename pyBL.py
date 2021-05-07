@@ -43,6 +43,7 @@ class IBLSimData:
         self.nu = nu
         self._x_u_e_spline = CubicSpline(x_vec, u_e_vec)
         #self._x_u_e_spline = CubicSpline(x_vec, u_e_vec,bc_type='natural') #replace line above for 'natural' bc's instead of 'not-a-knot'
+        #self._x_u_e_spline = CubicSpline(x_vec, u_e_vec,bc_type=((1,25),(2,0))) #hack
         #self.derivatives = derivatives
         #self.profile = profile
     
@@ -76,6 +77,9 @@ class IBLSim:
     def __init__(self,iblsimdata,derivatives,x0,y0,x_bound):
         self._data = iblsimdata
         self._sim = RK45(fun=derivatives,t0=x0, t_bound=x_bound, y0=y0 ) #y0=np.array([y0] t_bound = np.array([ x_bound])
+       #######hack (following line)
+        #self._sim = RK45(fun=derivatives,t0=x0, t_bound=x_bound, y0=np.array([pow(5E-4,2)*self._data.re*pow(iblsimdata.u_inf/x0,6)])) #y0=np.array([y0] t_bound = np.array([ x_bound])
+        #self._sim = RK45(fun=derivatives,t0=x0, t_bound=x_bound, y0=np.array([.0005]))  #y0=np.array([y0] t_bound = np.array([ x_bound])
         self._x_vec = np.array([self._sim.t])
         self._dense_output_vec = np.array([])
         #self._piecewise_ranges = np.array([lambda x: False])
@@ -355,13 +359,13 @@ class ThwaitesSimData(IBLSimData):
 #     wall_shear_vec =  property(fget=lambda self: self._wall_shear_vec)
     
 class ThwaitesSim(IBLSim):
-    def __init__(self, thwaites_sim_data):
-        
+    def __init__(self, thwaites_sim_data,x0=0,y0=0):
+        #note - f's(lambda) aren't actually used in solver
         self.u_e = thwaites_sim_data.u_e #f(x)
         self.u_inf = thwaites_sim_data.u_inf
         self.re = thwaites_sim_data.re
-        self.s = thwaites_sim_data.s
-        self.h = thwaites_sim_data.h
+        self.s_lam = thwaites_sim_data.s
+        self.h_lam = thwaites_sim_data.h
         self.nu = thwaites_sim_data.nu
         self.char_length = thwaites_sim_data.char_length
         
@@ -372,9 +376,10 @@ class ThwaitesSim(IBLSim):
             return np.array([pow(u_e,5)])
         
         #Probably user changeable eventually
-        self.x0 = thwaites_sim_data.x_vec[0]    
+        #self.x0 = thwaites_sim_data.x_vec[0]
+        self.x0=x0
         #self.y0 = np.array([5*pow(thwaites_sim_data.u_e(self.x0),4)])
-        self.y0 = np.array([0])
+        self.y0 = np.array([y0])
         self.x_bound = thwaites_sim_data.x_vec[-1] 
         
         super().__init__(thwaites_sim_data, derivatives, self.x0, self.y0, self.x_bound)
@@ -397,7 +402,7 @@ class ThwaitesSim(IBLSim):
        # sim = RK45(fun=derivatives, t0=x0 , y0=5*,t_bound = self.x[-1],max_step=.1)
        # integral_vec = cumtrapz(integrand_vec, thwaites_sim_data.x, initial=0)
     def eq5_6_16(self,x):
-        return (.45 / pow(self.u_e(x),6))*np.transpose(self.y(x))[0,:] #back down to (m,) array
+        return np.nan_to_num((.45 / pow(self.u_e(x),6))*np.transpose(self.y(x))[0,:]) #back down to (m,) array
       
     #     self._eq5_6_16_vec  = (.45 / pow(thwaites_sim_data.u_e, 6)) *integral_vec
     def theta(self,x):
@@ -411,12 +416,12 @@ class ThwaitesSim(IBLSim):
     #     self._h_vec = np.array([thwaites_sim_data.h(lam) for lam in self._lam_vec],dtype=np.float)
     #     self._s_vec = np.array([thwaites_sim_data.s(lam) for lam in self._lam_vec],dtype=np.float)
     def h_x(self,x):
-        #h as a function of x (simulation completed)
-        return np.array([self.h(lam) for lam in self.lam(x)])
+        #h function (not shape factor) as a function of x (simulation completed)
+        return np.array([self.h_lam(lam) for lam in self.lam(x)])
         
     def s_x(self,x):
         #s as a function of x (simulation completed)
-        return np.array([self.s(lam) for lam in self.lam(x)])
+        return np.array([self.s_lam(lam) for lam in self.lam(x)])
     def c_f(self,x,q=None):
         #q - scalar
         #skin friction
@@ -440,7 +445,8 @@ class ThwaitesSim(IBLSim):
     #                                 2) / 
     #                             (thwaites_sim_data.u_e*self._theta_vec))
     def rtheta(self,x):
-        return self.u_e(x)*self.theta(x)/self.nu    
+        return self.u_e(x)*self.theta(x)/self.nu  
+
     # #eq5_6_16_vec = property(fget=lambda self: self._eq5_6_16_vec)
     # theta_vec = property(fget=lambda self: self._theta_vec)
     # lam_vec = property(fget=lambda self: self._lam_vec)

@@ -2,3 +2,5 @@
 -a 
 __pycache__/ 
 -a 
+figures/
+-a
