@@ -5,6 +5,7 @@ Created on Mon Feb  1 11:33:36 2021
 @author: blond
 """
 
+#Testing modifying Thwaites to be based s and H instead of .45-6lam, y=theta^2
 import inspect    # used to return source code of h,s
 #from scipy.integrate import cumtrapz
 import numpy as np
@@ -251,6 +252,10 @@ def _function_of_lambda_property_setter(f):
 
 
 def _default_s(lam):
+    try:
+        lam = min([max([lam,-.1]),.1]) #gives back lambda at endpoints of fit (if outside fit)
+    except:
+        pass
     if lam >= 0 and lam <= .1:
         return .22 + 1.57 * lam - 1.8 * pow(lam, 2)
     elif lam >= -.1 and lam <= 0:
@@ -260,6 +265,11 @@ def _default_s(lam):
 
 
 def _default_h(lam):
+    try:
+        
+        lam = min([max([lam,-.1]),.1]) #gives back lambda at endpoints of fit (if outside fit)
+    except:
+        pass
     if lam >= 0 and lam <= .1:
         return 2.61-3.75*lam+5.24*pow(lam, 2)
     elif lam >= -.1 and lam <= 0:
@@ -282,7 +292,9 @@ class ThwaitesSimData(IBLSimData):
                          u_e_vec,
                          u_inf,
                          nu)
+        
         self.re = re
+        #these go through the setters
         self.s = s
         self.h = h
 
@@ -312,6 +324,7 @@ class ThwaitesSimData(IBLSimData):
                            fset=lambda self, new_char_length: setattr(self,
                                                                       '_char_length',
                                                                       new_char_length))
+    
     
     # def derivatives(self,t,y):
     #     x = t
@@ -371,9 +384,19 @@ class ThwaitesSim(IBLSim):
         
         self._x_tr = None 
         def derivatives(t,y):
-            x = t
-            u_e = self.u_e(x)
-            return np.array([pow(u_e,5)])
+            #modified derivatives to use s and h, define y as theta^2
+            x=t
+            lam = y*thwaites_sim_data.du_edx(x)/self.nu
+            
+            if abs(self.u_e(x))<np.array([1E-8]):
+                return np.array([1E-8])
+            else:
+                #return np.array([self.nu*(.45-6*lam)/self.u_e(x)])
+                return np.array([2*self.nu*(self.s_lam(lam)-(2+self.h_lam(lam))*lam)/self.u_e(x)])
+            #x = t
+            #u_e = self.u_e(x)
+            #return np.array([pow(u_e,5)])
+            
         
         #Probably user changeable eventually
         #self.x0 = thwaites_sim_data.x_vec[0]
@@ -388,11 +411,11 @@ class ThwaitesSim(IBLSim):
     
 
     
-    def u_e_star(self,x):
-        return self.u_e(x)/self.u_inf
+    #def u_e_star(self,x):
+        #return self.u_e(x)/self.u_inf
         #u_e_star_series = pd.Series(thwaites_sim_data.u_e) / thwaites_sim_data.u_inf
-    def x_star(self,x):
-        return x/thwaites_sim_data.char_length
+    #def x_star(self,x):
+        #return x/thwaites_sim_data.char_length
     
         #x_star_series = pd.Series(thwaites_sim_data.x) / thwaites_sim_data.char_length
         #with warnings.catch_warnings():
@@ -401,16 +424,17 @@ class ThwaitesSim(IBLSim):
        # integrand_vec = pow(thwaites_sim_data.u_e,5)
        # sim = RK45(fun=derivatives, t0=x0 , y0=5*,t_bound = self.x[-1],max_step=.1)
        # integral_vec = cumtrapz(integrand_vec, thwaites_sim_data.x, initial=0)
-    def eq5_6_16(self,x):
-        return np.nan_to_num((.45 / pow(self.u_e(x),6))*np.transpose(self.y(x))[0,:]) #back down to (m,) array
+    #def eq5_6_16(self,x):
+        #return np.nan_to_num((.45 / pow(self.u_e(x),6))*np.transpose(self.y(x))[0,:]) #back down to (m,) array
       
     #     self._eq5_6_16_vec  = (.45 / pow(thwaites_sim_data.u_e, 6)) *integral_vec
     def theta(self,x):
         #momentum thickness
-        return pow(self.eq5_6_16(x)*self.nu, .5)
+        #return pow(self.eq5_6_16(x)*self.nu, .5)
+        return np.sqrt(np.transpose(self.y(x))[0,:])
     #     self._theta_vec = pow(self._eq5_6_16_vec * thwaites_sim_data.nu, .5)
     def lam(self,x):
-        return (pow(self.theta(x), 2) *self.du_edx(x) /self.nu)
+        return (np.transpose(self.y(x))[0,:] *self.du_edx(x) /self.nu)
     #     self._lam_vec = (pow(self._theta_vec, 2) *np.gradient(thwaites_sim_data.u_e, thwaites_sim_data.x) /thwaites_sim_data.nu)
     
     #     self._h_vec = np.array([thwaites_sim_data.h(lam) for lam in self._lam_vec],dtype=np.float)
