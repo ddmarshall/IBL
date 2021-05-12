@@ -1,5 +1,5 @@
 import numpy as np
-from pyBL1 import ThwaitesSimData, ThwaitesSim
+from pyBL import ThwaitesSimData, ThwaitesSim
 from falkner_skan import falkner_skan
 import sympy as sp
 # import matplotlib.pyplot as plt
@@ -8,14 +8,14 @@ from scipy.interpolate import CubicSpline #for smoothed derivative experiment
 
 #flags for what to run/plot
 normal_sim = True
-derivative_sim = True
+derivative_sim = False
 #Inviscid Wedge Flow - LaPlace's Equation - inviscid solution to incompressible flow
-alpha = 1 #beta = alpha*pi - 0 for flat plate
+alpha = .05 #beta = alpha*pi - 0 for flat plate
 m = alpha/(2-alpha)
 #m=.1
 c = 1  # chord, in meters
 r0 =0.00 #where the simulation will start
-r = np.linspace(r0,c,250) #used as x - surface distance from origin
+r = np.linspace(r0,c,100) #used as x - surface distance from origin
 
 
 #rc = .2 #where clustering ends
@@ -25,8 +25,18 @@ u_e = Vinf*pow(r,m)
 nu = 1.45e-5  # kinematic viscosity
 
 re = Vinf * r[-1] / nu
+
+#y0 for sim (= theta0^2)
+#y0 = .075*nu/tsd.du_edx(r0)  #from Moran
+y0 = .45*pow(c,m)*nu*pow(r0,-1*m+1)/(Vinf*(5*m+1)) #theta^2 using analytical thwaites at r0
+
+#y0 for theta^2 for flat plate
+if m==0:
+    y0 = 0
+
+theta0 = np.sqrt(y0)
 #set up pyBL data to use splining
-tsd  =ThwaitesSimData(r*c,u_e,Vinf,nu,re)
+tsd  =ThwaitesSimData(r*c,u_e,Vinf,nu,re,r0,theta0)
 
 #Number of points on plot
 n_plot = 200
@@ -51,25 +61,16 @@ c_f_analytical = np.array(c_f_analytical)
 #in general, would back out y0 from theta - this is based on the analytical solution
 #y0 = pow(Vinf,5)*pow(r0,5*m+1)/((5*m+1)*pow(c,5*m))
 
-#from Moran - general stagnation solution from stagnation point series expansion
-#y0 = pow(tsd.du_edx(0),5)*pow(r0,6)/6 #one term, unsuccessful
-#y0 = pow(tsd.u_e(r0),6)/(tsd.du_edx(r0)*6) #one term, successful-ish
-#y0 = pow(tsd.du_edx(0),5)*pow(r0,6)/6 +pow(tsd._x_u_e_spline(0,2),5)*pow(r0,11)/11
 
-#new y0 for sim based on theta^2
-#y0 = .075*nu/tsd.du_edx(r0)
-y0 = .45*pow(c,m)*nu*pow(r0,-1*m+1)/(Vinf*(5*m+1)) #theta^2 using analytical thwaites at r0
 
-#y0 for theta^2 for flat plate
-if m==0:
-    y0 = 0
+
 
 lam0 = y0*tsd.du_edx(np.array([r0]))/nu
 
 #Implementation with pyBL
 
 
-ts = ThwaitesSim(tsd,x0=r0,y0=y0) #added adjustable y0
+ts = ThwaitesSim(tsd) #added adjustable y0
 #initial_theta= 5E-4
 
 if normal_sim==True:
@@ -96,7 +97,7 @@ tsd_der = tsd
 tsd_der.u_e = lambda x: due_dx_spline_antiderivative(x) +u_e[0]
 #modify the du_edx method to be a curve fit to the smoothed derivative
 tsd_der.du_edx = lambda x: due_dx_spline(x)
-ts_der = ThwaitesSim(tsd_der,x0=r0,y0=y0)
+ts_der = ThwaitesSim(tsd_der)
 if derivative_sim==True:
     while ts_der.status=='running': 
         ts_der.step()
@@ -264,3 +265,18 @@ plt.ylabel(r"$\delta*$")
 ax.legend(loc='center right', ncol=1)
 plt.grid(True)
 
+#Compare Normal Thwaites approximation for 2()
+if normal_sim==True:
+    sim = ts
+elif derivative_sim==True:
+    sim = ts_der
+    
+plotlam = np.linspace(-.1,.1)
+simple_thwaites = .45-6*plotlam
+new_thwaites = np.zeros(plotlam.shape) #preallocate
+for i in range(len(plotlam)):
+    new_thwaites[i] = 2*(sim.s_lam(plotlam[i])-(2+sim.h_lam(plotlam[i]))*plotlam[i])
+fig, ax = plt.subplots()
+plt.plot(plotlam,simple_thwaites,label='Original')
+plt.plot(plotlam,new_thwaites,label='New Method')
+ax.legend(loc='upper right')

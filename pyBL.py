@@ -275,7 +275,7 @@ def _default_h(lam):
     elif lam >= -.1 and lam <= 0:
         return (.0731)/(.14+lam) + 2.088
     else:
-        return np.nan #pass  # I'll deal with this later
+        return np.nan #pass  # Returned if lambda fails > or <
         
         
 class ThwaitesSimData(IBLSimData):
@@ -285,6 +285,8 @@ class ThwaitesSimData(IBLSimData):
                  u_inf,
                  nu,
                  re,
+                 x0,
+                 theta0,
                  s=_default_s,
                  h=_default_h,
                  char_length=None):
@@ -292,7 +294,8 @@ class ThwaitesSimData(IBLSimData):
                          u_e_vec,
                          u_inf,
                          nu)
-        
+        self.x0 = x0
+        self.theta0 = theta0
         self.re = re
         #these go through the setters
         self.s = s
@@ -372,11 +375,13 @@ class ThwaitesSimData(IBLSimData):
 #     wall_shear_vec =  property(fget=lambda self: self._wall_shear_vec)
     
 class ThwaitesSim(IBLSim):
-    def __init__(self, thwaites_sim_data,x0=0,y0=0):
+    def __init__(self, thwaites_sim_data):
         #note - f's(lambda) aren't actually used in solver
         self.u_e = thwaites_sim_data.u_e #f(x)
         self.u_inf = thwaites_sim_data.u_inf
         self.re = thwaites_sim_data.re
+        self.x0 = thwaites_sim_data.x0
+        self.theta0 = thwaites_sim_data.theta0
         self.s_lam = thwaites_sim_data.s
         self.h_lam = thwaites_sim_data.h
         self.nu = thwaites_sim_data.nu
@@ -393,16 +398,12 @@ class ThwaitesSim(IBLSim):
             else:
                 #return np.array([self.nu*(.45-6*lam)/self.u_e(x)])
                 return np.array([2*self.nu*(self.s_lam(lam)-(2+self.h_lam(lam))*lam)/self.u_e(x)])
-            #x = t
-            #u_e = self.u_e(x)
-            #return np.array([pow(u_e,5)])
-            
-        
+
         #Probably user changeable eventually
         #self.x0 = thwaites_sim_data.x_vec[0]
-        self.x0=x0
+        #self.x0=x0
         #self.y0 = np.array([5*pow(thwaites_sim_data.u_e(self.x0),4)])
-        self.y0 = np.array([y0])
+        self.y0 = np.array([pow(self.theta0,2)])
         self.x_bound = thwaites_sim_data.x_vec[-1] 
         
         super().__init__(thwaites_sim_data, derivatives, self.x0, self.y0, self.x_bound)
