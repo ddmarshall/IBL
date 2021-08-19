@@ -102,6 +102,7 @@ class IBLSim:
         return y_array
     
     def yp(self,x):
+        #Uses Dense Output construct to return derivative with polynomial
         x_array = x #must be array
         #x_array = np.array([x])
         yp_array = np.zeros([len(x),len(self._sim.y)])
@@ -250,7 +251,7 @@ lam_tab = -m_tab
 s_lam_spline = CubicSpline(lam_tab, s_tab)
 h_lam_spline = CubicSpline(lam_tab, h_tab)
 
-#hopefully redundant:
+#redundant (f can be calculated from other values):
 f_lam_spline = CubicSpline(lam_tab,f_tab)
 
 def spline_h(lam):
@@ -489,11 +490,11 @@ class HeadSim(IBLSim):
                 constants = [.8234,1.1,-1.287]
             else:
                 constants = [1.5501,.6778,-3.064]
-            dgdh = constants[2]*constants[0]*pow(h-constants[1],constants[2]-1)
+            dh1dh = constants[2]*constants[0]*pow(h-constants[1],constants[2]-1)
             h1 = constants[0]*pow(h-constants[1],constants[2])+3.3
-            f = .0306*pow(h1-3,-.6169)
-            dhdx = ((u_e*f-theta*h1*du_edx-u_e*h1*dthetadx) / 
-                    (u_e*theta*dgdh))
+            f1 = .0306*pow(h1-3,-.6169)
+            dhdx = ((u_e*f1-theta*h1*du_edx-u_e*h1*dthetadx) / 
+                    (u_e*theta*dh1dh))
             return np.array([dthetadx,dhdx])
         
                 #Probably user changeable eventually
