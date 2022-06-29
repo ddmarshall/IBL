@@ -44,6 +44,7 @@ Each version should be [tagged in the repository](https://github.com/ddmarshall/
 The main contributors to this project are:
 
 * David D. Marshall
+* Malachi Edland
 
 A list of all source code contributors can be found [here](https://github.com/ddmarshall/ibl/graphs/graphs/contributors).
 
@@ -51,6 +52,7 @@ A list of all source code contributors can be found [here](https://github.com/dd
 ## Version History
 
 * 0.0.1 - Initial Release
+* 0.1.0 - First Implementation of laminar and turbulent models
 
 <a name="license"></a>
 ## License
