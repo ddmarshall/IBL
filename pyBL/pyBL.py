@@ -10,125 +10,10 @@ import inspect    # used to return source code of h,s
 #from scipy.integrate import cumtrapz
 import numpy as np
 #import warnings
-from scipy.interpolate import CubicSpline
-from scipy.integrate import RK45
 from scipy.optimize import root #used for x_tr root finding in Thwaites (Michel)
+from scipy.interpolate import CubicSpline
 
-    
-class IBLSimData:
-    def __init__(self,
-                 x_vec,
-                 u_e_vec,
-                 u_inf,
-                 nu):
-        self.x_vec = x_vec
-        self.u_e_vec = u_e_vec
-        self.u_inf = u_inf
-        self.nu = nu
-        self._x_u_e_spline = CubicSpline(x_vec, u_e_vec)
-        #self._x_u_e_spline = CubicSpline(x_vec, u_e_vec,bc_type='natural') #replace line above for 'natural' bc's instead of 'not-a-knot'
-        #self._x_u_e_spline = CubicSpline(x_vec, u_e_vec,bc_type=((1,25),(2,0))) #hack
-        #self.derivatives = derivatives
-        #self.profile = profile
-    
-    #x_vec and u_e_vec: need to add traces to update the spline
-    x_vec = property(fget=lambda self: self._x_vec,
-                   fset=lambda self, new_x_vec: setattr(self,
-                                                      '_x_vec',
-                                                      new_x_vec)) #; self._x_u_e_spline = CubicSpline(new_x_vec, 
-                                                                                                   #self.u_e_vec))       
-    u_e_vec = property(fget=lambda self: self._u_e,
-                   fset=lambda self, new_u_e_vec: setattr(self,
-                                                      '_u_e_vec',
-                                                      new_u_e_vec)) #self._x_u_e_spline = CubicSpline(self.x_vec, 
-                                                                                                     #new_u_e_vec))
-
-    u_inf = property(fget=lambda self: self._u_inf,
-                     fset=lambda self, new_u_inf: setattr(self,
-                                                          '_u_inf',
-                                                          new_u_inf))
-    nu = property(fget=lambda self: self._nu,
-                  fset=lambda self, new_nu: setattr(self,
-                                                    '_nu',
-                                                    new_nu))
-    def u_e(self, x):
-        return self._x_u_e_spline(x)
-    def du_edx(self, x):
-        return self._x_u_e_spline(x,1)
-        
-        
-class IBLSim:
-    def __init__(self,iblsimdata,derivatives,x0,y0,x_bound):
-        self._data = iblsimdata
-        self._sim = RK45(fun=derivatives,t0=x0, t_bound=x_bound, y0=y0) #y0=np.array([y0] t_bound = np.array([ x_bound])
-       #######hack (following line)
-        #self._sim = RK45(fun=derivatives,t0=x0, t_bound=x_bound, y0=np.array([pow(5E-4,2)*self._data.re*pow(iblsimdata.u_inf/x0,6)])) #y0=np.array([y0] t_bound = np.array([ x_bound])
-        #self._sim = RK45(fun=derivatives,t0=x0, t_bound=x_bound, y0=np.array([.0005]))  #y0=np.array([y0] t_bound = np.array([ x_bound])
-        self._x_vec = np.array([self._sim.t])
-        self._dense_output_vec = np.array([])
-        #self._piecewise_ranges = np.array([lambda x: False])
-        #self._piecewise_funs = np.array([])
-        #self._status = self._sim.status
-        self.u_e = iblsimdata.u_e #holds reference to u_e(x) from IBLSimData
-        self.du_edx = iblsimdata.du_edx
-        #self._x_u_e_spline = CubicSpline(iblsimdata.x_vec, iblsimdata.u_e_vec)
-    data = property(fget = lambda self: self._data) 
-    x_vec = property(fget = lambda self: self._x_vec)
-    status = property(fget = lambda self: self._sim.status)
-    dense_output_vec = property(fget = lambda self: self._dense_output_vec)
-     
-        
-    def step(self):
-        self._sim.step()
-        self._x_vec = np.append(self._x_vec, [self._sim.t])
-        self._dense_output_vec = np.append(self.dense_output_vec,[self._sim.dense_output()])
-        if self._sim.status!='running':
-            print(self._sim.status)
-            self._x_vec = np.append(self._x_vec, self.data.x_vec[-1])
-        #self._piecewise_funs = np.append(self._piecewise_funs,[lambda x: self._sim.dense_output()(x)]) #was calling same function for every point
-        
-       
-    def y(self,x):
-        #returns m*n array, where m is len(x) and n is length(y)
-        x_array = x #must be array
-        #x_array = np.array([x])
-        y_array = np.zeros([len(x),len(self._sim.y)])
-        for i in range(len(x_array)):
-            for j in range(len(self.dense_output_vec)): #-1
-                if (x_array[i] >= self.x_vec[j]) & (x_array[i] <= self.x_vec[j+1]):
-                    y_array[i,:] = self.dense_output_vec[j](x_array[i])
-                    break
-                 
-        return y_array
-    
-    def yp(self,x):
-        #Uses Dense Output construct to return derivative with polynomial
-        x_array = x #must be array
-        #x_array = np.array([x])
-        yp_array = np.zeros([len(x),len(self._sim.y)])
-        for i in range(len(x_array)):
-            for j in range(len(self.dense_output_vec)): #-1
-                if (x_array[i] >= self.x_vec[j]) & (x_array[i] <= self.x_vec[j+1]):
-                    #y_array = np.append(y_array, [[self._piecewise_funs[j](x_array[i])]],axis=0)
-                    #print(x_array[i])
-                    #y_array[i,:] = self._piecewise_funs[j](x_array[i])
-                    xdist = (x_array[i] - self.dense_output_vec[j].t_old) / self.dense_output_vec[j].h
-                    if np.array(x_array[i]).ndim == 0:
-                                #p = np.tile(x, testfit.order + 1)
-                                p = np.tile(xdist, self.dense_output_vec[j].order + 1)
-                                p = np.cumprod(p)/p
-                    else:
-                                p = np.tile(xdist, (self.dense_output_vec[j].order + 1, 1))
-                                p = np.cumprod(p, axis=0)/p
-                    #term1 = self.dense_output_vec[j].h h actually disappears
-                    term2 = np.arange(1,self.dense_output_vec[j].order+2)
-                    term3 = self.dense_output_vec[j].Q
-                    term4 = p
-                    yp_array[i,:] = np.dot(term2*term3, term4) 
-                                        #yp_array[i,:] = self.dense_output_vec[j](x_array[i])
-                    
-                    break
-        return yp_array        
+from pyBL.pyBL_base import IBLSimData, IBLSim, SeparationModel
 
 class TransitionModel:
     def __init__(self,iblsim,criteria,h0calc,buffer):
@@ -182,31 +67,6 @@ class Michel(TransitionModel):
         super().__init__(iblsim,michel_difference,h0calc,buffer)
         
         
-class SeparationModel:
-    #when criteria are positive, has separated
-    def __init__(self,iblsim,criteria,buffer):
-        self._iblsim = iblsim
-        self._criteria = lambda x=None: criteria(self._iblsim,x) #if x == None, return crit for all x
-        self._x_sep = None
-        self._buffer = buffer
-
-    separated = property(fget = lambda self:self.x_sep!=None) #returns true if x_sep not none    
-    @property
-    def x_sep(self):
-        if self._x_sep == None and np.any(self._criteria(self._iblsim._data.x_vec[self._iblsim._data.x_vec>self._buffer])>0):
-            self._separated = True
-            buffered_x = self._iblsim._data.x_vec[self._iblsim._data.x_vec>self._buffer]
-            # crits = self._criteria(self._iblsim._data.x_vec)
-            # crits = self._criteria(self._iblsim._data.x_vec[self._iblsim._data.x_vec>self._buffer])
-            crits = self._criteria(buffered_x)
-            #best_guess = np.argmax(self._criteria(self._iblsim._data.x_vec)>0)
-            # best_guess = self._iblsim._data.x_vec[crits>0][0] #furthest upstream occurrence of criteria met
-            best_guess = buffered_x[crits>0][0] #furthest upstream occurrence of criteria met
-            
-            find_x_sep = root(lambda xpt:float(self._criteria(np.array([xpt]))),x0=best_guess)
-            self._x_sep = find_x_sep.x
-        return self._x_sep
-
 class ThwaitesSeparation(SeparationModel):
     def __init__(self,thwaitessim,buffer=0):
         def lambda_difference(thwaitessim,x=None):
@@ -214,17 +74,6 @@ class ThwaitesSeparation(SeparationModel):
                 x = thwaitessim.x_vec
             return -thwaitessim.lam(x)-.0842 # @ -.0842, separation
         super().__init__(thwaitessim,lambda_difference,buffer)
-
-class HeadSeparation(SeparationModel):
-    def __init__(self,headsim,buffer=0):
-        h_crit = 2
-        def h_difference(headsim,x=None):
-            if type(x)!=np.ndarray and x ==None:
-                x = headsim.x_vec
-            if len(x.shape)==2:
-                x = x[0]
-            return headsim.h(x)-h_crit # @ 2.4, separation
-        super().__init__(headsim,h_difference,buffer)
         
         
 #Thwaites Default Functions       
@@ -445,82 +294,3 @@ class ThwaitesSim(IBLSim):
     #                             (thwaites_sim_data.u_e*self._theta_vec))
     def rtheta(self,x):
         return self.u_e(x)*self.theta(x)/self.nu  
-
-    
-class HeadSimData(IBLSimData):
-    def __init__(self,
-                 x_vec,
-                 u_e_vec,
-                 u_inf,
-                 nu,
-                 x0,
-                 theta0,
-                 h0):
-        super().__init__(x_vec,
-                         u_e_vec,
-                         u_inf,
-                         nu)
-        self.x0 = x0
-        self.theta0 = theta0
-        self.h0 = h0
-        
-class HeadSim(IBLSim):
-    def __init__(self, head_sim_data):
-        self.u_e = head_sim_data.u_e #f(x)
-        self.du_edx = head_sim_data.du_edx #f(x)
-        self.u_inf = head_sim_data.u_inf        
-        self.nu = head_sim_data.nu 
-        self.x0 = head_sim_data.x0
-        self.theta0 = head_sim_data.theta0
-        self.h0 = head_sim_data.h0
-        self.x_bound = head_sim_data.x_vec[-1]
-        
-        def derivatives(t,y):
-            x = t
-            theta = y[0]
-            h = y[1]
-            
-            u_e = self.u_e(x)
-            du_edx = self.du_edx(x)
-            rtheta = u_e*theta/self.nu
-            cf = .246*pow(10,-.678*h)*pow(rtheta,-.268)
-            dthetadx = cf/2 - (h+2)*theta*du_edx/u_e
-            
-            if h<=1.6:
-                constants = [.8234,1.1,-1.287]
-            else:
-                constants = [1.5501,.6778,-3.064]
-            dh1dh = constants[2]*constants[0]*pow(h-constants[1],constants[2]-1)
-            h1 = constants[0]*pow(h-constants[1],constants[2])+3.3
-            f1 = .0306*pow(h1-3,-.6169)
-            dhdx = ((u_e*f1-theta*h1*du_edx-u_e*h1*dthetadx) / 
-                    (u_e*theta*dh1dh))
-            return np.array([dthetadx,dhdx])
-        
-                #Probably user changeable eventually
-        #x0 = self.x0   
-        self.y0 = np.array([self.theta0,self.h0])
-        #x_bound = self.x_bound
-        
-        super().__init__(head_sim_data,derivatives, self.x0, self.y0, self.x_bound)
-        
-    def theta(self,x):
-        return self.y(x)[:,0]
-    def thetap(self,x):
-        return self.yp(x)[:,0]
-    def h(self,x):
-        #shape factor
-        return self.y(x)[:,1]
-    def hp(self,x):
-        return self.yp(x)[:,1]
-    
-    def rtheta(self,x):
-        return self.u_e(x)*self.theta(x)/self.nu
-    def c_f(self,x):
-        return .246*pow(10,-.678*self.h(x))*pow(self.rtheta(x),-.268)
-        re_theta = self.u_inf*self.theta(x)/self.nu
-        return.246*pow(10,-.678*self.h(x))*pow(re_theta,-.268)
-    def del_star(self,x):
-        return self.h(x)*self.theta(x)
-    #def c_fp(self,x):
-        

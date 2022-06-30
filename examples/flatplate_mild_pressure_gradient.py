@@ -4,7 +4,10 @@
 """
 import numpy as np
 import matplotlib.pyplot as plt
-from pyBL import HeadSimData, HeadSim, HeadSeparation #, TransitionModel
+import sys
+sys.path.insert(0, "..")
+     
+from pyBL.heads_method import HeadSimData, HeadSim, HeadSeparation #, TransitionModel
 from scipy.interpolate import CubicSpline #for smoothed derivative experiment
 import tikzplotlib
 
