@@ -1,10 +1,14 @@
 import numpy as np
-from pyBL import ThwaitesSimData, ThwaitesSim, ThwaitesSeparation
+import sys
+sys.path.insert(0, "..")
+
+from pyBL.thwaites_method import ThwaitesSimData, ThwaitesSim, ThwaitesSeparation
+
 from falkner_skan import falkner_skan
 import sympy as sp
 # import matplotlib.pyplot as plt
 import matplotlib.pyplot as plt
-from scipy.interpolate import CubicSpline #for smoothed derivative experiment
+
 import tikzplotlib
 from plot_BL_params import plot_BL_params, falkner_skan_linestyle,falkner_skan_label, thwaites_label, thwaites_linestyle, thwaites_lin_label,thwaites_lin_linestyle,thwaites_analytical_label,thwaites_analytical_linestyle
 from plot_BL_params import theta_linestyle,theta_label,del_label,del_linestyle,c_f_label,c_f_linestyle,h_label,h_linestyle,error_label,x_label
