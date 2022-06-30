@@ -44,7 +44,7 @@ Each version should be [tagged in the repository](https://github.com/ddmarshall/
 The main contributors to this project are:
 
 * David D. Marshall
-* Malachi Edland
+* Malachi Edland (original implementation of Thwaites' Method, Head's Method, and Michel transition criteria).
 
 A list of all source code contributors can be found [here](https://github.com/ddmarshall/ibl/graphs/graphs/contributors).
 
