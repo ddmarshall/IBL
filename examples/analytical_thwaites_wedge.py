@@ -1,3 +1,4 @@
+import os
 import numpy as np
 
 from pyBL.thwaites_method import ThwaitesSimData, ThwaitesSim, ThwaitesSeparation
@@ -162,6 +163,9 @@ def wedgeflow(alpha,r0,npts,Vinf,nu,n_plot,name,y0=None,theta0=None,use_analytic
     plt.ylabel(error_label)
     ax.legend()
     
+    if (not os.path.isdir('figures')):
+        os.mkdir('figures')
+
     tikzplotlib.save(
         'figures/'+name+'_error.tex',
         axis_height = '\\figH',

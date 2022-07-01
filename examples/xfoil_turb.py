@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import os
 import matplotlib.pyplot as plt
 
 from pyBL.heads_method import HeadSim, HeadSimData, HeadSeparation
@@ -145,6 +146,9 @@ plt.xlim(0,max(s))
 plt.yscale('log')
 plt.grid(True)
 ax.set(xlabel=x_label,ylabel=error_label)
+
+if (not os.path.isdir('figures')):
+    os.mkdir('figures')
 
 tikzplotlib.save(
     'figures/xfoil_turb_error.tex',

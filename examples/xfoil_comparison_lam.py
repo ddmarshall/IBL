@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import os
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -137,6 +138,10 @@ ax.plot(s[s>0.6 ],ts.du_edx(s[s>0.6]),label='XFOIL',color='k')
 ax.set(xlabel=('x(m)'))
 ax.set(ylabel=(r'$\frac{du_e}{dx}$ (m/s$^2$)'))
 ax.grid(True)
+
+if (not os.path.isdir('figures')):
+    os.mkdir('figures')
+
 tikzplotlib.save(
     'figures/xfoil_lam_uezoom.tex',
     axis_height = '\\figH',

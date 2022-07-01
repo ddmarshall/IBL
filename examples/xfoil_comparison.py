@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import os
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -128,6 +129,10 @@ ax.legend(loc='lower right')
 plt.xlim([0,.7])
 plt.ylim([0,1500])
 plt.grid(True)
+
+if (not os.path.isdir('figures')):
+    os.mkdir('figures')
+
 tikzplotlib.save(
     'figures/full_xfoil_michel.tex',
     axis_height = '\\figH',
