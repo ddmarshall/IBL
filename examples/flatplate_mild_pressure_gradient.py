@@ -2,13 +2,17 @@
 """
 @author: blond
 """
+import os
 import numpy as np
 import matplotlib.pyplot as plt
-from pyBL import HeadSimData, HeadSim, HeadSeparation #, TransitionModel
+import sys
+sys.path.insert(0, "..")
+     
+from pyBL.heads_method import HeadSimData, HeadSim, HeadSeparation #, TransitionModel
 from scipy.interpolate import CubicSpline #for smoothed derivative experiment
 import tikzplotlib
 
-from plot_BL_params import theta_linestyle,theta_label,del_label,del_linestyle,c_f_label,c_f_linestyle,h_label,h_linestyle,error_label,x_label
+from plot_BL_params import theta_linestyle,del_linestyle,c_f_linestyle,h_linestyle
 from plot_BL_params import plot_BL_params,spline_label,spline_linestyle,smooth_label,smooth_linestyle,der_label,der_linestyle,data_marker,data_label
 
 #Keeping colors straight
@@ -133,6 +137,10 @@ def head_fp_mpg():
     # tikzplotlib.Flavors.latex.preamble()
     #tikzplotlib.clean_figure() #cleans the figure up, not sure if important
     #tikzplotlib.save("velocities.tex")
+    
+    if (not os.path.isdir('figures')):
+        os.mkdir('figures')
+
     tikzplotlib.save(
         'figures/fp_mapg_velocities.tex',
         axis_height = '\\figH',

@@ -12,7 +12,9 @@ import matplotlib.pyplot as plt
 
 #from scipy.optimize import root #for finding optimal blasius eta
 
-from pyBL import ThwaitesSimData, ThwaitesSim, HeadSimData, HeadSim, Michel
+from pyBL.thwaites_method import ThwaitesSimData, ThwaitesSim
+from pyBL.heads_method import HeadSimData, HeadSim
+from pyBL.pyBL import Michel
 
 #Inviscid Flate Plate
 u_inf = 6 #m/sec
@@ -22,7 +24,9 @@ nu = 1.48E-5
 re = u_inf * x[-1] / nu
 
 #Thwaites Simulation
-tsd = ThwaitesSimData(x, u_e, u_inf, nu, re, char_length=x[-1])
+#tsd  =ThwaitesSimData(r*c,u_e,Vinf,nu,re,r0,theta0,linearize=False)
+#tsd = ThwaitesSimData(x, u_e, u_inf, nu, re, char_length=x[-1])
+tsd = ThwaitesSimData(x, u_e, u_inf, nu, re, 0,theta0=None)
 ts = ThwaitesSim(tsd)
 michel = Michel(ts)
 while ts.status=='running':
