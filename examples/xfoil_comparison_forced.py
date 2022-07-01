@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-import subprocess
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -9,18 +8,9 @@ from pyBL.pyBL import Michel
 import time
 import tikzplotlib
 
+from xfoil_interface import get_xfoil_data
 from plot_BL_params import theta_linestyle,theta_label,del_label,del_linestyle,c_f_label,c_f_linestyle,h_label,h_linestyle,error_label,x_label
 from plot_BL_params import plot_BL_params,pybl_label,pybl_linestyle,xfoil_label,xfoil_linestyle,michel_label,michel_linestyle,retheta_label,retheta_linestyle
-
-# executable name
-from sys import platform
-
-if (platform == 'linux'):
-    xfoil_name = 'xfoil'
-elif (platform == 'win32'):
-    xfoil_name = 'xfoil.exe'
-else:
-    xfoil_name = 'noname'
 
 #For consistent plotting
 thetacolor = 'tab:blue'
@@ -32,142 +22,20 @@ pyblcolor = 'tab:blue'
 xfoilcolor = 'tab:red'
 michelcolor = 'tab:purple'
 
-#Place a copy of xfoil in the same folder as this script
-# airfoil = '4412'
-airfoil='0009'
-aoa = 0
-n_iter = 1
-n_transition = 9 #for xfoil e^N, 9 is default
+# Get xfoil info
 v_inf = 20 #m/s 
 re = 2E6
-# force_trans = .523
-force_trans =0.49153999
+s_trans =0.49153999
 
+c, theta0, h0, s, u_e, del_star, theta, c_f, h = get_xfoil_data('0009', 0, v_inf, re, s_trans)
+s0 = 0
+nu = v_inf*c/re
 le_sep_buffer = 0 #buffer to avoid separation at nonphysical leading edge
 le_trans_buffer = 0 #buffer to avoid transition at nonphysical leading edge 
 
-# batchfilename = 'runairfoil.txt'
-# batchfile = open(batchfilename,'w')
-invfile = 'inv.txt'
-invcpfile = 'invcp.txt'
-viscfile =  'visc.txt'
-
-invisc_command_list = ("""NACA """+str(airfoil)+"""
-OPER
-a """+str(aoa)+"""
-dump """+invfile+"""
-cpwr """+invcpfile+"""
-
-quit
-""").encode('utf-8')
-
-process = subprocess.Popen([xfoil_name],
-              stdin=subprocess.PIPE,
-              stdout=None,
-              stderr=None)
-process.communicate(invisc_command_list)
-process.wait()
-
-#Get the inviscid sim u_e and coordinates
-invdata = np.loadtxt(invfile)
-s_data = invdata[:,0]
-x_data = invdata[:,1]
-u_e_over_v_inf_data = invdata[:,3]
-
-#Get the inviscid cp
-invcpdata = np.loadtxt(invcpfile,skiprows=2)
-cp = invcpdata[:,1]
-#Extract estimation of stagnation point
-stagnation_ind = np.where(abs(cp-1) == min(abs(cp-1)))[0][0] -1 #stagnation based on cp being close to 1
-# stagnation_ind = int(np.where(x_data==min(x_data))[0][0]) #location of minimum x coordinate
-# stagnation_ind = np.where(u_e_over_v_inf_data==abs(u_e_over_v_inf_data))[-1][-1] #last place velocity is positive (first place on chord)
-
-
-#flip the inviscid results
-# s = np.flip(s_data[leading_edge_ind]-s_data[0:leading_edge_ind+1]) #
-# u_e = np.flip(u_e_over_v_inf_data[0:leading_edge_ind+1])*v_inf
-s = np.flip(s_data[stagnation_ind]-s_data) #s=0 is stagnation point
-u_e = np.flip(u_e_over_v_inf_data)*v_inf
-s0 = 0
-
-#Perform laminar analysis
-nu = v_inf*(s_data[stagnation_ind]-s_data[0])/re #use maybe different idea for chord length
-
-#Run viscous xfoil
-visc_command_list = ("""NACA """+str(airfoil)+"""
-OPER
-VISC
-"""+str(re)+"""
-ITER 
-"""+str(n_iter)+"""
-vpar
-n
-"""+str(n_transition)+"""
-xtr
-"""+str(force_trans)+"""
-1
-
-a """+str(aoa)+"""
-dump """+viscfile+"""
-
-quit
-""").encode('utf-8')
-
-# visc_command_list = ("""NACA """+str(airfoil)+"""
-# OPER
-# VISC
-# """+str(re)+"""
-# ITER 
-# """+str(n_iter)+"""
-# vpar
-# n
-# """+str(n_transition)+"""
-# xtr
-# """+str(float(michel.x_tr))+"""
-# 1
-
-# a """+str(aoa)+"""
-# dump """+viscfile+"""
-
-# quit
-# """).encode('utf-8')
-
-process = subprocess.Popen([xfoil_name],
-              stdin=subprocess.PIPE,
-              stdout=None,
-              stderr=None)
-process.communicate(visc_command_list)
-process.wait()
-
-
-
-
-#truncate viscous data (avoid added points)
-viscdata = np.loadtxt(viscfile, usecols=(0,1,2,3,4,5,6,7))
-invlength = invdata.shape[0]
-del_star_data = viscdata[0:invlength,4]
-theta_data = viscdata[0:invlength,5]
-c_f_data = viscdata[0:invlength,6]
-h_data = viscdata[0:invlength,7]
-
-
-
-
-# del_star = np.flip(del_star_data[0:leading_edge_ind+1])
-# theta = np.flip(theta_data[0:leading_edge_ind+1])
-# c_f = np.flip(c_f_data[0:leading_edge_ind+1])
-# h = np.flip(h_data[0:leading_edge_ind+1])
-
-#flip the viscous results
-del_star = np.flip(del_star_data)
-theta = np.flip(theta_data)
-c_f = np.flip(c_f_data)*(v_inf**2)/(u_e**2)
-h = np.flip(h_data)
-
-
 #tsd = ThwaitesSimData(s,u_e,v_inf,nu,re,s0,0,white_s,white_h)
 # tsd = ThwaitesSimData(s,u_e,v_inf,nu,re,s0,theta0=None) #entering theta0 as none uses moran for y0
-tsd = ThwaitesSimData(s,u_e,v_inf,nu,re,s0,theta0=theta_data[stagnation_ind]) #entering theta0 as none uses moran for y0
+tsd = ThwaitesSimData(s,u_e,v_inf,nu,re,s0,theta0) #entering theta0 as none uses moran for y0
 # tsd.theta0 = np.sqrt(.075*nu/tsd.du_edx(s0)) 
 ts = ThwaitesSim(tsd) 
 while ts.status=='running':
@@ -177,26 +45,8 @@ thwaites_sep = ThwaitesSeparation(ts,buffer=le_sep_buffer)
 t_x_sep = thwaites_sep.x_sep
 x_tr = michel.x_tr
 
-
 try:
-    hsd = HeadSimData(s,
-                      u_e,
-                      v_inf,
-                      nu,
-                      float(michel.x_tr), #x0
-                      float(ts.theta(michel.x_tr)),
-                      michel.h0)
-# h0 = 1.4754/np.log(ts.rtheta(force_trans)) +.9698
-# force_trans =np.array([force_trans])
-
-# try:
-#     hsd = HeadSimData(s,
-#                       u_e,
-#                       v_inf,
-#                       nu,
-#                       float(force_trans), #x0
-#                       float(ts.theta(force_trans)),
-#                       h0)
+    hsd = HeadSimData(s, u_e, v_inf, nu, float(michel.x_tr), float(ts.theta(michel.x_tr)), michel.h0)
     hs = HeadSim(hsd)
     while hs.status=='running':
         hs.step()
