@@ -52,7 +52,7 @@ A list of all source code contributors can be found [here](https://github.com/dd
 ## Version History
 
 * 0.0.1 - Initial Release
-* 0.1.0 - First Implementation of laminar and turbulent models
+* 0.0.2 - Has code mostly working as from Malachi's thesis
 
 <a name="license"></a>
 ## License
