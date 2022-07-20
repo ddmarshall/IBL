@@ -1,0 +1,10 @@
+# Used as part of pip install. See: https://pip.pypa.io/en/stable/user_guide/#requirements-files
+
+# Needed for code to work
+numpy
+scipy
+
+# Needed for examples to work
+casadi # For falkner_skan code
+sympy # For Falkner Skan example
+
