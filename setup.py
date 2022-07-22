@@ -13,7 +13,7 @@ with open('LICENSE.md') as f:
 
 setup(
     name='pyBL',
-    version='0.0.2',
+    version='0.0.3-dev',
     description='Integral boundary layer method implementations for use with inviscid flow solvers.',
     long_description=readme,
     author='David D. Marshall',
