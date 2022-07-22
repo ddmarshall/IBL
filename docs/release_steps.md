@@ -22,7 +22,7 @@ Once the code is ready for release these steps need to be taken.
 After a release has been created these steps need to be taken.
 
 * Start a new feature in Git-Flow.
-* Increment the path number by 1 and append -develop to the version string such as `1.2.3-develop`.
+* Increment the patch number by 1 and append -develop to the version string such as `1.2.3-develop`.
     * See above for files that need to be updated.
 * Check that all version interfaces are correct.
 * Finish the feature in Git-Flow.
