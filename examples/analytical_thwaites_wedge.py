@@ -5,7 +5,6 @@ from pyBL.thwaites_method import ThwaitesSimData, ThwaitesSim, ThwaitesSeparatio
 
 from falkner_skan import falkner_skan
 import sympy as sp
-# import matplotlib.pyplot as plt
 import matplotlib.pyplot as plt
 
 import tikzplotlib
