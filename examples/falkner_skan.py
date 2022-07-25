@@ -83,8 +83,10 @@ def falkner_skan(
     ])
 
     p_opts = {}
+    p_opts["print_time"] = 0 # turn off solution diagnostics printing
     s_opts = {}
     s_opts["max_iter"] = max_iter  # If you need to interrupt, just use ctrl+c
+    s_opts["print_level"] = 0 # turn off run diagnostics printing
     opti.solver('ipopt', p_opts, s_opts)
 
     try:
