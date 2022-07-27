@@ -47,7 +47,25 @@ def get_falkner_skan_results(m, U_inf, nu, x):
 
 
 def get_thwaites_falkner_skan_results(m, U_inf, nu, x):
+    """
+    Calculates the results for the analytic form of Thwaites method using the 
+    Falkner-Skan edge velocity distribution and returns various boundary layer 
+    parameters
     
+    Args
+    ----
+        m: Velocity parameter used to define specific case
+        U_inf: Scale of the freestream velocity
+        nu: Kinematic viscosity
+        x(numpy.array): Array of x-locations along surface to return values
+    
+    Returns
+    -------
+        delta_star(numpy.array): Displacement thickness at each location
+        theta(numpy.array): Momentum thickness at each location
+        cf(numpy.array): Skin friction coefficient at each location
+        H(numpy.array): Shape factor at each location
+    """
     K = np.sqrt(0.45/(5*m+1))
     Rex_sqrt = np.sqrt(U_inf*x**(m+1)/nu)
     
@@ -70,6 +88,41 @@ def  plot_falkner_skan_comparison(x_out, theta_exact, theta_analytic, theta_line
                                   cf_exact, cf_analytic, cf_linear, cf_nonlinear,
                                   H_exact, H_analytic, H_linear, H_nonlinear,
                                   theta_range, delta_star_range, cf_range, H_range):
+    """
+    Creates the plots for the comparisons of the various Falkner-Skan/Thwaites
+    test cases so that the results will all have same look.
+    
+    Args
+    ----
+        x_out(numpy.array): Array of locations along the plate that the 
+                            parameters are being provided
+        theta_exact(numpy.array): Exact momentum thicknesses
+        theta_analytic(numpy.array): Momentum thicknesses for analytic results
+        theta_linear(numpy.array): Momentum thicknesses for linear case
+        theta_nonlinear(numpy.array): Momentum thicknesses for nonlinear case
+        delta_star_exact(numpy.array): Exact displacement thicknesses
+        delta_star_analytic(numpy.array): Displacement thicknesses for analytic results
+        delta_star_linear(numpy.array): Displacement thicknesses for linear case
+        delta_star_nonlinear(numpy.array): Displacement thicknesses for nonlinear case
+        cf_exact(numpy.array): Exact skin friction coefficient
+        cf_analytic(numpy.array): Skin friction coefficient for analytic results
+        cf_linear(numpy.array): Skin friction coefficient for linear case
+        cf_nonlinear(numpy.array): Skin friction coefficient for nonlinear case
+        H_exact(numpy.array): Exact shape factor
+        H_analytic(numpy.array): Shape factor for analytic results
+        H_linear(numpy.array): Shape factor for linear case
+        H_nonlinear(numpy.array): Shape factor for nonlinear case
+        theta_range: Array with minimum and maximum values for the momentum
+                     thickness axis
+        delta_star_range: Array with minimum and maximum values for the displacement
+                     thickness axis
+        cf_range: Array with minimum and maximum values for the skin friction
+                     coefficient axis
+        H_range: Array with minimum and maximum values for the shape factor axis
+    Returns
+    -------
+        None
+    """
     # Set the plotting parameters
     exact_color = 'black'
     exact_label = 'Falkner-Skan'
