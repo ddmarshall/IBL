@@ -21,7 +21,7 @@ from falkner_skan_analysis import get_falkner_skan_results
 from falkner_skan_analysis import get_thwaites_falkner_skan_results
 from falkner_skan_analysis import plot_falkner_skan_comparison
 
-def blasius_case():
+def stagnation_flow_case():
     """
     Create the Blasius comparison, figures 3.1-3.3 in Edland's thesis
     
@@ -87,5 +87,5 @@ def blasius_case():
 
 
 if (__name__ == "__main__"):
-    blasius_case()
+    stagnation_flow_case()
 
