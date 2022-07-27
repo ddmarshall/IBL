@@ -8,7 +8,7 @@ Created on Mon Jul 25 13:37:25 2022
 
 import numpy as np
 
-from pyBL.thwaites_method import cebeci_h, cebeci_s
+from pyBL.thwaites_method import spline_h, spline_s
 
 from examples.falkner_skan import falkner_skan
 
@@ -40,7 +40,7 @@ def get_falkner_skan_results(m, U_inf, nu, x):
     delta_star = eta_star/g
     theta = theta_star/g
     H = delta_star/theta
-    cf = theta/x # TODO: make sure this is correct
+    cf=2*nu*g*f2[0]/U_e
     
     return delta_star, theta, cf, H
 
@@ -54,8 +54,8 @@ def get_thwaites_falkner_skan_results(m, U_inf, nu, x):
         lam = 0
     else:
         lam = m*K**2
-    S_fun = cebeci_s(lam)
-    H_fun = cebeci_h(lam)
+    S_fun = spline_s(lam)
+    H_fun = spline_h(lam)
     theta = x*K/Rex_sqrt
     cf = 2*S_fun/(K*Rex_sqrt)
     delta_star = theta*H_fun

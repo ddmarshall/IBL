@@ -8,7 +8,7 @@ Created on Fri Jul 22 16:25:18 2022
 import numpy as np
 import matplotlib.pyplot as plt
 
-from pyBL.thwaites_method import ThwaitesSimData, ThwaitesSim
+from pyBL.thwaites_method import ThwaitesSimData, ThwaitesSim, spline_h, spline_s
 
 from falkner_skan_analysis import get_falkner_skan_results, get_thwaites_falkner_skan_results
 
@@ -51,7 +51,7 @@ def blasius_case():
     Re_c = U_inf*c/nu_e;
     
     # Get the solution using the linearized function
-    tsd_linear = ThwaitesSimData(x_in,U_e,U_inf,nu_e,Re_c,x_in[0],theta_analytic[0],linearize=True)
+    tsd_linear = ThwaitesSimData(x_in,U_e,U_inf,nu_e,Re_c,x_in[0],theta_analytic[0],linearize=True, h=spline_h, s=spline_s)
     ts_linear = ThwaitesSim(tsd_linear) 
     while ts_linear.status=='running':
         ts_linear.step()
@@ -61,7 +61,7 @@ def blasius_case():
     H_linear = ts_linear.h(x_out)
     
     # Get the solution using the nonlinear function
-    tsd_nonlinear = ThwaitesSimData(x_in,U_e,U_inf,nu_e,Re_c,x_in[0],theta_analytic[0],linearize=False)
+    tsd_nonlinear = ThwaitesSimData(x_in,U_e,U_inf,nu_e,Re_c,x_in[0],theta_analytic[0],linearize=False, h=spline_h, s=spline_s)
     ts_nonlinear = ThwaitesSim(tsd_nonlinear)
     while ts_nonlinear.status=='running':
         ts_nonlinear.step()
