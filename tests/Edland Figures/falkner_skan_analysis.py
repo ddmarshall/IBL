@@ -161,15 +161,19 @@ def  plot_falkner_skan_comparison(x_out, theta_exact, theta_analytic, theta_line
     
     # Plot error compared to the Falkner-Skan result
     plt.figure()
-    plt.plot(x_out, np.abs(1-theta_analytic/theta_exact), label=theta_label+": "+nonlinear_label);
-    plt.plot(x_out, np.abs(1-delta_star_analytic/delta_star_exact), label=delta_star_label+": "+nonlinear_label);
-    plt.plot(x_out, np.abs(1-cf_analytic/cf_exact), label=cf_label+": "+nonlinear_label);
-    plt.plot(x_out, np.abs(1-H_analytic/H_exact), label=H_label+": "+nonlinear_label);
+    plt.plot(x_out, np.abs(1-theta_linear/theta_exact), label=theta_label+": "+linear_label);
+    plt.plot(x_out, np.abs(1-delta_star_linear/delta_star_exact), label=delta_star_label+": "+linear_label);
+    plt.plot(x_out, np.abs(1-cf_linear/cf_exact), label=cf_label+": "+linear_label);
+    plt.plot(x_out, np.abs(1-H_linear/H_exact), label=H_label+": "+linear_label);
+    plt.plot(x_out, np.abs(1-theta_nonlinear/theta_exact), label=theta_label+": "+nonlinear_label);
+    plt.plot(x_out, np.abs(1-delta_star_nonlinear/delta_star_exact), label=delta_star_label+": "+nonlinear_label);
+    plt.plot(x_out, np.abs(1-cf_nonlinear/cf_exact), label=cf_label+": "+nonlinear_label);
+    plt.plot(x_out, np.abs(1-H_nonlinear/H_exact), label=H_label+": "+nonlinear_label);
     plt.xlabel(r'$x$ (m)')
     plt.ylabel('Relative Error')
-    plt.ylim([.00001,5])
+    plt.ylim([.00001,10])
     plt.yscale('log')
     plt.grid(True)
-    plt.legend()
+    plt.legend(ncol=2)
     plt.show()
 
