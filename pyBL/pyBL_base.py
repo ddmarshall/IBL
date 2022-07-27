@@ -56,7 +56,7 @@ class IBLSimData:
 class IBLSim:
     def __init__(self,iblsimdata,derivatives,x0,y0,x_bound):
         self._data = iblsimdata
-        self._sim = RK45(fun=derivatives,t0=x0, t_bound=x_bound, y0=y0) #y0=np.array([y0] t_bound = np.array([ x_bound])
+        self._sim = RK45(fun=derivatives,t0=x0, t_bound=x_bound, y0=y0, rtol=1e-8, atol=1e-11) #y0=np.array([y0] t_bound = np.array([ x_bound])
        #######hack (following line)
         #self._sim = RK45(fun=derivatives,t0=x0, t_bound=x_bound, y0=np.array([pow(5E-4,2)*self._data.re*pow(iblsimdata.u_inf/x0,6)])) #y0=np.array([y0] t_bound = np.array([ x_bound])
         #self._sim = RK45(fun=derivatives,t0=x0, t_bound=x_bound, y0=np.array([.0005]))  #y0=np.array([y0] t_bound = np.array([ x_bound])
