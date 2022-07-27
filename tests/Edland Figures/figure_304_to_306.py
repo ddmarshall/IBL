@@ -41,7 +41,7 @@ def stagnation_flow_case():
     U_inf=1 # edge velocity at x/c=1 (used as a reference)
     nu_e=1.45e-5 # kinematic viscosity
     m=1 # Falkner-Skan parameter specifying the edge velocity profile
-    xmin=1e-2 # avoid divide by zero at leading edge
+    xmin=1e-6 # avoid divide by zero at leading edge
 
     x_in=np.linspace(xmin, c, npts_in)
     x_out=np.linspace(xmin, c, npts_out)
