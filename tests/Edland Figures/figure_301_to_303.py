@@ -76,7 +76,7 @@ def blasius_case():
                                  delta_star_exact, delta_star_analytic, delta_star_linear, delta_star_nonlinear,
                                  cf_exact, cf_analytic, cf_linear, cf_nonlinear,
                                  H_exact, H_analytic, H_linear, H_nonlinear,
-                                 [0.0, 0.003], [0.0, 0.007], [0.0, 0.01], [2.4, 2.8])
+                                 [0.0, 0.003], [0.0, 0.007], [0.0, 0.01], [2.5, 2.7])
 
 
 if (__name__ == "__main__"):
