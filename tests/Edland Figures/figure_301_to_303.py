@@ -6,11 +6,12 @@ Created on Fri Jul 22 16:25:18 2022
 """
 
 import numpy as np
-import matplotlib.pyplot as plt
 
 from pyBL.thwaites_method import ThwaitesSimData, ThwaitesSim, spline_h, spline_s
 
-from falkner_skan_analysis import get_falkner_skan_results, get_thwaites_falkner_skan_results
+from falkner_skan_analysis import get_falkner_skan_results
+from falkner_skan_analysis import get_thwaites_falkner_skan_results
+from falkner_skan_analysis import plot_falkner_skan_comparison
 
 def blasius_case():
     """
@@ -70,106 +71,12 @@ def blasius_case():
     cf_nonlinear = ts_nonlinear.c_f(x_out)
     H_nonlinear = ts_nonlinear.h(x_out)
     
-    ## Plot results
-    exact_color = 'black'
-    exact_label = 'Falkner-Skan'
-    analytic_color = 'green'
-    analytic_label = 'Thwaites (Analytic)'
-    linear_color = 'blue'
-    linear_label = 'Thwaites (Standard)'
-    nonlinear_color = 'cyan'
-    nonlinear_label = 'Thwaites (Improved)'
-    theta_label = r'$\theta$'
-    delta_star_label = r'$\delta^*$'
-    cf_label = r'$c_f$'
-    H_label = r'$H$'
-    
-    plt.rcParams['figure.figsize'] = [8, 5]
-
-    # Plot figure 3.1, the quad plot with boundary layer parameters
-    fig, ax = plt.subplots(nrows=2, ncols=2, sharex='all', constrained_layout=True)
-    
-    # Momentum thickness in 0,0
-    i=0
-    j=0
-    exact_curve = ax[i][j].plot(x_out, theta_exact, color=exact_color)
-    analytic_curve = ax[i][j].plot(x_out, theta_analytic, color=analytic_color)
-    linear_curve = ax[i][j].plot(x_out, theta_linear, color=linear_color)
-    nonlinear_curve = ax[i][j].plot(x_out, theta_nonlinear, color=nonlinear_color)
-    ax[i][j].set_xlabel(r'$x$ (m)')
-    ax[i][j].set_ylabel(r'$\theta$ (m)')
-    ax[i][j].grid(True)
-    
-    # Displacement thickness in 0,1
-    i=0
-    j=1
-    ax[i][j].plot(x_out, delta_star_exact, color=exact_color)
-    ax[i][j].plot(x_out, delta_star_analytic, color=analytic_color)
-    ax[i][j].plot(x_out, delta_star_linear, color=linear_color)
-    ax[i][j].plot(x_out, delta_star_nonlinear, color=nonlinear_color)
-    ax[i][j].set_xlabel(r'$x$ (m)')
-    ax[i][j].set_ylabel(r'$\delta$ (m)')
-    ax[i][j].grid(True)
-    
-    # Skin friction coefficient in 1,0
-    i=1
-    j=0
-    ax[i][j].plot(x_out, cf_exact, color=exact_color)
-    ax[i][j].plot(x_out, cf_analytic, color=analytic_color)
-    ax[i][j].plot(x_out, cf_linear, color=linear_color)
-    ax[i][j].plot(x_out, cf_nonlinear, color=nonlinear_color)
-    ax[i][j].set_ylim(0, 1e-2)
-    ax[i][j].set_xlabel(r'$x$ (m)')
-    ax[i][j].set_ylabel(r'$c_f$')
-    ax[i][j].grid(True)
-    
-    # Shape factor in 1,1
-    i=1
-    j=1
-    ax[i][j].plot(x_out, H_exact, color=exact_color)
-    ax[i][j].plot(x_out, H_analytic, color=analytic_color)
-    ax[i][j].plot(x_out, H_linear, color=linear_color)
-    ax[i][j].plot(x_out, H_nonlinear, color=nonlinear_color)
-    ax[i][j].set_ylim(2.5, 2.7)
-    ax[i][j].set_xlabel(r'$x$ (m)')
-    ax[i][j].set_ylabel(r'$H$')
-    ax[i][j].grid(True)
-
-    # Based on example from: https://riptutorial.com/matplotlib/example/10473/single-legend-shared-across-multiple-subplots
-    fig.legend([exact_curve, analytic_curve, linear_curve, nonlinear_curve], 
-               labels=[exact_label, analytic_label, linear_label, nonlinear_label],
-               loc="lower center", ncol=2, borderaxespad=0.1)
-    fig.set_figwidth(8)
-    fig.set_figheight(8)
-    plt.subplots_adjust(bottom=0.1, wspace=0.3)
-    plt.show()
-    
-    # Plot figure 3.2, error compared to the Thwaites analytic result
-    plt.figure()
-    plt.plot(x_out, np.abs(1-theta_linear/theta_analytic), label=theta_label);
-    plt.plot(x_out, np.abs(1-delta_star_linear/delta_star_analytic), label=delta_star_label);
-    plt.plot(x_out, np.abs(1-cf_linear/cf_analytic), label=cf_label);
-    plt.plot(x_out, np.abs(1-H_linear/H_analytic), label=H_label);
-    plt.xlabel(r'$x$ (m)')
-    plt.ylabel('Relative Error')
-    plt.yscale('log')
-    plt.grid(True)
-    plt.legend()
-    plt.show()
-    
-    # Plot figure 3.3, error compared to the Falkner-Skan result
-    plt.figure()
-    plt.plot(x_out, np.abs(1-theta_analytic/theta_exact), label=theta_label);
-    plt.plot(x_out, np.abs(1-delta_star_analytic/delta_star_exact), label=delta_star_label);
-    plt.plot(x_out, np.abs(1-cf_analytic/cf_exact), label=cf_label);
-    plt.plot(x_out, np.abs(1-H_analytic/H_exact), label=H_label);
-    plt.xlabel(r'$x$ (m)')
-    plt.ylabel('Relative Error')
-    plt.ylim([.00001,5])
-    plt.yscale('log')
-    plt.grid(True)
-    plt.legend()
-    plt.show()
+    ## Plot results for figures 3.1, 3.2, and 3.3
+    plot_falkner_skan_comparison(x_out, theta_exact, theta_analytic, theta_linear, theta_nonlinear,
+                                 delta_star_exact, delta_star_analytic, delta_star_linear, delta_star_nonlinear,
+                                 cf_exact, cf_analytic, cf_linear, cf_nonlinear,
+                                 H_exact, H_analytic, H_linear, H_nonlinear,
+                                 [0.0, 0.003], [0.0, 0.007], [0.0, 0.01], [2.4, 2.8])
 
 
 if (__name__ == "__main__"):
