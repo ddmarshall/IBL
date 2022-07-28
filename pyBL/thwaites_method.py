@@ -131,7 +131,7 @@ class ThwaitesSim(IBLSim):
         def derivatives(t,y):
             #modified derivatives to use s and h, define y as theta^2
             x=t
-            lam = y*thwaites_sim_data.du_edx(x)/self.nu
+            lam = np.clip(y*thwaites_sim_data.du_edx(x)/self.nu, -0.5, 0.5)
             # if (lam<= (-0.0842)):
             #     lam =np.array([(-0.0842)])
             if abs(self.u_e(x))<np.array([1E-8]):
