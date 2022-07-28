@@ -163,7 +163,7 @@ def  plot_falkner_skan_comparison(x_out, theta_exact, theta_analytic, theta_line
     ax[i][j].plot(x_out, delta_star_nonlinear, color=nonlinear_color)
     ax[i][j].set_ylim(delta_star_range[0], delta_star_range[1])
     ax[i][j].set_xlabel(r'$x$ (m)')
-    ax[i][j].set_ylabel(r'$\delta$ (m)')
+    ax[i][j].set_ylabel(r'$\delta^*$ (m)')
     ax[i][j].grid(True)
     
     # Skin friction coefficient in 1,0
