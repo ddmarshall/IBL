@@ -17,7 +17,7 @@ from falkner_skan_analysis import plot_falkner_skan_comparison
 
 def axisymmetric_stagnation_flow_case():
     """
-    Create the Blasius comparison, figures 3.1-3.3 in Edland's thesis
+    Create the axisymmetric stagnation flow comparison, figures 3.7-3.9 in Edland's thesis
     
     Args
     ----

@@ -23,7 +23,7 @@ from falkner_skan_analysis import plot_falkner_skan_comparison
 
 def stagnation_flow_case():
     """
-    Create the Blasius comparison, figures 3.1-3.3 in Edland's thesis
+    Create the 2d stagnation flow comparison, figures 3.4-3.6 in Edland's thesis
     
     Args
     ----
