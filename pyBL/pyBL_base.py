@@ -112,6 +112,8 @@ class IBLSim:
                     if np.array(x_array[i]).ndim == 0:
                                 #p = np.tile(x, testfit.order + 1)
                                 p = np.tile(xdist, self.dense_output_vec[j].order + 1)
+                                # TODO: This produces error when xdist=0 because p becomes vector of zeros
+                                #       See issue #21
                                 p = np.cumprod(p)/p
                     else:
                                 p = np.tile(xdist, (self.dense_output_vec[j].order + 1, 1))
