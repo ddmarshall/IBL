@@ -125,6 +125,9 @@ class IBLSim:
                     
                     break
         return yp_array        
+    
+    def Un(self, x):
+        pass
 
 
 class SeparationModel:
