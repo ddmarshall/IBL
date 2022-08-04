@@ -23,6 +23,7 @@ lam_tab = -m_tab
 
 s_lam_spline = CubicSpline(lam_tab, s_tab)
 h_lam_spline = CubicSpline(lam_tab, h_tab)
+hp_lam_spline = l_lam_splineself.derivative()
 
 #redundant (f can be calculated from other values):
 f_lam_spline = CubicSpline(lam_tab,f_tab)
@@ -45,7 +46,6 @@ def cebeci_s(lam):
     else:
         return np.nan #pass  # I'll deal with this later
 
-
 def cebeci_h(lam):
     try:
         
@@ -59,12 +59,20 @@ def cebeci_h(lam):
     else:
         return np.nan #pass  # Returned if lambda fails > or <
 
+# TODO: Implement this
+def cebeci_hp(lam):
+    return 0*lam
+
 def white_s(lam):
     return pow(lam+.09,.62)
     
 def white_h(lam):
     z = .25-lam
     return 2+4.14*z-83.5*pow(z,2) +854*pow(z,3) -3337*pow(z,4) +4576*pow(z,5)
+
+# TODO: Implement this
+def white_hp(lam):
+    return 0*lam
 
 def _stagnation_y0(iblsimdata,x0):
     #From Moran
@@ -82,6 +90,7 @@ class ThwaitesSimData(IBLSimData):
                  theta0=None,
                  s=spline_s,
                  h=spline_h,
+                 hp=spline_hp,
                  linearize=False):
         super().__init__(x_vec,
                          u_e_vec,
@@ -93,6 +102,7 @@ class ThwaitesSimData(IBLSimData):
         #these go through the setters
         self.s_lam = s
         self.h_lam = h
+        self.hp_lam = hp
         self._linearize=linearize
 
 
@@ -100,6 +110,11 @@ class ThwaitesSimData(IBLSimData):
     h_lam = property(fget=lambda self: self._h,
                  fset=lambda self, f: setattr(self,
                                               '_h',
+                                              _function_of_lambda_property_setter(f)))
+
+    hp_lam = property(fget=lambda self: self._hp,
+                 fset=lambda self, f: setattr(self,
+                                              '_hp',
                                               _function_of_lambda_property_setter(f)))
 
     s_lam = property(fget=lambda self: self._s,
@@ -124,6 +139,7 @@ class ThwaitesSim(IBLSim):
         self.theta0 = thwaites_sim_data.theta0
         self.s_lam = thwaites_sim_data.s_lam
         self.h_lam = thwaites_sim_data.h_lam
+        self.hp_lam = thwaites_sim_data.hp_lam
         self.nu = thwaites_sim_data.nu
 #        self.char_length = thwaites_sim_data.char_length
         
@@ -191,9 +207,14 @@ class ThwaitesSim(IBLSim):
         #h function (not shape factor) as a function of x (simulation completed)
         return np.array([self.h_lam(lam) for lam in self.lam(x)])
         
+    def dhdx(self,x):
+        #h function (not shape factor) as a function of x (simulation completed)
+        return np.array([self.h_lam(lam) for lam in self.lam(x)])
+        
     def s(self,x):
         #s as a function of x (simulation completed)
         return np.array([self.s_lam(lam) for lam in self.lam(x)])
+    
     def c_f(self,x):
         #q - scalar
         #skin friction
@@ -218,6 +239,13 @@ class ThwaitesSim(IBLSim):
     #                             (thwaites_sim_data.u_e*self._theta_vec))
     def rtheta(self,x):
         return self.u_e(x)*self.theta(x)/self.nu  
+    
+    def Un(self, x):
+        lam = self.lam(x)
+        theta2 = np.transpose(self.y(x))[0,:]
+        return self.du_edx(x)*self.del_star(x)
+             + 0.5*self.u_e(x)*self.h(x)*self.up(x)[:,0]/self.theta(x)
+             + (self.u_e(x)*self.theta(x).self.hp_lam(x)/self.nu)*(self.up(x)[:,0]*self.du_edx(x)+theta2*self.d2u_edx2(x))
         
         
 class ThwaitesSeparation(SeparationModel):

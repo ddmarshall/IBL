@@ -50,7 +50,9 @@ class IBLSimData:
     def u_e(self, x):
         return self._x_u_e_spline(x)
     def du_edx(self, x):
-        return self._x_u_e_spline(x,1)
+        return self._x_u_e_spline(x, 1)
+    def d2u_edx2(self, x):
+        return self._x_u_e_spline(x, 2)
         
         
 class IBLSim:
@@ -67,6 +69,7 @@ class IBLSim:
         #self._status = self._sim.status
         self.u_e = iblsimdata.u_e #holds reference to u_e(x) from IBLSimData
         self.du_edx = iblsimdata.du_edx
+        self.d2u_edx2 = iblsimdata.d2u_edx2
         #self._x_u_e_spline = CubicSpline(iblsimdata.x_vec, iblsimdata.u_e_vec)
     data = property(fget = lambda self: self._data) 
     x_vec = property(fget = lambda self: self._x_vec)
