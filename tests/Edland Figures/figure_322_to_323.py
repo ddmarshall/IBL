@@ -58,8 +58,8 @@ def natural_xfoil_comparison():
     # find transition
     michel_l = Michel(ts_l, buffer = 0)
     michel_u = Michel(ts_u, buffer = 0)
-#    print('lower: x_tr = ', np.float(michel_l.x_tr))
-#    print('upper: x_tr = ', np.float(michel_u.x_tr))
+    print('lower: x_tr = ', np.float(michel_l.x_tr))
+    print('upper: x_tr = ', np.float(michel_u.x_tr))
 
     # continue with turbulent boundary layer
     try:
