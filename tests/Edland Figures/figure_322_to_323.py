@@ -17,7 +17,7 @@ from xfoil_interface import read_xfoil_dump_file
 
 def natural_xfoil_comparison():
     """
-    Create the laminar airfoil comparison, figures 3.17-3.19 in Edland's thesis
+    Create the natural transition airfoil comparison, figures 3.22-3.23 in Edland's thesis
     
     Args
     ----

@@ -15,7 +15,7 @@ from xfoil_interface import read_xfoil_dump_file
 
 def turbulent_xfoil_comparison():
     """
-    Create the laminar airfoil comparison, figures 3.17-3.19 in Edland's thesis
+    Create the turbulent airfoil comparison, figures 3.20-3.21 in Edland's thesis
     
     Args
     ----
