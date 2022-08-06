@@ -68,7 +68,7 @@ def turbulent_xfoil_comparison():
     j=0
     ref_curve = ax[i][j].plot(xfoil_lower.x/c, xfoil_lower.delta_m/c, color=ref_color, marker=ref_marker, linestyle=ref_linestyle)
     ax[i][j].plot(xfoil_upper.x/c, xfoil_upper.delta_m/c, color=ref_color, marker=ref_marker, linestyle=ref_linestyle)
-    spline_curve = ax[i][j].plot(xfoil_lower.x[lower_range], hs_l.theta(xfoil_lower.s[lower_range])/c, color=spline_color)
+    spline_curve = ax[i][j].plot(xfoil_lower.x[lower_range]/c, hs_l.theta(xfoil_lower.s[lower_range])/c, color=spline_color)
     ax[i][j].plot(xfoil_upper.x[upper_range]/c, hs_u.theta(xfoil_upper.s[upper_range])/c, color=spline_color)
     ax[i][j].set_ylim(0, 0.0043)
     ax[i][j].set_xlabel(r'$x/c$')
@@ -80,8 +80,8 @@ def turbulent_xfoil_comparison():
     j=1
     ax[i][j].plot(xfoil_lower.x/c, xfoil_lower.delta_d/c, color=ref_color, marker=ref_marker, linestyle=ref_linestyle)
     ax[i][j].plot(xfoil_upper.x/c, xfoil_upper.delta_d/c, color=ref_color, marker=ref_marker, linestyle=ref_linestyle)
-    ax[i][j].plot(xfoil_lower.x[lower_range], hs_l.del_star(xfoil_lower.s[lower_range])/c, color=spline_color)
-    ax[i][j].plot(xfoil_upper.x[upper_range], hs_u.del_star(xfoil_upper.s[upper_range])/c, color=spline_color)
+    ax[i][j].plot(xfoil_lower.x[lower_range]/c, hs_l.del_star(xfoil_lower.s[lower_range])/c, color=spline_color)
+    ax[i][j].plot(xfoil_upper.x[upper_range]/c, hs_u.del_star(xfoil_upper.s[upper_range])/c, color=spline_color)
     ax[i][j].set_ylim(0, 0.007)
     ax[i][j].set_xlabel(r'$x/c$')
     ax[i][j].set_ylabel(r'$\delta^*/c$')
@@ -92,8 +92,8 @@ def turbulent_xfoil_comparison():
     j=0
     ax[i][j].plot(xfoil_lower.x/c, xfoil_lower.cf, color=ref_color, marker=ref_marker, linestyle=ref_linestyle)
     ax[i][j].plot(xfoil_upper.x/c, xfoil_upper.cf, color=ref_color, marker=ref_marker, linestyle=ref_linestyle)
-    ax[i][j].plot(xfoil_lower.x[lower_range], hs_l.c_f(xfoil_lower.s[lower_range]), color=spline_color)
-    ax[i][j].plot(xfoil_upper.x[upper_range], hs_u.c_f(xfoil_upper.s[upper_range]), color=spline_color)
+    ax[i][j].plot(xfoil_lower.x[lower_range]/c, hs_l.c_f(xfoil_lower.s[lower_range]), color=spline_color)
+    ax[i][j].plot(xfoil_upper.x[upper_range]/c, hs_u.c_f(xfoil_upper.s[upper_range]), color=spline_color)
     ax[i][j].set_ylim(0, 0.025)
     ax[i][j].set_xlabel(r'$x/c$')
     ax[i][j].set_ylabel(r'$c_f$')
@@ -104,8 +104,8 @@ def turbulent_xfoil_comparison():
     j=1
     ax[i][j].plot(xfoil_lower.x/c, xfoil_lower.H, color=ref_color, marker=ref_marker, linestyle=ref_linestyle)
     ax[i][j].plot(xfoil_upper.x/c, xfoil_upper.H, color=ref_color, marker=ref_marker, linestyle=ref_linestyle)
-    ax[i][j].plot(xfoil_lower.x[lower_range], hs_l.h(xfoil_lower.s[lower_range]), color='orange')
-    ax[i][j].plot(xfoil_upper.x[upper_range], hs_u.h(xfoil_upper.s[upper_range]), color=spline_color)
+    ax[i][j].plot(xfoil_lower.x[lower_range]/c, hs_l.h(xfoil_lower.s[lower_range]), color=spline_color)
+    ax[i][j].plot(xfoil_upper.x[upper_range]/c, hs_u.h(xfoil_upper.s[upper_range]), color=spline_color)
     ax[i][j].set_ylim(1.4, 2.4)
     ax[i][j].set_xlabel(r'$x/c$')
     ax[i][j].set_ylabel(r'$H$')

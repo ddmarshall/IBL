@@ -68,7 +68,7 @@ def laminar_xfoil_comparison():
     j=0
     ref_curve = ax[i][j].plot(xfoil_lower.x/c, xfoil_lower.delta_m/c, color=ref_color, marker=ref_marker, linestyle=ref_linestyle)
     ax[i][j].plot(xfoil_upper.x/c, xfoil_upper.delta_m/c, color=ref_color, marker=ref_marker, linestyle=ref_linestyle)
-    spline_curve = ax[i][j].plot(xfoil_lower.x[lower_range], ts_l.theta(xfoil_lower.s[lower_range])/c, color=spline_color)
+    spline_curve = ax[i][j].plot(xfoil_lower.x[lower_range]/c, ts_l.theta(xfoil_lower.s[lower_range])/c, color=spline_color)
     ax[i][j].plot(xfoil_upper.x[upper_range]/c, ts_u.theta(xfoil_upper.s[upper_range])/c, color=spline_color)
     ax[i][j].set_ylim(0, 0.025)
     ax[i][j].set_xlabel(r'$x/c$')
@@ -80,8 +80,8 @@ def laminar_xfoil_comparison():
     j=1
     ax[i][j].plot(xfoil_lower.x/c, xfoil_lower.delta_d/c, color=ref_color, marker=ref_marker, linestyle=ref_linestyle)
     ax[i][j].plot(xfoil_upper.x/c, xfoil_upper.delta_d/c, color=ref_color, marker=ref_marker, linestyle=ref_linestyle)
-    ax[i][j].plot(xfoil_lower.x[lower_range], ts_l.del_star(xfoil_lower.s[lower_range])/c, color=spline_color)
-    ax[i][j].plot(xfoil_upper.x[upper_range], ts_u.del_star(xfoil_upper.s[upper_range])/c, color=spline_color)
+    ax[i][j].plot(xfoil_lower.x[lower_range]/c, ts_l.del_star(xfoil_lower.s[lower_range])/c, color=spline_color)
+    ax[i][j].plot(xfoil_upper.x[upper_range]/c, ts_u.del_star(xfoil_upper.s[upper_range])/c, color=spline_color)
     ax[i][j].set_ylim(0, 0.075)
     ax[i][j].set_xlabel(r'$x/c$')
     ax[i][j].set_ylabel(r'$\delta^*/c$')
@@ -92,8 +92,8 @@ def laminar_xfoil_comparison():
     j=0
     ax[i][j].plot(xfoil_lower.x/c, xfoil_lower.cf, color=ref_color, marker=ref_marker, linestyle=ref_linestyle)
     ax[i][j].plot(xfoil_upper.x/c, xfoil_upper.cf, color=ref_color, marker=ref_marker, linestyle=ref_linestyle)
-    ax[i][j].plot(xfoil_lower.x[lower_range], ts_l.c_f(xfoil_lower.s[lower_range]), color=spline_color)
-    ax[i][j].plot(xfoil_upper.x[upper_range], ts_u.c_f(xfoil_upper.s[upper_range]), color=spline_color)
+    ax[i][j].plot(xfoil_lower.x[lower_range]/c, ts_l.c_f(xfoil_lower.s[lower_range]), color=spline_color)
+    ax[i][j].plot(xfoil_upper.x[upper_range]/c, ts_u.c_f(xfoil_upper.s[upper_range]), color=spline_color)
     ax[i][j].set_ylim(0, 0.3)
     ax[i][j].set_xlabel(r'$x/c$')
     ax[i][j].set_ylabel(r'$c_f$')
@@ -104,8 +104,8 @@ def laminar_xfoil_comparison():
     j=1
     ax[i][j].plot(xfoil_lower.x/c, xfoil_lower.H, color=ref_color, marker=ref_marker, linestyle=ref_linestyle)
     ax[i][j].plot(xfoil_upper.x/c, xfoil_upper.H, color=ref_color, marker=ref_marker, linestyle=ref_linestyle)
-    ax[i][j].plot(xfoil_lower.x[lower_range], ts_l.h(xfoil_lower.s[lower_range]), color=spline_color)
-    ax[i][j].plot(xfoil_upper.x[upper_range], ts_u.h(xfoil_upper.s[upper_range]), color=spline_color)
+    ax[i][j].plot(xfoil_lower.x[lower_range]/c, ts_l.h(xfoil_lower.s[lower_range]), color=spline_color)
+    ax[i][j].plot(xfoil_upper.x[upper_range]/c, ts_u.h(xfoil_upper.s[upper_range]), color=spline_color)
     ax[i][j].set_ylim(2.2, 2.7)
     ax[i][j].set_xlabel(r'$x/c$')
     ax[i][j].set_ylabel(r'$H$')
@@ -135,14 +135,14 @@ def laminar_xfoil_comparison():
     
     fig,axs = plt.subplots(ncols=2)
     ax = axs[0]
-    ax.plot(xfoil_lower.x[xfoil_lower.x>0.6], ts_l.u_e(xfoil_lower.s[xfoil_lower.x>0.6]),label='XFOIL',color='k')
+    ax.plot(xfoil_lower.x[xfoil_lower.x>0.6]/c, ts_l.u_e(xfoil_lower.s[xfoil_lower.x>0.6]),label='XFOIL',color='k')
     ax.set(xlabel=('$x/c$'))
     ax.set(ylabel=(r'$u_e$ (m/s)'))
     ax.grid(True)
 
     ax=axs[1]
-    ax.plot(xfoil_lower.x[xfoil_lower.x>0.6], ts_l.du_edx(xfoil_lower.s[xfoil_lower.x>0.6]),label='XFOIL',color='k')
-    ax.set(xlabel=('x(m)'))
+    ax.plot(xfoil_lower.x[xfoil_lower.x>0.6]/c, ts_l.du_edx(xfoil_lower.s[xfoil_lower.x>0.6]),label='XFOIL',color='k')
+    ax.set(xlabel=('$x/c$'))
     ax.set(ylabel=(r'$u^{\prime}_e$ (m/s$^2$)'))
     ax.grid(True)
     
