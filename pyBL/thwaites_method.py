@@ -23,13 +23,16 @@ lam_tab = -m_tab
 
 s_lam_spline = CubicSpline(lam_tab, s_tab)
 h_lam_spline = CubicSpline(lam_tab, h_tab)
-hp_lam_spline = l_lam_splineself.derivative()
+hp_lam_spline = h_lam_spline.derivative()
 
 #redundant (f can be calculated from other values):
 f_lam_spline = CubicSpline(lam_tab,f_tab)
 
 def spline_h(lam):
     return h_lam_spline(lam)
+
+def spline_hp(lam):
+    return hp_lam_spline(lam)
 
 def spline_s(lam):
     return s_lam_spline(lam)
@@ -241,11 +244,10 @@ class ThwaitesSim(IBLSim):
         return self.u_e(x)*self.theta(x)/self.nu  
     
     def Un(self, x):
-        lam = self.lam(x)
         theta2 = np.transpose(self.y(x))[0,:]
-        return self.du_edx(x)*self.del_star(x)
-             + 0.5*self.u_e(x)*self.h(x)*self.up(x)[:,0]/self.theta(x)
-             + (self.u_e(x)*self.theta(x).self.hp_lam(x)/self.nu)*(self.up(x)[:,0]*self.du_edx(x)+theta2*self.d2u_edx2(x))
+        return (self.du_edx(x)*self.del_star(x)
+               + 0.5*self.u_e(x)*self.h(x)*self.up(x)[:,0]/self.theta(x)
+               + (self.u_e(x)*self.theta(x).self.hp_lam(x)/self.nu)*(self.up(x)[:,0]*self.du_edx(x)+theta2*self.d2u_edx2(x)))
         
         
 class ThwaitesSeparation(SeparationModel):
