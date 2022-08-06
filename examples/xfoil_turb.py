@@ -2,7 +2,7 @@
 import os
 import matplotlib.pyplot as plt
 
-from pyBL.heads_method import HeadSim, HeadSimData, HeadSeparation
+from pyBL.head_method import HeadSim, HeadSimData, HeadSeparation
 import time
 import tikzplotlib
 

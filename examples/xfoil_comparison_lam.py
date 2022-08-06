@@ -4,7 +4,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 from pyBL.thwaites_method import ThwaitesSim, ThwaitesSimData, ThwaitesSeparation
-from pyBL.heads_method import HeadSim, HeadSimData, HeadSeparation
+from pyBL.head_method import HeadSim, HeadSimData, HeadSeparation
 from pyBL.pyBL import Michel
 import time
 import tikzplotlib

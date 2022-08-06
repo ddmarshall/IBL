@@ -10,7 +10,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy.interpolate import CubicSpline #for smoothed derivative experiment
 
-from pyBL.heads_method import HeadSimData, HeadSim
+from pyBL.head_method import HeadSimData, HeadSim
 
 def mild_adverse_pressure_gradient_case():
     """

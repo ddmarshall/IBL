@@ -13,7 +13,7 @@ import matplotlib.pyplot as plt
 #from scipy.optimize import root #for finding optimal blasius eta
 
 from pyBL.thwaites_method import ThwaitesSimData, ThwaitesSim
-from pyBL.heads_method import HeadSimData, HeadSim
+from pyBL.head_method import HeadSimData, HeadSim
 from pyBL.pyBL import Michel
 
 #Inviscid Flate Plate
