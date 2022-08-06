@@ -33,7 +33,7 @@ def laminar_xfoil_comparison():
     # x_trans = 1 (upper and lower)
     # Transition model n = 9
     c = 1 #m
-    U_inf = 20 #m/s 
+    U_inf = 20 #m/s
     Re = 1000
     xfoil_upper, xfoil_lower, _ = read_xfoil_dump_file('xfoil_laminar_dump.txt', U_inf)
     nu = U_inf*c/Re
@@ -107,7 +107,7 @@ def laminar_xfoil_comparison():
     ax[i][j].plot(xfoil_lower.x[lower_range], ts_l.h(xfoil_lower.s[lower_range]), color=spline_color)
     ax[i][j].plot(xfoil_upper.x[upper_range], ts_u.h(xfoil_upper.s[upper_range]), color=spline_color)
     ax[i][j].set_ylim(2.2, 2.7)
-    ax[i][j].set_xlabel(r'$x$')
+    ax[i][j].set_xlabel(r'$x/c$')
     ax[i][j].set_ylabel(r'$H$')
     ax[i][j].grid(True)
 
