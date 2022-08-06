@@ -104,8 +104,8 @@ def laminar_xfoil_comparison():
     j=1
     ax[i][j].plot(xfoil_lower.x/c, xfoil_lower.H, color=ref_color, marker=ref_marker, linestyle=ref_linestyle)
     ax[i][j].plot(xfoil_upper.x/c, xfoil_upper.H, color=ref_color, marker=ref_marker, linestyle=ref_linestyle)
-    ax[i][j].plot(xfoil_lower.x[lower_range], ts_l.h(xfoil_lower.s[lower_range]+1e-6), color='orange')
-    ax[i][j].plot(xfoil_upper.x[upper_range], ts_u.h(xfoil_upper.s[upper_range]+1e-6), color=spline_color)
+    ax[i][j].plot(xfoil_lower.x[lower_range], ts_l.h(xfoil_lower.s[lower_range]), color=spline_color)
+    ax[i][j].plot(xfoil_upper.x[upper_range], ts_u.h(xfoil_upper.s[upper_range]), color=spline_color)
     ax[i][j].set_ylim(2.2, 2.7)
     ax[i][j].set_xlabel(r'$x$')
     ax[i][j].set_ylabel(r'$H$')
