@@ -26,7 +26,7 @@ re = u_inf * x[-1] / nu
 #Thwaites Simulation
 #tsd  =ThwaitesSimData(r*c,u_e,Vinf,nu,re,r0,theta0,linearize=False)
 #tsd = ThwaitesSimData(x, u_e, u_inf, nu, re, char_length=x[-1])
-tsd = ThwaitesSimData(x, u_e, u_inf, nu, re, 0,theta0=None)
+tsd = ThwaitesSimData(x, u_e, u_inf, nu, re, x[0],theta0=0)
 ts = ThwaitesSim(tsd)
 michel = Michel(ts)
 while ts.status=='running':
