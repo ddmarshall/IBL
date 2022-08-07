@@ -191,9 +191,9 @@ def mild_adverse_pressure_gradient_case():
     # Momentum thickness in 0,0
     i=0
     j=0
-    spline_curve = ax[i][j].plot(x_vec, np.abs(1-hs.theta(x_vec)/theta_tab), color=spline_color);
-    smooth_curve = ax[i][j].plot(x_vec, np.abs(1-hs_smooth.theta(x_vec)/theta_tab), color=smooth_color);
-    smooth_der_curve = ax[i][j].plot(x_vec, np.abs(1-hs_smooth_der.theta(x_vec)/theta_tab), color=smooth_der_color);
+    spline_curve = ax[i][j].plot(x_vec, np.abs(1-hs.theta(x_vec)/theta_tab), color=spline_color)
+    smooth_curve = ax[i][j].plot(x_vec, np.abs(1-hs_smooth.theta(x_vec)/theta_tab), color=smooth_color)
+    smooth_der_curve = ax[i][j].plot(x_vec, np.abs(1-hs_smooth_der.theta(x_vec)/theta_tab), color=smooth_der_color)
     ax[i][j].set_ylim(7e-3, 1.3e-0)
     ax[i][j].set_xlabel(r'$x$ (m)')
     ax[i][j].set_ylabel(r'Relative Error in $\theta$')
@@ -203,9 +203,9 @@ def mild_adverse_pressure_gradient_case():
     # Displacement thickness in 0,1
     i=0
     j=1
-    ax[i][j].plot(x_vec, np.abs(1-hs.del_star(x_vec)/delta_star_tab), color=spline_color);
-    ax[i][j].plot(x_vec, np.abs(1-hs_smooth.del_star(x_vec)/delta_star_tab), color=smooth_color);
-    ax[i][j].plot(x_vec, np.abs(1-hs_smooth_der.del_star(x_vec)/delta_star_tab), color=smooth_der_color);
+    ax[i][j].plot(x_vec, np.abs(1-hs.del_star(x_vec)/delta_star_tab), color=spline_color)
+    ax[i][j].plot(x_vec, np.abs(1-hs_smooth.del_star(x_vec)/delta_star_tab), color=smooth_color)
+    ax[i][j].plot(x_vec, np.abs(1-hs_smooth_der.del_star(x_vec)/delta_star_tab), color=smooth_der_color)
     ax[i][j].set_ylim(7e-3, 1.3)
     ax[i][j].set_xlabel(r'$x$ (m)')
     ax[i][j].set_ylabel(r'Relative Error in $\delta^*$')
@@ -215,9 +215,9 @@ def mild_adverse_pressure_gradient_case():
     # Skin friction coefficient in 1,0
     i=1
     j=0
-    ax[i][j].plot(x_vec, np.abs(1-hs.c_f(x_vec)/cf_tab), color=spline_color);
-    ax[i][j].plot(x_vec, np.abs(1-hs_smooth.c_f(x_vec)/cf_tab), color=smooth_color);
-    ax[i][j].plot(x_vec, np.abs(1-hs_smooth_der.c_f(x_vec)/cf_tab), color=smooth_der_color);
+    ax[i][j].plot(x_vec, np.abs(1-hs.c_f(x_vec)/cf_tab), color=spline_color)
+    ax[i][j].plot(x_vec, np.abs(1-hs_smooth.c_f(x_vec)/cf_tab), color=smooth_color)
+    ax[i][j].plot(x_vec, np.abs(1-hs_smooth_der.c_f(x_vec)/cf_tab), color=smooth_der_color)
     ax[i][j].set_ylim(7e-4, 1.3e-1)
     ax[i][j].set_xlabel(r'$x$ (m)')
     ax[i][j].set_ylabel(r'Relative Error in $c_f$')
@@ -227,9 +227,9 @@ def mild_adverse_pressure_gradient_case():
     # Shape factor in 1,1
     i=1
     j=1
-    ax[i][j].plot(x_vec, np.abs(1-hs.h(x_vec)/H_tab), color=spline_color);
-    ax[i][j].plot(x_vec, np.abs(1-hs_smooth.h(x_vec)/H_tab), color=smooth_color);
-    ax[i][j].plot(x_vec, np.abs(1-hs_smooth_der.h(x_vec)/H_tab), color=smooth_der_color);
+    ax[i][j].plot(x_vec, np.abs(1-hs.h(x_vec)/H_tab), color=spline_color)
+    ax[i][j].plot(x_vec, np.abs(1-hs_smooth.h(x_vec)/H_tab), color=smooth_color)
+    ax[i][j].plot(x_vec, np.abs(1-hs_smooth_der.h(x_vec)/H_tab), color=smooth_der_color)
     ax[i][j].set_ylim(7e-5, 1.3e-1)
     ax[i][j].set_xlabel(r'$x$ (m)')
     ax[i][j].set_ylabel(r'Relative Error in $c_f$')

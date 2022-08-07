@@ -172,10 +172,10 @@ def natural_xfoil_comparison():
 
     # Plot difference compared to the XFoil results
     plt.figure()
-    plt.plot(xfoil_lower.x[lower_range]/c, np.abs(1-theta_l/xfoil_lower.delta_m[lower_range]), label=r'$\theta$');
-    plt.plot(xfoil_lower.x[lower_range]/c, np.abs(1-del_star_l/xfoil_lower.delta_d[lower_range]), label=r'$\delta^*$');
-    plt.plot(xfoil_lower.x[lower_range]/c, np.abs(1-cf_l/xfoil_lower.cf[lower_range]), label='$c_f$');
-    plt.plot(xfoil_lower.x[lower_range]/c, np.abs(1-H_l/xfoil_lower.H[lower_range]), label='$H$');
+    plt.plot(xfoil_lower.x[lower_range]/c, np.abs(1-theta_l/xfoil_lower.delta_m[lower_range]), label=r'$\theta$')
+    plt.plot(xfoil_lower.x[lower_range]/c, np.abs(1-del_star_l/xfoil_lower.delta_d[lower_range]), label=r'$\delta^*$')
+    plt.plot(xfoil_lower.x[lower_range]/c, np.abs(1-cf_l/xfoil_lower.cf[lower_range]), label='$c_f$')
+    plt.plot(xfoil_lower.x[lower_range]/c, np.abs(1-H_l/xfoil_lower.H[lower_range]), label='$H$')
     plt.xlabel(r'$x/c$')
     plt.ylabel('Relative Difference')
     plt.ylim([.00001,30])

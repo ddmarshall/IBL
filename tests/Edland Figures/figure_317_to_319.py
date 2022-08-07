@@ -121,10 +121,10 @@ def laminar_xfoil_comparison():
 
     # Plot difference compared to the XFoil results
     plt.figure()
-    plt.plot(xfoil_lower.x[lower_range]/c, np.abs(1-ts_l.theta(xfoil_lower.s[lower_range])/xfoil_lower.delta_m[lower_range]), label=r'$\theta$');
-    plt.plot(xfoil_lower.x[lower_range]/c, np.abs(1-ts_l.del_star(xfoil_lower.s[lower_range])/xfoil_lower.delta_d[lower_range]), label=r'$\delta^*$');
-    plt.plot(xfoil_lower.x[lower_range]/c, np.abs(1-ts_l.c_f(xfoil_lower.s[lower_range])/xfoil_lower.cf[lower_range]), label='$c_f$');
-    plt.plot(xfoil_lower.x[lower_range]/c, np.abs(1-ts_l.h(xfoil_lower.s[lower_range])/xfoil_lower.H[lower_range]), label='$H$');
+    plt.plot(xfoil_lower.x[lower_range]/c, np.abs(1-ts_l.theta(xfoil_lower.s[lower_range])/xfoil_lower.delta_m[lower_range]), label=r'$\theta$')
+    plt.plot(xfoil_lower.x[lower_range]/c, np.abs(1-ts_l.del_star(xfoil_lower.s[lower_range])/xfoil_lower.delta_d[lower_range]), label=r'$\delta^*$')
+    plt.plot(xfoil_lower.x[lower_range]/c, np.abs(1-ts_l.c_f(xfoil_lower.s[lower_range])/xfoil_lower.cf[lower_range]), label='$c_f$')
+    plt.plot(xfoil_lower.x[lower_range]/c, np.abs(1-ts_l.h(xfoil_lower.s[lower_range])/xfoil_lower.H[lower_range]), label='$H$')
     plt.xlabel(r'$x/c$')
     plt.ylabel('Relative Difference')
     plt.ylim([.00001,10])
