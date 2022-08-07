@@ -38,29 +38,28 @@ def spline_s(lam):
     return s_lam_spline(lam)
 
 def cebeci_s(lam):
-    try:
-        lam = min([max([lam,-.1]),.1]) #gives back lambda at endpoints of fit (if outside fit)
-    except:
-        pass
-    if lam >= 0 and lam <= .1:
-        return .22 + 1.57 * lam - 1.8 * pow(lam, 2)
-    elif lam >= -.1 and lam <= 0:
-        return .22 + 1.402 * lam + (.018 * lam) / (.107 + lam)
-    else:
-        return np.nan #pass  # I'll deal with this later
+    # case when lambda is too small
+    s0 = np.where(lam < -0.1, -0.1*np.ones_like(lam), 0)
+    # case when lambda fits first interval
+    s1 = np.where((lam >= -0.1) & (lam <= 0), 0.22 + 1.402*lam + 0.018*lam/(0.107 + lam), 0*lam)
+    # case when lambda fits second interval
+    s2 = np.where((lam>0) & (lam<=0.1), 0.22 + 1.57*lam - 1.8*lam**2, 0*lam)
+    # case when lambda is too large
+    s3 = np.where(lam > 0.1, 0.1*np.ones_like(lam), 0)
+    # combine all
+    return s0 + s1 + s2 + s3
 
 def cebeci_h(lam):
-    try:
-        
-        lam = min([max([lam,-.1]),.1]) #gives back lambda at endpoints of fit (if outside fit)
-    except:
-        pass
-    if lam >= 0 and lam <= .1:
-        return 2.61-3.75*lam+5.24*pow(lam, 2)
-    elif lam >= -.1 and lam <= 0:
-        return (.0731)/(.14+lam) + 2.088
-    else:
-        return np.nan #pass  # Returned if lambda fails > or <
+    # case when lambda is too small
+    h0 = np.where(lam < -0.1, -0.1*np.ones_like(lam), 0)
+    # case when lambda fits first interval
+    h1 = np.where((lam >= -0.1) & (lam <= 0), 2.088 + 0.0731/(0.14 + lam), 0*lam)
+    # case when lambda fits second interval
+    h2 = np.where((lam>0) & (lam<=0.1), 2.61 - 3.75*lam + 5.24*lam**2, 0*lam)
+    # case when lambda is too large
+    h3 = np.where(lam > 0.1, 0.1*np.ones_like(lam), 0)
+    # combine all
+    return h0 + h1 + h2 + h3
 
 # TODO: Implement this
 def cebeci_hp(lam):
