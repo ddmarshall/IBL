@@ -51,6 +51,7 @@ A list of all source code contributors can be found [here](https://github.com/dd
 <a name="version-history"></a>
 ## Version History
 
+* 0.0.4-develop - Latest development effort
 * 0.0.3 - Last release directly supporting Malachi's thesis
 * 0.0.2 - Has code mostly working as from Malachi's thesis
 * 0.0.1 - Initial Release
