@@ -76,32 +76,13 @@ def get_xfoil_data(airfoil, aoa, v_inf, re, s_trans):
     """+str(n_transition)+"""
     xtr
     """+str(s_trans)+"""
-    1
+    """+str(s_trans)+"""
     
     a """+str(aoa)+"""
     dump """+viscfile+"""
     
     quit
     """).encode('utf-8')
-    
-    # visc_command_list = ("""NACA """+str(airfoil)+"""
-    # OPER
-    # VISC
-    # """+str(re)+"""
-    # ITER 
-    # """+str(n_iter)+"""
-    # vpar
-    # n
-    # """+str(n_transition)+"""
-    # xtr
-    # """+str(float(michel.x_tr))+"""
-    # 1
-    
-    # a """+str(aoa)+"""
-    # dump """+viscfile+"""
-    
-    # quit
-    # """).encode('utf-8')
     
     process = subprocess.Popen([xfoil_name],
                   stdin=subprocess.PIPE,

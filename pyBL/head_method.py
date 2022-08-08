@@ -85,8 +85,10 @@ class HeadSim(IBLSim):
         return.246*pow(10,-.678*self.h(x))*pow(re_theta,-.268)
     def del_star(self,x):
         return self.h(x)*self.theta(x)
-    #def c_fp(self,x):
-
+    def Un(self, x):
+        return (self.du_edx(x)*self.h(x)*self.theta(x) + 
+                self.u_e(x)*self.yp(x)[:,1]*self.theta(x) +
+                self.u_e(x)*self.h(x)*self.yp(x)[:,0])
 
 class HeadSeparation(SeparationModel):
     def __init__(self,headsim,buffer=0):

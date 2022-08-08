@@ -13,11 +13,11 @@ with open('LICENSE.md') as f:
 
 setup(
     name='pyBL',
-    version='0.1.0',
+    version='0.0.3',
     description='Integral boundary layer method implementations for use with inviscid flow solvers.',
     long_description=readme,
-    author='Kenneth Reitz',
-    author_email='me@kennethreitz.com',
+    author='David D. Marshall',
+    author_email='ddmarshall@gmail.com',
     url='https://github.com/ddmarshall/IBL',
     license=license,
     packages=find_packages(exclude=('tests', 'docs'))

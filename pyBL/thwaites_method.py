@@ -23,6 +23,7 @@ lam_tab = -m_tab
 
 s_lam_spline = CubicSpline(lam_tab, s_tab)
 h_lam_spline = CubicSpline(lam_tab, h_tab)
+hp_lam_spline = h_lam_spline.derivative()
 
 #redundant (f can be calculated from other values):
 f_lam_spline = CubicSpline(lam_tab,f_tab)
@@ -30,34 +31,39 @@ f_lam_spline = CubicSpline(lam_tab,f_tab)
 def spline_h(lam):
     return h_lam_spline(lam)
 
+def spline_hp(lam):
+    return hp_lam_spline(lam)
+
 def spline_s(lam):
     return s_lam_spline(lam)
 
 def cebeci_s(lam):
-    try:
-        lam = min([max([lam,-.1]),.1]) #gives back lambda at endpoints of fit (if outside fit)
-    except:
-        pass
-    if lam >= 0 and lam <= .1:
-        return .22 + 1.57 * lam - 1.8 * pow(lam, 2)
-    elif lam >= -.1 and lam <= 0:
-        return .22 + 1.402 * lam + (.018 * lam) / (.107 + lam)
-    else:
-        return np.nan #pass  # I'll deal with this later
-
+    # case when lambda is too small
+    s0 = np.where(lam < -0.1, -0.1*np.ones_like(lam), 0)
+    # case when lambda fits first interval
+    s1 = np.where((lam >= -0.1) & (lam <= 0), 0.22 + 1.402*lam + 0.018*lam/(0.107 + lam), 0*lam)
+    # case when lambda fits second interval
+    s2 = np.where((lam>0) & (lam<=0.1), 0.22 + 1.57*lam - 1.8*lam**2, 0*lam)
+    # case when lambda is too large
+    s3 = np.where(lam > 0.1, 0.1*np.ones_like(lam), 0)
+    # combine all
+    return s0 + s1 + s2 + s3
 
 def cebeci_h(lam):
-    try:
-        
-        lam = min([max([lam,-.1]),.1]) #gives back lambda at endpoints of fit (if outside fit)
-    except:
-        pass
-    if lam >= 0 and lam <= .1:
-        return 2.61-3.75*lam+5.24*pow(lam, 2)
-    elif lam >= -.1 and lam <= 0:
-        return (.0731)/(.14+lam) + 2.088
-    else:
-        return np.nan #pass  # Returned if lambda fails > or <
+    # case when lambda is too small
+    h0 = np.where(lam < -0.1, -0.1*np.ones_like(lam), 0)
+    # case when lambda fits first interval
+    h1 = np.where((lam >= -0.1) & (lam <= 0), 2.088 + 0.0731/(0.14 + lam), 0*lam)
+    # case when lambda fits second interval
+    h2 = np.where((lam>0) & (lam<=0.1), 2.61 - 3.75*lam + 5.24*lam**2, 0*lam)
+    # case when lambda is too large
+    h3 = np.where(lam > 0.1, 0.1*np.ones_like(lam), 0)
+    # combine all
+    return h0 + h1 + h2 + h3
+
+# TODO: Implement this
+def cebeci_hp(lam):
+    return 0*lam
 
 def white_s(lam):
     return pow(lam+.09,.62)
@@ -65,6 +71,10 @@ def white_s(lam):
 def white_h(lam):
     z = .25-lam
     return 2+4.14*z-83.5*pow(z,2) +854*pow(z,3) -3337*pow(z,4) +4576*pow(z,5)
+
+# TODO: Implement this
+def white_hp(lam):
+    return 0*lam
 
 def _stagnation_y0(iblsimdata,x0):
     #From Moran
@@ -82,6 +92,7 @@ class ThwaitesSimData(IBLSimData):
                  theta0=None,
                  s=spline_s,
                  h=spline_h,
+                 hp=spline_hp,
                  linearize=False):
         super().__init__(x_vec,
                          u_e_vec,
@@ -93,6 +104,7 @@ class ThwaitesSimData(IBLSimData):
         #these go through the setters
         self.s_lam = s
         self.h_lam = h
+        self.hp_lam = hp
         self._linearize=linearize
 
 
@@ -100,6 +112,11 @@ class ThwaitesSimData(IBLSimData):
     h_lam = property(fget=lambda self: self._h,
                  fset=lambda self, f: setattr(self,
                                               '_h',
+                                              _function_of_lambda_property_setter(f)))
+
+    hp_lam = property(fget=lambda self: self._hp,
+                 fset=lambda self, f: setattr(self,
+                                              '_hp',
                                               _function_of_lambda_property_setter(f)))
 
     s_lam = property(fget=lambda self: self._s,
@@ -124,6 +141,7 @@ class ThwaitesSim(IBLSim):
         self.theta0 = thwaites_sim_data.theta0
         self.s_lam = thwaites_sim_data.s_lam
         self.h_lam = thwaites_sim_data.h_lam
+        self.hp_lam = thwaites_sim_data.hp_lam
         self.nu = thwaites_sim_data.nu
 #        self.char_length = thwaites_sim_data.char_length
         
@@ -131,7 +149,7 @@ class ThwaitesSim(IBLSim):
         def derivatives(t,y):
             #modified derivatives to use s and h, define y as theta^2
             x=t
-            lam = y*thwaites_sim_data.du_edx(x)/self.nu
+            lam = np.clip(y*thwaites_sim_data.du_edx(x)/self.nu, -0.5, 0.5)
             # if (lam<= (-0.0842)):
             #     lam =np.array([(-0.0842)])
             if abs(self.u_e(x))<np.array([1E-8]):
@@ -191,9 +209,14 @@ class ThwaitesSim(IBLSim):
         #h function (not shape factor) as a function of x (simulation completed)
         return np.array([self.h_lam(lam) for lam in self.lam(x)])
         
+    def dhdx(self,x):
+        #h function (not shape factor) as a function of x (simulation completed)
+        return np.array([self.h_lam(lam) for lam in self.lam(x)])
+        
     def s(self,x):
         #s as a function of x (simulation completed)
         return np.array([self.s_lam(lam) for lam in self.lam(x)])
+    
     def c_f(self,x):
         #q - scalar
         #skin friction
@@ -218,6 +241,12 @@ class ThwaitesSim(IBLSim):
     #                             (thwaites_sim_data.u_e*self._theta_vec))
     def rtheta(self,x):
         return self.u_e(x)*self.theta(x)/self.nu  
+    
+    def Un(self, x):
+        theta2 = np.transpose(self.y(x))[0,:]
+        return (self.du_edx(x)*self.del_star(x)
+               + 0.5*self.u_e(x)*self.h(x)*self.up(x)[:,0]/self.theta(x)
+               + (self.u_e(x)*self.theta(x).self.hp_lam(x)/self.nu)*(self.up(x)[:,0]*self.du_edx(x)+theta2*self.d2u_edx2(x)))
         
         
 class ThwaitesSeparation(SeparationModel):

@@ -61,3 +61,16 @@ class Michel(TransitionModel):
         def h0calc(iblsim,x_tr):
             return 1.4754/np.log(iblsim.rtheta(x_tr)) +.9698
         super().__init__(iblsim,michel_difference,h0calc,buffer)
+
+
+class Forced(TransitionModel):
+    def __init__(self,iblsim, x_tr, buffer=0):
+        self._x_forced = x_tr
+        def forced_difference(iblsim,x=None):
+            #returns all points for x = None or no x provided
+            if type(x)!=np.ndarray and x ==None:
+                x = iblsim.x_vec
+            return x - self._x_forced
+        def h0calc(iblsim,x_tr):
+            return 1.4754/np.log(iblsim.rtheta(x_tr)) +.9698
+        super().__init__(iblsim,forced_difference,h0calc,buffer)

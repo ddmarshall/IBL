@@ -50,13 +50,15 @@ class IBLSimData:
     def u_e(self, x):
         return self._x_u_e_spline(x)
     def du_edx(self, x):
-        return self._x_u_e_spline(x,1)
+        return self._x_u_e_spline(x, 1)
+    def d2u_edx2(self, x):
+        return self._x_u_e_spline(x, 2)
         
         
 class IBLSim:
     def __init__(self,iblsimdata,derivatives,x0,y0,x_bound):
         self._data = iblsimdata
-        self._sim = RK45(fun=derivatives,t0=x0, t_bound=x_bound, y0=y0) #y0=np.array([y0] t_bound = np.array([ x_bound])
+        self._sim = RK45(fun=derivatives,t0=x0, t_bound=x_bound, y0=y0, rtol=1e-8, atol=1e-11) #y0=np.array([y0] t_bound = np.array([ x_bound])
        #######hack (following line)
         #self._sim = RK45(fun=derivatives,t0=x0, t_bound=x_bound, y0=np.array([pow(5E-4,2)*self._data.re*pow(iblsimdata.u_inf/x0,6)])) #y0=np.array([y0] t_bound = np.array([ x_bound])
         #self._sim = RK45(fun=derivatives,t0=x0, t_bound=x_bound, y0=np.array([.0005]))  #y0=np.array([y0] t_bound = np.array([ x_bound])
@@ -67,6 +69,7 @@ class IBLSim:
         #self._status = self._sim.status
         self.u_e = iblsimdata.u_e #holds reference to u_e(x) from IBLSimData
         self.du_edx = iblsimdata.du_edx
+        self.d2u_edx2 = iblsimdata.d2u_edx2
         #self._x_u_e_spline = CubicSpline(iblsimdata.x_vec, iblsimdata.u_e_vec)
     data = property(fget = lambda self: self._data) 
     x_vec = property(fget = lambda self: self._x_vec)
@@ -112,6 +115,8 @@ class IBLSim:
                     if np.array(x_array[i]).ndim == 0:
                                 #p = np.tile(x, testfit.order + 1)
                                 p = np.tile(xdist, self.dense_output_vec[j].order + 1)
+                                # TODO: This produces error when xdist=0 because p becomes vector of zeros
+                                #       See issue #21
                                 p = np.cumprod(p)/p
                     else:
                                 p = np.tile(xdist, (self.dense_output_vec[j].order + 1, 1))
@@ -125,6 +130,9 @@ class IBLSim:
                     
                     break
         return yp_array        
+    
+    def Un(self, x):
+        pass
 
 
 class SeparationModel:
