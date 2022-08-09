@@ -198,11 +198,14 @@ class TestCurveFits(unittest.TestCase):
         
         # check to make sure raises error when asked for out of range data
         with self.assertRaises(ValueError):
-            tm._cb_H(2*lam_min)
+            tm._spline_H(2*lam_min)
         with self.assertRaises(ValueError):
-            tm._cb_H(2*lam_max)
+            tm._spline_H(2*lam_max)
         
         # test H' function
+        # NOTE: cannot evaluate spline H outside of end points, so finite 
+        #       difference cannot be done on end points of lambda
+        lam = lam[1:-2]
         Hp=np.zeros_like(lam)
         delta = 1e-8
         for i, l in enumerate(lam):
@@ -212,9 +215,9 @@ class TestCurveFits(unittest.TestCase):
         
         # check to make sure raises error when asked for out of range data
         with self.assertRaises(ValueError):
-            tm._cb_Hp(2*lam_min)
+            tm._spline_Hp(2*lam_min)
         with self.assertRaises(ValueError):
-            tm._cb_Hp(2*lam_max)
+            tm._spline_Hp(2*lam_max)
 
 
 if (__name__ == "__main__"):

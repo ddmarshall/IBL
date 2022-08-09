@@ -364,6 +364,14 @@ class ThwaitesMethod(IBLSim):
         -------
             Returns the H(\lambda) value(s)
         """
+        # case when lambda is out of range
+        lam_min, lam_max = ThwaitesMethod._spline_range()
+        
+        if (np.array(lam) < lam_min).any():
+            raise ValueError('cannot pass value less than {} into this function'.format(lam_min))
+        elif (np.array(lam) > lam_max).any():
+            raise ValueError('cannot pass value greater than {} into this function'.format(lam_max))
+
         return ThwaitesMethod._H_lam_spline(lam)
 
     @staticmethod
@@ -379,6 +387,14 @@ class ThwaitesMethod(IBLSim):
         -------
             Returns the dH/d\lambda value(s)
         """
+        # case when lambda is out of range
+        lam_min, lam_max = ThwaitesMethod._spline_range()
+        
+        if (np.array(lam) < lam_min).any():
+            raise ValueError('cannot pass value less than {} into this function'.format(lam_min))
+        elif (np.array(lam) > lam_max).any():
+            raise ValueError('cannot pass value greater than {} into this function'.format(lam_max))
+
         return ThwaitesMethod._Hp_lam_spline(lam)
 
     def theta(self,x):
