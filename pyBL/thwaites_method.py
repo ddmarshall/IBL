@@ -263,8 +263,9 @@ class ThwaitesMethod(IBLSim):
             raise ValueError('cannot pass value greater than {} into this function'.format(lam_max))
         
         # case when lambda fits first interval
-        return np.where((lam <= 0), 0.22 + 1.402*lam + 0.018*lam/(0.107 + lam),
-                        0.22 + 1.57*lam - 1.8*lam**2)
+        return np.piecewise(lam, [lam<0, lam>=0],
+                            [lambda lam: 0.22 + 1.402*lam + 0.018*lam/(0.107 + lam),
+                             lambda lam: 0.22 + 1.57*lam - 1.8*lam**2])
     
     @staticmethod
     def _cb_H(lam):
@@ -290,8 +291,9 @@ class ThwaitesMethod(IBLSim):
 
         # case when lambda fits first interval
         # NOTE: C&B's H function is not continuous at lam=0, so using second interval
-        return np.where((lam < 0), 2.088 + 0.0731/(0.14 + lam),
-                        2.61 - 3.75*lam + 5.24*lam**2)
+        return np.piecewise(lam, [lam<0, lam>=0],
+                            [lambda lam: 2.088 + 0.0731/(0.14 + lam),
+                             lambda lam: 2.61 - 3.75*lam + 5.24*lam**2])
     
     @staticmethod
     def _cb_Hp(lam):
@@ -317,7 +319,9 @@ class ThwaitesMethod(IBLSim):
 
         # case when lambda fits first interval
         # NOTE: C&B's H function is not continuous at lam=0, so using second interval
-        return np.where((lam < 0), -0.0731/(0.14 + lam)**2, -3.75 + 2*5.24*lam)
+        return np.piecewise(lam, [lam<0, lam>=0],
+                            [lambda lam: -0.0731/(0.14 + lam)**2,
+                             lambda lam: -3.75 + 2*5.24*lam])
 
     # Spline fits to Thwaites original data Edland
     _S_lam_spline = CubicSpline(_tab_lam, _tab_S)
