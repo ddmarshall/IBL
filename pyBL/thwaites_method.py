@@ -10,7 +10,7 @@ import numpy as np
 from scipy.interpolate import CubicSpline
 import inspect    # used to return source code of h,s
 
-from pyBL.pyBL_base import IBLSimData, IBLSim, SeparationModel
+from pyBL.pyBL_base import IBLSimData, IBLBase, SeparationModel
 
 
 def _stagnation_y0(iblsimdata,x0):
@@ -68,7 +68,7 @@ class ThwaitesSimData(IBLSimData):
 
                                                                            
   
-class ThwaitesMethod(IBLSim):
+class ThwaitesMethod(IBLBase):
     """
     Models a laminar boundary layer using Thwaites Method (1949) when provided 
     the edge velocity profile. There are a few different ways of modeling the 

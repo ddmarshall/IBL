@@ -55,7 +55,7 @@ class IBLSimData:
         return self._x_u_e_spline(x, 2)
         
         
-class IBLSim:
+class IBLBase:
     def __init__(self,iblsimdata,derivatives,x0,y0,x_bound):
         self._data = iblsimdata
         self._sim = RK45(fun=derivatives,t0=x0, t_bound=x_bound, y0=y0, rtol=1e-8, atol=1e-11) #y0=np.array([y0] t_bound = np.array([ x_bound])
@@ -64,13 +64,10 @@ class IBLSim:
         #self._sim = RK45(fun=derivatives,t0=x0, t_bound=x_bound, y0=np.array([.0005]))  #y0=np.array([y0] t_bound = np.array([ x_bound])
         self._x_vec = np.array([self._sim.t])
         self._dense_output_vec = np.array([])
-        #self._piecewise_ranges = np.array([lambda x: False])
-        #self._piecewise_funs = np.array([])
-        #self._status = self._sim.status
         self.u_e = iblsimdata.u_e #holds reference to u_e(x) from IBLSimData
         self.du_edx = iblsimdata.du_edx
         self.d2u_edx2 = iblsimdata.d2u_edx2
-        #self._x_u_e_spline = CubicSpline(iblsimdata.x_vec, iblsimdata.u_e_vec)
+
     data = property(fget = lambda self: self._data) 
     x_vec = property(fget = lambda self: self._x_vec)
     status = property(fget = lambda self: self._sim.status)
