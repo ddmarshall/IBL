@@ -12,69 +12,6 @@ import inspect    # used to return source code of h,s
 
 from pyBL.pyBL_base import IBLSimData, IBLSim, SeparationModel
 
-    
-#bringing in thwaites' tabulated values
-f_tab = np.array([.938,.953,.956,.962,.967,.969,.971,.970,.963,.952,.936,.919,.902,.886,.854,.825,.797,.770,.744,.691,.640,.590,.539,.490,.440,.342,.249,.156,.064,-.028,-.138,-.251,-.362,-.702,-1])
-m_tab = np.array([.082,.0818,.0816,.0812,.0808,.0804,.08,.079,.078,.076,.074,.072,.07,.068,.064,.06,.056,.052,.048,.04,.032,.024,.016,.008,0,-0.016,-.032,-.048,-.064,-.08,-.1,-.12,-.14,-.2,-.25])
-s_tab = np.array([0,.011,.016,.024,.03,.035,.039,.049,.055,.067,.076,.083,.089,.094,.104,.113,.122,.13,.138,.153,.168,.182,.195,.208,.22,.244,.268,.291,.313,.333,.359,.382,.404,.463,.5])
-h_tab = np.array([3.7,3.69,3.66,3.63,3.61,3.59,3.58,3.52,3.47,3.38,3.3,3.23,3.17,3.13,3.05,2.99,2.94,2.9,2.87,2.81,2.75,2.71,2.67,2.64,2.61,2.55,2.49,2.44,2.39,2.34,2.28,2.23,2.18,2.07,2])
-
-lam_tab = -m_tab
-
-s_lam_spline = CubicSpline(lam_tab, s_tab)
-h_lam_spline = CubicSpline(lam_tab, h_tab)
-hp_lam_spline = h_lam_spline.derivative()
-
-#redundant (f can be calculated from other values):
-f_lam_spline = CubicSpline(lam_tab,f_tab)
-
-def spline_h(lam):
-    return h_lam_spline(lam)
-
-def spline_hp(lam):
-    return hp_lam_spline(lam)
-
-def spline_s(lam):
-    return s_lam_spline(lam)
-
-def cebeci_s(lam):
-    # case when lambda is too small
-    s0 = np.where(lam < -0.1, -0.1*np.ones_like(lam), 0)
-    # case when lambda fits first interval
-    s1 = np.where((lam >= -0.1) & (lam <= 0), 0.22 + 1.402*lam + 0.018*lam/(0.107 + lam), 0*lam)
-    # case when lambda fits second interval
-    s2 = np.where((lam>0) & (lam<=0.1), 0.22 + 1.57*lam - 1.8*lam**2, 0*lam)
-    # case when lambda is too large
-    s3 = np.where(lam > 0.1, 0.1*np.ones_like(lam), 0)
-    # combine all
-    return s0 + s1 + s2 + s3
-
-def cebeci_h(lam):
-    # case when lambda is too small
-    h0 = np.where(lam < -0.1, -0.1*np.ones_like(lam), 0)
-    # case when lambda fits first interval
-    h1 = np.where((lam >= -0.1) & (lam <= 0), 2.088 + 0.0731/(0.14 + lam), 0*lam)
-    # case when lambda fits second interval
-    h2 = np.where((lam>0) & (lam<=0.1), 2.61 - 3.75*lam + 5.24*lam**2, 0*lam)
-    # case when lambda is too large
-    h3 = np.where(lam > 0.1, 0.1*np.ones_like(lam), 0)
-    # combine all
-    return h0 + h1 + h2 + h3
-
-# TODO: Implement this
-def cebeci_hp(lam):
-    return 0*lam
-
-def white_s(lam):
-    return pow(lam+.09,.62)
-    
-def white_h(lam):
-    z = .25-lam
-    return 2+4.14*z-83.5*pow(z,2) +854*pow(z,3) -3337*pow(z,4) +4576*pow(z,5)
-
-# TODO: Implement this
-def white_hp(lam):
-    return 0*lam
 
 def _stagnation_y0(iblsimdata,x0):
     #From Moran
@@ -90,9 +27,9 @@ class ThwaitesSimData(IBLSimData):
                  re,
                  x0,
                  theta0=None,
-                 s=spline_s,
-                 h=spline_h,
-                 hp=spline_hp,
+                 s=None,
+                 h=None,
+                 hp=None,
                  linearize=False):
         super().__init__(x_vec,
                          u_e_vec,
@@ -131,7 +68,23 @@ class ThwaitesSimData(IBLSimData):
 
                                                                            
   
-class ThwaitesSim(IBLSim):
+class ThwaitesMethod(IBLSim):
+    """
+    Models a laminar boundary layer using Thwaites Method (1949) when provided 
+    the edge velocity profile. There are a few different ways of modeling the 
+    tabular data from Thwaites original work that can be set.
+    
+    Attributes
+    ----------
+        _tab_lam: Original tabular data for lambda from Thwaites
+        _tab_S: Original tabular data for S from Thwaites
+        _tab_H: Original tabular data for H from Thwaites
+        _tab_F: Original tabular data for F=2(S-\lambda(2+H)) from Thwaites
+        _S_lam_spline: Cubic spline through Thwaites tabular data for S
+        _H_lam_spline: Cubic spline through Thwaites tabular data for H
+        _Hp_lam_spline: Derivative of the cubic spline through H
+        
+    """
     def __init__(self, thwaites_sim_data):
         #note - f's(lambda) aren't actually used in solver
         self.u_e = thwaites_sim_data.u_e #f(x)
@@ -143,9 +96,9 @@ class ThwaitesSim(IBLSim):
         self.h_lam = thwaites_sim_data.h_lam
         self.hp_lam = thwaites_sim_data.hp_lam
         self.nu = thwaites_sim_data.nu
-#        self.char_length = thwaites_sim_data.char_length
         
         self._x_tr = None 
+
         def derivatives(t,y):
             #modified derivatives to use s and h, define y as theta^2
             x=t
@@ -174,26 +127,260 @@ class ThwaitesSim(IBLSim):
         super().__init__(thwaites_sim_data, derivatives, self.x0, self.y0, self.x_bound)
         self.u_e = thwaites_sim_data.u_e
 
+    # Tabular data section
+    _tab_F = np.array([0.938, 0.953, 0.956, 0.962, 0.967, 0.969, 0.971, 0.970, 
+                       0.963, 0.952, 0.936, 0.919, 0.902, 0.886, 0.854, 0.825,
+                       0.797, 0.770, 0.744, 0.691, 0.640, 0.590, 0.539, 0.490,
+                       0.440, 0.342, 0.249, 0.156, 0.064,-0.028,-0.138,-0.251,
+                      -0.362,-0.702,-1.000])
+    _tab_S = np.array([0.000, 0.011, 0.016, 0.024, 0.030, 0.035, 0.039, 0.049,
+                       0.055, 0.067, 0.076, 0.083, 0.089, 0.094, 0.104, 0.113,
+                       0.122, 0.130, 0.138, 0.153, 0.168, 0.182, 0.195, 0.208,
+                       0.220, 0.244, 0.268, 0.291, 0.313, 0.333, 0.359, 0.382,
+                       0.404, 0.463, 0.500])
+    _tab_H = np.array([3.70, 3.69, 3.66, 3.63, 3.61, 3.59, 3.58, 3.52, 3.47,
+                       3.38, 3.30, 3.23, 3.17, 3.13, 3.05, 2.99, 2.94, 2.90,
+                       2.87, 2.81, 2.75, 2.71, 2.67, 2.64, 2.61, 2.55, 2.49,
+                       2.44, 2.39, 2.34, 2.28, 2.23, 2.18, 2.07,  2.00])
+    _tab_lam = np.array([-0.082,-0.0818,-0.0816,-0.0812,-0.0808,-0.0804,-0.080,
+                         -0.079,-0.078, -0.076, -0.074, -0.072, -0.070, -0.068,
+                         -0.064,-0.060, -0.056, -0.052, -0.048, -0.040, -0.032,
+                         -0.024,-0.016, -0.008,  0.000,  0.016,  0.032,  0.048,
+                          0.064,  0.080,  0.10,  0.12,   0.14,   0.20,   0.25])
     
+    @staticmethod
+    def _tabular_range():
+        """Returns the minimum and maximum lambda for tabular data"""
+        return (np.amin(ThwaitesMethod._tab_lam), np.amax(ThwaitesMethod._tab_lam))
 
+    @staticmethod
+    def _tabular_data():
+        """Returns the tabulated values of F from Thwaites' Table I of 1949 paper"""
+        return ThwaitesMethod._tab_lam, ThwaitesMethod._tab_H, ThwaitesMethod._tab_S, ThwaitesMethod._tab_F
+
+    @staticmethod
+    def _white_range():
+        """Returns the minimum and maximum lambda for White from 2011 book"""
+        return (-0.09, np.inf)
     
-    #def u_e_star(self,x):
-        #return self.u_e(x)/self.u_inf
-        #u_e_star_series = pd.Series(thwaites_sim_data.u_e) / thwaites_sim_data.u_inf
-    #def x_star(self,x):
-        #return x/thwaites_sim_data.char_length
-    
-        #x_star_series = pd.Series(thwaites_sim_data.x) / thwaites_sim_data.char_length
-        #with warnings.catch_warnings():
-            #warnings.simplefilter("ignore")
+    # Whites curve fits section
+    @staticmethod
+    def _white_S(lam):
+        """
+        Returns White's calculation of S from 2011 book
         
-       # integrand_vec = pow(thwaites_sim_data.u_e,5)
-       # sim = RK45(fun=derivatives, t0=x0 , y0=5*,t_bound = self.x[-1],max_step=.1)
-       # integral_vec = cumtrapz(integrand_vec, thwaites_sim_data.x, initial=0)
-    #def eq5_6_16(self,x):
-        #return np.nan_to_num((.45 / pow(self.u_e(x),6))*np.transpose(self.y(x))[0,:]) #back down to (m,) array
-      
-    #     self._eq5_6_16_vec  = (.45 / pow(thwaites_sim_data.u_e, 6)) *integral_vec
+        Args
+        ----
+            lam: lambda parameter(s) at which evaluation is wanted
+            
+        Returns
+        -------
+            Returns the S(\lambda) value(s)
+        """
+        # case when lambda is out of range
+        lam_min, lam_max = ThwaitesMethod._white_range()
+        
+        if (np.array(lam) < lam_min).any():
+            raise ValueError('cannot pass value less than {} into this function'.format(lam_min))
+        elif (np.array(lam) > lam_max).any():
+            raise ValueError('cannot pass value greater than {} into this function'.format(lam_max))
+
+        return pow(lam + 0.09, 0.62)
+    
+    @staticmethod
+    def _white_H(lam):
+        """
+        Returns White's calculation of H from 2011 book
+        
+        Args
+        ----
+            lam: lambda parameter(s) at which evaluation is wanted
+            
+        Returns
+        -------
+            Returns the H(\lambda) value(s)
+        """
+        # case when lambda is out of range
+        lam_min, lam_max = ThwaitesMethod._white_range()
+        
+        if (np.array(lam) < lam_min).any():
+            raise ValueError('cannot pass value less than {} into this function'.format(lam_min))
+        elif (np.array(lam) > lam_max).any():
+            raise ValueError('cannot pass value greater than {} into this function'.format(lam_max))
+
+        z = 0.25-lam
+        return 2 + z*(4.14 + z*(-83.5 + z*(854 + z*(-3337 + z*4576))))
+    
+    @staticmethod
+    def _white_Hp(lam):
+        """
+        Returns the derivative of White's calculation of H from 2011 book
+        
+        Args
+        ----
+            lam: lambda parameter(s) at which evaluation is wanted
+            
+        Returns
+        -------
+            Returns the dH/d\lambda value(s)
+        """
+        # case when lambda is out of range
+        lam_min, lam_max = ThwaitesMethod._white_range()
+        
+        if (np.array(lam) < lam_min).any():
+            raise ValueError('cannot pass value less than {} into this function'.format(lam_min))
+        elif (np.array(lam) > lam_max).any():
+            raise ValueError('cannot pass value greater than {} into this function'.format(lam_max))
+
+        z = 0.25-lam
+        return -(4.14 + z*(-2*83.5 + z*(3*854 + z*(-4*3337 + z*5*4576))))
+
+    # Cebeci & Bradshaw curve fits section
+    @staticmethod
+    def _cb_range():
+        """Returns the minimum and maximum lambda for Cebeci and Bradshaw from 2011 book"""
+        return (-0.1, 0.1)
+    
+    @staticmethod
+    def _cb_S(lam):
+        """
+        Returns Cebeci and Bradshaw's calculation of S from 1977 book
+        
+        Args
+        ----
+            lam: lambda parameter(s) at which evaluation is wanted
+            
+        Returns
+        -------
+            Returns the S(\lambda) value(s)
+        """
+        # case when lambda is out of range
+        lam_min, lam_max = ThwaitesMethod._cb_range()
+        
+        if (np.array(lam) < lam_min).any():
+            raise ValueError('cannot pass value less than {} into this function'.format(lam_min))
+        elif (np.array(lam) > lam_max).any():
+            raise ValueError('cannot pass value greater than {} into this function'.format(lam_max))
+        
+        # case when lambda fits first interval
+        return np.where((lam <= 0), 0.22 + 1.402*lam + 0.018*lam/(0.107 + lam),
+                        0.22 + 1.57*lam - 1.8*lam**2)
+    
+    @staticmethod
+    def _cb_H(lam):
+        """
+        Returns Cebeci and Bradshaw's calculation of H from 1977 book
+        
+        Args
+        ----
+            lam: lambda parameter(s) at which evaluation is wanted
+            
+        Returns
+        -------
+            Returns the H(\lambda) value(s)
+        """
+        # case when lambda is out of range
+        lam_min, lam_max = ThwaitesMethod._cb_range()
+        
+        if (np.array(lam) < lam_min).any():
+            raise ValueError('cannot pass value less than {} into this function'.format(lam_min))
+        elif (np.array(lam) > lam_max).any():
+            raise ValueError('cannot pass value greater than {} into this function'.format(lam_max))
+        
+
+        # case when lambda fits first interval
+        # NOTE: C&B's H function is not continuous at lam=0, so using second interval
+        return np.where((lam < 0), 2.088 + 0.0731/(0.14 + lam),
+                        2.61 - 3.75*lam + 5.24*lam**2)
+    
+    @staticmethod
+    def _cb_Hp(lam):
+        """
+        Returns the derivative of Cebeci and Bradshaw's calculation of H from 1977 book
+        
+        Args
+        ----
+            lam: lambda parameter(s) at which evaluation is wanted
+            
+        Returns
+        -------
+            Returns the dH/d\lambda value(s)
+        """
+        # case when lambda is out of range
+        lam_min, lam_max = ThwaitesMethod._cb_range()
+        
+        if (np.array(lam) < lam_min).any():
+            raise ValueError('cannot pass value less than -0.1 into this function')
+        elif (np.array(lam) > lam_max).any():
+            raise ValueError('cannot pass value greater than 0.1 into this function')
+        
+
+        # case when lambda fits first interval
+        # NOTE: C&B's H function is not continuous at lam=0, so using second interval
+        return np.where((lam < 0), -0.0731/(0.14 + lam)**2, -3.75 + 2*5.24*lam)
+
+    # Spline fits to Thwaites original data Edland
+    _S_lam_spline = CubicSpline(_tab_lam, _tab_S)
+    _H_lam_spline = CubicSpline(_tab_lam, _tab_H)
+    _Hp_lam_spline = _H_lam_spline.derivative()
+    
+    @staticmethod
+    def _spline_range():
+        return ThwaitesMethod._tabular_range()
+    
+    @staticmethod
+    def _spline_S(lam):
+        """
+        Returns the spline of S from Edland 2021
+        
+        Args
+        ----
+            lam: lambda parameter(s) at which evaluation is wanted
+            
+        Returns
+        -------
+            Returns the S(\lambda) value(s)
+        """
+        # case when lambda is out of range
+        lam_min, lam_max = ThwaitesMethod._spline_range()
+        
+        if (np.array(lam) < lam_min).any():
+            raise ValueError('cannot pass value less than {} into this function'.format(lam_min))
+        elif (np.array(lam) > lam_max).any():
+            raise ValueError('cannot pass value greater than {} into this function'.format(lam_max))
+
+        return ThwaitesMethod._S_lam_spline(lam)
+
+    @staticmethod
+    def _spline_H(lam):
+        """
+        Returns the spline of H from Edland 2021
+        
+        Args
+        ----
+            lam: lambda parameter(s) at which evaluation is wanted
+            
+        Returns
+        -------
+            Returns the H(\lambda) value(s)
+        """
+        return ThwaitesMethod._H_lam_spline(lam)
+
+    @staticmethod
+    def _spline_Hp(lam):
+        """
+        Returns the derivative of the spline of H from Edland 2021
+        
+        Args
+        ----
+            lam: lambda parameter(s) at which evaluation is wanted
+            
+        Returns
+        -------
+            Returns the dH/d\lambda value(s)
+        """
+        return ThwaitesMethod._Hp_lam_spline(lam)
+
     def theta(self,x):
         #momentum thickness
         #return pow(self.eq5_6_16(x)*self.nu, .5)
