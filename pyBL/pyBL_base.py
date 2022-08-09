@@ -10,6 +10,7 @@ import numpy as np
 from scipy.interpolate import CubicSpline
 from scipy.integrate import RK45
 from scipy.optimize import root
+from abc import ABC
 
 class IBLSimData:
     def __init__(self,
@@ -55,7 +56,7 @@ class IBLSimData:
         return self._x_u_e_spline(x, 2)
         
         
-class IBLBase:
+class IBLBase(ABC):
     def __init__(self,iblsimdata,derivatives,x0,y0,x_bound, rtol=1e-8, atol=1e-11):
         self._data = iblsimdata
         self._sim = RK45(fun=derivatives,t0=x0, t_bound=x_bound, y0=y0, rtol=rtol, atol=atol)
@@ -125,9 +126,21 @@ class IBLBase:
                     break
         return yp_array        
     
-    def Un(self, x):
+    def U_n(self, x):
+        
         pass
-
+    
+    def delta_d(self, x):
+        pass
+    
+    def delta_m(self, x):
+        pass
+    
+    def H(self, x):
+        pass
+    
+    def tau_w(self, x):
+        pass
 
 class SeparationModel:
     #when criteria are positive, has separated
