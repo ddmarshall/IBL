@@ -59,8 +59,8 @@ class IBLSimData:
 class IBLBase(ABC):
     def __init__(self,iblsimdata,derivatives,x0,y0,x_bound, rtol=1e-8, atol=1e-11):
         self._data = iblsimdata
-        self._sim = RK45(fun=derivatives,t0=x0, t_bound=x_bound, y0=y0, rtol=rtol, atol=atol)
-        self._x_vec = np.array([self._sim.t])
+        self._ode = RK45(fun=derivatives,t0=x0, t_bound=x_bound, y0=y0, rtol=rtol, atol=atol)
+        self._x_vec = np.array([self._ode.t])
         self._dense_output_vec = np.array([])
         self.u_e = iblsimdata.u_e #holds reference to u_e(x) from IBLSimData
         self.du_edx = iblsimdata.du_edx
@@ -68,25 +68,25 @@ class IBLBase(ABC):
 
     data = property(fget = lambda self: self._data) 
     x_vec = property(fget = lambda self: self._x_vec)
-    status = property(fget = lambda self: self._sim.status)
+    status = property(fget = lambda self: self._ode.status)
     dense_output_vec = property(fget = lambda self: self._dense_output_vec)
      
         
     def step(self):
-        self._sim.step()
-        self._x_vec = np.append(self._x_vec, [self._sim.t])
-        self._dense_output_vec = np.append(self.dense_output_vec,[self._sim.dense_output()])
-        if self._sim.status!='running':
-            print(self._sim.status)
+        self._ode.step()
+        self._x_vec = np.append(self._x_vec, [self._ode.t])
+        self._dense_output_vec = np.append(self.dense_output_vec,[self._ode.dense_output()])
+        if self._ode.status!='running':
+            print(self._ode.status)
             self._x_vec = np.append(self._x_vec, self.data.x_vec[-1])
-        #self._piecewise_funs = np.append(self._piecewise_funs,[lambda x: self._sim.dense_output()(x)]) #was calling same function for every point
+        #self._piecewise_funs = np.append(self._piecewise_funs,[lambda x: self._ode.dense_output()(x)]) #was calling same function for every point
         
        
     def y(self,x):
         #returns m*n array, where m is len(x) and n is length(y)
         x_array = x #must be array
         #x_array = np.array([x])
-        y_array = np.zeros([len(x),len(self._sim.y)])
+        y_array = np.zeros([len(x),len(self._ode.y)])
         for i in range(len(x_array)):
             for j in range(len(self.dense_output_vec)): #-1
                 if (x_array[i] >= self.x_vec[j]) & (x_array[i] <= self.x_vec[j+1]):
@@ -99,7 +99,7 @@ class IBLBase(ABC):
         #Uses Dense Output construct to return derivative with polynomial
         x_array = x #must be array
         #x_array = np.array([x])
-        yp_array = np.zeros([len(x),len(self._sim.y)])
+        yp_array = np.zeros([len(x),len(self._ode.y)])
         for i in range(len(x_array)):
             for j in range(len(self.dense_output_vec)): #-1
                 if (x_array[i] >= self.x_vec[j]) & (x_array[i] <= self.x_vec[j+1]):
@@ -127,7 +127,6 @@ class IBLBase(ABC):
         return yp_array        
     
     def U_n(self, x):
-        
         pass
     
     def delta_d(self, x):
