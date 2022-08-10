@@ -62,15 +62,58 @@ class IBLBase(ABC):
         self._ode = RK45(fun=derivatives,t0=x0, t_bound=x_bound, y0=y0, rtol=rtol, atol=atol)
         self._x_vec = np.array([self._ode.t])
         self._dense_output_vec = np.array([])
-        self.u_e = iblsimdata.u_e #holds reference to u_e(x) from IBLSimData
-        self.du_edx = iblsimdata.du_edx
-        self.d2u_edx2 = iblsimdata.d2u_edx2
+        self._U_e = iblsimdata.u_e #holds reference to u_e(x) from IBLSimData
+        self._du_edx = iblsimdata.du_edx
+        self._d2u_edx2 = iblsimdata.d2u_edx2
 
     data = property(fget = lambda self: self._data) 
     x_vec = property(fget = lambda self: self._x_vec)
     status = property(fget = lambda self: self._ode.status)
     dense_output_vec = property(fget = lambda self: self._dense_output_vec)
      
+    def U_e(self, x):
+        """
+        Return the inviscid edge velocity at specified location(s)
+        
+        Args
+        ----
+            x: distance along surface
+            
+        Returns
+        -------
+            Inviscid edge velocity
+        """
+        return self._U_e(x)
+    
+    def dU_edx(self, x):
+        """
+        Return the streamwise derivative of the inviscid edge velocity at 
+        specified location(s)
+        
+        Args
+        ----
+            x: distance along surface
+            
+        Returns
+        -------
+            Derivative of inviscid edge velocity
+        """
+        return self._dU_edx(x)
+    
+    def d2U_edx2(self, x):
+        """
+        Return the streamwise second derivative of the inviscid edge velocity at 
+        specified location(s)
+        
+        Args
+        ----
+            x: distance along surface
+            
+        Returns
+        -------
+            Second derivative of inviscid edge velocity
+        """
+        return self._d2U_edx2(x)
         
     def step(self):
         self._ode.step()
