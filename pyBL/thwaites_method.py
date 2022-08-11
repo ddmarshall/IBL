@@ -10,7 +10,7 @@ import numpy as np
 from scipy.interpolate import CubicSpline
 import inspect    # used to return source code of h,s
 
-from pyBL.pyBL_base import IBLSimData, IBLBase, SeparationModel
+from pyBL.ibl_base import IBLSimData, IBLBase, SeparationModel
 
 
 def _stagnation_y0(iblsimdata,x0):

@@ -10,7 +10,7 @@ import numpy as np
 from scipy.interpolate import CubicSpline
 from scipy.integrate import RK45
 from scipy.optimize import root
-from abc import ABC
+from abc import ABC, abstractmethod
 
 class IBLSimData:
     def __init__(self,
@@ -57,20 +57,33 @@ class IBLSimData:
         
         
 class IBLBase(ABC):
-    def __init__(self,iblsimdata,derivatives,x0,y0,x_bound, rtol=1e-8, atol=1e-11):
-        self._data = iblsimdata
-        self._ode = RK45(fun=derivatives,t0=x0, t_bound=x_bound, y0=y0, rtol=rtol, atol=atol)
+    """
+    The base class for integral boundary layer classes.
+    
+    This encapsulates the common features and needed parameters for all IBL 
+    methods. At the very least it provides the inteface that is expected for all
+    IBL classes.
+    
+    Attributes
+    ----------
+        _ode: Common ODE solver to be used by all IBL methods. Currently is an
+              dense output RK45 from scipy.
+        _U_e: Function representing the edge velocity profile
+        _dU_edx: Function representing the streamwise derivative of the edge 
+                 velocity
+        _d2U_edx2: Function representing the streamwise second derivative of the
+                   edge velocity
+        _x_vec: Vector 
+    """
+    def __init__(self, U_e, dU_edx, d2U_edx2, yp, x0, y0, x_end, int_rtol=1e-8, int_atol=1e-11):
+#        self._data = iblsimdata
+        self._ode = RK45(fun=yp, t0=x0, t_bound=x_end, y0=y0, rtol=int_rtol, atol=int_atol)
+        self._U_e = U_e
+        self._dU_edx = dU_edx
+        self._d2U_edx2 = d2U_edx2
         self._x_vec = np.array([self._ode.t])
         self._dense_output_vec = np.array([])
-        self._U_e = iblsimdata.u_e #holds reference to u_e(x) from IBLSimData
-        self._du_edx = iblsimdata.du_edx
-        self._d2u_edx2 = iblsimdata.d2u_edx2
 
-    data = property(fget = lambda self: self._data) 
-    x_vec = property(fget = lambda self: self._x_vec)
-    status = property(fget = lambda self: self._ode.status)
-    dense_output_vec = property(fget = lambda self: self._dense_output_vec)
-     
     def U_e(self, x):
         """
         Return the inviscid edge velocity at specified location(s)
@@ -114,7 +127,12 @@ class IBLBase(ABC):
             Second derivative of inviscid edge velocity
         """
         return self._d2U_edx2(x)
-        
+    
+    data = property(fget = lambda self: self._data) 
+    x_vec = property(fget = lambda self: self._x_vec)
+    status = property(fget = lambda self: self._ode.status)
+    dense_output_vec = property(fget = lambda self: self._dense_output_vec)
+     
     def step(self):
         self._ode.step()
         self._x_vec = np.append(self._x_vec, [self._ode.t])
@@ -122,8 +140,6 @@ class IBLBase(ABC):
         if self._ode.status!='running':
             print(self._ode.status)
             self._x_vec = np.append(self._x_vec, self.data.x_vec[-1])
-        #self._piecewise_funs = np.append(self._piecewise_funs,[lambda x: self._ode.dense_output()(x)]) #was calling same function for every point
-        
        
     def y(self,x):
         #returns m*n array, where m is len(x) and n is length(y)
@@ -169,18 +185,23 @@ class IBLBase(ABC):
                     break
         return yp_array        
     
+    @abstractmethod
     def U_n(self, x):
         pass
     
+    @abstractmethod
     def delta_d(self, x):
         pass
     
+    @abstractmethod
     def delta_m(self, x):
         pass
     
+    @abstractmethod
     def H(self, x):
         pass
     
+    @abstractmethod
     def tau_w(self, x):
         pass
 
