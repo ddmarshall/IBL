@@ -21,7 +21,7 @@ class RKDenseOutputPPolyTest(unittest.TestCase):
             return t
         
         ## propagate first step
-        ode = RK45(fun=simple_fun, t0=0, y0=[1], t_bound=2, )
+        ode = RK45(fun=simple_fun, t0=0, y0=[1], t_bound=2)
         ode.step()
         status = ode.status
         self.assertNotEqual(status, "failed")
@@ -71,7 +71,7 @@ class RKDenseOutputPPolyTest(unittest.TestCase):
             return np.array([t, t**2])
         
         ## propagate first step
-        ode = RK45(fun=simple_fun, t0=0, y0=[1, 2], t_bound=2, )
+        ode = RK45(fun=simple_fun, t0=0, y0=[1, 2], t_bound=2)
         ode.step()
         status = ode.status
         self.assertNotEqual(status, "failed")
