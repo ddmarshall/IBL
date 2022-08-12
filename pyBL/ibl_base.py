@@ -176,6 +176,7 @@ class IBLBase(ABC):
             return self._U_e(x)
         else:
             raise ValueError("U_e was not set")
+            return None
     
     def dU_edx(self, x):
         """
@@ -194,6 +195,7 @@ class IBLBase(ABC):
             return self._dU_edx(x)
         else:
             raise ValueError("dU_edx was not set")
+            return None
     
     def d2U_edx2(self, x):
         """
@@ -212,6 +214,7 @@ class IBLBase(ABC):
             return self._d2U_edx2(x)
         else:
             raise ValueError("d2U_edx2 was not set")
+            return None
     
     #TODO: These need to be (re)moved
     data = property(fget = lambda self: self._data) 
