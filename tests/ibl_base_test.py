@@ -10,7 +10,6 @@ Created on Tue Aug  9 17:26:49 2022
 import unittest
 import numpy as np
 import numpy.testing as npt
-from scipy.misc import derivative as fd
 from scipy.interpolate import CubicSpline
 
 from pyBL.ibl_base import IBLBase
@@ -19,10 +18,11 @@ from pyBL.ibl_base import IBLBase
 class IBLBaseTest(IBLBase):
     """Generic class to test the concrete methods in IBLBase"""
     
-    def __init__(self, U_e, dU_edx=None, d2U_edx2=None):
+    def __init__(self, U_e = None, dU_edx = None, d2U_edx2 = None):
         def fun(t, y):
             return t
-        super().__init__(fun, 0, [0], 0, U_e, dU_edx=dU_edx, d2U_edx2=d2U_edx2)
+        super().__init__(fun, 0, [0], 0,
+                         U_e=U_e, dU_edx=dU_edx, d2U_edx2=d2U_edx2)
     
     def U_n(self, x):
         return np.zeros_like(x)
@@ -81,11 +81,11 @@ class TestEdgeVelocity(unittest.TestCase):
         else:
             return m*(m-1)*(m-2)*C*x**(m-3)
     
-    def test_setting_functions(self):
+    def test_setting_velocity_functions(self):
         ## create test class with all three functions
         U_inf = 10
         m = 0.75
-        iblb = IBLBaseTest(lambda x: self.U_e_fun(x, U_inf, m),
+        iblb = IBLBaseTest(U_e = lambda x: self.U_e_fun(x, U_inf, m),
                            dU_edx = lambda x: self.dU_edx_fun(x, U_inf, m),
                            d2U_edx2 = lambda x: self.d2U_edx2_fun(x, U_inf, m))
         
@@ -100,7 +100,7 @@ class TestEdgeVelocity(unittest.TestCase):
         ## create test class with two functions
         U_inf = 10
         m = 0.75
-        iblb = IBLBaseTest(lambda x: self.U_e_fun(x, U_inf, m),
+        iblb = IBLBaseTest(U_e = lambda x: self.U_e_fun(x, U_inf, m),
                            dU_edx = lambda x: self.dU_edx_fun(x, U_inf, m))
         
         x=np.linspace(0.1, 5, 21)
@@ -114,7 +114,7 @@ class TestEdgeVelocity(unittest.TestCase):
         ## create test class with one function
         U_inf = 10
         m = 0.75
-        iblb = IBLBaseTest(lambda x: self.U_e_fun(x, U_inf, m))
+        iblb = IBLBaseTest(U_e = lambda x: self.U_e_fun(x, U_inf, m))
         
         x=np.linspace(0.1, 5, 21)
         U_e_ref = self.U_e_fun(x, U_inf, m)
@@ -126,7 +126,7 @@ class TestEdgeVelocity(unittest.TestCase):
         self.assertIsNone(npt.assert_allclose(iblb.d2U_edx2(x), d2U_edx2_ref,
                                               rtol=1e-5, atol=0))
     
-    def test_setting_splines(self):
+    def test_setting_velocity_splines(self):
         ## set the edge velocity spline
         x_sample = np.linspace(0.1, 5, 8)
         U_inf = 10
@@ -134,7 +134,7 @@ class TestEdgeVelocity(unittest.TestCase):
         U_e = CubicSpline(x_sample, self.U_e_fun(x_sample, U_inf, m))
         dU_edx = U_e.derivative()
         d2U_edx2 = dU_edx.derivative()
-        iblb = IBLBaseTest(U_e)
+        iblb = IBLBaseTest(U_e = U_e)
         
         x=np.linspace(0.1, 5, 21)
         U_e_ref = U_e(x)
@@ -154,7 +154,7 @@ class TestEdgeVelocity(unittest.TestCase):
         U_e = dU_edx.antiderivative()
         U_e.c[-1,:] = U_e.c[-1,:]+self.U_e_fun(x_sample[0], U_inf, m)
         d2U_edx2 = dU_edx.derivative()
-        iblb = IBLBaseTest(U_e, dU_edx = dU_edx)
+        iblb = IBLBaseTest(U_e = U_e, dU_edx = dU_edx)
         
         x=np.linspace(0.1, 5, 21)
         U_e_ref = U_e(x)
@@ -175,7 +175,7 @@ class TestEdgeVelocity(unittest.TestCase):
         dU_edx.c[-1,:] = dU_edx.c[-1,:]+self.dU_edx_fun(x_sample[0], U_inf, m)
         U_e = dU_edx.antiderivative()
         U_e.c[-1,:] = U_e.c[-1,:]+self.U_e_fun(x_sample[0], U_inf, m)
-        iblb = IBLBaseTest(U_e, dU_edx = dU_edx, d2U_edx2 = d2U_edx2)
+        iblb = IBLBaseTest(U_e = U_e, dU_edx = dU_edx, d2U_edx2 = d2U_edx2)
         
         x=np.linspace(0.1, 5, 21)
         U_e_ref = U_e(x)
@@ -185,7 +185,7 @@ class TestEdgeVelocity(unittest.TestCase):
         self.assertIsNone(npt.assert_allclose(iblb.dU_edx(x), dU_edx_ref))
         self.assertIsNone(npt.assert_allclose(iblb.d2U_edx2(x), d2U_edx2_ref))
     
-    def test_setting_U_e_x(self):
+    def test_setting_velocity_points(self):
         ## set the edge velocity values
         x_sample = np.linspace(0.1, 5, 8)
         U_inf = 10
@@ -194,12 +194,33 @@ class TestEdgeVelocity(unittest.TestCase):
         U_e_spline = CubicSpline(x_sample, self.U_e_fun(x_sample, U_inf, m))
         dU_edx_spline = U_e_spline.derivative()
         d2U_edx2_spline = dU_edx_spline.derivative()
-        iblb = IBLBaseTest(U_e)
+        iblb = IBLBaseTest(U_e = U_e)
         
         x=np.linspace(0.1, 5, 21)
         U_e_ref = U_e_spline(x)
         dU_edx_ref = dU_edx_spline(x)
         d2U_edx2_ref = d2U_edx2_spline(x)
+        self.assertIsNone(npt.assert_allclose(iblb.U_e(x), U_e_ref))
+        self.assertIsNone(npt.assert_allclose(iblb.dU_edx(x), dU_edx_ref))
+        self.assertIsNone(npt.assert_allclose(iblb.d2U_edx2(x), d2U_edx2_ref))
+    
+    def test_delay_setting_velocity(self):
+        ## create test class with all three functions
+        U_inf = 10
+        m = 0.75
+        iblb = IBLBaseTest()
+        x=np.linspace(0.1, 5, 21)
+        U_e_ref = self.U_e_fun(x, U_inf, m)
+        dU_edx_ref = self.dU_edx_fun(x, U_inf, m)
+        d2U_edx2_ref = self.d2U_edx2_fun(x, U_inf, m)
+        
+        self.assertRaises(ValueError, iblb.U_e, x)
+        self.assertRaises(ValueError, iblb.dU_edx, x)
+        self.assertRaises(ValueError, iblb.d2U_edx2, x)
+        
+        iblb.setVelocity(U_e = lambda x: self.U_e_fun(x, U_inf, m),
+                        dU_edx = lambda x: self.dU_edx_fun(x, U_inf, m),
+                        d2U_edx2 = lambda x: self.d2U_edx2_fun(x, U_inf, m))
         self.assertIsNone(npt.assert_allclose(iblb.U_e(x), U_e_ref))
         self.assertIsNone(npt.assert_allclose(iblb.dU_edx(x), dU_edx_ref))
         self.assertIsNone(npt.assert_allclose(iblb.d2U_edx2(x), d2U_edx2_ref))

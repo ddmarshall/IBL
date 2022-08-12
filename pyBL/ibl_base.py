@@ -67,28 +67,41 @@ class IBLBase(ABC):
     
     Attributes
     ----------
-        _ode: Common ODE solver to be used by all IBL methods. Currently is an
-              dense output RK45 from scipy.
         _U_e: Function representing the edge velocity profile
         _dU_edx: Function representing the streamwise derivative of the edge 
                  velocity
         _d2U_edx2: Function representing the streamwise second derivative of the
                    edge velocity
+        _ode: Common ODE solver to be used by all IBL methods. Currently is an
+              dense output RK45 from scipy.
         _x_vec: Vector 
+    
+    Raises
+    ------
+        ValueError: if configuration parameter is invalid (see message)
     """
-    def __init__(self, yp, x0, y0, x_end, U_e,
-                 dU_edx=None, d2U_edx2=None, int_rtol=1e-8, int_atol=1e-11):
+    def __init__(self, yp, x0, y0, x_end, int_rtol=1e-8, int_atol=1e-11,
+                 U_e = None, dU_edx=None, d2U_edx2=None):
 #        self._data = iblsimdata
         self._ode = RK45(fun=yp, t0=x0, t_bound=x_end, y0=y0,
                          rtol=int_rtol, atol=int_atol)
         
         ## set the velocity terms
-        self.set_velocity(U_e, dU_edx, d2U_edx2)
+        if U_e is None:
+            if (dU_edx is not None):
+                raise ValueError("Must specify U_e if specifying dU_edx")
+            if (d2U_edx2 is not None):
+                raise ValueError("Must specify U_e if specifying d2U_edx2")
+            self._U_e = None
+            self._dU_edx = None
+            self._d2U_edx2 = None
+        else:
+            self.setVelocity(U_e, dU_edx, d2U_edx2)
         
         self._x_vec = np.array([self._ode.t])
         self._dense_output_vec = np.array([])
 
-    def set_velocity(self, U_e, dU_edx = None, d2U_edx2 = None):
+    def setVelocity(self, U_e, dU_edx = None, d2U_edx2 = None):
         # check if U_e is callable
         if callable(U_e):
             self._U_e = U_e
@@ -142,7 +155,7 @@ class IBLBase(ABC):
                     raise ValueError("Must pass at least two points for edge velocity")
                 
                 U_e_spline = CubicSpline(x_pts, U_e_pts)
-                self.set_velocity(U_e_spline)
+                self.setVelocity(U_e_spline)
             else:
                 # otherwise unknown velocity input
                 raise ValueError("Don't know how to use {} to initialize velocity".format(U_e))
@@ -159,7 +172,10 @@ class IBLBase(ABC):
         -------
             Inviscid edge velocity
         """
-        return self._U_e(x)
+        if (self._U_e is not None):
+            return self._U_e(x)
+        else:
+            raise ValueError("U_e was not set")
     
     def dU_edx(self, x):
         """
@@ -174,7 +190,10 @@ class IBLBase(ABC):
         -------
             Derivative of inviscid edge velocity
         """
-        return self._dU_edx(x)
+        if (self._dU_edx is not None):
+            return self._dU_edx(x)
+        else:
+            raise ValueError("dU_edx was not set")
     
     def d2U_edx2(self, x):
         """
@@ -189,8 +208,12 @@ class IBLBase(ABC):
         -------
             Second derivative of inviscid edge velocity
         """
-        return self._d2U_edx2(x)
+        if (self._d2U_edx2 is not None):
+            return self._d2U_edx2(x)
+        else:
+            raise ValueError("d2U_edx2 was not set")
     
+    #TODO: These need to be (re)moved
     data = property(fget = lambda self: self._data) 
     x_vec = property(fget = lambda self: self._x_vec)
     status = property(fget = lambda self: self._ode.status)
