@@ -72,6 +72,8 @@ class IBLBase(ABC):
                  velocity
         _d2U_edx2: Function representing the streamwise second derivative of the
                    edge velocity
+        _do_ppoly: Piecewise polynomial collection of dense output from ODE
+                   solver
         _ode: Common ODE solver to be used by all IBL methods. Currently is an
               dense output RK45 from scipy.
         _x_vec: Vector 
@@ -82,7 +84,6 @@ class IBLBase(ABC):
     """
     def __init__(self, yp, x0, y0, x_end, int_rtol=1e-8, int_atol=1e-11,
                  U_e = None, dU_edx=None, d2U_edx2=None):
-#        self._data = iblsimdata
         self._ode = RK45(fun=yp, t0=x0, t_bound=x_end, y0=y0,
                          rtol=int_rtol, atol=int_atol)
         
