@@ -102,6 +102,26 @@ class IBLBase(ABC):
         self._dense_output_vec = np.array([])
 
     def setVelocity(self, U_e, dU_edx = None, d2U_edx2 = None):
+        """
+        Set the edge velocity relations.
+        
+        A number of different ways can be used to set the velocity relation and
+        its derivatives.
+        * U_e can be a 2-tuple of xpoints and velocity values. In this case a
+          cubic spline will be created and the derivative functionss will be
+          taken from the cubic spline.
+        * U_e and the derivatives can be callable objects.
+            * If the first derivative object is provided but not the second 
+              derivative object, then if the first derivative object has a
+              method called 'derivative' then that method will be used to
+              generate the second derivative object. Otherwise the second
+              derivative will be approximated by finite differences of the first
+              derivative.
+            * If neither derivative objects are provided, then if U_e has a
+              method called 'derivative' then that method will be used to
+              generate both derivative objects. Otherwise the derivative
+              objects will be created from finite difference approximations.
+        """
         # check if U_e is callable
         if callable(U_e):
             self._U_e = U_e
