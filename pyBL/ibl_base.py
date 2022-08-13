@@ -109,32 +109,39 @@ class IBLBase(ABC):
             # if dU_edx not provided then use finite differences
             if dU_edx is None:
                 if d2U_edx2 is not None:
-                    raise ValueError("Can only pass second derivative if first derivative was specified")
+                    raise ValueError("Can only pass second derivative if first "
+                                     "derivative was specified")
                 
                 # if U_e has derivative method then use it
-                if hasattr(U_e, 'derivative') and callable(getattr(U_e, 'derivative')):
+                if (hasattr(U_e, 'derivative') and
+                        callable(getattr(U_e, 'derivative'))):
                     self._dU_edx = U_e.derivative()
                     self._d2U_edx2 = U_e.derivative(2)
                 else:
-                    self._dU_edx = lambda x: fd(self._U_e, x, 1e-4, n=1, order=3)
-                    self._d2U_edx2 = lambda x: fd(self._U_e, x, 1e-4, n=2, order=3)
+                    self._dU_edx = lambda x: fd(self._U_e, x, 1e-4,
+                                                n=1, order=3)
+                    self._d2U_edx2 = lambda x: fd(self._U_e, x, 1e-4,
+                                                  n=2, order=3)
             else:
                 if not callable(dU_edx):
-                    raise ValueError("Must pass in callable object for first derivative if callable U_e given")
-                
+                    raise ValueError("Must pass in callable object for first "
+                                     "derivative if callable U_e given")
                 self._dU_edx = dU_edx
                 
                 # if d2U_edx2 not provied then use finite difference
                 if d2U_edx2 is None:
                     # if dU_edx has derivative method then use it
-                    if hasattr(dU_edx, 'derivative') and callable(getattr(dU_edx, 'derivative')):
+                    if (hasattr(dU_edx, 'derivative') and
+                            callable(getattr(dU_edx, 'derivative'))):
                         self._d2U_edx2 = dU_edx.derivative()
                     else:
                         self._d2U_edx2 = lambda x: fd(self._dU_edx, x, 1e-5,
                                                       n=1, order=3)
                 else:
                     if not callable(dU_edx):
-                        raise ValueError("Must pass in callable object for first derivative if callable U_e given")
+                        raise ValueError("Must pass in callable object for "
+                                         "first derivative if callable U_e "
+                                         "given")
                     
                     self._d2U_edx2 = d2U_edx2
         else:
@@ -146,19 +153,24 @@ class IBLBase(ABC):
                 # check to make sure have two vectors of same length suitable
                 #   for building splines
                 if (x_pts.ndim != 1):
-                    raise ValueError("First element of U_e 2-tuple must be 1D vector of distances")
+                    raise ValueError("First element of U_e 2-tuple must be 1D "
+                                     "vector of distances")
                 if (U_e_pts.ndim != 1):
-                    raise ValueError("Second element of U_e 2-tuple must be 1D vector of Velocities")
+                    raise ValueError("Second element of U_e 2-tuple must be 1D "
+                                     "vector of Velocities")
                 if npts != U_e_pts.shape[0]:
-                    raise ValueError("Vectors in U_e 2-tuple must be of same length")
+                    raise ValueError("Vectors in U_e 2-tuple must be of same "
+                                     "length")
                 if npts < 2:
-                    raise ValueError("Must pass at least two points for edge velocity")
+                    raise ValueError("Must pass at least two points for edge "
+                                     "velocity")
                 
                 U_e_spline = CubicSpline(x_pts, U_e_pts)
                 self.setVelocity(U_e_spline)
             else:
                 # otherwise unknown velocity input
-                raise ValueError("Don't know how to use {} to initialize velocity".format(U_e))
+                raise ValueError("Don't know how to use {} to initialize "
+                                 "velocity".format(U_e))
     
     def U_e(self, x):
         """
