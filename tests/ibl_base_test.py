@@ -19,8 +19,8 @@ class IBLBaseTest(IBLBase):
     """Generic class to test the concrete methods in IBLBase"""
     def __init__(self, U_e = None, dU_edx = None, d2U_edx2 = None, 
                  x_kill = None):
-        def fun(t, y):
-            return t
+        def fun(x, F):
+            return x
         super().__init__(fun, 0, [0], 0,
                          U_e=U_e, dU_edx=dU_edx, d2U_edx2=d2U_edx2)
     
