@@ -17,8 +17,8 @@ from pyBL.ibl_base import IBLBase
 
 class IBLBaseTest(IBLBase):
     """Generic class to test the concrete methods in IBLBase"""
-    
-    def __init__(self, U_e = None, dU_edx = None, d2U_edx2 = None):
+    def __init__(self, U_e = None, dU_edx = None, d2U_edx2 = None, 
+                 x_kill = None):
         def fun(t, y):
             return t
         super().__init__(fun, 0, [0], 0,
@@ -149,8 +149,10 @@ class TestEdgeVelocity(unittest.TestCase):
         U_inf = 10
         m = 1.25
         dU_edx = CubicSpline(x_sample, self.dU_edx_fun(x_sample, U_inf, m),
-                             bc_type=((1, self.d2U_edx2_fun(x_sample[0], U_inf, m)),
-                                      (1, self.d2U_edx2_fun(x_sample[-1], U_inf, m))))
+                             bc_type=((1, self.d2U_edx2_fun(x_sample[0],
+                                                            U_inf, m)),
+                                      (1, self.d2U_edx2_fun(x_sample[-1],
+                                                            U_inf, m))))
         U_e = dU_edx.antiderivative()
         U_e.c[-1,:] = U_e.c[-1,:]+self.U_e_fun(x_sample[0], U_inf, m)
         d2U_edx2 = dU_edx.derivative()
@@ -169,8 +171,10 @@ class TestEdgeVelocity(unittest.TestCase):
         U_inf = 10
         m = 1.25
         d2U_edx2 = CubicSpline(x_sample, self.d2U_edx2_fun(x_sample, U_inf, m),
-                               bc_type=((1, self.d3U_edx3_fun(x_sample[0], U_inf, m)),
-                                        (1, self.d3U_edx3_fun(x_sample[-1], U_inf, m))))
+                               bc_type=((1, self.d3U_edx3_fun(x_sample[0],
+                                                              U_inf, m)),
+                                        (1, self.d3U_edx3_fun(x_sample[-1],
+                                                              U_inf, m))))
         dU_edx = d2U_edx2.antiderivative()
         dU_edx.c[-1,:] = dU_edx.c[-1,:]+self.dU_edx_fun(x_sample[0], U_inf, m)
         U_e = dU_edx.antiderivative()
