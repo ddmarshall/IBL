@@ -12,50 +12,43 @@ import numpy as np
 import numpy.testing as npt
 from scipy.interpolate import CubicSpline
 
-# these should go with the base class
-from scipy.integrate import solve_ivp
-from abc import ABC, abstractmethod
-
 from pyBL.ibl_base import IBLBase
+from pyBL.ibl_base import IBLTermEventBase
 
 
-class IBLResult:
-    def __init__(self, x_end = np.inf, F_end = np.inf,
-                 status = -99, message = "Not Set", success = False):
-        self.x_end = x_end
-        self.F_end = F_end
-        self.status = status
-        self.message = message
-        self.success = success
-
-
-class IBLTermEvent(ABC):
-    def __init__(self):
-        self.terminal = True
-        
-    def __call__(self, x, F):
-        return self._call_impl(x, F)
+class _IBLBaseTestTermEvent(IBLTermEventBase):
+    """
+    Sample class to test the termination capabilities of the base class.
     
-    @abstractmethod
-    def eventInfo(self):
-        pass
+    This is a callable object that the ODE integrator will use to determine if
+    the integration should terminate before the end location.
     
-    @abstractmethod
-    def _call_impl(self, x, F):
-        pass
-
-TERMINATION_MESSAGES = {0: "Completed",
-                        -1: "Separated",
-                        1: "Transition",
-                        -99: "Unknown Event"}
-
-
-class _IBLBaseTestTermEvent(IBLTermEvent):
+    Attributes
+    ----------
+        _x_kill: x-location that the integrator should stop.
+    """
     def __init__(self, x_kill):
         self._x_kill = x_kill
         super().__init__()
     
     def _call_impl(self, x, F):
+        """
+        Information used to determine if IBL test integrator should terminate.
+        
+        This will terminate once x passed specified value (x_kill) and will be
+        negative before then (positive afterwards).
+        
+        Args
+        ----
+            x: Current x-location of the integration
+            F: Current state value(s)
+        
+        Returns
+        -------
+            Negative value when the integration should continue, positive when
+            the integration has passed the termination condition, and zero at
+            the state when the integrator should terminate.
+        """
         return x - self._x_kill
     
     def eventInfo(self):
@@ -66,79 +59,23 @@ class IBLBaseTest(IBLBase):
     """Generic class to test the concrete methods in IBLBase"""
     def __init__(self, U_e = None, dU_edx = None, d2U_edx2 = None, 
                  x_kill = None):
-        def fun(x, F):
-            return x
-        super().__init__(fun, 0, [0], 0,
-                         U_e=U_e, dU_edx=dU_edx, d2U_edx2=d2U_edx2)
-        self._kill_events = None
+        # setup base class
+        super().__init__(U_e=U_e, dU_edx=dU_edx, d2U_edx2=d2U_edx2)
+        
+        # set up this class
         if x_kill is not None:
             self._add_kill_event(_IBLBaseTestTermEvent(x_kill))
     
     def _ode_impl(self, x, F):
+        """
+        The is the derivatives of the ODEs that are to be solved
+        
+        Args
+        ----
+            x: x-location of current step
+            F: current step state value(s)
+        """
         return x
-    
-    def _add_kill_event(self, ke):
-        if self._kill_events is None:
-            self._kill_events = [ke]
-        else:
-            self._kill_events.append(ke)
-    
-    def solve(self, xrange, y0i, rtol=1e-8, atol=1e-11, term_event = None):
-        ## setup the ODE solver
-        xrange = np.asarray(xrange)
-        y0 = np.asarray(y0i)
-        if y0.ndim == 0:
-            y0 = [y0i]
-        
-        kill_events = []
-        if self._kill_events is not None:
-            kill_events = kill_events + self._kill_events
-
-        if term_event is None:
-            if self._kill_events is None:
-                kill_events = None
-        else:
-            if isinstance(term_event, list):
-                kill_events = kill_events + term_event
-            else:
-                kill_events.append(term_event)
-
-        rtn = solve_ivp(fun = self._ode_impl, t_span = xrange, y0 = y0,
-                        method = 'RK45', dense_output = True,
-                        events = kill_events, rtol = rtol, atol = atol)
-        
-        # if completed gather info
-        self._solution = None
-        x_end = xrange[0]
-        F_end = y0
-        status = -99
-        message = rtn.message
-        if rtn.success:
-            self._solution = rtn.sol
-            
-            # if terminated on time or early figure out why
-            if rtn.status == 0:
-                x_end = rtn.t[-1]
-                F_end = rtn.sol(x_end)
-                status = 0
-                message = ""
-            elif rtn.status == 1:
-                message = "Event not found."
-                for i, xe in enumerate(rtn.t_events):
-                    if xe.shape[0] > 0:
-                        x_end = xe[0]
-                        F_end = rtn.sol(x_end)
-                        status, message = kill_events[i].eventInfo()
-                        break
-            else:
-                status = -99
-
-        if len(message)> 0:
-            message = "{}: {}".format(TERMINATION_MESSAGES.get(status), message)
-        else:
-            message = TERMINATION_MESSAGES.get(status)
-        return IBLResult(x_end = x_end, F_end = F_end, status = status,
-                         message = message, success = rtn.success)
     
     def U_n(self, x):
         return np.zeros_like(x)
@@ -156,7 +93,11 @@ class IBLBaseTest(IBLBase):
         return np.zeros_like(x)
 
 
-class IBLBaseTestTransition(IBLTermEvent):
+class IBLBaseTestTransition(IBLTermEventBase):
+    """
+    Generic class to test the passing of termination events during the solve 
+    method.
+    """
     def __init__(self, F_kill):
         self._F_kill = F_kill
         super().__init__()

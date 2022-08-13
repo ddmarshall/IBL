@@ -8,55 +8,101 @@ Created on Wed Jun 29 14:17:53 2022
 
 import numpy as np
 from scipy.interpolate import CubicSpline
-from scipy.integrate import RK45
-from scipy.optimize import root
+from scipy.integrate import solve_ivp
 from scipy.misc import derivative as fd
 from abc import ABC, abstractmethod
 
-class IBLSimData:
-    def __init__(self,
-                 x_vec,
-                 u_e_vec,
-                 u_inf,
-                 nu):
-        self.x_vec = x_vec
-        self.u_e_vec = u_e_vec
-        self.u_inf = u_inf
-        self.nu = nu
-        self._x_u_e_spline = CubicSpline(x_vec, u_e_vec)
-        #self._x_u_e_spline = CubicSpline(x_vec, u_e_vec,bc_type='natural') #replace line above for 'natural' bc's instead of 'not-a-knot'
-        #self._x_u_e_spline = CubicSpline(x_vec, u_e_vec,bc_type=((1,25),(2,0))) #hack
-        #self.derivatives = derivatives
-        #self.profile = profile
-    
-    #x_vec and u_e_vec: need to add traces to update the spline
-    x_vec = property(fget=lambda self: self._x_vec,
-                   fset=lambda self, new_x_vec: setattr(self,
-                                                      '_x_vec',
-                                                      new_x_vec)) #; self._x_u_e_spline = CubicSpline(new_x_vec, 
-                                                                                                   #self.u_e_vec))       
-    u_e_vec = property(fget=lambda self: self._u_e,
-                   fset=lambda self, new_u_e_vec: setattr(self,
-                                                      '_u_e_vec',
-                                                      new_u_e_vec)) #self._x_u_e_spline = CubicSpline(self.x_vec, 
-                                                                                                     #new_u_e_vec))
 
-    u_inf = property(fget=lambda self: self._u_inf,
-                     fset=lambda self, new_u_inf: setattr(self,
-                                                          '_u_inf',
-                                                          new_u_inf))
-    nu = property(fget=lambda self: self._nu,
-                  fset=lambda self, new_nu: setattr(self,
-                                                    '_nu',
-                                                    new_nu))
-    def u_e(self, x):
-        return self._x_u_e_spline(x)
-    def du_edx(self, x):
-        return self._x_u_e_spline(x, 1)
-    def d2u_edx2(self, x):
-        return self._x_u_e_spline(x, 2)
+TERMINATION_MESSAGES = {0: "Completed",
+                        -1: "Separated",
+                        1: "Transition",
+                        -99: "Unknown Event"}
+
+
+class IBLResult:
+    """Bunch object representing the results of the IBL integration.
+    
+    Attributes
+    ----------
+        x_end: x-location of end of integration
+        F_end: State value(s) at end of integration
+        status: Reason integration terminated:
+            * 0: Reached final distance
+            * -1: Separation occured at x_end
+            * 1: Transition occured at x_end
+            * Other values can be used by specific implementations
+        message: Description of termination reason
+        success: True if solver successfully completed
+    """
+    def __init__(self, x_end = np.inf, F_end = np.inf,
+                 status = -99, message = "Not Set", success = False):
+        self.x_end = x_end
+        self.F_end = F_end
+        self.status = status
+        self.message = message
+        self.success = success
+
+
+class IBLTermEventBase(ABC):
+    """
+    Base class for a termination event for IBL solver.
+    
+    The two abstract methods that have to be implemented are EventInfo and 
+    _call_impl. Classes derived from this class can either be used within an 
+    IBL implementation or as a parameter into the solve method.
+    """
+    def __init__(self):
+        self.terminal = True
         
+    def __call__(self, x, F):
+        """
+        ODE solver is going to call this method to determine if the integration 
+        should terminate.
         
+        Args
+        ----
+            x: Current x-location of the integration
+            F: Current state value(s)
+        
+        Returns
+        -------
+            Floating point number that is zero when the solver should stop
+        """
+        return self._call_impl(x, F)
+    
+    @abstractmethod
+    def eventInfo(self):
+        """
+        Method returns information about the purpose of this event. This is 
+        used to provide feedback as to what caused the integration to terminate
+        and any other helpful information.
+        
+        Returns
+        -------
+            2-tuple of event index and string providing any extra information.
+            Event index should be -1 for separation and 1 for transition. Other 
+            values may not be handled correctly.
+        """
+        pass
+    
+    @abstractmethod
+    def _call_impl(self, x, F):
+        """
+        Information used to determine if IBL integrator should terminate.
+        
+        The return value is used in a root finder to find what x,F will result
+        in the termination of the integrator. The function should return zero 
+        when the integrator should terminate, and change signs around the
+        termination state.
+        
+        Args
+        ----
+            x: Current x-location of the integration
+            F: Current state value(s)
+        """
+        pass
+
+
 class IBLBase(ABC):
     """
     The base class for integral boundary layer classes.
@@ -72,22 +118,17 @@ class IBLBase(ABC):
                  velocity
         _d2U_edx2: Function representing the streamwise second derivative of the
                    edge velocity
-        _do_ppoly: Piecewise polynomial collection of dense output from ODE
-                   solver
-        _ode: Common ODE solver to be used by all IBL methods. Currently is an
-              dense output RK45 from scipy.
-        _x_vec: Vector 
+        _kill_events: List of events that should be passed into ODE solver that
+                      might cause the integration to terminate early
+        _F: Piecewise polynomials representing the state variables from the
+            ODE solution
     
     Raises
     ------
         ValueError: if configuration parameter is invalid (see message)
     """
-    def __init__(self, yp, x0, y0, x_end, int_rtol=1e-8, int_atol=1e-11,
-                 U_e = None, dU_edx=None, d2U_edx2=None):
-        self._ode = RK45(fun=yp, t0=x0, t_bound=x_end, y0=y0,
-                         rtol=int_rtol, atol=int_atol)
-        
-        ## set the velocity terms
+    def __init__(self, U_e = None, dU_edx=None, d2U_edx2=None):
+        # set the velocity terms
         if U_e is None:
             if (dU_edx is not None):
                 raise ValueError("Must specify U_e if specifying dU_edx")
@@ -99,8 +140,9 @@ class IBLBase(ABC):
         else:
             self.setVelocity(U_e, dU_edx, d2U_edx2)
         
-        self._x_vec = np.array([self._ode.t])
-        self._dense_output_vec = np.array([])
+        # initialize other parameters
+        self._kill_events = None
+        self._F = None
 
     def setVelocity(self, U_e, dU_edx = None, d2U_edx2 = None):
         """
@@ -122,6 +164,16 @@ class IBLBase(ABC):
               method called 'derivative' then that method will be used to
               generate both derivative objects. Otherwise the derivative
               objects will be created from finite difference approximations.
+        
+        Args
+        ----
+        U_e: Edge velocity
+        dU_edx: First derivative of the edge velocity
+        d2U_edx2: Second derivative of the edge velocity
+        
+        Raises
+        ------
+            ValueError: if configuration parameter is invalid (see message)
         """
         # check if U_e is callable
         if callable(U_e):
@@ -193,6 +245,83 @@ class IBLBase(ABC):
                 raise ValueError("Don't know how to use {} to initialize "
                                  "velocity".format(U_e))
     
+    def solve(self, xrange, y0i, rtol=1e-8, atol=1e-11, term_event = None):
+        """
+        Solve the ODEs to determine the boundary layer properties.
+        
+        Args
+        ----
+        xrange: 2-tuple with the start and end x-locations of integration
+        y0i: Initial condition of the state vector for integration
+        rtol: Relative tolerance for integration scheme
+        atol: Absolute tolerance for integration scheme
+        term_event: List of classes based on IBLTermEventBase, in addition to
+                    any internal ones, to be used to determine if the 
+                    integration should terminate before the end location. These
+                    should mostly be for transition to turbulent boundary layer
+                    or separation.
+        
+        Returns
+        -------
+            Bunch object (IBLResult) with information about the solution 
+            process and termination.
+        """
+        ## setup the ODE solver
+        xrange = np.asarray(xrange)
+        y0 = np.asarray(y0i)
+        if y0.ndim == 0:
+            y0 = [y0i]
+        
+        kill_events = []
+        if self._kill_events is not None:
+            kill_events = kill_events + self._kill_events
+
+        if term_event is None:
+            if self._kill_events is None:
+                kill_events = None
+        else:
+            if isinstance(term_event, list):
+                kill_events = kill_events + term_event
+            else:
+                kill_events.append(term_event)
+
+        rtn = solve_ivp(fun = self._ode_impl, t_span = xrange, y0 = y0,
+                        method = 'RK45', dense_output = True,
+                        events = kill_events, rtol = rtol, atol = atol)
+        
+        # if completed gather info
+        self._solution = None
+        x_end = xrange[0]
+        F_end = y0
+        status = -99
+        message = rtn.message
+        if rtn.success:
+            self._solution = rtn.sol
+            
+            # if terminated on time or early figure out why
+            if rtn.status == 0:
+                x_end = rtn.t[-1]
+                F_end = rtn.sol(x_end)
+                status = 0
+                message = ""
+            elif rtn.status == 1:
+                message = "Event not found."
+                for i, xe in enumerate(rtn.t_events):
+                    if xe.shape[0] > 0:
+                        x_end = xe[0]
+                        F_end = rtn.sol(x_end)
+                        status, message = kill_events[i].eventInfo()
+                        break
+            else:
+                status = -99
+
+        if len(message)> 0:
+            message = "{}: {}".format(TERMINATION_MESSAGES.get(status), message)
+        else:
+            message = TERMINATION_MESSAGES.get(status)
+        return IBLResult(x_end = x_end, F_end = F_end, status = status,
+                         message = message, success = rtn.success)
+    
     def U_e(self, x):
         """
         Return the inviscid edge velocity at specified location(s)
@@ -249,20 +378,87 @@ class IBLBase(ABC):
             raise ValueError("d2U_edx2 was not set")
             return None
     
-    #TODO: These need to be (re)moved
-    data = property(fget = lambda self: self._data) 
-    x_vec = property(fget = lambda self: self._x_vec)
-    status = property(fget = lambda self: self._ode.status)
-    dense_output_vec = property(fget = lambda self: self._dense_output_vec)
-     
-    def step(self):
-        self._ode.step()
-        self._x_vec = np.append(self._x_vec, [self._ode.t])
-        self._dense_output_vec = np.append(self.dense_output_vec,[self._ode.dense_output()])
-        if self._ode.status!='running':
-            print(self._ode.status)
-            self._x_vec = np.append(self._x_vec, self.data.x_vec[-1])
-       
+    @abstractmethod
+    def U_n(self, x):
+        """
+        Calculate the transpiration velocity
+        
+        Args
+        ----
+            x: Streamwise loations to calculate this property
+        
+        Returns
+        -------
+            Desired property at the specified locations
+        """
+        pass
+    
+    @abstractmethod
+    def delta_d(self, x):
+        """
+        Calculate the displacement thickness
+        
+        Args
+        ----
+            x: Streamwise loations to calculate this property
+        
+        Returns
+        -------
+            Desired property at the specified locations
+        """
+        pass
+    
+    @abstractmethod
+    def delta_m(self, x):
+        """
+        Calcualte the momentum thickness
+        
+        Args
+        ----
+            x: Streamwise loations to calculate this property
+        
+        Returns
+        -------
+            Desired property at the specified locations
+        """
+        pass
+    
+    @abstractmethod
+    def H(self, x):
+        """
+        Calculate the shape factor
+        
+        Args
+        ----
+            x: Streamwise loations to calculate this property
+        
+        Returns
+        -------
+            Desired property at the specified locations
+        """
+        pass
+    
+    @abstractmethod
+    def tau_w(self, x):
+        """
+        Calculate the wall shear stress
+        
+        Args
+        ----
+            x: Streamwise loations to calculate this property
+        
+        Returns
+        -------
+            Desired property at the specified locations
+        """
+        pass
+    
+    def _add_kill_event(self, ke):
+        if self._kill_events is None:
+            self._kill_events = [ke]
+        else:
+            self._kill_events.append(ke)
+    
     def y(self,x):
         #returns m*n array, where m is len(x) and n is length(y)
         x_array = x #must be array
