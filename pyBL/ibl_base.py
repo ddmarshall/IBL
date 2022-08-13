@@ -306,49 +306,4 @@ class IBLBase(ABC):
                     
                     break
         return yp_array        
-    
-    @abstractmethod
-    def U_n(self, x):
-        pass
-    
-    @abstractmethod
-    def delta_d(self, x):
-        pass
-    
-    @abstractmethod
-    def delta_m(self, x):
-        pass
-    
-    @abstractmethod
-    def H(self, x):
-        pass
-    
-    @abstractmethod
-    def tau_w(self, x):
-        pass
-
-class SeparationModel:
-    #when criteria are positive, has separated
-    def __init__(self,iblsim,criteria,buffer):
-        self._iblsim = iblsim
-        self._criteria = lambda x=None: criteria(self._iblsim,x) #if x == None, return crit for all x
-        self._x_sep = None
-        self._buffer = buffer
-
-    separated = property(fget = lambda self:self.x_sep!=None) #returns true if x_sep not none    
-    @property
-    def x_sep(self):
-        if self._x_sep == None and np.any(self._criteria(self._iblsim._data.x_vec[self._iblsim._data.x_vec>self._buffer])>0):
-            self._separated = True
-            buffered_x = self._iblsim._data.x_vec[self._iblsim._data.x_vec>self._buffer]
-            # crits = self._criteria(self._iblsim._data.x_vec)
-            # crits = self._criteria(self._iblsim._data.x_vec[self._iblsim._data.x_vec>self._buffer])
-            crits = self._criteria(buffered_x)
-            #best_guess = np.argmax(self._criteria(self._iblsim._data.x_vec)>0)
-            # best_guess = self._iblsim._data.x_vec[crits>0][0] #furthest upstream occurrence of criteria met
-            best_guess = buffered_x[crits>0][0] #furthest upstream occurrence of criteria met
-            
-            find_x_sep = root(lambda xpt:float(self._criteria(np.array([xpt]))),x0=best_guess)
-            self._x_sep = find_x_sep.x
-        return self._x_sep
 
