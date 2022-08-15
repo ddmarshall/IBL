@@ -10,7 +10,7 @@ import numpy as np
 from scipy.interpolate import CubicSpline
 import inspect    # used to return source code of h,s
 
-from pyBL.ibl_base import IBLSimData, IBLBase, SeparationModel
+from pyBL.ibl_base import IBLBase
 
 
 def _stagnation_y0(iblsimdata,x0):
@@ -18,53 +18,53 @@ def _stagnation_y0(iblsimdata,x0):
       return .075*iblsimdata.nu/iblsimdata.du_edx(x0)
 
 
-class ThwaitesSimData(IBLSimData):
-    def __init__(self,
-                 x_vec,
-                 u_e_vec,
-                 u_inf,
-                 nu,
-                 re,
-                 x0,
-                 theta0=None,
-                 s=None,
-                 h=None,
-                 hp=None,
-                 linearize=False):
-        super().__init__(x_vec,
-                         u_e_vec,
-                         u_inf,
-                         nu)
-        self.x0 = x0
-        self.theta0 = theta0
-        self.re = re
-        #these go through the setters
-        self.s_lam = s
-        self.h_lam = h
-        self.hp_lam = hp
-        self._linearize=linearize
-
-
-
-    h_lam = property(fget=lambda self: self._h,
-                 fset=lambda self, f: setattr(self,
-                                              '_h',
-                                              _function_of_lambda_property_setter(f)))
-
-    hp_lam = property(fget=lambda self: self._hp,
-                 fset=lambda self, f: setattr(self,
-                                              '_hp',
-                                              _function_of_lambda_property_setter(f)))
-
-    s_lam = property(fget=lambda self: self._s,
-                 fset=lambda self, f: setattr(self,
-                                              '_s',
-                                              _function_of_lambda_property_setter(f)))
-
-    re = property(fget=lambda self: self._re,
-                  fset=lambda self, new_re: setattr(self,
-                                                    '_re',
-                                                    new_re))
+#class ThwaitesSimData(IBLSimData):
+#    def __init__(self,
+#                 x_vec,
+#                 u_e_vec,
+#                 u_inf,
+#                 nu,
+#                 re,
+#                 x0,
+#                 theta0=None,
+#                 s=None,
+#                 h=None,
+#                 hp=None,
+#                 linearize=False):
+#        super().__init__(x_vec,
+#                         u_e_vec,
+#                         u_inf,
+#                         nu)
+#        self.x0 = x0
+#        self.theta0 = theta0
+#        self.re = re
+#        #these go through the setters
+#        self.s_lam = s
+#        self.h_lam = h
+#        self.hp_lam = hp
+#        self._linearize=linearize
+#
+#
+#
+#    h_lam = property(fget=lambda self: self._h,
+#                 fset=lambda self, f: setattr(self,
+#                                              '_h',
+#                                              _function_of_lambda_property_setter(f)))
+#
+#    hp_lam = property(fget=lambda self: self._hp,
+#                 fset=lambda self, f: setattr(self,
+#                                              '_hp',
+#                                              _function_of_lambda_property_setter(f)))
+#
+#    s_lam = property(fget=lambda self: self._s,
+#                 fset=lambda self, f: setattr(self,
+#                                              '_s',
+#                                              _function_of_lambda_property_setter(f)))
+#
+#    re = property(fget=lambda self: self._re,
+#                  fset=lambda self, new_re: setattr(self,
+#                                                    '_re',
+#                                                    new_re))
 
                                                                            
   
@@ -73,6 +73,9 @@ class ThwaitesMethod(IBLBase):
     Models a laminar boundary layer using Thwaites Method (1949) when provided 
     the edge velocity profile. There are a few different ways of modeling the 
     tabular data from Thwaites original work that can be set.
+    
+    This class solves for delta_m^2 use the IBLBase ODE solver using the linear
+    approximation for the differential equation relationship .
     
     Attributes
     ----------
@@ -85,48 +88,194 @@ class ThwaitesMethod(IBLBase):
         _Hp_lam_spline: Derivative of the cubic spline through H
         
     """
-    def __init__(self, thwaites_sim_data):
-        #note - f's(lambda) aren't actually used in solver
-        self.u_e = thwaites_sim_data.u_e #f(x)
-        self.u_inf = thwaites_sim_data.u_inf
-        self.re = thwaites_sim_data.re
-        self.x0 = thwaites_sim_data.x0
-        self.theta0 = thwaites_sim_data.theta0
-        self.s_lam = thwaites_sim_data.s_lam
-        self.h_lam = thwaites_sim_data.h_lam
-        self.hp_lam = thwaites_sim_data.hp_lam
-        self.nu = thwaites_sim_data.nu
+    def __init__(self, U_e = None, dU_edx = None, d2U_edx2 = None, data_fits="Thwaites"):
+        super().__init__(U_e, dU_edx, d2U_edx2)
+        self.set_data_fits(data_fits)
+#        #note - f's(lambda) aren't actually used in solver
+#        self.u_e = thwaites_sim_data.u_e #f(x)
+#        self.u_inf = thwaites_sim_data.u_inf
+#        self.re = thwaites_sim_data.re
+#        self.x0 = thwaites_sim_data.x0
+#        self.theta0 = thwaites_sim_data.theta0
+#        self.s_lam = thwaites_sim_data.s_lam
+#        self.h_lam = thwaites_sim_data.h_lam
+#        self.hp_lam = thwaites_sim_data.hp_lam
+#        self.nu = thwaites_sim_data.nu
+#        
+#        self._x_tr = None
+    
+    def set_data_fits(self, data_fits):
+        """
+        Set the functions used for the data fits of the shear function,
+        S(\lambda), and the shape function, H(\lambda).
         
-        self._x_tr = None 
-
-        def derivatives(t,y):
-            #modified derivatives to use s and h, define y as theta^2
-            x=t
-            lam = np.clip(y*thwaites_sim_data.du_edx(x)/self.nu, -0.5, 0.5)
-            # if (lam<= (-0.0842)):
-            #     lam =np.array([(-0.0842)])
-            if abs(self.u_e(x))<np.array([1E-8]):
-                return np.array([1E-8])
+        Args
+        ----
+            data_fits: either a 2-tuple of functions that each take one 
+                       parameter, lambda where the first is the shear 
+                       function and the second is the shape function; or 
+                       a string for representing one of the three internal 
+                       implementations:
+                           * "Thwaites" - Spline fits of Thwaites original 
+                             data (Edland 2022)
+                           * "White" - Curve fits from White (2011)
+                           * "Cebeci-Bradshaw" - Curve fits from 
+                             Cebeci-Bradshaw 1977"
+        
+        Throws
+        ------
+            ValueError if an invalid fit name or unusable 2-tuple provided
+        """
+        # data_fits can either be string or 2-tuple of callables
+        self._H_fun = None
+        self._S_fun = None
+        if type(data_fits) is str:
+            if data_fits == "Thwaites":
+                self._H_fun = self._spline_H
+                self._S_fun = self._spline_S
+            elif data_fits == "White":
+                self._H_fun = self._white_H
+                self._S_fun = self._white_S
+            elif data_fits == "Cebeci-Bradshaw":
+                self._H_fun = self._cb_H
+                self._S_fun = self._cb_S
             else:
-                #Check whether to assume .45-6lam for 2(s-(2+H)*lam)
-                if thwaites_sim_data._linearize==True:
-                    return np.array([self.nu*(.45-6*lam)/self.u_e(x)])
-                else:
-                    return np.array([2*self.nu*(self.s_lam(lam)-(2+self.h_lam(lam))*lam)/self.u_e(x)])
-
-        #Probably user changeable eventually
-        #self.x0 = thwaites_sim_data.x_vec[0]
-        #self.x0=x0
-        #self.y0 = np.array([5*pow(thwaites_sim_data.u_e(self.x0),4)])
-        if self.theta0 is not None:
-            self.y0 = np.array([pow(self.theta0,2)])
+                raise ValueError("Unknown fitting function name: ", data_fits)
         else:
-            self.y0 = [_stagnation_y0(thwaites_sim_data,self.x0)]
-        self.x_bound = thwaites_sim_data.x_vec[-1] 
-        
-        super().__init__(thwaites_sim_data, derivatives, self.x0, self.y0, self.x_bound)
-        self.u_e = thwaites_sim_data.u_e
+            # check to make sure have two callables
+            if (type(data_fits) is tuple) and (len(data_fits)==2):
+                if callable(data_fits[0]) and callable(data_fits[1]):
+                    self._H_fun = data_fits[1]
+                    self._S_fun = data_fits[0]
+                else:
+                    raise ValueError("Need to pass callable objects for fit "
+                                     "functions")
+            else:
+                raise ValueError("Need to pass a 2-tuple for fit functions")
+            
+#        def derivatives(t,y):
+#            #modified derivatives to use s and h, define y as theta^2
+#            x=t
+#            lam = np.clip(y*thwaites_sim_data.du_edx(x)/self.nu, -0.5, 0.5)
+#            # if (lam<= (-0.0842)):
+#            #     lam =np.array([(-0.0842)])
+#            if abs(self.u_e(x))<np.array([1E-8]):
+#                return np.array([1E-8])
+#            else:
+#                #Check whether to assume .45-6lam for 2(s-(2+H)*lam)
+#                if thwaites_sim_data._linearize==True:
+#                    return np.array([self.nu*(.45-6*lam)/self.u_e(x)])
+#                else:
+#                    return np.array([2*self.nu*(self.s_lam(lam)-(2+self.h_lam(lam))*lam)/self.u_e(x)])
 
+#        #Probably user changeable eventually
+#        #self.x0 = thwaites_sim_data.x_vec[0]
+#        #self.x0=x0
+#        #self.y0 = np.array([5*pow(thwaites_sim_data.u_e(self.x0),4)])
+#        if self.theta0 is not None:
+#            self.y0 = np.array([pow(self.theta0,2)])
+#        else:
+#            self.y0 = [_stagnation_y0(thwaites_sim_data,self.x0)]
+#        self.x_bound = thwaites_sim_data.x_vec[-1] 
+#        
+#        super().__init__(thwaites_sim_data, derivatives, self.x0, self.y0, self.x_bound)
+#        self.u_e = thwaites_sim_data.u_e
+    
+#    def theta(self,x):
+#        #momentum thickness
+#        #return pow(self.eq5_6_16(x)*self.nu, .5)
+#        return np.sqrt(np.transpose(self.y(x))[0,:])
+#    #     self._theta_vec = pow(self._eq5_6_16_vec * thwaites_sim_data.nu, .5)
+#    def lam(self,x):
+#        return (np.transpose(self.y(x))[0,:] *self.du_edx(x) /self.nu)
+#    #     self._lam_vec = (pow(self._theta_vec, 2) *np.gradient(thwaites_sim_data.u_e, thwaites_sim_data.x) /thwaites_sim_data.nu)
+    
+#    #     self._h_vec = np.array([thwaites_sim_data.h(lam) for lam in self._lam_vec],dtype=np.float)
+#    #     self._s_vec = np.array([thwaites_sim_data.s(lam) for lam in self._lam_vec],dtype=np.float)
+#    def h(self,x):
+#        #h function (not shape factor) as a function of x (simulation completed)
+#        return np.array([self.h_lam(lam) for lam in self.lam(x)])
+    
+#    def dhdx(self,x):
+#        #h function (not shape factor) as a function of x (simulation completed)
+#        return np.array([self.h_lam(lam) for lam in self.lam(x)])
+    
+#    def s(self,x):
+#        #s as a function of x (simulation completed)
+#        return np.array([self.s_lam(lam) for lam in self.lam(x)])
+    
+#    def c_f(self,x):
+#        #q - scalar
+#        #skin friction
+#        #return 2 *self.nu*self.s(self.lam(x))/(self.u_e(x)*self.theta(x))
+#        return 2 *self.nu*self.s(x) / (self.u_e(x)*self.theta(x))
+#        #gives s a single value at a time
+#        #return 2 *self.nu*np.array([self.s(lam) for lam in self.lam(x)]) / (self.u_e(x)*self.theta(x))
+#    #     self._cf_vec = (2 *
+#    #                     thwaites_sim_data.nu *
+#    #                     self._s_vec /
+#    #                     (thwaites_sim_data.u_e *
+#    #                     self._theta_vec))
+#    #     self._del_star_vec = self._h_vec*self._theta_vec
+    
+#    def del_star(self,x):
+#        return self.h(x)*self.theta(x)
+#        #return np.array([self.h(lam) for lam in self.lam(x)])*self.theta(x)
+#    #     self._wall_shear_vec = (thwaites_sim_data.nu * 
+#    #                             self._s_vec * 
+#    #                             pow(thwaites_sim_data.u_e / 
+#    #                                 thwaites_sim_data.u_inf, 
+#    #                                 2) / 
+#    #                             (thwaites_sim_data.u_e*self._theta_vec))
+    
+#    def rtheta(self,x):
+#        return self.u_e(x)*self.theta(x)/self.nu  
+    
+#    def Un(self, x):
+#        theta2 = np.transpose(self.y(x))[0,:]
+#        return (self.du_edx(x)*self.del_star(x)
+#               + 0.5*self.u_e(x)*self.h(x)*self.up(x)[:,0]/self.theta(x)
+#               + (self.u_e(x)*self.theta(x).self.hp_lam(x)/self.nu)*(self.up(x)[:,0]*self.du_edx(x)+theta2*self.d2u_edx2(x)))
+    
+    def _ode_impl(self, x, delta_m2):
+        """
+        This is the right-hand-side of the ODE representing Thwaites method.
+        
+        Args
+        ----
+            x: x-location of current step
+            delta_m2: current step square of momentum thickness
+        """
+        a = 0.45
+        b = 6
+        lam = self._calc_lambda(x, delta_m2)
+        F = a-b*lam
+        
+        return self._nu*F/self.U_e(x)
+    
+    def _calc_lambda(self, x, delta_m2):
+        return delta_m2*self.dU_edx(x)/self.nu
+    
+    def U_n(self, x):
+        raise NotImplementedError("Need to implement this")
+        return np.zeros_like(x)
+    
+    def delta_d(self, x):
+        raise NotImplementedError("Need to implement this")
+        return np.zeros_like(x)
+    
+    def delta_m(self, x):
+        raise NotImplementedError("Need to implement this")
+        return np.zeros_like(x)
+    
+    def H(self, x):
+        raise NotImplementedError("Need to implement this")
+        return np.zeros_like(x)
+    
+    def tau_w(self, x):
+        raise NotImplementedError("Need to implement this")
+        return np.zeros_like(x)
+    
     # Tabular data section
     _tab_F = np.array([0.938, 0.953, 0.956, 0.962, 0.967, 0.969, 0.971, 0.970, 
                        0.963, 0.952, 0.936, 0.919, 0.902, 0.886, 0.854, 0.825,
@@ -437,68 +586,14 @@ class ThwaitesMethod(IBLBase):
 
         return ThwaitesMethod._Hp_lam_spline(lam)
 
-    def theta(self,x):
-        #momentum thickness
-        #return pow(self.eq5_6_16(x)*self.nu, .5)
-        return np.sqrt(np.transpose(self.y(x))[0,:])
-    #     self._theta_vec = pow(self._eq5_6_16_vec * thwaites_sim_data.nu, .5)
-    def lam(self,x):
-        return (np.transpose(self.y(x))[0,:] *self.du_edx(x) /self.nu)
-    #     self._lam_vec = (pow(self._theta_vec, 2) *np.gradient(thwaites_sim_data.u_e, thwaites_sim_data.x) /thwaites_sim_data.nu)
-    
-    #     self._h_vec = np.array([thwaites_sim_data.h(lam) for lam in self._lam_vec],dtype=np.float)
-    #     self._s_vec = np.array([thwaites_sim_data.s(lam) for lam in self._lam_vec],dtype=np.float)
-    def h(self,x):
-        #h function (not shape factor) as a function of x (simulation completed)
-        return np.array([self.h_lam(lam) for lam in self.lam(x)])
-        
-    def dhdx(self,x):
-        #h function (not shape factor) as a function of x (simulation completed)
-        return np.array([self.h_lam(lam) for lam in self.lam(x)])
-        
-    def s(self,x):
-        #s as a function of x (simulation completed)
-        return np.array([self.s_lam(lam) for lam in self.lam(x)])
-    
-    def c_f(self,x):
-        #q - scalar
-        #skin friction
-        #return 2 *self.nu*self.s(self.lam(x))/(self.u_e(x)*self.theta(x))
-        return 2 *self.nu*self.s(x) / (self.u_e(x)*self.theta(x))
-        #gives s a single value at a time
-        #return 2 *self.nu*np.array([self.s(lam) for lam in self.lam(x)]) / (self.u_e(x)*self.theta(x))
-    #     self._cf_vec = (2 *
-    #                     thwaites_sim_data.nu *
-    #                     self._s_vec /
-    #                     (thwaites_sim_data.u_e *
-    #                     self._theta_vec))
-    #     self._del_star_vec = self._h_vec*self._theta_vec
-    def del_star(self,x):
-        return self.h(x)*self.theta(x)
-        #return np.array([self.h(lam) for lam in self.lam(x)])*self.theta(x)
-    #     self._wall_shear_vec = (thwaites_sim_data.nu * 
-    #                             self._s_vec * 
-    #                             pow(thwaites_sim_data.u_e / 
-    #                                 thwaites_sim_data.u_inf, 
-    #                                 2) / 
-    #                             (thwaites_sim_data.u_e*self._theta_vec))
-    def rtheta(self,x):
-        return self.u_e(x)*self.theta(x)/self.nu  
-    
-    def Un(self, x):
-        theta2 = np.transpose(self.y(x))[0,:]
-        return (self.du_edx(x)*self.del_star(x)
-               + 0.5*self.u_e(x)*self.h(x)*self.up(x)[:,0]/self.theta(x)
-               + (self.u_e(x)*self.theta(x).self.hp_lam(x)/self.nu)*(self.up(x)[:,0]*self.du_edx(x)+theta2*self.d2u_edx2(x)))
-        
-        
-class ThwaitesSeparation(SeparationModel):
-    def __init__(self,thwaitessim,buffer=0):
-        def lambda_difference(thwaitessim,x=None):
-            if type(x)!=np.ndarray and x ==None:
-                x = thwaitessim.x_vec
-            return -thwaitessim.lam(x)-.0842 # @ -.0842, separation
-        super().__init__(thwaitessim,lambda_difference,buffer)
+
+#class ThwaitesSeparation(SeparationModel):
+#    def __init__(self,thwaitessim,buffer=0):
+#        def lambda_difference(thwaitessim,x=None):
+#            if type(x)!=np.ndarray and x ==None:
+#                x = thwaitessim.x_vec
+#            return -thwaitessim.lam(x)-.0842 # @ -.0842, separation
+#        super().__init__(thwaitessim,lambda_difference,buffer)
 
         
         
