@@ -455,9 +455,12 @@ class IBLBase(ABC):
     
     def _add_kill_event(self, ke):
         if self._kill_events is None:
-            self._kill_events = [ke]
+            self._set_kill_event(ke)
         else:
             self._kill_events.append(ke)
+    
+    def _set_kill_event(self, ke):
+        self._kill_events = [ke]
     
     ## These need to be modified or removed
     def y(self,x):

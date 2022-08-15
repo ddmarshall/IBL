@@ -64,7 +64,7 @@ class IBLBaseTest(IBLBase):
         
         # set up this class
         if x_kill is not None:
-            self._add_kill_event(_IBLBaseTestTermEvent(x_kill))
+            self._set_kill_event(_IBLBaseTestTermEvent(x_kill))
     
     def _ode_impl(self, x, F):
         """
