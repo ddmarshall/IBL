@@ -176,6 +176,10 @@ class ThwaitesMethod(IBLBase):
         Returns
         -------
             Returns the S(\lambda) value(s)
+        
+        Throws
+        ------
+            ValueError if an invalid fit name or unusable 2-tuple provided
         """
         # case when lambda is out of range
         lam_min, lam_max = ThwaitesMethod._white_range()
@@ -199,6 +203,10 @@ class ThwaitesMethod(IBLBase):
         Returns
         -------
             Returns the H(\lambda) value(s)
+        
+        Throws
+        ------
+            ValueError if an invalid fit name or unusable 2-tuple provided
         """
         # case when lambda is out of range
         lam_min, lam_max = ThwaitesMethod._white_range()
@@ -223,6 +231,10 @@ class ThwaitesMethod(IBLBase):
         Returns
         -------
             Returns the dH/d\lambda value(s)
+        
+        Throws
+        ------
+            ValueError if an invalid fit name or unusable 2-tuple provided
         """
         # case when lambda is out of range
         lam_min, lam_max = ThwaitesMethod._white_range()
@@ -238,7 +250,7 @@ class ThwaitesMethod(IBLBase):
     # Cebeci & Bradshaw curve fits section
     @staticmethod
     def _cb_range():
-        """Returns the minimum and maximum lambda for Cebeci and Bradshaw from 2011 book"""
+        """Returns the minimum and maximum lambda for Cebeci and Bradshaw from 1977 book"""
         return (-0.1, 0.1)
     
     @staticmethod
@@ -253,6 +265,10 @@ class ThwaitesMethod(IBLBase):
         Returns
         -------
             Returns the S(\lambda) value(s)
+        
+        Throws
+        ------
+            ValueError if an invalid fit name or unusable 2-tuple provided
         """
         # case when lambda is out of range
         lam_min, lam_max = ThwaitesMethod._cb_range()
@@ -279,6 +295,10 @@ class ThwaitesMethod(IBLBase):
         Returns
         -------
             Returns the H(\lambda) value(s)
+        
+        Throws
+        ------
+            ValueError if an invalid fit name or unusable 2-tuple provided
         """
         # case when lambda is out of range
         lam_min, lam_max = ThwaitesMethod._cb_range()
@@ -307,6 +327,10 @@ class ThwaitesMethod(IBLBase):
         Returns
         -------
             Returns the dH/d\lambda value(s)
+        
+        Throws
+        ------
+            ValueError if an invalid fit name or unusable 2-tuple provided
         """
         # case when lambda is out of range
         lam_min, lam_max = ThwaitesMethod._cb_range()
@@ -344,6 +368,10 @@ class ThwaitesMethod(IBLBase):
         Returns
         -------
             Returns the S(\lambda) value(s)
+        
+        Throws
+        ------
+            ValueError if an invalid fit name or unusable 2-tuple provided
         """
         # case when lambda is out of range
         lam_min, lam_max = ThwaitesMethod._spline_range()
@@ -367,6 +395,10 @@ class ThwaitesMethod(IBLBase):
         Returns
         -------
             Returns the H(\lambda) value(s)
+        
+        Throws
+        ------
+            ValueError if an invalid fit name or unusable 2-tuple provided
         """
         # case when lambda is out of range
         lam_min, lam_max = ThwaitesMethod._spline_range()
@@ -390,6 +422,10 @@ class ThwaitesMethod(IBLBase):
         Returns
         -------
             Returns the dH/d\lambda value(s)
+        
+        Throws
+        ------
+            ValueError if an invalid fit name or unusable 2-tuple provided
         """
         # case when lambda is out of range
         lam_min, lam_max = ThwaitesMethod._spline_range()
