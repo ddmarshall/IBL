@@ -51,7 +51,7 @@ class _IBLBaseTestTermEvent(IBLTermEventBase):
         """
         return x - self._x_kill
     
-    def eventInfo(self):
+    def event_info(self):
         return -1, ""
 
 
@@ -105,7 +105,7 @@ class IBLBaseTestTransition(IBLTermEventBase):
     def _call_impl(self, x, F):
         return F - self._F_kill
     
-    def eventInfo(self):
+    def event_info(self):
         return 1, ""
 
 
@@ -291,7 +291,7 @@ class TestEdgeVelocity(unittest.TestCase):
         self.assertRaises(ValueError, iblb.dU_edx, x)
         self.assertRaises(ValueError, iblb.d2U_edx2, x)
         
-        iblb.setVelocity(U_e = lambda x: self.U_e_fun(x, U_inf, m),
+        iblb.set_velocity(U_e = lambda x: self.U_e_fun(x, U_inf, m),
                         dU_edx = lambda x: self.dU_edx_fun(x, U_inf, m),
                         d2U_edx2 = lambda x: self.d2U_edx2_fun(x, U_inf, m))
         self.assertIsNone(npt.assert_allclose(iblb.U_e(x), U_e_ref))

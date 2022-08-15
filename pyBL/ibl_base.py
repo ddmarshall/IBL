@@ -47,7 +47,7 @@ class IBLTermEventBase(ABC):
     """
     Base class for a termination event for IBL solver.
     
-    The two abstract methods that have to be implemented are EventInfo and 
+    The two abstract methods that have to be implemented are event_info and 
     _call_impl. Classes derived from this class can either be used within an 
     IBL implementation or as a parameter into the solve method.
     """
@@ -71,7 +71,7 @@ class IBLTermEventBase(ABC):
         return self._call_impl(x, F)
     
     @abstractmethod
-    def eventInfo(self):
+    def event_info(self):
         """
         Method returns information about the purpose of this event. This is 
         used to provide feedback as to what caused the integration to terminate
@@ -138,13 +138,13 @@ class IBLBase(ABC):
             self._dU_edx = None
             self._d2U_edx2 = None
         else:
-            self.setVelocity(U_e, dU_edx, d2U_edx2)
+            self.set_velocity(U_e, dU_edx, d2U_edx2)
         
         # initialize other parameters
         self._kill_events = None
         self._F = None
 
-    def setVelocity(self, U_e, dU_edx = None, d2U_edx2 = None):
+    def set_velocity(self, U_e, dU_edx = None, d2U_edx2 = None):
         """
         Set the edge velocity relations.
         
@@ -239,7 +239,7 @@ class IBLBase(ABC):
                                      "velocity")
                 
                 U_e_spline = CubicSpline(x_pts, U_e_pts)
-                self.setVelocity(U_e_spline)
+                self.set_velocity(U_e_spline)
             else:
                 # otherwise unknown velocity input
                 raise ValueError("Don't know how to use {} to initialize "
@@ -310,7 +310,7 @@ class IBLBase(ABC):
                     if xe.shape[0] > 0:
                         x_end = xe[0]
                         F_end = rtn.sol(x_end)
-                        status, message = kill_events[i].eventInfo()
+                        status, message = kill_events[i].event_info()
                         break
             else:
                 status = -99
@@ -459,6 +459,7 @@ class IBLBase(ABC):
         else:
             self._kill_events.append(ke)
     
+    ## These need to be modified or removed
     def y(self,x):
         #returns m*n array, where m is len(x) and n is length(y)
         x_array = x #must be array
