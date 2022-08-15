@@ -287,9 +287,12 @@ class TestEdgeVelocity(unittest.TestCase):
         dU_edx_ref = self.dU_edx_fun(x, U_inf, m)
         d2U_edx2_ref = self.d2U_edx2_fun(x, U_inf, m)
         
-        self.assertRaises(ValueError, iblb.U_e, x)
-        self.assertRaises(ValueError, iblb.dU_edx, x)
-        self.assertRaises(ValueError, iblb.d2U_edx2, x)
+        with self.assertRaises(ValueError):
+            iblb.U_e(x)
+        with self.assertRaises(ValueError):
+            iblb.dU_edx(x)
+        with self.assertRaises(ValueError):
+            iblb.d2U_edx2(x)
         
         iblb.set_velocity(U_e = lambda x: self.U_e_fun(x, U_inf, m),
                         dU_edx = lambda x: self.dU_edx_fun(x, U_inf, m),
