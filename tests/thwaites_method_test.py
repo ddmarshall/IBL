@@ -55,7 +55,8 @@ class TestCurveFits(unittest.TestCase):
         
         # compare the tabulated F with the calculated value
         F_calc = 2*(S-lam*(2+H))
-        self.assertIsNone(npt.assert_allclose(self.F_ref, F_calc, rtol=0, atol=1e-2))
+        self.assertIsNone(npt.assert_allclose(self.F_ref, F_calc,
+                                              rtol=0, atol=1e-2))
         
     def test_white_functions(self):
         
@@ -65,7 +66,8 @@ class TestCurveFits(unittest.TestCase):
         self.assertTrue(np.isinf(lam_max))
         
         # create the lambdas and reference values for testing
-        lam = np.linspace(lam_min, np.minimum(np.amax(self.lam_ref), lam_max), 101)
+        lam = np.linspace(lam_min, np.minimum(np.amax(self.lam_ref), lam_max),
+                          101)
         
         # test S function
         def S_fun(lam):
@@ -209,7 +211,8 @@ class TestCurveFits(unittest.TestCase):
         Hp=np.zeros_like(lam)
         delta = 1e-8
         for i, l in enumerate(lam):
-            Hp[i] = fd(tm._spline_H, l, max(l*delta, delta), n=1, order=3)
+            Hp[i] = fd(tm._spline_H, l, max(l*delta, delta),
+                       n=1, order=3)
         
         self.assertIsNone(npt.assert_allclose(Hp, tm._spline_Hp(lam)))
         

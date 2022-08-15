@@ -127,7 +127,7 @@ class IBLBase(ABC):
     ------
         ValueError: if configuration parameter is invalid (see message)
     """
-    def __init__(self, U_e = None, dU_edx=None, d2U_edx2=None):
+    def __init__(self, U_e = None, dU_edx = None, d2U_edx2 = None):
         # set the velocity terms
         if U_e is None:
             if (dU_edx is not None):

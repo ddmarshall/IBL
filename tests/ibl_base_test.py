@@ -68,7 +68,7 @@ class IBLBaseTest(IBLBase):
     
     def _ode_impl(self, x, F):
         """
-        The is the derivatives of the ODEs that are to be solved
+        This is the derivatives of the ODEs that are to be solved
         
         Args
         ----
