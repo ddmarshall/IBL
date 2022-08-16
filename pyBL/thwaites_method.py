@@ -19,56 +19,6 @@ from pyBL.ibl_base import IBLTermEventBase
 #      return .075*iblsimdata.nu/iblsimdata.du_edx(x0)
 
 
-#class ThwaitesSimData(IBLSimData):
-#    def __init__(self,
-#                 x_vec,
-#                 u_e_vec,
-#                 u_inf,
-#                 nu,
-#                 re,
-#                 x0,
-#                 theta0=None,
-#                 s=None,
-#                 h=None,
-#                 hp=None,
-#                 linearize=False):
-#        super().__init__(x_vec,
-#                         u_e_vec,
-#                         u_inf,
-#                         nu)
-#        self.x0 = x0
-#        self.theta0 = theta0
-#        self.re = re
-#        #these go through the setters
-#        self.s_lam = s
-#        self.h_lam = h
-#        self.hp_lam = hp
-#        self._linearize=linearize
-#
-#
-#
-#    h_lam = property(fget=lambda self: self._h,
-#                 fset=lambda self, f: setattr(self,
-#                                              '_h',
-#                                              _function_of_lambda_property_setter(f)))
-#
-#    hp_lam = property(fget=lambda self: self._hp,
-#                 fset=lambda self, f: setattr(self,
-#                                              '_hp',
-#                                              _function_of_lambda_property_setter(f)))
-#
-#    s_lam = property(fget=lambda self: self._s,
-#                 fset=lambda self, f: setattr(self,
-#                                              '_s',
-#                                              _function_of_lambda_property_setter(f)))
-#
-#    re = property(fget=lambda self: self._re,
-#                  fset=lambda self, new_re: setattr(self,
-#                                                    '_re',
-#                                                    new_re))
-
-                                                                           
-  
 class ThwaitesMethod(IBLBase):
     """
     Models a laminar boundary layer using Thwaites Method (1949) when provided 
