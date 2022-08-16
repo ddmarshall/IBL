@@ -219,8 +219,17 @@ class ThwaitesMethod(IBLBase):
         -------
             Desired property at the specified locations
         """
-        raise NotImplementedError("Need to implement this")
-        return np.zeros_like(x)
+        U_e = self.U_e(x)
+        dU_edx = self.dU_edx(x)
+        delta_m2_on_nu = self._solution(x)[0]
+        term1 = dU_edx*self.delta_d(x)
+        term2 = np.sqrt(self._nu/delta_m2_on_nu)
+        dsol_dx = self._ode_impl(x, delta_m2_on_nu)
+        term3 = 0.5*U_e*self.H(x)*dsol_dx
+        term4 = (U_e*delta_m2_on_nu
+                *self._Hp_fun(self._calc_lambda(x,delta_m2_on_nu)))
+        term5 = dU_edx*dsol_dx+self.d2U_edx2(x)*delta_m2_on_nu
+        return term1 + term2*(term3+term4*term5)
     
     def delta_d(self, x):
         """

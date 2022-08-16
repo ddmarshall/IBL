@@ -22,6 +22,10 @@ class ThwaitesLinearAnalytic:
         self.H_fun = H_fun
         self.S_fun = S_fun
     
+    def U_n(self, x):
+        ddelta_ddx = fd(self.delta_d, x, 1e-5, n=1, order=3)
+        return self.U_ref*x**self.m*(self.m*self.delta_d(x)/x+ddelta_ddx)
+    
     def delta_d(self, x):
         return self.delta_m(x)*self.H(x)
     
@@ -110,6 +114,7 @@ class TestLinearThwaites(unittest.TestCase):
         self.assertIsNone(npt.assert_allclose(tm.H(x), tm_ref.H(x)))
         self.assertIsNone(npt.assert_allclose(tm.tau_w(x, rho),
                                               tm_ref.tau_w(x, rho)))
+        self.assertIsNone(npt.assert_allclose(tm.U_n(x), tm_ref.U_n(x)))
         
         # test with Cebeci and Bradshaw fits
         tm = ThwaitesMethod(U_e = U_e_fun, dU_edx = dU_edx_fun,
@@ -128,6 +133,7 @@ class TestLinearThwaites(unittest.TestCase):
         self.assertIsNone(npt.assert_allclose(tm.H(x), tm_ref.H(x)))
         self.assertIsNone(npt.assert_allclose(tm.tau_w(x, rho),
                                               tm_ref.tau_w(x, rho)))
+        self.assertIsNone(npt.assert_allclose(tm.U_n(x), tm_ref.U_n(x)))
         
         # test creating with own functions for S, H, H'
         def S_fun(lam):
@@ -157,6 +163,7 @@ class TestLinearThwaites(unittest.TestCase):
         self.assertIsNone(npt.assert_allclose(tm.H(x), tm_ref.H(x)))
         self.assertIsNone(npt.assert_allclose(tm.tau_w(x, rho),
                                               tm_ref.tau_w(x, rho)))
+        self.assertIsNone(npt.assert_allclose(tm.U_n(x), tm_ref.U_n(x)))
         
         # test creating with own functions for S, H
         tm = ThwaitesMethod(U_e = U_e_fun, dU_edx = dU_edx_fun,
@@ -174,6 +181,7 @@ class TestLinearThwaites(unittest.TestCase):
         self.assertIsNone(npt.assert_allclose(tm.H(x), tm_ref.H(x)))
         self.assertIsNone(npt.assert_allclose(tm.tau_w(x, rho),
                                               tm_ref.tau_w(x, rho)))
+        self.assertIsNone(npt.assert_allclose(tm.U_n(x), tm_ref.U_n(x)))
         
         # test creating with invalid name
         with self.assertRaises(ValueError):
