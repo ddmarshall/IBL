@@ -290,89 +290,19 @@ class ThwaitesMethod(IBLBase):
         lam = self._calc_lambda(x, self._solution(x)[0])
         return rho*self._nu*self.U_e(x)*self._S_fun(lam)/self.delta_m(x)
     
-#        def derivatives(t,y):
-#            #modified derivatives to use s and h, define y as theta^2
-#            x=t
-#            lam = np.clip(y*thwaites_sim_data.du_edx(x)/self.nu, -0.5, 0.5)
-#            # if (lam<= (-0.0842)):
-#            #     lam =np.array([(-0.0842)])
-#            if abs(self.u_e(x))<np.array([1E-8]):
-#                return np.array([1E-8])
-#            else:
-#                #Check whether to assume .45-6lam for 2(s-(2+H)*lam)
-#                if thwaites_sim_data._linearize==True:
-#                    return np.array([self.nu*(.45-6*lam)/self.u_e(x)])
-#                else:
-#                    return np.array([2*self.nu*(self.s_lam(lam)-(2+self.h_lam(lam))*lam)/self.u_e(x)])
-
-#        #Probably user changeable eventually
-#        #self.x0 = thwaites_sim_data.x_vec[0]
-#        #self.x0=x0
-#        #self.y0 = np.array([5*pow(thwaites_sim_data.u_e(self.x0),4)])
-#        if self.theta0 is not None:
-#            self.y0 = np.array([pow(self.theta0,2)])
-#        else:
-#            self.y0 = [_stagnation_y0(thwaites_sim_data,self.x0)]
-#        self.x_bound = thwaites_sim_data.x_vec[-1] 
-#        
-#        super().__init__(thwaites_sim_data, derivatives, self.x0, self.y0, self.x_bound)
-#        self.u_e = thwaites_sim_data.u_e
-    
-#    def theta(self,x):
-#        #momentum thickness
-#        #return pow(self.eq5_6_16(x)*self.nu, .5)
-#        return np.sqrt(np.transpose(self.y(x))[0,:])
-#    #     self._theta_vec = pow(self._eq5_6_16_vec * thwaites_sim_data.nu, .5)
 #    def lam(self,x):
 #        return (np.transpose(self.y(x))[0,:] *self.du_edx(x) /self.nu)
 #    #     self._lam_vec = (pow(self._theta_vec, 2) *np.gradient(thwaites_sim_data.u_e, thwaites_sim_data.x) /thwaites_sim_data.nu)
     
 #    #     self._h_vec = np.array([thwaites_sim_data.h(lam) for lam in self._lam_vec],dtype=np.float)
 #    #     self._s_vec = np.array([thwaites_sim_data.s(lam) for lam in self._lam_vec],dtype=np.float)
-#    def h(self,x):
-#        #h function (not shape factor) as a function of x (simulation completed)
-#        return np.array([self.h_lam(lam) for lam in self.lam(x)])
     
 #    def dhdx(self,x):
 #        #h function (not shape factor) as a function of x (simulation completed)
 #        return np.array([self.h_lam(lam) for lam in self.lam(x)])
     
-#    def s(self,x):
-#        #s as a function of x (simulation completed)
-#        return np.array([self.s_lam(lam) for lam in self.lam(x)])
-    
-#    def c_f(self,x):
-#        #q - scalar
-#        #skin friction
-#        #return 2 *self.nu*self.s(self.lam(x))/(self.u_e(x)*self.theta(x))
-#        return 2 *self.nu*self.s(x) / (self.u_e(x)*self.theta(x))
-#        #gives s a single value at a time
-#        #return 2 *self.nu*np.array([self.s(lam) for lam in self.lam(x)]) / (self.u_e(x)*self.theta(x))
-#    #     self._cf_vec = (2 *
-#    #                     thwaites_sim_data.nu *
-#    #                     self._s_vec /
-#    #                     (thwaites_sim_data.u_e *
-#    #                     self._theta_vec))
-#    #     self._del_star_vec = self._h_vec*self._theta_vec
-    
-#    def del_star(self,x):
-#        return self.h(x)*self.theta(x)
-#        #return np.array([self.h(lam) for lam in self.lam(x)])*self.theta(x)
-#    #     self._wall_shear_vec = (thwaites_sim_data.nu * 
-#    #                             self._s_vec * 
-#    #                             pow(thwaites_sim_data.u_e / 
-#    #                                 thwaites_sim_data.u_inf, 
-#    #                                 2) / 
-#    #                             (thwaites_sim_data.u_e*self._theta_vec))
-    
 #    def rtheta(self,x):
 #        return self.u_e(x)*self.theta(x)/self.nu  
-    
-#    def Un(self, x):
-#        theta2 = np.transpose(self.y(x))[0,:]
-#        return (self.du_edx(x)*self.del_star(x)
-#               + 0.5*self.u_e(x)*self.h(x)*self.up(x)[:,0]/self.theta(x)
-#               + (self.u_e(x)*self.theta(x).self.hp_lam(x)/self.nu)*(self.up(x)[:,0]*self.du_edx(x)+theta2*self.d2u_edx2(x)))
     
     def _ode_impl(self, x, delta_m2_on_nu):
         """
