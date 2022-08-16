@@ -14,96 +14,170 @@ from scipy.misc import derivative as fd
 from pyBL.thwaites_method import ThwaitesMethod
 
 
+class ThwaitesLinearAnalytic:
+    def __init__(self, U_ref, m, nu, H_fun, S_fun):
+        self.m = m
+        self.U_ref = U_ref
+        self.nu = nu
+        self.H_fun = H_fun
+        self.S_fun = S_fun
+    
+    def delta_d(self, x):
+        return self.delta_m(x)*self.H(x)
+    
+    def delta_m(self, x):
+        K = np.sqrt(0.45/(5*self.m+1))
+        Rex_sqrt = np.sqrt(self.U_ref*x**(self.m+1)/self.nu)
+        return x*K/Rex_sqrt
+    
+    def H(self, x):
+        if (self.m==0):
+            lam = np.zeros_like(x)
+        else:
+            K = np.sqrt(0.45/(5*self.m+1))
+            lam = self.m*K**2*np.ones_like(x)
+        return self.H_fun(lam)
+    
+    def tau_w(self, x, rho):
+        K = np.sqrt(0.45/(5*self.m+1))
+        Rex_sqrt = np.sqrt(self.U_ref*x**(self.m+1)/self.nu)
+        
+        if (self.m==0):
+            lam = np.zeros_like(x)
+        else:
+            lam = self.m*K**2*np.ones_like(x)
+        return rho*(self.U_ref*x**self.m)**2*self.S_fun(lam)/(K*Rex_sqrt)
+
+
 class TestLinearThwaites(unittest.TestCase):
     """Class to test the implementation of the linear Thwaites method"""
-    @staticmethod
-    def genererate_analytic_results(m, U_inf, nu, x,S_fun, H_fun):
-        """
-        Calculates the results for the analytic form of Thwaites method using
-        the Falkner-Skan edge velocity distribution and returns various boundary
-        layer parameters
-        
-        Args
-        ----
-            m: Velocity parameter used to define specific case
-            U_inf: Scale of the freestream velocity
-            nu: Kinematic viscosity
-            x(numpy.array): Array of x-locations along surface to return values
-            S_fun(callable): Function for the shear function in Thwaites method
-            H_fun(callable): Function for the shape function in Thwaites method
-        
-        Returns
-        -------
-            delta_d(numpy.array): Displacement thickness at each location
-            delta_m(numpy.array): Momentum thickness at each location
-            c_f(numpy.array): Skin friction coefficient at each location
-            H(numpy.array): Shape factor at each location
-        """
-        K = np.sqrt(0.45/(5*m+1))
-        Rex_sqrt = np.sqrt(U_inf*x**(m+1)/nu)
-        
-        if (m==0):
-            lam = 0
-        else:
-            lam = m*K**2
-        S_lam = S_fun(lam)
-        H_lam = H_fun(lam)
-        delta_m = x*K/Rex_sqrt
-        c_f = 2*S_lam/(K*Rex_sqrt)
-        delta_d = delta_m*H_lam
-        H = delta_d/delta_m
-        
-        return delta_d, delta_m, c_f, H
     
     def testBlaisusCase(self):
-        
         # set parameters
-        U_inf = 10
+        U_ref = 10
         m = 0
         nu = 1e-5
+        rho = 1
         x = np.linspace(0.1, 2, 101)
         
         # create edge velocity functions
         def U_e_fun(x):
-            return U_inf*x**m
+            return U_ref*x**m
         
         def dU_edx_fun(x):
             if m == 0:
                 return np.zeros_like(x)
             else:
-                return m*U_inf*x**(m-1)
+                return m*U_ref*x**(m-1)
         
         def d2U_edx2_fun(x):
             if (m==0) or (m==1):
                 return np.zeros_like(x)
             else:
-                return m*(m-1)*x**(m-2)
+                return m*(m-1)*U_ref*x**(m-2)
         
         # test with spline of tabular data
-        tm = ThwaitesMethod(U_e_fun, dU_edx_fun, d2U_edx2_fun, data_fits = "Thwaites")
-        delta_d_ref, delta_m_ref, c_f_ref, H_ref = self.genererate_analytic_results(m, U_inf, nu, x, tm._S_fun, tm._H_fun)
+        tm = ThwaitesMethod(U_e = U_e_fun, dU_edx = dU_edx_fun,
+                            d2U_edx2 = d2U_edx2_fun, data_fits = "Thwaites")
+        tm_ref = ThwaitesLinearAnalytic(U_ref, m, nu, tm._H_fun, tm._S_fun)
+        tm.set_solution_parameters(x0 = x[0], x_end = x[-1],
+                                   delta_m0 = tm_ref.delta_m(x[0]), nu = nu)
+        rtn = tm.solve()
+        self.assertTrue(rtn.success)
+        self.assertEqual(rtn.status, 0)
+        self.assertEqual(rtn.message, "Completed")
+        self.assertEqual(rtn.x_end, x[-1])
+        self.assertIsNone(npt.assert_allclose(tm.delta_d(x), tm_ref.delta_d(x)))
+        self.assertIsNone(npt.assert_allclose(tm.delta_m(x), tm_ref.delta_m(x)))
+        self.assertIsNone(npt.assert_allclose(tm.H(x), tm_ref.H(x)))
+        self.assertIsNone(npt.assert_allclose(tm.tau_w(x, rho),
+                                              tm_ref.tau_w(x, rho)))
+        self.assertIsNone(npt.assert_allclose(tm.U_n(x), tm_ref.U_n(x)))
         
-        # test with Whites data
-        tm = ThwaitesMethod(U_e_fun, dU_edx_fun, d2U_edx2_fun, "White")
-        delta_d_ref, delta_m_ref, c_f_ref, H_ref = self.genererate_analytic_results(m, U_inf, nu, x, tm._S_fun, tm._H_fun)
+        # test with White fits
+        tm = ThwaitesMethod(U_e = U_e_fun, dU_edx = dU_edx_fun,
+                            d2U_edx2 = d2U_edx2_fun, data_fits = "White")
+        tm_ref = ThwaitesLinearAnalytic(U_ref, m, nu, tm._H_fun, tm._S_fun)
+        tm.set_solution_parameters(x0 = x[0], x_end = x[-1],
+                                   delta_m0 = tm_ref.delta_m(x[0]), nu = nu)
+        rtn = tm.solve()
+        self.assertTrue(rtn.success)
+        self.assertEqual(rtn.status, 0)
+        self.assertEqual(rtn.message, "Completed")
+        self.assertEqual(rtn.x_end, x[-1])
+        self.assertIsNone(npt.assert_allclose(tm.delta_d(x), tm_ref.delta_d(x)))
+        self.assertIsNone(npt.assert_allclose(tm.delta_m(x), tm_ref.delta_m(x)))
+        self.assertIsNone(npt.assert_allclose(tm.H(x), tm_ref.H(x)))
+        self.assertIsNone(npt.assert_allclose(tm.tau_w(x, rho),
+                                              tm_ref.tau_w(x, rho)))
         
         # test with Cebeci and Bradshaw fits
-        tm = ThwaitesMethod(U_e_fun, dU_edx_fun, d2U_edx2_fun, "Cebeci-Bradshaw")
-        delta_d_ref, delta_m_ref, c_f_ref, H_ref = self.genererate_analytic_results(m, U_inf, nu, x, tm._S_fun, tm._H_fun)
+        tm = ThwaitesMethod(U_e = U_e_fun, dU_edx = dU_edx_fun,
+                            d2U_edx2 = d2U_edx2_fun,
+                            data_fits = "Cebeci-Bradshaw")
+        tm_ref = ThwaitesLinearAnalytic(U_ref, m, nu, tm._H_fun, tm._S_fun)
+        tm.set_solution_parameters(x0 = x[0], x_end = x[-1],
+                                   delta_m0 = tm_ref.delta_m(x[0]), nu = nu)
+        rtn = tm.solve()
+        self.assertTrue(rtn.success)
+        self.assertEqual(rtn.status, 0)
+        self.assertEqual(rtn.message, "Completed")
+        self.assertEqual(rtn.x_end, x[-1])
+        self.assertIsNone(npt.assert_allclose(tm.delta_d(x), tm_ref.delta_d(x)))
+        self.assertIsNone(npt.assert_allclose(tm.delta_m(x), tm_ref.delta_m(x)))
+        self.assertIsNone(npt.assert_allclose(tm.H(x), tm_ref.H(x)))
+        self.assertIsNone(npt.assert_allclose(tm.tau_w(x, rho),
+                                              tm_ref.tau_w(x, rho)))
         
-        # test creating with own functions for S, H
+        # test creating with own functions for S, H, H'
         def S_fun(lam):
             return (lam + 0.09)**(0.62)
         
         def H_fun(lam):
             z = 0.25-lam
             return 2.0 + 4.14*z - 83.5*z**2 + 854*z**3 - 3337*z**4 + 4576*z**5
-        tm = ThwaitesMethod(U_e_fun, dU_edx_fun, d2U_edx2_fun, (S_fun, H_fun))
-        delta_d_ref, delta_m_ref, c_f_ref, H_ref = self.genererate_analytic_results(m, U_inf, nu, x, tm._S_fun, tm._H_fun)
+        
+        def Hp_fun(lam):
+            z = 0.25-lam
+            return -(4.14 + z*(-2*83.5 + z*(3*854 + z*(-4*3337 + z*5*4576))))
+        
+        tm = ThwaitesMethod(U_e = U_e_fun, dU_edx = dU_edx_fun,
+                            d2U_edx2 = d2U_edx2_fun,
+                            data_fits = (S_fun, H_fun, Hp_fun))
+        tm_ref = ThwaitesLinearAnalytic(U_ref, m, nu, H_fun, S_fun)
+        tm.set_solution_parameters(x0 = x[0], x_end = x[-1],
+                                   delta_m0 = tm_ref.delta_m(x[0]), nu = nu)
+        rtn = tm.solve()
+        self.assertTrue(rtn.success)
+        self.assertEqual(rtn.status, 0)
+        self.assertEqual(rtn.message, "Completed")
+        self.assertEqual(rtn.x_end, x[-1])
+        self.assertIsNone(npt.assert_allclose(tm.delta_d(x), tm_ref.delta_d(x)))
+        self.assertIsNone(npt.assert_allclose(tm.delta_m(x), tm_ref.delta_m(x)))
+        self.assertIsNone(npt.assert_allclose(tm.H(x), tm_ref.H(x)))
+        self.assertIsNone(npt.assert_allclose(tm.tau_w(x, rho),
+                                              tm_ref.tau_w(x, rho)))
+        
+        # test creating with own functions for S, H
+        tm = ThwaitesMethod(U_e = U_e_fun, dU_edx = dU_edx_fun,
+                            d2U_edx2 = d2U_edx2_fun, data_fits = (S_fun, H_fun))
+        tm_ref = ThwaitesLinearAnalytic(U_ref, m, nu, H_fun, S_fun)
+        tm.set_solution_parameters(x0 = x[0], x_end = x[-1],
+                                   delta_m0 = tm_ref.delta_m(x[0]), nu = nu)
+        rtn = tm.solve()
+        self.assertTrue(rtn.success)
+        self.assertEqual(rtn.status, 0)
+        self.assertEqual(rtn.message, "Completed")
+        self.assertEqual(rtn.x_end, x[-1])
+        self.assertIsNone(npt.assert_allclose(tm.delta_d(x), tm_ref.delta_d(x)))
+        self.assertIsNone(npt.assert_allclose(tm.delta_m(x), tm_ref.delta_m(x)))
+        self.assertIsNone(npt.assert_allclose(tm.H(x), tm_ref.H(x)))
+        self.assertIsNone(npt.assert_allclose(tm.tau_w(x, rho),
+                                              tm_ref.tau_w(x, rho)))
         
         # test creating with invalid name
         with self.assertRaises(ValueError):
-            ThwaitesMethod(U_e_fun, dU_edx_fun, d2U_edx2_fun, "My Own")
+            ThwaitesMethod(U_e = U_e_fun, dU_edx = dU_edx_fun, d2U_edx2 = d2U_edx2_fun, data_fits = "My Own")
 
 
 class TestCurveFits(unittest.TestCase):

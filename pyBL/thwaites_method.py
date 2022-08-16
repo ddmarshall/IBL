@@ -8,14 +8,15 @@ Created on Thu Jun 30 12:42:04 2022
 
 import numpy as np
 from scipy.interpolate import CubicSpline
-import inspect    # used to return source code of h,s
+from scipy.misc import derivative as fd
 
 from pyBL.ibl_base import IBLBase
+from pyBL.ibl_base import IBLTermEventBase
 
 
-def _stagnation_y0(iblsimdata,x0):
-    #From Moran
-      return .075*iblsimdata.nu/iblsimdata.du_edx(x0)
+#def _stagnation_y0(iblsimdata,x0):
+#    #From Moran
+#      return .075*iblsimdata.nu/iblsimdata.du_edx(x0)
 
 
 #class ThwaitesSimData(IBLSimData):
@@ -74,11 +75,17 @@ class ThwaitesMethod(IBLBase):
     the edge velocity profile. There are a few different ways of modeling the 
     tabular data from Thwaites original work that can be set.
     
-    This class solves for delta_m^2 use the IBLBase ODE solver using the linear
-    approximation for the differential equation relationship .
+    This class solves for \frac{\delta_m^2}{\nu} use the IBLBase ODE solver
+    using the linear approximation for the differential equation relationship.
     
     Attributes
     ----------
+        _delta_m0: Momentum thickness at start location
+        _nu: Kinematic viscosity
+        _S_fun: Shear function used in algorithm
+        _H_fun: Shape function used in algorithm
+        _Hp_fun: Derivative of the Shape function
+
         _tab_lam: Original tabular data for lambda from Thwaites
         _tab_S: Original tabular data for S from Thwaites
         _tab_H: Original tabular data for H from Thwaites
@@ -88,21 +95,42 @@ class ThwaitesMethod(IBLBase):
         _Hp_lam_spline: Derivative of the cubic spline through H
         
     """
-    def __init__(self, U_e = None, dU_edx = None, d2U_edx2 = None, data_fits="Thwaites"):
+    def __init__(self, U_e = None, dU_edx = None, d2U_edx2 = None,
+                 data_fits="Thwaites"):
         super().__init__(U_e, dU_edx, d2U_edx2)
         self.set_data_fits(data_fits)
-#        #note - f's(lambda) aren't actually used in solver
-#        self.u_e = thwaites_sim_data.u_e #f(x)
-#        self.u_inf = thwaites_sim_data.u_inf
-#        self.re = thwaites_sim_data.re
-#        self.x0 = thwaites_sim_data.x0
-#        self.theta0 = thwaites_sim_data.theta0
-#        self.s_lam = thwaites_sim_data.s_lam
-#        self.h_lam = thwaites_sim_data.h_lam
-#        self.hp_lam = thwaites_sim_data.hp_lam
-#        self.nu = thwaites_sim_data.nu
-#        
-#        self._x_tr = None
+        self._nu = None
+        self._delta_m0 = None
+    
+    def set_solution_parameters(self, x0, x_end, delta_m0, nu):
+        """
+        Set the parameters needed for the solver to propagate
+        
+        Args
+        ----
+            x0: location to start integration
+            x_end: location to end integration
+            delta_m0: Momentum thickness at start location
+            nu: Kinematic viscosity
+        
+        Throws
+        ------
+            ValueError if negative viscosity provided
+        
+        """
+        if nu < 0:
+            raise ValueError("Viscosity must be positive")
+        else:
+            self._nu = nu
+        if delta_m0 < 0:
+            raise ValueError("Initial momentum thickness must be positive")
+        else:
+            self._delta_m0 = delta_m0
+        self._set_x_range(x0, x_end)
+    
+    def nu(self):
+        """Getter for kinematic viscosity"""
+        return self._nu
     
     def set_data_fits(self, data_fits):
         """
@@ -128,31 +156,131 @@ class ThwaitesMethod(IBLBase):
         """
         # data_fits can either be string or 2-tuple of callables
         self._H_fun = None
+        self._Hp_fun = None
         self._S_fun = None
         if type(data_fits) is str:
             if data_fits == "Thwaites":
                 self._H_fun = self._spline_H
+                self._Hp_fun = self._spline_Hp
                 self._S_fun = self._spline_S
             elif data_fits == "White":
                 self._H_fun = self._white_H
+                self._Hp_fun = self._white_Hp
                 self._S_fun = self._white_S
             elif data_fits == "Cebeci-Bradshaw":
                 self._H_fun = self._cb_H
+                self._Hp_fun = self._cb_Hp
                 self._S_fun = self._cb_S
             else:
                 raise ValueError("Unknown fitting function name: ", data_fits)
         else:
             # check to make sure have two callables
-            if (type(data_fits) is tuple) and (len(data_fits)==2):
-                if callable(data_fits[0]) and callable(data_fits[1]):
-                    self._H_fun = data_fits[1]
-                    self._S_fun = data_fits[0]
+            if (type(data_fits) is tuple):
+                if len(data_fits)==3:
+                    if callable(data_fits[0]) and callable(data_fits[1]) \
+                            and callable(data_fits[2]):
+                        self._S_fun = data_fits[0]
+                        self._H_fun = data_fits[1]
+                        self._Hp_fun = data_fits[2]
+                    else:
+                        raise ValueError("Need to pass callable objects for "
+                                         "fit functions")
+                elif len(data_fits)==2:
+                    if callable(data_fits[0]) and callable(data_fits[1]):
+                        self._S_fun = data_fits[0]
+                        self._H_fun = data_fits[1]
+                        self._Hp_fun = lambda lam: fd(self._H_fun, lam, 1e-5, 
+                                                      n=1, order=3)
+                    else:
+                        raise ValueError("Need to pass callable objects for "
+                                         "fit functions")
                 else:
-                    raise ValueError("Need to pass callable objects for fit "
-                                     "functions")
+                    raise ValueError("Need to pass two or three callable "
+                                     "objects for fit functions")
             else:
                 raise ValueError("Need to pass a 2-tuple for fit functions")
-            
+        
+        self._set_kill_event(_ThwaitesSeparationEvent(self._calc_lambda,
+                                                      self._S_fun))
+    
+    def solve(self, term_event = None):
+        return self._solve_impl(self._delta_m0**2/self._nu,
+                                term_event = term_event)
+    
+    def U_n(self, x):
+        """
+        Calculate the transpiration velocity
+        
+        Args
+        ----
+            x: Streamwise loations to calculate this property
+        
+        Returns
+        -------
+            Desired property at the specified locations
+        """
+        raise NotImplementedError("Need to implement this")
+        return np.zeros_like(x)
+    
+    def delta_d(self, x):
+        """
+        Calculate the displacement thickness
+        
+        Args
+        ----
+            x: Streamwise loations to calculate this property
+        
+        Returns
+        -------
+            Desired property at the specified locations
+        """
+        return self.delta_m(x)*self.H(x)
+    
+    def delta_m(self, x):
+        """
+        Calcualte the momentum thickness
+        
+        Args
+        ----
+            x: Streamwise loations to calculate this property
+        
+        Returns
+        -------
+            Desired property at the specified locations
+        """
+        return np.sqrt(self._solution(x)[0]*self._nu)
+    
+    def H(self, x):
+        """
+        Calculate the shape factor
+        
+        Args
+        ----
+            x: Streamwise loations to calculate this property
+        
+        Returns
+        -------
+            Desired property at the specified locations
+        """
+        lam = self._calc_lambda(x, self._solution(x)[0])
+        return self._H_fun(lam)
+    
+    def tau_w(self, x, rho):
+        """
+        Calculate the wall shear stress
+        
+        Args
+        ----
+            x: Streamwise loations to calculate this property
+            rho: Freestream density
+        
+        Returns
+        -------
+            Desired property at the specified locations
+        """
+        lam = self._calc_lambda(x, self._solution(x)[0])
+        return rho*self._nu*self.U_e(x)*self._S_fun(lam)/self.delta_m(x)
+    
 #        def derivatives(t,y):
 #            #modified derivatives to use s and h, define y as theta^2
 #            x=t
@@ -237,44 +365,25 @@ class ThwaitesMethod(IBLBase):
 #               + 0.5*self.u_e(x)*self.h(x)*self.up(x)[:,0]/self.theta(x)
 #               + (self.u_e(x)*self.theta(x).self.hp_lam(x)/self.nu)*(self.up(x)[:,0]*self.du_edx(x)+theta2*self.d2u_edx2(x)))
     
-    def _ode_impl(self, x, delta_m2):
+    def _ode_impl(self, x, delta_m2_on_nu):
         """
         This is the right-hand-side of the ODE representing Thwaites method.
         
         Args
         ----
             x: x-location of current step
-            delta_m2: current step square of momentum thickness
+            delta_m2_on_nu: current step square of momentum thickness divided
+            by the kinematic viscosity
         """
         a = 0.45
         b = 6
-        lam = self._calc_lambda(x, delta_m2)
-        F = a-b*lam
+        lam = self._calc_lambda(x, delta_m2_on_nu)
+        F = (a-b*lam)
         
-        return self._nu*F/self.U_e(x)
+        return F/self.U_e(x)
     
-    def _calc_lambda(self, x, delta_m2):
-        return delta_m2*self.dU_edx(x)/self.nu
-    
-    def U_n(self, x):
-        raise NotImplementedError("Need to implement this")
-        return np.zeros_like(x)
-    
-    def delta_d(self, x):
-        raise NotImplementedError("Need to implement this")
-        return np.zeros_like(x)
-    
-    def delta_m(self, x):
-        raise NotImplementedError("Need to implement this")
-        return np.zeros_like(x)
-    
-    def H(self, x):
-        raise NotImplementedError("Need to implement this")
-        return np.zeros_like(x)
-    
-    def tau_w(self, x):
-        raise NotImplementedError("Need to implement this")
-        return np.zeros_like(x)
+    def _calc_lambda(self, x, delta_m2_on_nu):
+        return delta_m2_on_nu*self.dU_edx(x)
     
     # Tabular data section
     _tab_F = np.array([0.938, 0.953, 0.956, 0.962, 0.967, 0.969, 0.971, 0.970, 
@@ -598,15 +707,54 @@ class ThwaitesMethod(IBLBase):
         
         
 #Thwaites Default Functions       
-def _function_of_lambda_property_setter(f):
-    try:
-        sig = inspect.signature(f)
-    except Exception as e:
-        print('Must be a function of lambda.')
-        print(e)
-    else:
-        if len(sig.parameters) != 1:
-            raise Exception('Must take one argument, lambda.')
-        else:
-            return f
+#def _function_of_lambda_property_setter(f):
+#    try:
+#        sig = inspect.signature(f)
+#    except Exception as e:
+#        print('Must be a function of lambda.')
+#        print(e)
+#    else:
+#        if len(sig.parameters) != 1:
+#            raise Exception('Must take one argument, lambda.')
+#        else:
+#            return f
+
+
+class _ThwaitesSeparationEvent(IBLTermEventBase):
+    """
+    This class detects separation and will terminate integration when it occurs.
+    
+    This is a callable object that the ODE integrator will use to determine if
+    the integration should terminate before the end location.
+    
+    Attributes
+    ----------
+        _x_kill: x-location that the integrator should stop.
+    """
+    def __init__(self, calc_lam, S_fun):
+        super().__init__()
+        self._calc_lam = calc_lam
+        self._S_fun = S_fun
+    
+    def _call_impl(self, x, delta_m2_on_nu):
+        """
+        Information used to determine if Thwaites method integrator should 
+        terminate.
+        
+        This will terminate once the shear function goes negative.
+        
+        Args
+        ----
+            x: Current x-location of the integration
+            delta_m2_on_nu: Current step square of momentum thickness divided
+                            by the kinematic viscosity
+        
+        Returns
+        -------
+            Current value of the shear function.
+        """
+        return self._S_fun(self._calc_lam(x, delta_m2_on_nu))
+    
+    def event_info(self):
+        return -1, ""
 

@@ -13,96 +13,6 @@ from scipy.misc import derivative as fd
 from abc import ABC, abstractmethod
 
 
-TERMINATION_MESSAGES = {0: "Completed",
-                        -1: "Separated",
-                        1: "Transition",
-                        -99: "Unknown Event"}
-
-
-class IBLResult:
-    """Bunch object representing the results of the IBL integration.
-    
-    Attributes
-    ----------
-        x_end: x-location of end of integration
-        F_end: State value(s) at end of integration
-        status: Reason integration terminated:
-            * 0: Reached final distance
-            * -1: Separation occured at x_end
-            * 1: Transition occured at x_end
-            * Other values can be used by specific implementations
-        message: Description of termination reason
-        success: True if solver successfully completed
-    """
-    def __init__(self, x_end = np.inf, F_end = np.inf,
-                 status = -99, message = "Not Set", success = False):
-        self.x_end = x_end
-        self.F_end = F_end
-        self.status = status
-        self.message = message
-        self.success = success
-
-
-class IBLTermEventBase(ABC):
-    """
-    Base class for a termination event for IBL solver.
-    
-    The two abstract methods that have to be implemented are event_info and 
-    _call_impl. Classes derived from this class can either be used within an 
-    IBL implementation or as a parameter into the solve method.
-    """
-    def __init__(self):
-        self.terminal = True
-        
-    def __call__(self, x, F):
-        """
-        ODE solver is going to call this method to determine if the integration 
-        should terminate.
-        
-        Args
-        ----
-            x: Current x-location of the integration
-            F: Current state value(s)
-        
-        Returns
-        -------
-            Floating point number that is zero when the solver should stop
-        """
-        return self._call_impl(x, F)
-    
-    @abstractmethod
-    def event_info(self):
-        """
-        Method returns information about the purpose of this event. This is 
-        used to provide feedback as to what caused the integration to terminate
-        and any other helpful information.
-        
-        Returns
-        -------
-            2-tuple of event index and string providing any extra information.
-            Event index should be -1 for separation and 1 for transition. Other 
-            values may not be handled correctly.
-        """
-        pass
-    
-    @abstractmethod
-    def _call_impl(self, x, F):
-        """
-        Information used to determine if IBL integrator should terminate.
-        
-        The return value is used in a root finder to find what x,F will result
-        in the termination of the integrator. The function should return zero 
-        when the integrator should terminate, and change signs around the
-        termination state.
-        
-        Args
-        ----
-            x: Current x-location of the integration
-            F: Current state value(s)
-        """
-        pass
-
-
 class IBLBase(ABC):
     """
     The base class for integral boundary layer classes.
@@ -118,6 +28,7 @@ class IBLBase(ABC):
                  velocity
         _d2U_edx2: Function representing the streamwise second derivative of the
                    edge velocity
+        _x_range: 2-tuple for start and end location for integration
         _kill_events: List of events that should be passed into ODE solver that
                       might cause the integration to terminate early
         _F: Piecewise polynomials representing the state variables from the
@@ -141,6 +52,7 @@ class IBLBase(ABC):
             self.set_velocity(U_e, dU_edx, d2U_edx2)
         
         # initialize other parameters
+        self._x_range = None
         self._kill_events = None
         self._F = None
 
@@ -245,13 +157,12 @@ class IBLBase(ABC):
                 raise ValueError("Don't know how to use {} to initialize "
                                  "velocity".format(U_e))
     
-    def solve(self, xrange, y0i, rtol=1e-8, atol=1e-11, term_event = None):
+    def _solve_impl(self, y0i, rtol=1e-8, atol=1e-11, term_event = None):
         """
         Solve the ODEs to determine the boundary layer properties.
         
         Args
         ----
-        xrange: 2-tuple with the start and end x-locations of integration
         y0i: Initial condition of the state vector for integration
         rtol: Relative tolerance for integration scheme
         atol: Absolute tolerance for integration scheme
@@ -265,9 +176,18 @@ class IBLBase(ABC):
         -------
             Bunch object (IBLResult) with information about the solution 
             process and termination.
+        
+        Throws
+        ------
+            TypeError if solution parameters have not been set
         """
         ## setup the ODE solver
-        xrange = np.asarray(xrange)
+        if (self._x_range is None):
+            raise TypeError("Derived class needs to set the x-range")
+            return IBLResult(x_end = None, F_end = None, status = -99,
+                             message = "Solver not configured", 
+                             success = False)
+            
         y0 = np.asarray(y0i)
         if y0.ndim == 0:
             y0 = [y0i]
@@ -285,13 +205,13 @@ class IBLBase(ABC):
             else:
                 kill_events.append(term_event)
 
-        rtn = solve_ivp(fun = self._ode_impl, t_span = xrange, y0 = y0,
+        rtn = solve_ivp(fun = self._ode_impl, t_span = self._x_range, y0 = y0,
                         method = 'RK45', dense_output = True,
                         events = kill_events, rtol = rtol, atol = atol)
         
         # if completed gather info
         self._solution = None
-        x_end = xrange[0]
+        x_end = self._x_range[0]
         F_end = y0
         status = -99
         message = rtn.message
@@ -321,6 +241,9 @@ class IBLBase(ABC):
             message = TERMINATION_MESSAGES.get(status)
         return IBLResult(x_end = x_end, F_end = F_end, status = status,
                          message = message, success = rtn.success)
+    
+    def _set_x_range(self, x0, x1):
+        self._x_range = [x0, x1]
     
     def U_e(self, x):
         """
@@ -439,13 +362,14 @@ class IBLBase(ABC):
         pass
     
     @abstractmethod
-    def tau_w(self, x):
+    def tau_w(self, x, rho):
         """
         Calculate the wall shear stress
         
         Args
         ----
             x: Streamwise loations to calculate this property
+            rho: Freestream density
         
         Returns
         -------
@@ -461,49 +385,139 @@ class IBLBase(ABC):
     
     def _set_kill_event(self, ke):
         self._kill_events = [ke]
+#    
+#    ## These need to be modified or removed
+#    def y(self,x):
+#        #returns m*n array, where m is len(x) and n is length(y)
+#        x_array = x #must be array
+#        #x_array = np.array([x])
+#        y_array = np.zeros([len(x),len(self._ode.y)])
+#        for i in range(len(x_array)):
+#            for j in range(len(self.dense_output_vec)): #-1
+#                if (x_array[i] >= self.x_vec[j]) & (x_array[i] <= self.x_vec[j+1]):
+#                    y_array[i,:] = self.dense_output_vec[j](x_array[i])
+#                    break
+#                 
+#        return y_array
+#    
+#    def yp(self,x):
+#        #Uses Dense Output construct to return derivative with polynomial
+#        x_array = x #must be array
+#        #x_array = np.array([x])
+#        yp_array = np.zeros([len(x),len(self._ode.y)])
+#        for i in range(len(x_array)):
+#            for j in range(len(self.dense_output_vec)): #-1
+#                if (x_array[i] >= self.x_vec[j]) & (x_array[i] <= self.x_vec[j+1]):
+#                    #y_array = np.append(y_array, [[self._piecewise_funs[j](x_array[i])]],axis=0)
+#                    #print(x_array[i])
+#                    #y_array[i,:] = self._piecewise_funs[j](x_array[i])
+#                    xdist = (x_array[i] - self.dense_output_vec[j].t_old) / self.dense_output_vec[j].h
+#                    if np.array(x_array[i]).ndim == 0:
+#                                #p = np.tile(x, testfit.order + 1)
+#                                p = np.tile(xdist, self.dense_output_vec[j].order + 1)
+#                                # TODO: This produces error when xdist=0 because p becomes vector of zeros
+#                                #       See issue #21
+#                                p = np.cumprod(p)/p
+#                    else:
+#                                p = np.tile(xdist, (self.dense_output_vec[j].order + 1, 1))
+#                                p = np.cumprod(p, axis=0)/p
+#                    #term1 = self.dense_output_vec[j].h h actually disappears
+#                    term2 = np.arange(1,self.dense_output_vec[j].order+2)
+#                    term3 = self.dense_output_vec[j].Q
+#                    term4 = p
+#                    yp_array[i,:] = np.dot(term2*term3, term4) 
+#                                        #yp_array[i,:] = self.dense_output_vec[j](x_array[i])
+#                    
+#                    break
+#        return yp_array        
+
+
+TERMINATION_MESSAGES = {0: "Completed",
+                        -1: "Separated",
+                        1: "Transition",
+                        -99: "Unknown Event"}
+
+
+class IBLResult:
+    """Bunch object representing the results of the IBL integration.
     
-    ## These need to be modified or removed
-    def y(self,x):
-        #returns m*n array, where m is len(x) and n is length(y)
-        x_array = x #must be array
-        #x_array = np.array([x])
-        y_array = np.zeros([len(x),len(self._ode.y)])
-        for i in range(len(x_array)):
-            for j in range(len(self.dense_output_vec)): #-1
-                if (x_array[i] >= self.x_vec[j]) & (x_array[i] <= self.x_vec[j+1]):
-                    y_array[i,:] = self.dense_output_vec[j](x_array[i])
-                    break
-                 
-        return y_array
+    Attributes
+    ----------
+        x_end: x-location of end of integration
+        F_end: State value(s) at end of integration
+        status: Reason integration terminated:
+            * 0: Reached final distance
+            * -1: Separation occured at x_end
+            * 1: Transition occured at x_end
+            * Other values can be used by specific implementations
+        message: Description of termination reason
+        success: True if solver successfully completed
+    """
+    def __init__(self, x_end = np.inf, F_end = np.inf,
+                 status = -99, message = "Not Set", success = False):
+        self.x_end = x_end
+        self.F_end = F_end
+        self.status = status
+        self.message = message
+        self.success = success
+
+
+class IBLTermEventBase(ABC):
+    """
+    Base class for a termination event for IBL solver.
     
-    def yp(self,x):
-        #Uses Dense Output construct to return derivative with polynomial
-        x_array = x #must be array
-        #x_array = np.array([x])
-        yp_array = np.zeros([len(x),len(self._ode.y)])
-        for i in range(len(x_array)):
-            for j in range(len(self.dense_output_vec)): #-1
-                if (x_array[i] >= self.x_vec[j]) & (x_array[i] <= self.x_vec[j+1]):
-                    #y_array = np.append(y_array, [[self._piecewise_funs[j](x_array[i])]],axis=0)
-                    #print(x_array[i])
-                    #y_array[i,:] = self._piecewise_funs[j](x_array[i])
-                    xdist = (x_array[i] - self.dense_output_vec[j].t_old) / self.dense_output_vec[j].h
-                    if np.array(x_array[i]).ndim == 0:
-                                #p = np.tile(x, testfit.order + 1)
-                                p = np.tile(xdist, self.dense_output_vec[j].order + 1)
-                                # TODO: This produces error when xdist=0 because p becomes vector of zeros
-                                #       See issue #21
-                                p = np.cumprod(p)/p
-                    else:
-                                p = np.tile(xdist, (self.dense_output_vec[j].order + 1, 1))
-                                p = np.cumprod(p, axis=0)/p
-                    #term1 = self.dense_output_vec[j].h h actually disappears
-                    term2 = np.arange(1,self.dense_output_vec[j].order+2)
-                    term3 = self.dense_output_vec[j].Q
-                    term4 = p
-                    yp_array[i,:] = np.dot(term2*term3, term4) 
-                                        #yp_array[i,:] = self.dense_output_vec[j](x_array[i])
-                    
-                    break
-        return yp_array        
+    The two abstract methods that have to be implemented are event_info and 
+    _call_impl. Classes derived from this class can either be used within an 
+    IBL implementation or as a parameter into the solve method.
+    """
+    def __init__(self):
+        self.terminal = True
+        
+    def __call__(self, x, F):
+        """
+        ODE solver is going to call this method to determine if the integration 
+        should terminate.
+        
+        Args
+        ----
+            x: Current x-location of the integration
+            F: Current state value(s)
+        
+        Returns
+        -------
+            Floating point number that is zero when the solver should stop
+        """
+        return self._call_impl(x, F)
+    
+    @abstractmethod
+    def event_info(self):
+        """
+        Method returns information about the purpose of this event. This is 
+        used to provide feedback as to what caused the integration to terminate
+        and any other helpful information.
+        
+        Returns
+        -------
+            2-tuple of event index and string providing any extra information.
+            Event index should be -1 for separation and 1 for transition. Other 
+            values may not be handled correctly.
+        """
+        pass
+    
+    @abstractmethod
+    def _call_impl(self, x, F):
+        """
+        Information used to determine if IBL integrator should terminate.
+        
+        The return value is used in a root finder to find what x,F will result
+        in the termination of the integrator. The function should return zero 
+        when the integrator should terminate, and change signs around the
+        termination state.
+        
+        Args
+        ----
+            x: Current x-location of the integration
+            F: Current state value(s)
+        """
+        pass
 

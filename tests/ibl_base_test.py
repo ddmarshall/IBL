@@ -66,6 +66,10 @@ class IBLBaseTest(IBLBase):
         if x_kill is not None:
             self._set_kill_event(_IBLBaseTestTermEvent(x_kill))
     
+    def solve(self, x_start, x_end, y0, term_event = None):
+        self._set_x_range(x_start, x_end)
+        return self._solve_impl(y0, term_event = term_event)
+    
     def _ode_impl(self, x, F):
         """
         This is the derivatives of the ODEs that are to be solved
@@ -89,7 +93,7 @@ class IBLBaseTest(IBLBase):
     def H(self, x):
         return np.zeros_like(x)
     
-    def tau_w(self, x):
+    def tau_w(self, x, rho):
         return np.zeros_like(x)
 
 
@@ -315,7 +319,7 @@ class TestEdgeVelocity(unittest.TestCase):
         x_start = 1
         x_end = 2
         y_start = ref_fun(x_start)
-        rtn = iblb.solve([x_start, x_end], y_start)
+        rtn = iblb.solve(x_start, x_end, y_start)
         self.assertTrue(rtn.success)
         self.assertEqual(rtn.status, 0)
         self.assertEqual(rtn.message, "Completed")
@@ -326,7 +330,7 @@ class TestEdgeVelocity(unittest.TestCase):
         x_start = 1
         x_end = x_kill + 1
         y_start = ref_fun(x_start)
-        rtn = iblb.solve([x_start, x_end], y_start)
+        rtn = iblb.solve(x_start, x_end, y_start)
         self.assertTrue(rtn.success)
         self.assertEqual(rtn.status, -1)
         self.assertEqual(rtn.message, "Separated")
@@ -339,7 +343,7 @@ class TestEdgeVelocity(unittest.TestCase):
         y_start = ref_fun(x_start)
         y_trans = 0.5*(y_start+ref_fun(x_kill))
         x_trans = np.sqrt(2*(y_trans-1))
-        rtn = iblb.solve([x_start, x_end], y_start,
+        rtn = iblb.solve(x_start, x_end, y_start,
                          term_event = IBLBaseTestTransition(y_trans))
         self.assertTrue(rtn.success)
         self.assertEqual(rtn.status, 1)
