@@ -12,6 +12,9 @@ import numpy.testing as npt
 from scipy.misc import derivative as fd
 
 from pyBL.thwaites_method import ThwaitesMethod
+from pyBL.thwaites_method import _ThwaitesFunctionsWhite
+from pyBL.thwaites_method import _ThwaitesFunctionsCebeciBradshaw
+from pyBL.thwaites_method import _ThwaitesFunctionsSpline
 
 
 class ThwaitesLinearAnalytic:
@@ -82,8 +85,8 @@ class TestLinearThwaites(unittest.TestCase):
         
         # test with spline of tabular data
         tm = ThwaitesMethod(U_e = U_e_fun, dU_edx = dU_edx_fun,
-                            d2U_edx2 = d2U_edx2_fun, data_fits = "Thwaites")
-        tm_ref = ThwaitesLinearAnalytic(U_ref, m, nu, tm._H_fun, tm._S_fun)
+                            d2U_edx2 = d2U_edx2_fun, data_fits = "Spline")
+        tm_ref = ThwaitesLinearAnalytic(U_ref, m, nu, tm._model.H, tm._model.S)
         tm.set_solution_parameters(x0 = x[0], x_end = x[-1],
                                    delta_m0 = tm_ref.delta_m(x[0]), nu = nu)
         rtn = tm.solve()
@@ -101,7 +104,7 @@ class TestLinearThwaites(unittest.TestCase):
         # test with White fits
         tm = ThwaitesMethod(U_e = U_e_fun, dU_edx = dU_edx_fun,
                             d2U_edx2 = d2U_edx2_fun, data_fits = "White")
-        tm_ref = ThwaitesLinearAnalytic(U_ref, m, nu, tm._H_fun, tm._S_fun)
+        tm_ref = ThwaitesLinearAnalytic(U_ref, m, nu, tm._model.H, tm._model.S)
         tm.set_solution_parameters(x0 = x[0], x_end = x[-1],
                                    delta_m0 = tm_ref.delta_m(x[0]), nu = nu)
         rtn = tm.solve()
@@ -120,7 +123,7 @@ class TestLinearThwaites(unittest.TestCase):
         tm = ThwaitesMethod(U_e = U_e_fun, dU_edx = dU_edx_fun,
                             d2U_edx2 = d2U_edx2_fun,
                             data_fits = "Cebeci-Bradshaw")
-        tm_ref = ThwaitesLinearAnalytic(U_ref, m, nu, tm._H_fun, tm._S_fun)
+        tm_ref = ThwaitesLinearAnalytic(U_ref, m, nu, tm._model.H, tm._model.S)
         tm.set_solution_parameters(x0 = x[0], x_end = x[-1],
                                    delta_m0 = tm_ref.delta_m(x[0]), nu = nu)
         rtn = tm.solve()
@@ -185,7 +188,8 @@ class TestLinearThwaites(unittest.TestCase):
         
         # test creating with invalid name
         with self.assertRaises(ValueError):
-            ThwaitesMethod(U_e = U_e_fun, dU_edx = dU_edx_fun, d2U_edx2 = d2U_edx2_fun, data_fits = "My Own")
+            ThwaitesMethod(U_e = U_e_fun, dU_edx = dU_edx_fun,
+                           d2U_edx2 = d2U_edx2_fun, data_fits = "My Own")
 
 
 class TestCurveFits(unittest.TestCase):
@@ -215,13 +219,19 @@ class TestCurveFits(unittest.TestCase):
     
     def test_tabular_values(self):
         
+        spline = _ThwaitesFunctionsSpline()
+        
         # test the range of lambda
-        lam_min, lam_max = ThwaitesMethod._tabular_range()
+        lam_min = spline._tab_lam[0]
+        lam_max = spline._tab_lam[-1]
         self.assertIsNone(npt.assert_allclose(lam_min, np.min(self.lam_ref)))
         self.assertIsNone(npt.assert_allclose(lam_max, np.max(self.lam_ref)))
         
         # test the tabular values
-        lam, H, S, F = ThwaitesMethod._tabular_data()
+        lam = spline._tab_lam
+        H = spline._tab_H
+        S = spline._tab_S
+        F = spline._tab_F
         self.assertIsNone(npt.assert_allclose(self.lam_ref, lam))
         self.assertIsNone(npt.assert_allclose(self.H_ref, H))
         self.assertIsNone(npt.assert_allclose(self.S_ref, S))
@@ -234,61 +244,62 @@ class TestCurveFits(unittest.TestCase):
         
     def test_white_functions(self):
         
-        # test the range of lambda
-        lam_min, lam_max = ThwaitesMethod._white_range()
+        white = _ThwaitesFunctionsWhite()
+        
+        ## test the range of lambda
+        lam_min, lam_max = white.range()
         self.assertIsNone(npt.assert_allclose(lam_min, -0.09))
         self.assertTrue(np.isinf(lam_max))
         
         # create the lambdas and reference values for testing
-        lam = np.linspace(lam_min, np.minimum(np.amax(self.lam_ref), lam_max),
-                          101)
+        lam = np.linspace(lam_min, np.max(self.lam_ref), 101)
         
-        # test S function
+        ## test S function
         def S_fun(lam):
             return (lam + 0.09)**(0.62)
         
+        # do loop in case hard coded functions cannot take vectors
         S=np.zeros_like(lam)
         for i, l in enumerate(lam):
             S[i] = S_fun(l)
+        self.assertIsNone(npt.assert_allclose(S, white.S(lam)))
         
-        self.assertIsNone(npt.assert_allclose(S, ThwaitesMethod._white_S(lam)))
-        
-        # check to make sure raises error when asked for out of range data
+        ## check to make sure raises error when asked for out of range data
         with self.assertRaises(ValueError):
-            ThwaitesMethod._white_S(2*lam_min)
+            white.S(2*lam_min)
         
-        # test H function
+        ## test H function
         def H_fun(lam):
             z = 0.25-lam
             return 2.0 + 4.14*z - 83.5*z**2 + 854*z**3 - 3337*z**4 + 4576*z**5
         
+        # do loop in case hard coded functions cannot take vectors
         H=np.zeros_like(lam)
         for i, l in enumerate(lam):
             H[i] = H_fun(l)
+        self.assertIsNone(npt.assert_allclose(H, white.H(lam)))
         
-        self.assertIsNone(npt.assert_allclose(H, ThwaitesMethod._white_H(lam)))
-        
-        # check to make sure raises error when asked for out of range data
+        ## check to make sure raises error when asked for out of range data
         with self.assertRaises(ValueError):
-            ThwaitesMethod._white_H(2*lam_min)
+            white.H(2*lam_min)
         
-        # test H' function
+        ## test H' function
         Hp=np.zeros_like(lam)
         delta = 1e-5
         for i, l in enumerate(lam):
             Hp[i] = fd(H_fun, l, l*delta, n=1, order=3)
+        self.assertIsNone(npt.assert_allclose(Hp, white.Hp(lam)))
         
-        self.assertIsNone(npt.assert_allclose(Hp,
-                                              ThwaitesMethod._white_Hp(lam)))
-        
-        # check to make sure raises error when asked for out of range data
+        ## check to make sure raises error when asked for out of range data
         with self.assertRaises(ValueError):
-            ThwaitesMethod._white_Hp(2*lam_min)
+            white.Hp(2*lam_min)
     
-    def test_cebeci_and_bradshaw_functions(self):
+    def test_cebeci_bradshaw_functions(self):
+        
+        cb = _ThwaitesFunctionsCebeciBradshaw()
         
         # test the range of lambda
-        lam_min, lam_max = ThwaitesMethod._cb_range()
+        lam_min, lam_max = cb.range()
         self.assertIsNone(npt.assert_allclose(lam_min, -0.1))
         self.assertIsNone(npt.assert_allclose(lam_max, 0.1))
         
@@ -302,17 +313,17 @@ class TestCurveFits(unittest.TestCase):
             else:
                 return 0.22 + 1.57*lam - 1.8*lam**2
         
+        # do loop in case hard coded functions cannot take vectors
         S=np.zeros_like(lam)
         for i, l in enumerate(lam):
             S[i] = S_fun(l)
-        
-        self.assertIsNone(npt.assert_allclose(S, ThwaitesMethod._cb_S(lam)))
+        self.assertIsNone(npt.assert_allclose(S, cb.S(lam)))
         
         # check to make sure raises error when asked for out of range data
         with self.assertRaises(ValueError):
-            ThwaitesMethod._cb_S(2*lam_min)
+            cb.S(2*lam_min)
         with self.assertRaises(ValueError):
-            ThwaitesMethod._cb_S(2*lam_max)
+            cb.S(2*lam_max)
         
         # test H function
         def H_fun(lam):
@@ -321,17 +332,17 @@ class TestCurveFits(unittest.TestCase):
             else:
                 return 2.61 - 3.75*lam + 5.24*lam**2
         
+        # do loop in case hard coded functions cannot take vectors
         H=np.zeros_like(lam)
         for i, l in enumerate(lam):
             H[i] = H_fun(l)
-        
-        self.assertIsNone(npt.assert_allclose(H, ThwaitesMethod._cb_H(lam)))
+        self.assertIsNone(npt.assert_allclose(H, cb.H(lam)))
         
         # check to make sure raises error when asked for out of range data
         with self.assertRaises(ValueError):
-            ThwaitesMethod._cb_H(2*lam_min)
+            cb.H(2*lam_min)
         with self.assertRaises(ValueError):
-            ThwaitesMethod._cb_H(2*lam_max)
+            cb.H(2*lam_max)
         
         # test H' function
         # NOTE: Since H is discontinuous at 0, so is H' so remove that case
@@ -339,45 +350,47 @@ class TestCurveFits(unittest.TestCase):
         Hp=np.zeros_like(lam)
         delta = 1e-5
         for i, l in enumerate(lam):
-            Hp[i] = fd(H_fun, l, max(l*delta, delta), n=1, order=3)
+            Hp[i] = fd(H_fun, l, np.maximum(l*delta, delta), n=1, order=3)
         
-        self.assertIsNone(npt.assert_allclose(Hp, ThwaitesMethod._cb_Hp(lam)))
+        self.assertIsNone(npt.assert_allclose(Hp, cb.Hp(lam)))
         
         # check to make sure raises error when asked for out of range data
         with self.assertRaises(ValueError):
-            ThwaitesMethod._cb_Hp(2*lam_min)
+            cb.Hp(2*lam_min)
         with self.assertRaises(ValueError):
-            ThwaitesMethod._cb_Hp(2*lam_max)
+            cb.Hp(2*lam_max)
     
     def test_spline_functions(self):
         
+        spline = _ThwaitesFunctionsSpline()
+        
         # test the range of lambda
-        lam_min, lam_max = ThwaitesMethod._spline_range()
-        self.assertIsNone(npt.assert_allclose(lam_min, np.amin(self.lam_ref)))
-        self.assertIsNone(npt.assert_allclose(lam_max, np.amax(self.lam_ref)))
+        lam_min, lam_max = spline.range()
+        self.assertIsNone(npt.assert_allclose(lam_min, np.min(self.lam_ref)))
+        self.assertIsNone(npt.assert_allclose(lam_max, np.max(self.lam_ref)))
         
         # create the lambdas and reference values for testing
         lam = self.lam_ref
         
         # test S function
         S=self.S_ref
-        self.assertIsNone(npt.assert_allclose(S, ThwaitesMethod._spline_S(lam)))
+        self.assertIsNone(npt.assert_allclose(S, spline.S(lam)))
         
         # check to make sure raises error when asked for out of range data
         with self.assertRaises(ValueError):
-            ThwaitesMethod._spline_S(2*lam_min)
+            spline.S(2*lam_min)
         with self.assertRaises(ValueError):
-            ThwaitesMethod._spline_S(2*lam_max)
+            spline.S(2*lam_max)
         
         # test H function
         H=self.H_ref
-        self.assertIsNone(npt.assert_allclose(H, ThwaitesMethod._spline_H(lam)))
+        self.assertIsNone(npt.assert_allclose(H, spline.H(lam)))
         
         # check to make sure raises error when asked for out of range data
         with self.assertRaises(ValueError):
-            ThwaitesMethod._spline_H(2*lam_min)
+            spline.H(2*lam_min)
         with self.assertRaises(ValueError):
-            ThwaitesMethod._spline_H(2*lam_max)
+            spline.H(2*lam_max)
         
         # test H' function
         # NOTE: cannot evaluate spline H outside of end points, so finite 
@@ -386,17 +399,19 @@ class TestCurveFits(unittest.TestCase):
         Hp=np.zeros_like(lam)
         delta = 1e-8
         for i, l in enumerate(lam):
-            Hp[i] = fd(ThwaitesMethod._spline_H, l, max(l*delta, delta),
+            Hp[i] = fd(spline.H, l, np.maximum(l*delta, delta),
                        n=1, order=3)
         
-        self.assertIsNone(npt.assert_allclose(Hp,
-                                              ThwaitesMethod._spline_Hp(lam)))
+        self.assertIsNone(npt.assert_allclose(Hp, spline.Hp(lam)))
         
         # check to make sure raises error when asked for out of range data
         with self.assertRaises(ValueError):
-            ThwaitesMethod._spline_Hp(2*lam_min)
+            spline.Hp(2*lam_min)
         with self.assertRaises(ValueError):
-            ThwaitesMethod._spline_Hp(2*lam_max)
+            spline.Hp(2*lam_max)
+    
+    def test_custom_functions(self):
+        pass
 
 
 if (__name__ == "__main__"):

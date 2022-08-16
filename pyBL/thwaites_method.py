@@ -32,21 +32,10 @@ class ThwaitesMethod(IBLBase):
     ----------
         _delta_m0: Momentum thickness at start location
         _nu: Kinematic viscosity
-        _S_fun: Shear function used in algorithm
-        _H_fun: Shape function used in algorithm
-        _Hp_fun: Derivative of the Shape function
-
-        _tab_lam: Original tabular data for lambda from Thwaites
-        _tab_S: Original tabular data for S from Thwaites
-        _tab_H: Original tabular data for H from Thwaites
-        _tab_F: Original tabular data for F=2(S-\lambda(2+H)) from Thwaites
-        _S_lam_spline: Cubic spline through Thwaites tabular data for S
-        _H_lam_spline: Cubic spline through Thwaites tabular data for H
-        _Hp_lam_spline: Derivative of the cubic spline through H
-        
+        _model: Collection of functions for S, H, and H'
     """
     def __init__(self, U_e = None, dU_edx = None, d2U_edx2 = None,
-                 data_fits="Thwaites"):
+                 data_fits="Spline"):
         super().__init__(U_e, dU_edx, d2U_edx2)
         self.set_data_fits(data_fits)
         self._nu = None
@@ -85,16 +74,19 @@ class ThwaitesMethod(IBLBase):
     def set_data_fits(self, data_fits):
         """
         Set the functions used for the data fits of the shear function,
-        S(\lambda), and the shape function, H(\lambda).
+        S(\lambda), shape function, H(\lambda), and the slope of the shape
+        function dH/d\lambda.
         
         Args
         ----
-            data_fits: either a 2-tuple of functions that each take one 
-                       parameter, lambda where the first is the shear 
-                       function and the second is the shape function; or 
-                       a string for representing one of the three internal 
-                       implementations:
-                           * "Thwaites" - Spline fits of Thwaites original 
+            data_fits: * either a 2-tuple or 3-tuple of functions that each take
+                         one parameter, lambda, where the first is the shear 
+                         function, the second is the shape function and if 
+                         provided, the third is the derivative of the shape
+                         function; or 
+                       * a string for representing one of the three internal 
+                         implementations:
+                           * "Spline" - Spline fits of Thwaites original 
                              data (Edland 2022)
                            * "White" - Curve fits from White (2011)
                            * "Cebeci-Bradshaw" - Curve fits from 
@@ -102,25 +94,18 @@ class ThwaitesMethod(IBLBase):
         
         Throws
         ------
-            ValueError if an invalid fit name or unusable 2-tuple provided
+            ValueError if an invalid fit name or unusable 2-tuple or
+            3-tuple provided
         """
         # data_fits can either be string or 2-tuple of callables
-        self._H_fun = None
-        self._Hp_fun = None
-        self._S_fun = None
+        self._model = None
         if type(data_fits) is str:
-            if data_fits == "Thwaites":
-                self._H_fun = self._spline_H
-                self._Hp_fun = self._spline_Hp
-                self._S_fun = self._spline_S
+            if data_fits == "Spline":
+                self._model = _ThwaitesFunctionsSpline()
             elif data_fits == "White":
-                self._H_fun = self._white_H
-                self._Hp_fun = self._white_Hp
-                self._S_fun = self._white_S
+                self._model = _ThwaitesFunctionsWhite()
             elif data_fits == "Cebeci-Bradshaw":
-                self._H_fun = self._cb_H
-                self._Hp_fun = self._cb_Hp
-                self._S_fun = self._cb_S
+                self._model = _ThwaitesFunctionsCebeciBradshaw()
             else:
                 raise ValueError("Unknown fitting function name: ", data_fits)
         else:
@@ -129,18 +114,23 @@ class ThwaitesMethod(IBLBase):
                 if len(data_fits)==3:
                     if callable(data_fits[0]) and callable(data_fits[1]) \
                             and callable(data_fits[2]):
-                        self._S_fun = data_fits[0]
-                        self._H_fun = data_fits[1]
-                        self._Hp_fun = data_fits[2]
+                        self._model = _ThwaitesFunctionsBase("Custom",
+                                                             data_fits[0],
+                                                             data_fits[1],
+                                                             data_fits[2],
+                                                             -np.inf, np.inf)
                     else:
                         raise ValueError("Need to pass callable objects for "
                                          "fit functions")
                 elif len(data_fits)==2:
                     if callable(data_fits[0]) and callable(data_fits[1]):
-                        self._S_fun = data_fits[0]
-                        self._H_fun = data_fits[1]
-                        self._Hp_fun = lambda lam: fd(self._H_fun, lam, 1e-5, 
-                                                      n=1, order=3)
+                        def Hp_fun(lam):
+                            return fd(self._model.H, lam, 1e-5, n=1, order=3)
+                        self._model = _ThwaitesFunctionsBase("Custom",
+                                                             data_fits[0],
+                                                             data_fits[1],
+                                                             Hp_fun,
+                                                             -np.inf, np.inf)
                     else:
                         raise ValueError("Need to pass callable objects for "
                                          "fit functions")
@@ -151,7 +141,7 @@ class ThwaitesMethod(IBLBase):
                 raise ValueError("Need to pass a 2-tuple for fit functions")
         
         self._set_kill_event(_ThwaitesSeparationEvent(self._calc_lambda,
-                                                      self._S_fun))
+                                                      self._model.S))
     
     def solve(self, term_event = None):
         return self._solve_impl(self._delta_m0**2/self._nu,
@@ -177,7 +167,7 @@ class ThwaitesMethod(IBLBase):
         dsol_dx = self._ode_impl(x, delta_m2_on_nu)
         term3 = 0.5*U_e*self.H(x)*dsol_dx
         term4 = (U_e*delta_m2_on_nu
-                *self._Hp_fun(self._calc_lambda(x,delta_m2_on_nu)))
+                *self._model.Hp(self._calc_lambda(x,delta_m2_on_nu)))
         term5 = dU_edx*dsol_dx+self.d2U_edx2(x)*delta_m2_on_nu
         return term1 + term2*(term3+term4*term5)
     
@@ -222,7 +212,7 @@ class ThwaitesMethod(IBLBase):
             Desired property at the specified locations
         """
         lam = self._calc_lambda(x, self._solution(x)[0])
-        return self._H_fun(lam)
+        return self._model.H(lam)
     
     def tau_w(self, x, rho):
         """
@@ -238,7 +228,7 @@ class ThwaitesMethod(IBLBase):
             Desired property at the specified locations
         """
         lam = self._calc_lambda(x, self._solution(x)[0])
-        return rho*self._nu*self.U_e(x)*self._S_fun(lam)/self.delta_m(x)
+        return rho*self._nu*self.U_e(x)*self._model.S(lam)/self.delta_m(x)
     
 #    def lam(self,x):
 #        return (np.transpose(self.y(x))[0,:] *self.du_edx(x) /self.nu)
@@ -273,7 +263,109 @@ class ThwaitesMethod(IBLBase):
     
     def _calc_lambda(self, x, delta_m2_on_nu):
         return delta_m2_on_nu*self.dU_edx(x)
+
+
+#class ThwaitesSeparation(SeparationModel):
+#    def __init__(self,thwaitessim,buffer=0):
+#        def lambda_difference(thwaitessim,x=None):
+#            if type(x)!=np.ndarray and x ==None:
+#                x = thwaitessim.x_vec
+#            return -thwaitessim.lam(x)-.0842 # @ -.0842, separation
+#        super().__init__(thwaitessim,lambda_difference,buffer)
+
+
+class _ThwaitesFunctionsBase:
+    """Base class for curve fits for Thwaites data"""
+    def __init__(self, name, S_fun, H_fun, Hp_fun, lambda_min, lambda_max):
+        self._range = [lambda_min, lambda_max]
+        self._name = name
+        self._H_fun = H_fun
+        self._Hp_fun = Hp_fun
+        self._S_fun = S_fun
     
+    def range(self):
+        return self._range[0], self._range[1]
+    
+    def H(self, lam):
+        self._check_range(lam)
+        return self._H_fun(lam)
+    
+    def Hp(self, lam):
+        self._check_range(lam)
+        return self._Hp_fun(lam)
+    
+    def S(self, lam):
+        self._check_range(lam)
+        return self._S_fun(lam)
+    
+    def F(self, lam):
+        self._check_range(lam)
+        return 2*(self.S(lam)-lam*(self.H(lam)+2))
+    
+    def get_name(self):
+        return self._name
+    
+    def _check_range(self, lam):
+        lam_min, lam_max = self.range()
+        
+        if (np.array(lam) < lam_min).any():
+            raise ValueError('cannot pass value less than {} into this function'.format(lam_min))
+        elif (np.array(lam) > lam_max).any():
+            raise ValueError('cannot pass value greater than {} into this function'.format(lam_max))
+
+
+class _ThwaitesFunctionsWhite(_ThwaitesFunctionsBase):
+    """Returns White's calculation of Thwaites functions from 2011 book"""
+    def __init__(self):
+        def S(lam):
+            return pow(lam + 0.09, 0.62)
+        def H(lam):
+            z = 0.25-lam
+            return 2 + z*(4.14 + z*(-83.5 + z*(854 + z*(-3337 + z*4576))))
+        def Hp(lam):
+            z = 0.25-lam
+            return -(4.14 + z*(-2*83.5 + z*(3*854 + z*(-4*3337 + z*5*4576))))
+        
+        super().__init__("White", S, H, Hp, -0.09, np.inf)
+
+
+class _ThwaitesFunctionsCebeciBradshaw(_ThwaitesFunctionsBase):
+    """
+    Returns Cebeci and Bradshaw's calculation of Thwaites functions from
+    1977 book
+    """
+    def __init__(self):
+        def S(lam):
+            return np.piecewise(lam, [lam<0, lam>=0],
+                                [lambda lam: (0.22 + 1.402*lam
+                                              + 0.018*lam/(0.107 + lam)),
+                                 lambda lam: 0.22 + 1.57*lam - 1.8*lam**2])
+        def H(lam):
+            # NOTE: C&B's H function is not continuous at lam=0,
+            #       so using second interval
+            return np.piecewise(lam, [lam<0, lam>=0],
+                                [lambda lam: 2.088 + 0.0731/(0.14 + lam),
+                                 lambda lam: 2.61 - 3.75*lam + 5.24*lam**2])
+        def Hp(lam):
+            # NOTE: C&B's H function is not continuous at lam=0,
+            #       so using second interval
+            return np.piecewise(lam, [lam<0, lam>=0],
+                                [lambda lam: -0.0731/(0.14 + lam)**2,
+                                 lambda lam: -3.75 + 2*5.24*lam])
+        
+        super().__init__("Cebeci and Bradshaw", S, H, Hp, -0.1, 0.1)
+
+class _ThwaitesFunctionsSpline(_ThwaitesFunctionsBase):
+    """Returns cubic splines of Thwaites original tables based on Edland 2021"""
+    def __init__(self):
+        # Spline fits to Thwaites original data Edland
+        S = CubicSpline(self._tab_lam, self._tab_S)
+        H = CubicSpline(self._tab_lam, self._tab_H)
+        Hp = H.derivative()
+        
+        super().__init__("Thwaites Splines", S, H, Hp, np.min(self._tab_lam),
+                         np.max(self._tab_lam))
+
     # Tabular data section
     _tab_F = np.array([0.938, 0.953, 0.956, 0.962, 0.967, 0.969, 0.971, 0.970, 
                        0.963, 0.952, 0.936, 0.919, 0.902, 0.886, 0.854, 0.825,
@@ -295,319 +387,6 @@ class ThwaitesMethod(IBLBase):
                          -0.024,-0.016, -0.008,  0.000,  0.016,  0.032,  0.048,
                           0.064,  0.080,  0.10,  0.12,   0.14,   0.20,   0.25])
     
-    @staticmethod
-    def _tabular_range():
-        """Returns the minimum and maximum lambda for tabular data"""
-        return (np.amin(ThwaitesMethod._tab_lam), np.amax(ThwaitesMethod._tab_lam))
-
-    @staticmethod
-    def _tabular_data():
-        """Returns the tabulated values of F from Thwaites' Table I of 1949 paper"""
-        return ThwaitesMethod._tab_lam, ThwaitesMethod._tab_H, ThwaitesMethod._tab_S, ThwaitesMethod._tab_F
-
-    @staticmethod
-    def _white_range():
-        """Returns the minimum and maximum lambda for White from 2011 book"""
-        return (-0.09, np.inf)
-    
-    # Whites curve fits section
-    @staticmethod
-    def _white_S(lam):
-        """
-        Returns White's calculation of S from 2011 book
-        
-        Args
-        ----
-            lam: lambda parameter(s) at which evaluation is wanted
-            
-        Returns
-        -------
-            Returns the S(\lambda) value(s)
-        
-        Throws
-        ------
-            ValueError if an invalid fit name or unusable 2-tuple provided
-        """
-        # case when lambda is out of range
-        lam_min, lam_max = ThwaitesMethod._white_range()
-        
-        if (np.array(lam) < lam_min).any():
-            raise ValueError('cannot pass value less than {} into this function'.format(lam_min))
-        elif (np.array(lam) > lam_max).any():
-            raise ValueError('cannot pass value greater than {} into this function'.format(lam_max))
-
-        return pow(lam + 0.09, 0.62)
-    
-    @staticmethod
-    def _white_H(lam):
-        """
-        Returns White's calculation of H from 2011 book
-        
-        Args
-        ----
-            lam: lambda parameter(s) at which evaluation is wanted
-            
-        Returns
-        -------
-            Returns the H(\lambda) value(s)
-        
-        Throws
-        ------
-            ValueError if an invalid fit name or unusable 2-tuple provided
-        """
-        # case when lambda is out of range
-        lam_min, lam_max = ThwaitesMethod._white_range()
-        
-        if (np.array(lam) < lam_min).any():
-            raise ValueError('cannot pass value less than {} into this function'.format(lam_min))
-        elif (np.array(lam) > lam_max).any():
-            raise ValueError('cannot pass value greater than {} into this function'.format(lam_max))
-
-        z = 0.25-lam
-        return 2 + z*(4.14 + z*(-83.5 + z*(854 + z*(-3337 + z*4576))))
-    
-    @staticmethod
-    def _white_Hp(lam):
-        """
-        Returns the derivative of White's calculation of H from 2011 book
-        
-        Args
-        ----
-            lam: lambda parameter(s) at which evaluation is wanted
-            
-        Returns
-        -------
-            Returns the dH/d\lambda value(s)
-        
-        Throws
-        ------
-            ValueError if an invalid fit name or unusable 2-tuple provided
-        """
-        # case when lambda is out of range
-        lam_min, lam_max = ThwaitesMethod._white_range()
-        
-        if (np.array(lam) < lam_min).any():
-            raise ValueError('cannot pass value less than {} into this function'.format(lam_min))
-        elif (np.array(lam) > lam_max).any():
-            raise ValueError('cannot pass value greater than {} into this function'.format(lam_max))
-
-        z = 0.25-lam
-        return -(4.14 + z*(-2*83.5 + z*(3*854 + z*(-4*3337 + z*5*4576))))
-
-    # Cebeci & Bradshaw curve fits section
-    @staticmethod
-    def _cb_range():
-        """Returns the minimum and maximum lambda for Cebeci and Bradshaw from 1977 book"""
-        return (-0.1, 0.1)
-    
-    @staticmethod
-    def _cb_S(lam):
-        """
-        Returns Cebeci and Bradshaw's calculation of S from 1977 book
-        
-        Args
-        ----
-            lam: lambda parameter(s) at which evaluation is wanted
-            
-        Returns
-        -------
-            Returns the S(\lambda) value(s)
-        
-        Throws
-        ------
-            ValueError if an invalid fit name or unusable 2-tuple provided
-        """
-        # case when lambda is out of range
-        lam_min, lam_max = ThwaitesMethod._cb_range()
-        
-        if (np.array(lam) < lam_min).any():
-            raise ValueError('cannot pass value less than {} into this function'.format(lam_min))
-        elif (np.array(lam) > lam_max).any():
-            raise ValueError('cannot pass value greater than {} into this function'.format(lam_max))
-        
-        # case when lambda fits first interval
-        return np.piecewise(lam, [lam<0, lam>=0],
-                            [lambda lam: 0.22 + 1.402*lam + 0.018*lam/(0.107 + lam),
-                             lambda lam: 0.22 + 1.57*lam - 1.8*lam**2])
-    
-    @staticmethod
-    def _cb_H(lam):
-        """
-        Returns Cebeci and Bradshaw's calculation of H from 1977 book
-        
-        Args
-        ----
-            lam: lambda parameter(s) at which evaluation is wanted
-            
-        Returns
-        -------
-            Returns the H(\lambda) value(s)
-        
-        Throws
-        ------
-            ValueError if an invalid fit name or unusable 2-tuple provided
-        """
-        # case when lambda is out of range
-        lam_min, lam_max = ThwaitesMethod._cb_range()
-        
-        if (np.array(lam) < lam_min).any():
-            raise ValueError('cannot pass value less than {} into this function'.format(lam_min))
-        elif (np.array(lam) > lam_max).any():
-            raise ValueError('cannot pass value greater than {} into this function'.format(lam_max))
-        
-
-        # case when lambda fits first interval
-        # NOTE: C&B's H function is not continuous at lam=0, so using second interval
-        return np.piecewise(lam, [lam<0, lam>=0],
-                            [lambda lam: 2.088 + 0.0731/(0.14 + lam),
-                             lambda lam: 2.61 - 3.75*lam + 5.24*lam**2])
-    
-    @staticmethod
-    def _cb_Hp(lam):
-        """
-        Returns the derivative of Cebeci and Bradshaw's calculation of H from 1977 book
-        
-        Args
-        ----
-            lam: lambda parameter(s) at which evaluation is wanted
-            
-        Returns
-        -------
-            Returns the dH/d\lambda value(s)
-        
-        Throws
-        ------
-            ValueError if an invalid fit name or unusable 2-tuple provided
-        """
-        # case when lambda is out of range
-        lam_min, lam_max = ThwaitesMethod._cb_range()
-        
-        if (np.array(lam) < lam_min).any():
-            raise ValueError('cannot pass value less than -0.1 into this function')
-        elif (np.array(lam) > lam_max).any():
-            raise ValueError('cannot pass value greater than 0.1 into this function')
-        
-
-        # case when lambda fits first interval
-        # NOTE: C&B's H function is not continuous at lam=0, so using second interval
-        return np.piecewise(lam, [lam<0, lam>=0],
-                            [lambda lam: -0.0731/(0.14 + lam)**2,
-                             lambda lam: -3.75 + 2*5.24*lam])
-
-    # Spline fits to Thwaites original data Edland
-    _S_lam_spline = CubicSpline(_tab_lam, _tab_S)
-    _H_lam_spline = CubicSpline(_tab_lam, _tab_H)
-    _Hp_lam_spline = _H_lam_spline.derivative()
-    
-    @staticmethod
-    def _spline_range():
-        return ThwaitesMethod._tabular_range()
-    
-    @staticmethod
-    def _spline_S(lam):
-        """
-        Returns the spline of S from Edland 2021
-        
-        Args
-        ----
-            lam: lambda parameter(s) at which evaluation is wanted
-            
-        Returns
-        -------
-            Returns the S(\lambda) value(s)
-        
-        Throws
-        ------
-            ValueError if an invalid fit name or unusable 2-tuple provided
-        """
-        # case when lambda is out of range
-        lam_min, lam_max = ThwaitesMethod._spline_range()
-        
-        if (np.array(lam) < lam_min).any():
-            raise ValueError('cannot pass value less than {} into this function'.format(lam_min))
-        elif (np.array(lam) > lam_max).any():
-            raise ValueError('cannot pass value greater than {} into this function'.format(lam_max))
-
-        return ThwaitesMethod._S_lam_spline(lam)
-
-    @staticmethod
-    def _spline_H(lam):
-        """
-        Returns the spline of H from Edland 2021
-        
-        Args
-        ----
-            lam: lambda parameter(s) at which evaluation is wanted
-            
-        Returns
-        -------
-            Returns the H(\lambda) value(s)
-        
-        Throws
-        ------
-            ValueError if an invalid fit name or unusable 2-tuple provided
-        """
-        # case when lambda is out of range
-        lam_min, lam_max = ThwaitesMethod._spline_range()
-        
-        if (np.array(lam) < lam_min).any():
-            raise ValueError('cannot pass value less than {} into this function'.format(lam_min))
-        elif (np.array(lam) > lam_max).any():
-            raise ValueError('cannot pass value greater than {} into this function'.format(lam_max))
-
-        return ThwaitesMethod._H_lam_spline(lam)
-
-    @staticmethod
-    def _spline_Hp(lam):
-        """
-        Returns the derivative of the spline of H from Edland 2021
-        
-        Args
-        ----
-            lam: lambda parameter(s) at which evaluation is wanted
-            
-        Returns
-        -------
-            Returns the dH/d\lambda value(s)
-        
-        Throws
-        ------
-            ValueError if an invalid fit name or unusable 2-tuple provided
-        """
-        # case when lambda is out of range
-        lam_min, lam_max = ThwaitesMethod._spline_range()
-        
-        if (np.array(lam) < lam_min).any():
-            raise ValueError('cannot pass value less than {} into this function'.format(lam_min))
-        elif (np.array(lam) > lam_max).any():
-            raise ValueError('cannot pass value greater than {} into this function'.format(lam_max))
-
-        return ThwaitesMethod._Hp_lam_spline(lam)
-
-
-#class ThwaitesSeparation(SeparationModel):
-#    def __init__(self,thwaitessim,buffer=0):
-#        def lambda_difference(thwaitessim,x=None):
-#            if type(x)!=np.ndarray and x ==None:
-#                x = thwaitessim.x_vec
-#            return -thwaitessim.lam(x)-.0842 # @ -.0842, separation
-#        super().__init__(thwaitessim,lambda_difference,buffer)
-
-        
-        
-#Thwaites Default Functions       
-#def _function_of_lambda_property_setter(f):
-#    try:
-#        sig = inspect.signature(f)
-#    except Exception as e:
-#        print('Must be a function of lambda.')
-#        print(e)
-#    else:
-#        if len(sig.parameters) != 1:
-#            raise Exception('Must take one argument, lambda.')
-#        else:
-#            return f
-
 
 class _ThwaitesSeparationEvent(IBLTermEventBase):
     """
