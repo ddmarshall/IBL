@@ -359,12 +359,12 @@ class _ThwaitesFunctionsSpline(_ThwaitesFunctionsBase):
     """Returns cubic splines of Thwaites original tables based on Edland 2021"""
     def __init__(self):
         # Spline fits to Thwaites original data Edland
-        S = CubicSpline(self._tab_lam, self._tab_S)
-        H = CubicSpline(self._tab_lam, self._tab_H)
+        S = CubicSpline(self._tab_lambda, self._tab_S)
+        H = CubicSpline(self._tab_lambda, self._tab_H)
         Hp = H.derivative()
         
-        super().__init__("Thwaites Splines", S, H, Hp, np.min(self._tab_lam),
-                         np.max(self._tab_lam))
+        super().__init__("Thwaites Splines", S, H, Hp, np.min(self._tab_lambda),
+                         np.max(self._tab_lambda))
 
     # Tabular data section
     _tab_F = np.array([0.938, 0.953, 0.956, 0.962, 0.967, 0.969, 0.971, 0.970, 
@@ -381,11 +381,12 @@ class _ThwaitesFunctionsSpline(_ThwaitesFunctionsBase):
                        3.38, 3.30, 3.23, 3.17, 3.13, 3.05, 2.99, 2.94, 2.90,
                        2.87, 2.81, 2.75, 2.71, 2.67, 2.64, 2.61, 2.55, 2.49,
                        2.44, 2.39, 2.34, 2.28, 2.23, 2.18, 2.07,  2.00])
-    _tab_lam = np.array([-0.082,-0.0818,-0.0816,-0.0812,-0.0808,-0.0804,-0.080,
-                         -0.079,-0.078, -0.076, -0.074, -0.072, -0.070, -0.068,
-                         -0.064,-0.060, -0.056, -0.052, -0.048, -0.040, -0.032,
-                         -0.024,-0.016, -0.008,  0.000,  0.016,  0.032,  0.048,
-                          0.064,  0.080,  0.10,  0.12,   0.14,   0.20,   0.25])
+    _tab_lambda = np.array([-0.082,-0.0818,-0.0816,-0.0812,-0.0808,-0.0804,
+                            -0.080,-0.079, -0.078, -0.076, -0.074, -0.072,
+                            -0.070,-0.068, -0.064, -0.060, -0.056, -0.052,
+                            -0.048,-0.040, -0.032, -0.024, -0.016, -0.008,
+                             0.000, 0.016,  0.032,  0.048,  0.064,  0.080,
+                             0.10,  0.12,   0.14,   0.20,   0.25])
     
 
 class _ThwaitesSeparationEvent(IBLTermEventBase):

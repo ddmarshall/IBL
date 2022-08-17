@@ -222,13 +222,13 @@ class TestCurveFits(unittest.TestCase):
         spline = _ThwaitesFunctionsSpline()
         
         # test the range of lambda
-        lam_min = spline._tab_lam[0]
-        lam_max = spline._tab_lam[-1]
+        lam_min = spline._tab_lambda[0]
+        lam_max = spline._tab_lambda[-1]
         self.assertIsNone(npt.assert_allclose(lam_min, np.min(self.lam_ref)))
         self.assertIsNone(npt.assert_allclose(lam_max, np.max(self.lam_ref)))
         
         # test the tabular values
-        lam = spline._tab_lam
+        lam = spline._tab_lambda
         H = spline._tab_H
         S = spline._tab_S
         F = spline._tab_F
