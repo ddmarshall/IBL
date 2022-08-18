@@ -102,6 +102,7 @@ def compare_thwaites_fits():
     plt.ylabel(r'$F\left(\lambda\right)$')
     plt.grid(True)
     plt.legend()
+    plt.show()
     
     ## Calculate the errors between tabular data and fits
     # Notes: * Only Cebeci & Bradshaw cannot compare all tabulated values
@@ -118,7 +119,6 @@ def compare_thwaites_fits():
     spline_error = np.abs(1-spline.F(tab_lambda)/tab_F)
     
     # Show relative errors
-    plt.show()
     plt.figure()
     plt.plot(tab_lambda, linear_error, color='green', label=r'Linear')
     plt.plot(tab_lambda, white_error, color='red', label=r'White')
