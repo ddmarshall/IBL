@@ -8,13 +8,15 @@ Created on Wed Aug 17 18:01:43 2022
 
 import numpy as np
 from scipy.integrate import solve_ivp
+from scipy.integrate import quadrature
+from scipy.optimize import root_scalar
 
 
 class BlasiusSolution:
     def __init__(self, U_ref, nu, fpp0 = None, eta_inf = 10):
         self._U_ref = U_ref
         self._nu = nu
-        self._eta_range = [0, eta_inf]
+        self._eta_inf = eta_inf
         
         self._set_boundary_condition(fpp0)
         self._set_solution()
@@ -38,7 +40,7 @@ class BlasiusSolution:
             
             return Fp
             
-        rtn = solve_ivp(fun = fun, t_span = self._eta_range, y0 = F0,
+        rtn = solve_ivp(fun = fun, t_span = [0, self._eta_inf], y0 = F0,
                         method = 'RK45', dense_output = True, events = None,
                         rtol = 1e-8, atol = 1e-11)
         
@@ -51,25 +53,37 @@ class BlasiusSolution:
                              "".format(self._fpp0))
     
     def f(self, eta):
-        return self._F(eta)[0, :]
+        return self._F(eta)[0]
     
     def fp(self, eta):
-        return self._F(eta)[1, :]
+        return self._F(eta)[1]
     
     def fpp(self, eta):
-        return self._F(eta)[2, :]
+        return self._F(eta)[2]
     
     def eta_d(self):
-        pass
+        return self._eta_inf-self.f(self._eta_inf)
     
     def eta_m(self):
-        pass
+        return self.fpp(0)
     
     def eta_k(self):
-        pass
+        def fun(eta):
+            return 2*np.prod(self._F(eta), axis=0)
+        
+        val = quadrature(fun, 0, self._eta_inf)
+        return val[0]
     
     def eta_s(self):
-        pass
+        def fun(eta):
+            return 0.99-self.fp(eta)
+        
+        sol = root_scalar(fun, method = "bisect", bracket = [0, 10])
+        if sol.converged:
+            return sol.root
+        else:
+            raise ValueError("Could not find shear thickness with error: "
+                             + sol.flag)
     
     def eta(self, x, y):
         x = np.asarray(x)
@@ -102,16 +116,28 @@ class BlasiusSolution:
         pass
     
     def delta_d(self, x):
-        pass
+        return self.eta_d()/self._g(x)
     
     def delta_m(self, x):
-        pass
+        return self.eta_m()/self._g(x)
+    
+    def delta_k(self, x):
+        return self.eta_k()/self._g(x)
     
     def delta_s(self, x):
-        pass
+        return self.eta_s()/self._g(x)
     
-    def H(self, x):
-        return self.delta_m(x)/self.delta_d(x)
+    def H_d(self, _):
+        return self.eta_d()/self.eta_m()
+    
+    def H_k(self, _):
+        return self.eta_k()/self.eta_m()
     
     def tau_w(self, x, rho):
-        pass
+        return rho*self._nu*self._U_ref*self._g(x)*self.fpp(0)
+    
+    def D(self, x, rho):
+        return 0.5*rho*self._nu*self._g(x)*self._U_ref**2*self.eta_k()
+    
+    def _g(self, x):
+        return np.sqrt(0.5*self._U_ref/(self._nu*x))

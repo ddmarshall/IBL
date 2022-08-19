@@ -9,6 +9,7 @@ Created on Wed Aug 17 17:23:25 2022
 import unittest
 import numpy as np
 import numpy.testing as npt
+from scipy.integrate import quadrature
 
 from pyBL.blasius_solution import BlasiusSolution
 
@@ -50,32 +51,103 @@ class TestCurveFits(unittest.TestCase):
                         0.00026,  0.000119, 0.000052, 0.000022, 0.000009,
                         0.000004])
     eta_d_ref = 1.21678
-    eta_m_ref = 0.4696
+    eta_m_ref = 0.46960
     eta_s_ref = 3.5
+    eta_k_ref = 0
     
     def testBasicSolution(self):
-        bs = BlasiusSolution(U_ref = 10, fpp0 = 0.46960, nu = 1e-5)
+        U_inf = 10
+        nu = 1e-5
+        bs = BlasiusSolution(U_ref = U_inf, fpp0 = 0.46960, nu = nu)
         
-        ## test the solution for f
+        ## Test the solution for f
         f = bs.f(self.eta_ref)
         self.assertIsNone(npt.assert_allclose(f, self.f_ref, rtol=0, atol=1e-5))
         
-        ## test the solution for f'
+        ## Test the solution for f'
         fp = bs.fp(self.eta_ref)
         self.assertIsNone(npt.assert_allclose(fp, self.fp_ref, rtol=0,
                                               atol=1e-5))
         
-        ## test the solution for f''
+        ## Test the solution for f''
         fpp = bs.fpp(self.eta_ref)
         self.assertIsNone(npt.assert_allclose(fpp, self.fpp_ref, rtol=0,
                                               atol=1e-5))
-        
-        pass
     
     def testBoundaryLayerParameters(self):
-        pass
+        U_inf = 10
+        nu = 1e-5
+        rho = 1
+        bs = BlasiusSolution(U_ref = U_inf, fpp0 = 0.46960, nu = nu)
+        
+        ## Test the values in terms of eta
+        # displacement thickness
+        eta_d = bs.eta_d()
+        self.assertIsNone(npt.assert_allclose(eta_d, self.eta_d_ref, rtol = 0,
+                                              atol = 1e-4))
+        # momentum thickness
+        eta_m = bs.eta_m()
+        self.assertIsNone(npt.assert_allclose(eta_m, self.eta_m_ref, rtol = 0,
+                                              atol = 1e-4))
+        
+        # shear thickness
+        eta_s = bs.eta_s()
+        self.assertIsNone(npt.assert_allclose(eta_s, self.eta_s_ref, rtol = 0,
+                                              atol = 1e-1))
+        
+        # kinetic energy thickness
+        def fun(eta):
+            fp = bs.fp(eta)
+            return fp*(1-fp**2)
+        eta_k_ref = quadrature(fun, 0, 10)[0]
+        
+        eta_k = bs.eta_k()
+        self.assertIsNone(npt.assert_allclose(eta_k, eta_k_ref, rtol = 1e-6,
+                          atol = 0))
+        
+        ## Test the values in terms of x
+        x = np.linspace(0.2, 2, 101)
+        g = np.sqrt(0.5*U_inf/(nu*x))
+        
+        # test displacement thickness
+        delta_d_ref = eta_d/g
+        self.assertIsNone(npt.assert_allclose(bs.delta_d(x), delta_d_ref))
+        
+        # test momentum thickness
+        delta_m_ref = eta_m/g
+        self.assertIsNone(npt.assert_allclose(bs.delta_m(x), delta_m_ref))
+        
+        # test kinetic energy thickness
+        delta_k_ref = eta_k/g
+        self.assertIsNone(npt.assert_allclose(bs.delta_k(x), delta_k_ref))
+        
+        # test shear thickness
+        delta_s_ref = eta_s/g
+        self.assertIsNone(npt.assert_allclose(bs.delta_s(x), delta_s_ref))
+        
+        # test shape factors
+        H_d_ref = delta_d_ref/delta_m_ref
+        H_k_ref = delta_k_ref/delta_m_ref
+        self.assertIsNone(npt.assert_allclose(bs.H_d(x), H_d_ref))
+        self.assertIsNone(npt.assert_allclose(bs.H_k(x), H_k_ref))
+        
+        # test wall shear stress
+        tau_w_ref = rho*nu*U_inf*g*bs.fpp(0)
+        self.assertIsNone(npt.assert_allclose(bs.tau_w(x, rho), tau_w_ref))
+        
+        # test dissipation
+        def fun(eta):
+            return bs.fpp(eta)**2
+        D_ref = rho*nu*U_inf**2*g*quadrature(fun, 0, 10)[0]
+        self.assertIsNone(npt.assert_allclose(bs.D(x, rho), D_ref))
     
     def testLocalProperties(self):
+        
+        ## Test the values in terms of eta
+        
+        ## Test the values in terms of x,y
+        # test eta transformation
+        
         pass
 
 
