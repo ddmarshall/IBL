@@ -56,6 +56,12 @@ class TestCurveFits(unittest.TestCase):
     eta_k_ref = 0
     V_e_term = 0.8604
     
+    def testBCSearch(self):
+        U_inf = 10
+        nu = 1e-5
+        bs = BlasiusSolution(U_ref = U_inf, nu = nu, fpp0 = None)
+        self.assertIsNone(npt.assert_allclose(bs.fpp(0), self.fpp_ref[0]))
+    
     def testBasicSolution(self):
         U_inf = 10
         nu = 1e-5

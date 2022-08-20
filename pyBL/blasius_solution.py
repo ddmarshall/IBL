@@ -13,7 +13,7 @@ from scipy.optimize import root_scalar
 
 
 class BlasiusSolution:
-    def __init__(self, U_ref, nu, fpp0 = None, eta_inf = 10):
+    def __init__(self, U_ref, nu, fpp0 = 0.46959998713136886, eta_inf = 10):
         self._U_ref = U_ref
         self._nu = nu
         self._eta_inf = eta_inf
@@ -23,26 +23,31 @@ class BlasiusSolution:
     
     def _set_boundary_condition(self, fpp0 = None):
         if fpp0 is None:
-            raise NotImplementedError("Not implemented ability to search for "
-                                      "boundary condition value")
+            def fun(fpp0):
+                F0 = [0, 0, fpp0]
+                rtn = solve_ivp(fun = self._ode_fun,
+                                t_span = [0, self._eta_inf], y0 = F0,
+                                method = 'RK45', dense_output = False,
+                                events = None, rtol = 1e-8, atol = 1e-11)
+                if not rtn.success:
+                    raise ValueError("Could not find boundary condition")
+                return 1-rtn.y[1,-1]
+            
+            sol = root_scalar(fun, method = "bisect", bracket = [0.4, 0.5])
+            if sol.converged:
+                self._fpp0 = sol.root
+            else:
+                raise ValueError("Root finded could not find boundary "
+                                 "condition")
         else:
             self._fpp0 = fpp0
     
     def _set_solution(self):
         F0 = [0, 0, self._fpp0]
         
-        def fun(eta, F):
-            Fp = np.zeros_like(F)
-            
-            Fp[0] = F[1]
-            Fp[1] = F[2]
-            Fp[2] = -F[0]*F[2]
-            
-            return Fp
-            
-        rtn = solve_ivp(fun = fun, t_span = [0, self._eta_inf], y0 = F0,
-                        method = 'RK45', dense_output = True, events = None,
-                        rtol = 1e-8, atol = 1e-11)
+        rtn = solve_ivp(fun = self._ode_fun, t_span = [0, self._eta_inf],
+                        y0 = F0, method = 'RK45', dense_output = True,
+                        events = None, rtol = 1e-8, atol = 1e-11)
         
         self._F = None
         if rtn.success:
@@ -133,3 +138,15 @@ class BlasiusSolution:
     
     def _g(self, x):
         return np.sqrt(0.5*self._U_ref/(self._nu*x))
+    
+    @staticmethod
+    def _ode_fun(eta, F):
+        Fp = np.zeros_like(F)
+        
+        Fp[0] = F[1]
+        Fp[1] = F[2]
+        Fp[2] = -F[0]*F[2]
+        
+        return Fp
+            
+
