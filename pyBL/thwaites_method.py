@@ -165,7 +165,7 @@ class ThwaitesMethod(IBLBase):
         term1 = dU_edx*self.delta_d(x)
         term2 = np.sqrt(self._nu/delta_m2_on_nu)
         dsol_dx = self._ode_impl(x, delta_m2_on_nu)
-        term3 = 0.5*U_e*self.H(x)*dsol_dx
+        term3 = 0.5*U_e*self.H_d(x)*dsol_dx
         term4 = (U_e*delta_m2_on_nu
                 *self._model.Hp(self._calc_lambda(x,delta_m2_on_nu)))
         term5 = dU_edx*dsol_dx+self.d2U_edx2(x)*delta_m2_on_nu
@@ -183,7 +183,7 @@ class ThwaitesMethod(IBLBase):
         -------
             Desired property at the specified locations
         """
-        return self.delta_m(x)*self.H(x)
+        return self.delta_m(x)*self.H_d(x)
     
     def delta_m(self, x):
         """
@@ -199,7 +199,7 @@ class ThwaitesMethod(IBLBase):
         """
         return np.sqrt(self._solution(x)[0]*self._nu)
     
-    def H(self, x):
+    def H_d(self, x):
         """
         Calculate the shape factor
         

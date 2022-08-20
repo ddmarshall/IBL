@@ -30,14 +30,14 @@ class ThwaitesLinearAnalytic:
         return self.U_ref*x**self.m*(self.m*self.delta_d(x)/x+ddelta_ddx)
     
     def delta_d(self, x):
-        return self.delta_m(x)*self.H(x)
+        return self.delta_m(x)*self.H_d(x)
     
     def delta_m(self, x):
         K = np.sqrt(0.45/(5*self.m+1))
         Rex_sqrt = np.sqrt(self.U_ref*x**(self.m+1)/self.nu)
         return x*K/Rex_sqrt
     
-    def H(self, x):
+    def H_d(self, x):
         if (self.m==0):
             lam = np.zeros_like(x)
         else:
@@ -96,7 +96,7 @@ class TestLinearThwaites(unittest.TestCase):
         self.assertEqual(rtn.x_end, x[-1])
         self.assertIsNone(npt.assert_allclose(tm.delta_d(x), tm_ref.delta_d(x)))
         self.assertIsNone(npt.assert_allclose(tm.delta_m(x), tm_ref.delta_m(x)))
-        self.assertIsNone(npt.assert_allclose(tm.H(x), tm_ref.H(x)))
+        self.assertIsNone(npt.assert_allclose(tm.H_d(x), tm_ref.H_d(x)))
         self.assertIsNone(npt.assert_allclose(tm.tau_w(x, rho),
                                               tm_ref.tau_w(x, rho)))
         self.assertIsNone(npt.assert_allclose(tm.U_n(x), tm_ref.U_n(x)))
@@ -114,7 +114,7 @@ class TestLinearThwaites(unittest.TestCase):
         self.assertEqual(rtn.x_end, x[-1])
         self.assertIsNone(npt.assert_allclose(tm.delta_d(x), tm_ref.delta_d(x)))
         self.assertIsNone(npt.assert_allclose(tm.delta_m(x), tm_ref.delta_m(x)))
-        self.assertIsNone(npt.assert_allclose(tm.H(x), tm_ref.H(x)))
+        self.assertIsNone(npt.assert_allclose(tm.H_d(x), tm_ref.H_d(x)))
         self.assertIsNone(npt.assert_allclose(tm.tau_w(x, rho),
                                               tm_ref.tau_w(x, rho)))
         self.assertIsNone(npt.assert_allclose(tm.U_n(x), tm_ref.U_n(x)))
@@ -133,7 +133,7 @@ class TestLinearThwaites(unittest.TestCase):
         self.assertEqual(rtn.x_end, x[-1])
         self.assertIsNone(npt.assert_allclose(tm.delta_d(x), tm_ref.delta_d(x)))
         self.assertIsNone(npt.assert_allclose(tm.delta_m(x), tm_ref.delta_m(x)))
-        self.assertIsNone(npt.assert_allclose(tm.H(x), tm_ref.H(x)))
+        self.assertIsNone(npt.assert_allclose(tm.H_d(x), tm_ref.H_d(x)))
         self.assertIsNone(npt.assert_allclose(tm.tau_w(x, rho),
                                               tm_ref.tau_w(x, rho)))
         self.assertIsNone(npt.assert_allclose(tm.U_n(x), tm_ref.U_n(x)))
@@ -163,7 +163,7 @@ class TestLinearThwaites(unittest.TestCase):
         self.assertEqual(rtn.x_end, x[-1])
         self.assertIsNone(npt.assert_allclose(tm.delta_d(x), tm_ref.delta_d(x)))
         self.assertIsNone(npt.assert_allclose(tm.delta_m(x), tm_ref.delta_m(x)))
-        self.assertIsNone(npt.assert_allclose(tm.H(x), tm_ref.H(x)))
+        self.assertIsNone(npt.assert_allclose(tm.H_d(x), tm_ref.H_d(x)))
         self.assertIsNone(npt.assert_allclose(tm.tau_w(x, rho),
                                               tm_ref.tau_w(x, rho)))
         self.assertIsNone(npt.assert_allclose(tm.U_n(x), tm_ref.U_n(x)))
@@ -181,7 +181,7 @@ class TestLinearThwaites(unittest.TestCase):
         self.assertEqual(rtn.x_end, x[-1])
         self.assertIsNone(npt.assert_allclose(tm.delta_d(x), tm_ref.delta_d(x)))
         self.assertIsNone(npt.assert_allclose(tm.delta_m(x), tm_ref.delta_m(x)))
-        self.assertIsNone(npt.assert_allclose(tm.H(x), tm_ref.H(x)))
+        self.assertIsNone(npt.assert_allclose(tm.H_d(x), tm_ref.H_d(x)))
         self.assertIsNone(npt.assert_allclose(tm.tau_w(x, rho),
                                               tm_ref.tau_w(x, rho)))
         self.assertIsNone(npt.assert_allclose(tm.U_n(x), tm_ref.U_n(x)))

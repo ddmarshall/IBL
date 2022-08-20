@@ -90,7 +90,7 @@ class IBLBaseTest(IBLBase):
     def delta_m(self, x):
         return np.zeros_like(x)
     
-    def H(self, x):
+    def H_d(self, x):
         return np.zeros_like(x)
     
     def tau_w(self, x, rho):

@@ -347,7 +347,7 @@ class IBLBase(ABC):
         pass
     
     @abstractmethod
-    def H(self, x):
+    def H_d(self, x):
         """
         Calculate the shape factor
         
