@@ -230,20 +230,6 @@ class ThwaitesMethod(IBLBase):
         lam = self._calc_lambda(x, self._solution(x)[0])
         return rho*self._nu*self.U_e(x)*self._model.S(lam)/self.delta_m(x)
     
-#    def lam(self,x):
-#        return (np.transpose(self.y(x))[0,:] *self.du_edx(x) /self.nu)
-#    #     self._lam_vec = (pow(self._theta_vec, 2) *np.gradient(thwaites_sim_data.u_e, thwaites_sim_data.x) /thwaites_sim_data.nu)
-    
-#    #     self._h_vec = np.array([thwaites_sim_data.h(lam) for lam in self._lam_vec],dtype=np.float)
-#    #     self._s_vec = np.array([thwaites_sim_data.s(lam) for lam in self._lam_vec],dtype=np.float)
-    
-#    def dhdx(self,x):
-#        #h function (not shape factor) as a function of x (simulation completed)
-#        return np.array([self.h_lam(lam) for lam in self.lam(x)])
-    
-#    def rtheta(self,x):
-#        return self.u_e(x)*self.theta(x)/self.nu  
-    
     def _ode_impl(self, x, delta_m2_on_nu):
         """
         This is the right-hand-side of the ODE representing Thwaites method.
@@ -263,15 +249,6 @@ class ThwaitesMethod(IBLBase):
     
     def _calc_lambda(self, x, delta_m2_on_nu):
         return delta_m2_on_nu*self.dU_edx(x)
-
-
-#class ThwaitesSeparation(SeparationModel):
-#    def __init__(self,thwaitessim,buffer=0):
-#        def lambda_difference(thwaitessim,x=None):
-#            if type(x)!=np.ndarray and x ==None:
-#                x = thwaitessim.x_vec
-#            return -thwaitessim.lam(x)-.0842 # @ -.0842, separation
-#        super().__init__(thwaitessim,lambda_difference,buffer)
 
 
 class _ThwaitesFunctionsBase:
