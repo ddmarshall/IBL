@@ -148,13 +148,39 @@ class TestCurveFits(unittest.TestCase):
         self.assertIsNone(npt.assert_allclose(bs.D(x, rho), D_ref))
     
     def testLocalProperties(self):
-        
-        ## Test the values in terms of eta
+        U_inf = 10
+        nu = 1e-5
+        bs = BlasiusSolution(U_ref = U_inf, fpp0 = 0.46960, nu = nu)
         
         ## Test the values in terms of x,y
-        # test eta transformation
+        x0 = 0.4
+        y0 = 2e-3
         
-        pass
+        # test eta transformation
+        g = np.sqrt(0.5*U_inf/(nu*x0))
+        eta_ref = y0*g
+        self.assertIsNone(npt.assert_allclose(bs.eta(x0, y0), eta_ref))
+        
+        # test sample in y
+        x = x0
+        y = np.linspace(1e-4, 5e-3, 11)
+        g = np.sqrt(0.5*U_inf/(nu*x))
+        eta_ref = y*g
+        u_ref = U_inf*bs.fp(eta_ref)
+        v_ref = np.sqrt(0.5*nu*U_inf/x)*(eta_ref*bs.fp(eta_ref)-bs.f(eta_ref))
+        self.assertIsNone(npt.assert_allclose(bs.u(x, y), u_ref))
+        self.assertIsNone(npt.assert_allclose(bs.v(x, y), v_ref))
+        
+        
+        # test sample in x
+        x = np.linspace(0.2, 0.5, 11)
+        y = y0
+        g = np.sqrt(0.5*U_inf/(nu*x))
+        eta_ref = y*g
+        u_ref = U_inf*bs.fp(eta_ref)
+        v_ref = np.sqrt(0.5*nu*U_inf/x)*(eta_ref*bs.fp(eta_ref)-bs.f(eta_ref))
+        self.assertIsNone(npt.assert_allclose(bs.u(x, y), u_ref))
+        self.assertIsNone(npt.assert_allclose(bs.v(x, y), v_ref))
 
 
 if (__name__ == "__main__"):

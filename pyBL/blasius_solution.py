@@ -90,23 +90,13 @@ class BlasiusSolution:
         y = np.asarray(y)
         return y*np.sqrt(0.5*self._U_ref/(self._nu*x))
     
-    def u(self, *args):
-        if len(args) == 1:
-            eta = args[0]
-        elif len(args) == 2:
-            eta = self.eta(args[0], args[1])
-        else:
-            raise ValueError("Can only pass either eta or x,y into this method")
-        return self.U_ref*self.fp(eta);
+    def u(self, x, y):
+        eta = self.eta(x, y)
+        return self._U_ref*self.fp(eta);
     
-    def v(self, *args):
-        if len(args) == 1:
-            eta = args[0]
-        elif len(args) == 2:
-            eta = self.eta(args[0], args[1])
-        else:
-            raise ValueError("Can only pass either eta or x,y into this method")
-        pass
+    def v(self, x, y):
+        eta = self.eta(x, y)
+        return self._nu*self._g(x)*(eta*self.fp(eta)-self.f(eta))
     
     def U_e(self, x):
         x = np.asarray(x)
