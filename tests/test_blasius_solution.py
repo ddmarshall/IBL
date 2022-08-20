@@ -54,6 +54,7 @@ class TestCurveFits(unittest.TestCase):
     eta_m_ref = 0.46960
     eta_s_ref = 3.5
     eta_k_ref = 0
+    V_e_term = 0.8604
     
     def testBasicSolution(self):
         U_inf = 10
@@ -109,6 +110,11 @@ class TestCurveFits(unittest.TestCase):
         x = np.linspace(0.2, 2, 101)
         g = np.sqrt(0.5*U_inf/(nu*x))
         
+        # test the transpiration velocity
+        V_e_ref = nu*g*np.sqrt(2)*self.V_e_term
+        self.assertIsNone(npt.assert_allclose(bs.V_e(x), V_e_ref, rtol = 1e-5,
+                                              atol = 0))
+
         # test displacement thickness
         delta_d_ref = eta_d/g
         self.assertIsNone(npt.assert_allclose(bs.delta_d(x), delta_d_ref))

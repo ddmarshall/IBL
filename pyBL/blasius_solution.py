@@ -113,7 +113,7 @@ class BlasiusSolution:
         return self._U_ref*np.ones_like(x)
     
     def V_e(self, x):
-        pass
+        return self._nu*self._g(x)*self.eta_d()
     
     def delta_d(self, x):
         return self.eta_d()/self._g(x)
