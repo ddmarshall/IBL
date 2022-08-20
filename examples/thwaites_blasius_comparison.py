@@ -2,7 +2,8 @@
 # -*- coding: utf-8 -*-
 """
 This example shows a comparison between various forms of Thwaites and the
-Blasius solution to laminar flat plate boundary layer flows.
+Blasius solution to laminar flat plate boundary layer flows. It shows similar
+results to Figures 3.1 to 3.3 in Edland thesis.
 
 Created on Wed Aug 17 15:03:07 2022
 
