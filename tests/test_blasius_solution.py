@@ -59,7 +59,7 @@ class TestCurveFits(unittest.TestCase):
     def testBasicSolution(self):
         U_inf = 10
         nu = 1e-5
-        bs = BlasiusSolution(U_ref = U_inf, fpp0 = 0.46960, nu = nu)
+        bs = BlasiusSolution(U_ref = U_inf, fpp0 = self.fpp_ref[0], nu = nu)
         
         ## Test the solution for f
         f = bs.f(self.eta_ref)
@@ -79,7 +79,7 @@ class TestCurveFits(unittest.TestCase):
         U_inf = 10
         nu = 1e-5
         rho = 1
-        bs = BlasiusSolution(U_ref = U_inf, fpp0 = 0.46960, nu = nu)
+        bs = BlasiusSolution(U_ref = U_inf, fpp0 = self.fpp_ref[0], nu = nu)
         
         ## Test the values in terms of eta
         # displacement thickness
@@ -150,7 +150,7 @@ class TestCurveFits(unittest.TestCase):
     def testLocalProperties(self):
         U_inf = 10
         nu = 1e-5
-        bs = BlasiusSolution(U_ref = U_inf, fpp0 = 0.46960, nu = nu)
+        bs = BlasiusSolution(U_ref = U_inf, fpp0 = self.fpp_ref[0], nu = nu)
         
         ## Test the values in terms of x,y
         x0 = 0.4
