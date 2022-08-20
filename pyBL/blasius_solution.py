@@ -117,11 +117,13 @@ class BlasiusSolution:
     def delta_s(self, x):
         return self.eta_s()/self._g(x)
     
-    def H_d(self, _):
-        return self.eta_d()/self.eta_m()
+    def H_d(self, x):
+        x = np.asarray(x)
+        return (self.eta_d()/self.eta_m())*np.ones_like(x)
     
-    def H_k(self, _):
-        return self.eta_k()/self.eta_m()
+    def H_k(self, x):
+        x = np.asarray(x)
+        return (self.eta_k()/self.eta_m())*np.ones_like(x)
     
     def tau_w(self, x, rho):
         return rho*self._nu*self._U_ref*self._g(x)*self.fpp(0)
