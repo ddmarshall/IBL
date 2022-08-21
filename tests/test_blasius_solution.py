@@ -69,17 +69,18 @@ class TestCurveFits(unittest.TestCase):
         
         ## Test the solution for f
         f = bs.f(self.eta_ref)
-        self.assertIsNone(npt.assert_allclose(f, self.f_ref, rtol=0, atol=1e-5))
+        self.assertIsNone(npt.assert_allclose(f, self.f_ref, rtol = 0,
+                                              atol = 1e-5))
         
         ## Test the solution for f'
         fp = bs.fp(self.eta_ref)
-        self.assertIsNone(npt.assert_allclose(fp, self.fp_ref, rtol=0,
-                                              atol=1e-5))
+        self.assertIsNone(npt.assert_allclose(fp, self.fp_ref, rtol = 0,
+                                              atol= 1e-5))
         
         ## Test the solution for f''
         fpp = bs.fpp(self.eta_ref)
-        self.assertIsNone(npt.assert_allclose(fpp, self.fpp_ref, rtol=0,
-                                              atol=1e-5))
+        self.assertIsNone(npt.assert_allclose(fpp, self.fpp_ref, rtol = 0,
+                                              atol = 1e-5))
     
     def testBoundaryLayerParameters(self):
         U_inf = 10
