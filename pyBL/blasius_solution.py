@@ -56,7 +56,7 @@ class BlasiusSolution:
     def eta(self, x, y):
         x = np.asarray(x)
         y = np.asarray(y)
-        return y*np.sqrt(0.5*self._U_ref/(self._nu*x))
+        return y*self._g(x)
     
     def u(self, x, y):
         eta = self.eta(x, y)
