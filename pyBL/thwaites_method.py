@@ -9,6 +9,7 @@ Created on Thu Jun 30 12:42:04 2022
 import numpy as np
 from scipy.interpolate import CubicSpline
 from scipy.misc import derivative as fd
+from abc import abstractmethod
 
 from pyBL.ibl_base import IBLBase
 from pyBL.ibl_base import IBLTermEventBase
@@ -19,14 +20,14 @@ from pyBL.ibl_base import IBLTermEventBase
 #      return .075*iblsimdata.nu/iblsimdata.du_edx(x0)
 
 
-class ThwaitesMethod(IBLBase):
+class ThwaitesMethodBase(IBLBase):
     """
     Models a laminar boundary layer using Thwaites Method (1949) when provided 
     the edge velocity profile. There are a few different ways of modeling the 
     tabular data from Thwaites original work that can be set.
     
-    This class solves for \frac{\delta_m^2}{\nu} use the IBLBase ODE solver
-    using the linear approximation for the differential equation relationship.
+    This class is the base class for the linear and nonlinear versions of
+    Thwaites method.
     
     Attributes
     ----------
@@ -35,7 +36,7 @@ class ThwaitesMethod(IBLBase):
         _model: Collection of functions for S, H, and H'
     """
     def __init__(self, U_e = None, dU_edx = None, d2U_edx2 = None,
-                 data_fits="Spline"):
+                 data_fits = "Spline"):
         super().__init__(U_e, dU_edx, d2U_edx2)
         self.set_data_fits(data_fits)
         self._nu = None
@@ -240,15 +241,36 @@ class ThwaitesMethod(IBLBase):
             delta_m2_on_nu: current step square of momentum thickness divided
             by the kinematic viscosity
         """
+        
+        return self._calc_F(x, delta_m2_on_nu)/self.U_e(x)
+    
+    @abstractmethod
+    def _calc_F(self, x, delta_m2_on_nu):
+        pass
+    
+    def _calc_lambda(self, x, delta_m2_on_nu):
+        return delta_m2_on_nu*self.dU_edx(x)
+
+
+class ThwaitesMethodLinear(ThwaitesMethodBase):
+    """
+    Models a laminar boundary layer using Thwaites Method (1949) when provided 
+    the edge velocity profile. There are a few different ways of modeling the 
+    tabular data from Thwaites original work that can be set.
+    
+    This class solves for \frac{\delta_m^2}{\nu} use the IBLBase ODE solver
+    using the linear approximation for the differential equation relationship.
+    """
+    def __init__(self, U_e = None, dU_edx = None, d2U_edx2 = None,
+                 data_fits = "Spline"):
+        super().__init__(U_e, dU_edx, d2U_edx2, data_fits)
+    
+    def _calc_F(self, x, delta_m2_on_nu):
         a = 0.45
         b = 6
         lam = self._calc_lambda(x, delta_m2_on_nu)
         F = (a-b*lam)
-        
-        return F/self.U_e(x)
-    
-    def _calc_lambda(self, x, delta_m2_on_nu):
-        return delta_m2_on_nu*self.dU_edx(x)
+        return F
 
 
 class _ThwaitesFunctionsBase:

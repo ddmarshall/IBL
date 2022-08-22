@@ -11,7 +11,7 @@ import numpy as np
 import numpy.testing as npt
 from scipy.misc import derivative as fd
 
-from pyBL.thwaites_method import ThwaitesMethod
+from pyBL.thwaites_method import ThwaitesMethodLinear
 from pyBL.thwaites_method import _ThwaitesFunctionsWhite
 from pyBL.thwaites_method import _ThwaitesFunctionsCebeciBradshaw
 from pyBL.thwaites_method import _ThwaitesFunctionsSpline
@@ -84,8 +84,8 @@ class TestLinearThwaites(unittest.TestCase):
                 return m*(m-1)*U_ref*x**(m-2)
         
         # test with spline of tabular data
-        tm = ThwaitesMethod(U_e = U_e_fun, dU_edx = dU_edx_fun,
-                            d2U_edx2 = d2U_edx2_fun, data_fits = "Spline")
+        tm = ThwaitesMethodLinear(U_e = U_e_fun, dU_edx = dU_edx_fun,
+                                  d2U_edx2 = d2U_edx2_fun, data_fits = "Spline")
         tm_ref = ThwaitesLinearAnalytic(U_ref, m, nu, tm._model.H, tm._model.S)
         tm.set_solution_parameters(x0 = x[0], x_end = x[-1],
                                    delta_m0 = tm_ref.delta_m(x[0]), nu = nu)
@@ -102,8 +102,8 @@ class TestLinearThwaites(unittest.TestCase):
         self.assertIsNone(npt.assert_allclose(tm.U_n(x), tm_ref.U_n(x)))
         
         # test with White fits
-        tm = ThwaitesMethod(U_e = U_e_fun, dU_edx = dU_edx_fun,
-                            d2U_edx2 = d2U_edx2_fun, data_fits = "White")
+        tm = ThwaitesMethodLinear(U_e = U_e_fun, dU_edx = dU_edx_fun,
+                                  d2U_edx2 = d2U_edx2_fun, data_fits = "White")
         tm_ref = ThwaitesLinearAnalytic(U_ref, m, nu, tm._model.H, tm._model.S)
         tm.set_solution_parameters(x0 = x[0], x_end = x[-1],
                                    delta_m0 = tm_ref.delta_m(x[0]), nu = nu)
@@ -120,9 +120,9 @@ class TestLinearThwaites(unittest.TestCase):
         self.assertIsNone(npt.assert_allclose(tm.U_n(x), tm_ref.U_n(x)))
         
         # test with Cebeci and Bradshaw fits
-        tm = ThwaitesMethod(U_e = U_e_fun, dU_edx = dU_edx_fun,
-                            d2U_edx2 = d2U_edx2_fun,
-                            data_fits = "Cebeci-Bradshaw")
+        tm = ThwaitesMethodLinear(U_e = U_e_fun, dU_edx = dU_edx_fun,
+                                  d2U_edx2 = d2U_edx2_fun,
+                                  data_fits = "Cebeci-Bradshaw")
         tm_ref = ThwaitesLinearAnalytic(U_ref, m, nu, tm._model.H, tm._model.S)
         tm.set_solution_parameters(x0 = x[0], x_end = x[-1],
                                    delta_m0 = tm_ref.delta_m(x[0]), nu = nu)
@@ -150,9 +150,9 @@ class TestLinearThwaites(unittest.TestCase):
             z = 0.25-lam
             return -(4.14 + z*(-2*83.5 + z*(3*854 + z*(-4*3337 + z*5*4576))))
         
-        tm = ThwaitesMethod(U_e = U_e_fun, dU_edx = dU_edx_fun,
-                            d2U_edx2 = d2U_edx2_fun,
-                            data_fits = (S_fun, H_fun, Hp_fun))
+        tm = ThwaitesMethodLinear(U_e = U_e_fun, dU_edx = dU_edx_fun,
+                                  d2U_edx2 = d2U_edx2_fun,
+                                  data_fits = (S_fun, H_fun, Hp_fun))
         tm_ref = ThwaitesLinearAnalytic(U_ref, m, nu, H_fun, S_fun)
         tm.set_solution_parameters(x0 = x[0], x_end = x[-1],
                                    delta_m0 = tm_ref.delta_m(x[0]), nu = nu)
@@ -169,8 +169,9 @@ class TestLinearThwaites(unittest.TestCase):
         self.assertIsNone(npt.assert_allclose(tm.U_n(x), tm_ref.U_n(x)))
         
         # test creating with own functions for S, H
-        tm = ThwaitesMethod(U_e = U_e_fun, dU_edx = dU_edx_fun,
-                            d2U_edx2 = d2U_edx2_fun, data_fits = (S_fun, H_fun))
+        tm = ThwaitesMethodLinear(U_e = U_e_fun, dU_edx = dU_edx_fun,
+                                  d2U_edx2 = d2U_edx2_fun,
+                                  data_fits = (S_fun, H_fun))
         tm_ref = ThwaitesLinearAnalytic(U_ref, m, nu, H_fun, S_fun)
         tm.set_solution_parameters(x0 = x[0], x_end = x[-1],
                                    delta_m0 = tm_ref.delta_m(x[0]), nu = nu)
@@ -188,8 +189,8 @@ class TestLinearThwaites(unittest.TestCase):
         
         # test creating with invalid name
         with self.assertRaises(ValueError):
-            ThwaitesMethod(U_e = U_e_fun, dU_edx = dU_edx_fun,
-                           d2U_edx2 = d2U_edx2_fun, data_fits = "My Own")
+            ThwaitesMethodLinear(U_e = U_e_fun, dU_edx = dU_edx_fun,
+                                 d2U_edx2 = d2U_edx2_fun, data_fits = "My Own")
 
 
 class TestCurveFits(unittest.TestCase):

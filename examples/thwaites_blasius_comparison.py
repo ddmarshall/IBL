@@ -15,7 +15,7 @@ import matplotlib.pyplot as plt
 from matplotlib.gridspec import GridSpec
 
 from pyBL.blasius_solution import BlasiusSolution
-from pyBL.thwaites_method import ThwaitesMethod
+from pyBL.thwaites_method import ThwaitesMethodLinear
 
 
 def compare_blasius_solution():
@@ -40,26 +40,26 @@ def compare_blasius_solution():
     ## Get the solutions for comparisons
     x = np.linspace(1e-6, c, npts)
     bs = BlasiusSolution(U_ref = U_inf, nu = nu_inf)
-    tm = ThwaitesMethod(U_e = U_e_fun, dU_edx = dU_edx_fun,
-                        d2U_edx2 = d2U_edx2_fun, data_fits = "Spline")
-    tm.set_solution_parameters(x0 = x[0], x_end = x[-1],
-                               delta_m0 = bs.delta_m(x[0]), nu = nu_inf)
-    rtn = tm.solve()
+    tml = ThwaitesMethodLinear(U_e = U_e_fun, dU_edx = dU_edx_fun,
+                               d2U_edx2 = d2U_edx2_fun, data_fits = "Spline")
+    tml.set_solution_parameters(x0 = x[0], x_end = x[-1],
+                                delta_m0 = bs.delta_m(x[0]), nu = nu_inf)
+    rtn = tml.solve()
     if not rtn.success:
         print("Could not get solution for Thwaites method: " + rtn.message)
         return
     
     ## Calculate the boundary layer parameters
     delta_d_exact = bs.delta_d(x)
-    delta_d_standard = tm.delta_d(x)
+    delta_d_standard = tml.delta_d(x)
     delta_m_exact = bs.delta_m(x)
-    delta_m_standard = tm.delta_m(x)
+    delta_m_standard = tml.delta_m(x)
     c_f_exact = bs.tau_w(x, rho_inf)/(0.5*rho_inf*U_inf**2)
-    c_f_standard = tm.tau_w(x, rho_inf)/(0.5*rho_inf*U_inf**2)
+    c_f_standard = tml.tau_w(x, rho_inf)/(0.5*rho_inf*U_inf**2)
     H_d_exact = bs.H_d(x)
-    H_d_standard = tm.H_d(x)
+    H_d_standard = tml.H_d(x)
     U_n_exact = bs.V_e(x)
-    U_n_standard = tm.U_n(x)
+    U_n_standard = tml.U_n(x)
     
     ## plot functions
     plt.rcParams['figure.figsize'] = [8, 5]
