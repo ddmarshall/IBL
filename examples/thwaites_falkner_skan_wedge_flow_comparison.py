@@ -2,8 +2,8 @@
 # -*- coding: utf-8 -*-
 """
 This example shows a comparison between various forms of Thwaites and the
-Falkner-Skan solution to laminar flat plate boundary layer stagnation point
-flows. It shows similar results to Figures 3.4 to 3.6 in Edland thesis.
+Falkner-Skan solution to laminar flat plate boundary layer wedge flows at angle
+of pi/4. It shows similar results to Figures 3.7 to 3.9 in Edland thesis.
 
 Created on Wed Aug 17 15:03:07 2022
 
