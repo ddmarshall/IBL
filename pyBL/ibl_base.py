@@ -385,51 +385,6 @@ class IBLBase(ABC):
     
     def _set_kill_event(self, ke):
         self._kill_events = [ke]
-#    
-#    ## These need to be modified or removed
-#    def y(self,x):
-#        #returns m*n array, where m is len(x) and n is length(y)
-#        x_array = x #must be array
-#        #x_array = np.array([x])
-#        y_array = np.zeros([len(x),len(self._ode.y)])
-#        for i in range(len(x_array)):
-#            for j in range(len(self.dense_output_vec)): #-1
-#                if (x_array[i] >= self.x_vec[j]) & (x_array[i] <= self.x_vec[j+1]):
-#                    y_array[i,:] = self.dense_output_vec[j](x_array[i])
-#                    break
-#                 
-#        return y_array
-#    
-#    def yp(self,x):
-#        #Uses Dense Output construct to return derivative with polynomial
-#        x_array = x #must be array
-#        #x_array = np.array([x])
-#        yp_array = np.zeros([len(x),len(self._ode.y)])
-#        for i in range(len(x_array)):
-#            for j in range(len(self.dense_output_vec)): #-1
-#                if (x_array[i] >= self.x_vec[j]) & (x_array[i] <= self.x_vec[j+1]):
-#                    #y_array = np.append(y_array, [[self._piecewise_funs[j](x_array[i])]],axis=0)
-#                    #print(x_array[i])
-#                    #y_array[i,:] = self._piecewise_funs[j](x_array[i])
-#                    xdist = (x_array[i] - self.dense_output_vec[j].t_old) / self.dense_output_vec[j].h
-#                    if np.array(x_array[i]).ndim == 0:
-#                                #p = np.tile(x, testfit.order + 1)
-#                                p = np.tile(xdist, self.dense_output_vec[j].order + 1)
-#                                # TODO: This produces error when xdist=0 because p becomes vector of zeros
-#                                #       See issue #21
-#                                p = np.cumprod(p)/p
-#                    else:
-#                                p = np.tile(xdist, (self.dense_output_vec[j].order + 1, 1))
-#                                p = np.cumprod(p, axis=0)/p
-#                    #term1 = self.dense_output_vec[j].h h actually disappears
-#                    term2 = np.arange(1,self.dense_output_vec[j].order+2)
-#                    term3 = self.dense_output_vec[j].Q
-#                    term4 = p
-#                    yp_array[i,:] = np.dot(term2*term3, term4) 
-#                                        #yp_array[i,:] = self.dense_output_vec[j](x_array[i])
-#                    
-#                    break
-#        return yp_array        
 
 
 TERMINATION_MESSAGES = {0: "Completed",
