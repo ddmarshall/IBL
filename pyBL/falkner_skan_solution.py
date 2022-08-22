@@ -62,7 +62,7 @@ class FalknerSkanSolution:
     
     def u(self, x, y):
         eta = self.eta(x, y)
-        return self._U_ref*x**self._m*self.fp(eta);
+        return self.U_e(x)*self.fp(eta);
     
     def v(self, x, y):
         eta = self.eta(x, y)
@@ -96,10 +96,13 @@ class FalknerSkanSolution:
         return (self.eta_k()/self.eta_m())*np.ones_like(x)
     
     def tau_w(self, x, rho):
-        return rho*self._nu*self._U_ref*x**self._m*self._g(x)*self.fpp(0)
+        return rho*self._nu*self.U_e(x)*self._g(x)*self.fpp(0)
     
     def D(self, x, rho):
-        return 0.5*rho*self._nu*self._g(x)*(self._U_ref*x**self._m)**2*self.eta_k()
+        beta = self._beta()
+        D_term = (0.5*(1+3*beta)*self.eta_k()
+                 +beta*(1+beta)*self.eta_m()+beta**2*self.eta_d())
+        return rho*self._nu*self._g(x)*self.U_e(x)**2*D_term
     
     def _beta(self):
         if self._m == np.inf:
@@ -109,7 +112,7 @@ class FalknerSkanSolution:
         return beta
     
     def _g(self, x):
-        return np.sqrt(0.5*(self._m+1)*self._U_ref*x**self._m/(self._nu*x))
+        return np.sqrt(0.5*(self._m+1)*self.U_e(x)/(self._nu*x))
     
     def _set_boundary_condition(self, m = 0):
         self._m = m
