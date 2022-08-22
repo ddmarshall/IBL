@@ -99,9 +99,7 @@ class FalknerSkanSolution:
         return rho*self._nu*self.U_e(x)*self._g(x)*self.fpp(0)
     
     def D(self, x, rho):
-        beta = self._beta()
-        D_term = (0.5*(1+3*beta)*self.eta_k()
-                 +beta*(1+beta)*self.eta_m()+beta**2*self.eta_d())
+        D_term = 0.5*(1+2*self._beta())*self.eta_k()
         return rho*self._nu*self._g(x)*self.U_e(x)**2*D_term
     
     def _beta(self):

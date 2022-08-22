@@ -119,7 +119,12 @@ class TestCurveFits(unittest.TestCase):
         tau_w_ref = rho*nu*U_e*g*fs.fpp(0)
         self.assertIsNone(npt.assert_allclose(fs.tau_w(x, rho), tau_w_ref))
         
-        # TODO: Test dissipation
+        # test dissipation
+        def fun(eta):
+            return fs.fpp(eta)**2
+        D_ref = rho*nu*U_e**2*g*quadrature(fun, 0, 10)[0]
+        self.assertIsNone(npt.assert_allclose(fs.D(x, rho), D_ref, rtol = 2e-5,
+                          atol = 0))
     
     def testBeta1Solution(self):
         idx = 1
@@ -180,7 +185,12 @@ class TestCurveFits(unittest.TestCase):
         tau_w_ref = rho*nu*U_e*g*fs.fpp(0)
         self.assertIsNone(npt.assert_allclose(fs.tau_w(x, rho), tau_w_ref))
         
-        # TODO: Test dissipation
+        # test dissipation
+        def fun(eta):
+            return fs.fpp(eta)**2
+        D_ref = rho*nu*U_e**2*g*quadrature(fun, 0, 10)[0]
+        self.assertIsNone(npt.assert_allclose(fs.D(x, rho), D_ref, atol = 1e-5,
+                          rtol = 0))
     
     def testBeta2Solution(self):
         idx = 2
@@ -241,7 +251,11 @@ class TestCurveFits(unittest.TestCase):
         tau_w_ref = rho*nu*U_e*g*fs.fpp(0)
         self.assertIsNone(npt.assert_allclose(fs.tau_w(x, rho), tau_w_ref))
         
-        # TODO: Test dissipation
+        # test dissipation
+        def fun(eta):
+            return fs.fpp(eta)**2
+        D_ref = rho*nu*U_e**2*g*quadrature(fun, 0, 10)[0]
+        self.assertIsNone(npt.assert_allclose(fs.D(x, rho), D_ref))
     
     def testBeta3Solution(self):
         idx = 3
@@ -302,7 +316,11 @@ class TestCurveFits(unittest.TestCase):
         tau_w_ref = rho*nu*U_e*g*fs.fpp(0)
         self.assertIsNone(npt.assert_allclose(fs.tau_w(x, rho), tau_w_ref))
         
-        # TODO: Test dissipation
+        # test dissipation
+        def fun(eta):
+            return fs.fpp(eta)**2
+        D_ref = rho*nu*U_e**2*g*quadrature(fun, 0, 10)[0]
+        self.assertIsNone(npt.assert_allclose(fs.D(x, rho), D_ref))
     
     def testBeta4Solution(self):
         idx = 4
@@ -363,7 +381,11 @@ class TestCurveFits(unittest.TestCase):
         tau_w_ref = rho*nu*U_e*g*fs.fpp(0)
         self.assertIsNone(npt.assert_allclose(fs.tau_w(x, rho), tau_w_ref))
         
-        # TODO: Test dissipation
+        # test dissipation
+        def fun(eta):
+            return fs.fpp(eta)**2
+        D_ref = rho*nu*U_e**2*g*quadrature(fun, 0, 10)[0]
+        self.assertIsNone(npt.assert_allclose(fs.D(x, rho), D_ref))
 
 
 if (__name__ == "__main__"):
