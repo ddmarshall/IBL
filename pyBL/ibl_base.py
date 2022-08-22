@@ -487,7 +487,7 @@ class IBLTermEventBase(ABC):
         -------
             Floating point number that is zero when the solver should stop
         """
-        return self._call_impl(x, F)
+        return self._call_impl(x, np.asarray(F))
     
     @abstractmethod
     def event_info(self):
