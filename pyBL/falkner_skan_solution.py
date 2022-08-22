@@ -152,7 +152,7 @@ class FalknerSkanSolution:
             rng = [0.6, 0.7]
         elif m <= 0.2:
             rng = [0.7, 0.9]
-        elif m <= 0.3:
+        elif m <= 0.35:
             rng = [0.9, 1.0]
         elif m <= 0.5:
             rng = [1.0, 1.05]
