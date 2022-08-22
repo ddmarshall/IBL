@@ -39,7 +39,7 @@ def compare_blasius_solution():
     
     ## Get the solutions for comparisons
     x = np.linspace(1e-6, c, npts)
-    bs = BlasiusSolution(U_ref = U_inf, nu = nu_inf, fpp0 = 0.46960)
+    bs = BlasiusSolution(U_ref = U_inf, nu = nu_inf)
     tm = ThwaitesMethod(U_e = U_e_fun, dU_edx = dU_edx_fun,
                         d2U_edx2 = d2U_edx2_fun, data_fits = "Spline")
     tm.set_solution_parameters(x0 = x[0], x_end = x[-1],
