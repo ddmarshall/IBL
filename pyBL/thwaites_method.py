@@ -286,9 +286,9 @@ class _ThwaitesFunctionsBase:
         lam_min, lam_max = self.range()
         
         if (np.array(lam) < lam_min).any():
-            raise ValueError('cannot pass value less than {} into this function'.format(lam_min))
+            raise ValueError('cannot pass value less than {} into this function: {}'.format(lam_min, lam))
         elif (np.array(lam) > lam_max).any():
-            raise ValueError('cannot pass value greater than {} into this function'.format(lam_max))
+            raise ValueError('cannot pass value greater than {} into this function: {}'.format(lam_max, lam))
 
 
 class _ThwaitesFunctionsWhite(_ThwaitesFunctionsBase):
