@@ -64,6 +64,7 @@ class TestCurveFits(unittest.TestCase):
         idx = 0
         U_inf = 10
         nu = 1e-5
+        rho = 1
         beta = self.beta_ref[idx] + 1e-6 # hack to get this case to work
         m = beta/(2-beta)
         fs = FalknerSkanSolution(U_ref = U_inf, m=beta/(2-beta), nu = nu)
@@ -100,6 +101,7 @@ class TestCurveFits(unittest.TestCase):
         # dimensional terms
         x = np.linspace(0.2, 2, 101)
         g = np.sqrt(0.5*(m+1)*U_inf*x**m/(nu*x))
+        U_e = U_inf*x**m
         delta_d_ref = eta_d/g
         self.assertIsNone(npt.assert_allclose(fs.delta_d(x), delta_d_ref))
         delta_m_ref = eta_m/g
@@ -113,13 +115,17 @@ class TestCurveFits(unittest.TestCase):
         self.assertIsNone(npt.assert_allclose(fs.H_d(x), H_d_ref))
         self.assertIsNone(npt.assert_allclose(fs.H_k(x), H_k_ref))
         
-        # TODO: Test wall shear stress
+        # test wall shear stress
+        tau_w_ref = rho*nu*U_e*g*fs.fpp(0)
+        self.assertIsNone(npt.assert_allclose(fs.tau_w(x, rho), tau_w_ref))
+        
         # TODO: Test dissipation
     
     def testBeta1Solution(self):
         idx = 1
         U_inf = 10
         nu = 1e-5
+        rho = 1
         beta = self.beta_ref[idx]
         m = beta/(2-beta)
         fs = FalknerSkanSolution(U_ref = U_inf, m=beta/(2-beta), nu = nu)
@@ -156,6 +162,7 @@ class TestCurveFits(unittest.TestCase):
         # dimensional terms
         x = np.linspace(0.2, 2, 101)
         g = np.sqrt(0.5*(m+1)*U_inf*x**m/(nu*x))
+        U_e = U_inf*x**m
         delta_d_ref = eta_d/g
         self.assertIsNone(npt.assert_allclose(fs.delta_d(x), delta_d_ref))
         delta_m_ref = eta_m/g
@@ -169,13 +176,17 @@ class TestCurveFits(unittest.TestCase):
         self.assertIsNone(npt.assert_allclose(fs.H_d(x), H_d_ref))
         self.assertIsNone(npt.assert_allclose(fs.H_k(x), H_k_ref))
         
-        # TODO: Test wall shear stress
+        # test wall shear stress
+        tau_w_ref = rho*nu*U_e*g*fs.fpp(0)
+        self.assertIsNone(npt.assert_allclose(fs.tau_w(x, rho), tau_w_ref))
+        
         # TODO: Test dissipation
     
     def testBeta2Solution(self):
         idx = 2
         U_inf = 10
         nu = 1e-5
+        rho = 1
         beta = self.beta_ref[idx]
         m = beta/(2-beta)
         fs = FalknerSkanSolution(U_ref = U_inf, m=beta/(2-beta), nu = nu)
@@ -212,6 +223,7 @@ class TestCurveFits(unittest.TestCase):
         # dimensional terms
         x = np.linspace(0.2, 2, 101)
         g = np.sqrt(0.5*(m+1)*U_inf*x**m/(nu*x))
+        U_e = U_inf*x**m
         delta_d_ref = eta_d/g
         self.assertIsNone(npt.assert_allclose(fs.delta_d(x), delta_d_ref))
         delta_m_ref = eta_m/g
@@ -225,13 +237,17 @@ class TestCurveFits(unittest.TestCase):
         self.assertIsNone(npt.assert_allclose(fs.H_d(x), H_d_ref))
         self.assertIsNone(npt.assert_allclose(fs.H_k(x), H_k_ref))
         
-        # TODO: Test wall shear stress
+        # test wall shear stress
+        tau_w_ref = rho*nu*U_e*g*fs.fpp(0)
+        self.assertIsNone(npt.assert_allclose(fs.tau_w(x, rho), tau_w_ref))
+        
         # TODO: Test dissipation
     
     def testBeta3Solution(self):
         idx = 3
         U_inf = 10
         nu = 1e-5
+        rho = 1
         beta = self.beta_ref[idx]
         m = beta/(2-beta)
         fs = FalknerSkanSolution(U_ref = U_inf, m=beta/(2-beta), nu = nu)
@@ -268,6 +284,7 @@ class TestCurveFits(unittest.TestCase):
         # dimensional terms
         x = np.linspace(0.2, 2, 101)
         g = np.sqrt(0.5*(m+1)*U_inf*x**m/(nu*x))
+        U_e = U_inf*x**m
         delta_d_ref = eta_d/g
         self.assertIsNone(npt.assert_allclose(fs.delta_d(x), delta_d_ref))
         delta_m_ref = eta_m/g
@@ -281,13 +298,17 @@ class TestCurveFits(unittest.TestCase):
         self.assertIsNone(npt.assert_allclose(fs.H_d(x), H_d_ref))
         self.assertIsNone(npt.assert_allclose(fs.H_k(x), H_k_ref))
         
-        # TODO: Test wall shear stress
+        # test wall shear stress
+        tau_w_ref = rho*nu*U_e*g*fs.fpp(0)
+        self.assertIsNone(npt.assert_allclose(fs.tau_w(x, rho), tau_w_ref))
+        
         # TODO: Test dissipation
     
     def testBeta4Solution(self):
         idx = 4
         U_inf = 10
         nu = 1e-5
+        rho = 1
         beta = self.beta_ref[idx]
         m = beta/(2-beta)
         fs = FalknerSkanSolution(U_ref = U_inf, m=beta/(2-beta), nu = nu)
@@ -324,6 +345,7 @@ class TestCurveFits(unittest.TestCase):
         # dimensional terms
         x = np.linspace(0.2, 2, 101)
         g = np.sqrt(0.5*(m+1)*U_inf*x**m/(nu*x))
+        U_e = U_inf*x**m
         delta_d_ref = eta_d/g
         self.assertIsNone(npt.assert_allclose(fs.delta_d(x), delta_d_ref))
         delta_m_ref = eta_m/g
@@ -337,27 +359,11 @@ class TestCurveFits(unittest.TestCase):
         self.assertIsNone(npt.assert_allclose(fs.H_d(x), H_d_ref))
         self.assertIsNone(npt.assert_allclose(fs.H_k(x), H_k_ref))
         
-        # TODO: Test wall shear stress
+        # test wall shear stress
+        tau_w_ref = rho*nu*U_e*g*fs.fpp(0)
+        self.assertIsNone(npt.assert_allclose(fs.tau_w(x, rho), tau_w_ref))
+        
         # TODO: Test dissipation
-    
-    # NOTE: This case will not work without more robust BVP solver
-#    def testBeta5Solution(self):
-#        idx = 5
-#        U_inf = 10
-#        nu = 1e-5
-#        beta = self.beta_ref[idx]
-#        m = beta/(2-beta)
-#        fs = FalknerSkanSolution(U_ref = U_inf, m=beta/(2-beta), nu = nu)
-
-#        # test wall shear stress
-#        tau_w_ref = rho*nu*U_inf*g*bs.fpp(0)
-#        self.assertIsNone(npt.assert_allclose(bs.tau_w(x, rho), tau_w_ref))
-#        
-#        # test dissipation
-#        def fun(eta):
-#            return bs.fpp(eta)**2
-#        D_ref = rho*nu*U_inf**2*g*quadrature(fun, 0, 10)[0]
-#        self.assertIsNone(npt.assert_allclose(bs.D(x, rho), D_ref))
 
 
 if (__name__ == "__main__"):

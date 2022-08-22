@@ -133,6 +133,8 @@ class FalknerSkanSolution:
                 val = 0
             return val
         
+        # These ranges were found via trial and error. Is there a more robust
+        # way of finding a suitable initial range?
         if m <= -0.905:
             raise ValueError("Value of m is below separation value")
         elif m <= -0.09:
