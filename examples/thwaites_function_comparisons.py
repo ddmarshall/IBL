@@ -9,6 +9,7 @@ Created on Tue Aug 16 16:20:20 2022
 
 @author: ddmarshall
 """
+
 import numpy as np
 import matplotlib.pyplot as plt
 

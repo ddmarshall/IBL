@@ -1,11 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Created on Mon Aug 22 15:11:07 2022
-
-@author: ddmarshall
-"""
-"""
 This example shows a comparison between various forms of Thwaites and the
 Falkner-Skan solution to laminar flat plate boundary layer stagnation point
 flows. It shows similar results to Figures 3.4 to 3.6 in Edland thesis.
@@ -51,7 +46,7 @@ def compare_stagnation_solution():
     
     ## Get the solutions for comparisons
     x = np.linspace(1e-6, c, npts)
-    fs = FalknerSkanSolution(U_ref = U_inf, m=1, nu = nu_inf)
+    fs = FalknerSkanSolution(U_ref = U_inf, m=m, nu = nu_inf)
     tm = ThwaitesMethod(U_e = U_e_fun, dU_edx = dU_edx_fun,
                         d2U_edx2 = d2U_edx2_fun, data_fits = "Spline")
     tm.set_solution_parameters(x0 = x[0], x_end = x[-1],
@@ -88,7 +83,7 @@ def compare_stagnation_solution():
     axis_error = fig.add_subplot(gs[2, :])
     
     exact_color = "black"
-    exact_label = "Blasius"
+    exact_label = "Falkner-Skan"
     standard_color = "green"
     standard_label = "Standard"
     
