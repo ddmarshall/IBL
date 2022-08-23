@@ -78,8 +78,6 @@ def compare_blasius_solution():
     U_n_nonlinear = tmn.U_n(x)
     
     ## plot functions
-    plt.rcParams['figure.figsize'] = [8, 5]
-    
     # Plot the quad plot with boundary layer parameters
     fig = plt.figure()
     fig.set_figwidth(10)
@@ -131,7 +129,6 @@ def compare_blasius_solution():
     ax.plot(x/c, delta_m_standard/c, color = standard_color)
     ax.plot(x/c, delta_m_nonlinear/c, color = nonlinear_color)
     ax.set_ylim(0, 0.0006)
-    ax.set_xlabel(r"$x/c$")
     ax.set_ylabel(r"$\delta_m/c$")
     ax.grid(True)
     
@@ -140,7 +137,6 @@ def compare_blasius_solution():
             color = standard_color)
     ax.plot(x/c, np.abs(1-delta_m_nonlinear/delta_m_exact),
             color = nonlinear_color)
-    ax.set_xlabel(r"$x/c$")
     ax.set_ylabel("Relative Error")
     ax.set_ylim([1e-4,1])
     ax.set_yscale('log')
