@@ -258,19 +258,36 @@ class ThwaitesMethodLinear(ThwaitesMethodBase):
     the edge velocity profile. There are a few different ways of modeling the 
     tabular data from Thwaites original work that can be set.
     
-    This class solves for \frac{\delta_m^2}{\nu} use the IBLBase ODE solver
-    using the linear approximation for the differential equation relationship.
+    This class solves for \frac{\delta_m^2}{\nu} using the IBLBase ODE solver
+    with the linear approximation for the differential equation relationship.
     """
     def __init__(self, U_e = None, dU_edx = None, d2U_edx2 = None,
                  data_fits = "Spline"):
         super().__init__(U_e, dU_edx, d2U_edx2, data_fits)
     
     def _calc_F(self, x, delta_m2_on_nu):
+        lam = self._calc_lambda(x, delta_m2_on_nu)
         a = 0.45
         b = 6
+        return a-b*lam
+
+
+class ThwaitesMethodNonlinear(ThwaitesMethodBase):
+    """
+    Models a laminar boundary layer using Thwaites Method (1949) when provided 
+    the edge velocity profile. There are a few different ways of modeling the 
+    tabular data from Thwaites original work that can be set.
+    
+    This class solves for \frac{\delta_m^2}{\nu} using the IBLBase ODE solver
+    with the nonlinear formulation for the differential equation relationship.
+    """
+    def __init__(self, U_e = None, dU_edx = None, d2U_edx2 = None,
+                 data_fits = "Spline"):
+        super().__init__(U_e, dU_edx, d2U_edx2, data_fits)
+    
+    def _calc_F(self, x, delta_m2_on_nu):
         lam = self._calc_lambda(x, delta_m2_on_nu)
-        F = (a-b*lam)
-        return F
+        return self._model.F(lam)
 
 
 class _ThwaitesFunctionsBase:
