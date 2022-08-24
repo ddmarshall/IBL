@@ -14,7 +14,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.gridspec import GridSpec
 
-from pyBL.falkner_skan_solution import FalknerSkanSolution
+from pyBL.falkner_skan import FalknerSkanSolution
 from pyBL.thwaites_method import ThwaitesMethodLinear
 from pyBL.thwaites_method import ThwaitesMethodNonlinear
 

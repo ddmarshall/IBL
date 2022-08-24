@@ -11,7 +11,7 @@ import numpy as np
 import numpy.testing as npt
 from scipy.integrate import quadrature
 
-from pyBL.falkner_skan_solution import FalknerSkanSolution
+from pyBL.falkner_skan import FalknerSkanSolution
 
 
 class TestCurveFits(unittest.TestCase):
