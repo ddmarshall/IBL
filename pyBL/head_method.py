@@ -10,12 +10,7 @@ import numpy as np
 
 from pyBL.ibl_base import IBLBase
 from pyBL.ibl_base import IBLTermEventBase
-
-def _c_f_LudwiegTillman(Re_delta_m, H_d):
-    return 0.246/(Re_delta_m**0.268*10**0.678)
-
-def _c_f_Felsch(Re_delta_m, H_d):
-    return 0.058*(0.93 - 1.95*np.log10(H_d))**1.705/(Re_delta_m**0.268)
+from pyBL.skin_friction import c_f_LudwiegTillman as c_f_LT
 
 
 class HeadMethod(IBLBase):
@@ -210,6 +205,18 @@ class HeadMethod(IBLBase):
         H1_break = HeadMethod._H1(1.6)
         return np.piecewise(H1, [H1<=H1_break, H1>H1_break],
                             [H_d_low, H_d_high])
+    
+    @staticmethod
+    def _E_on_Ue(H1):
+        H1 = np.asarray(H1)
+        if (H1 <= 3).any():
+            raise ValueError("Cannot pass entrainment shape factor less than "
+                             " 3: {}".format(np.amin(H1)))
+        return 0.0306/(H1-3)**0.6169
+    
+    @staticmethod
+    def _c_f(delta_m, H1):
+        pass
 
 
 

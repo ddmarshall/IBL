@@ -59,6 +59,22 @@ class TestHeadMethod(unittest.TestCase):
         with self.assertRaises(ValueError):
             HeadMethod._H_d(3.322)
     
+    def testEntrainmentVelocityCalculation(self):
+        ## test calculation of term
+        def fun(H1):
+            return 0.0306/(H1-3)**0.6169
+        
+        H1 = np.linspace(3.01, 5, 101)
+        Eterm_ref = np.zeros_like(H1)
+        for i, H1i in enumerate(H1):
+            Eterm_ref[i] = fun(H1i)
+        Eterm = HeadMethod._E_on_Ue(H1)
+        self.assertIsNone(npt.assert_allclose(Eterm, Eterm_ref))
+        
+        ## test invalid values
+        with self.assertRaises(ValueError):
+            HeadMethod._E_on_Ue(3)
+    
     def testSkinFrictionCalculation(self):
         pass
 
