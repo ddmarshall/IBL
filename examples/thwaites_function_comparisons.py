@@ -19,7 +19,7 @@ from pyBL.thwaites_method import _ThwaitesFunctionsSpline
 
 def compare_thwaites_fits():
     ## Set common plot properties
-    plt.rcParams['figure.figsize'] = [8, 5]
+    plt.rcParams["figure.figsize"] = [8, 5]
     npts = 101
     
     ## Create the various fit models
@@ -54,14 +54,14 @@ def compare_thwaites_fits():
     
     # Plot functions compared to the Thwaites tabulated values
     plt.figure()
-    plt.plot(tab_lambda, tab_F, marker='o', linestyle='', color='black',
-             label=r'Thwaites Original')
-    plt.plot(linear_lambda, linear_F, color='green', label=r'Linear')
-    plt.plot(white_lambda, white_F, color='red', label=r'White')
-    plt.plot(cb_lambda, cb_F, color='orange', label=r'Cebeci & Bradshaw')
-    plt.plot(spline_lambda, spline_F, color='purple', label=r'Spline')
-    plt.xlabel(r'$\lambda$')
-    plt.ylabel(r'$F\left(\lambda\right)$')
+    plt.plot(tab_lambda, tab_F, marker='o', linestyle='', color="black",
+             label=r"Thwaites Original")
+    plt.plot(linear_lambda, linear_F, color="green", label=r"Linear")
+    plt.plot(white_lambda, white_F, color="red", label=r"White")
+    plt.plot(cb_lambda, cb_F, color="orange", label=r"Cebeci & Bradshaw")
+    plt.plot(spline_lambda, spline_F, color="purple", label=r"Spline")
+    plt.xlabel(r"$\lambda$")
+    plt.ylabel(r"$F\left(\lambda\right)$")
     plt.grid(True)
     plt.legend()
     plt.show()
@@ -93,14 +93,14 @@ def compare_thwaites_fits():
     # Plot the zoomed in region
     plt.figure()
     plt.plot(tab_lambda_zoom, tab_F_zoom, marker='o', linestyle='',
-             color='black', label=r'Thwaites Original')
-    plt.plot(linear_lambda_zoom, linear_F_zoom, color='green', label=r'Linear')
-    plt.plot(white_lambda_zoom, white_F_zoom, color='red', label=r'White')
-    plt.plot(cb_lambda_zoom, cb_F_zoom, color='orange',
-             label=r'Cebeci & Bradshaw')
-    plt.plot(spline_lambda_zoom, spline_F_zoom, color='purple', label=r'Spline')
-    plt.xlabel(r'$\lambda$')
-    plt.ylabel(r'$F\left(\lambda\right)$')
+             color="black", label=r"Thwaites Original")
+    plt.plot(linear_lambda_zoom, linear_F_zoom, color="green", label=r"Linear")
+    plt.plot(white_lambda_zoom, white_F_zoom, color="red", label=r"White")
+    plt.plot(cb_lambda_zoom, cb_F_zoom, color="orange",
+             label=r"Cebeci & Bradshaw")
+    plt.plot(spline_lambda_zoom, spline_F_zoom, color="purple", label=r"Spline")
+    plt.xlabel(r"$\lambda$")
+    plt.ylabel(r"$F\left(\lambda\right)$")
     plt.grid(True)
     plt.legend()
     plt.show()
@@ -121,15 +121,15 @@ def compare_thwaites_fits():
     
     # Show relative errors
     plt.figure()
-    plt.plot(tab_lambda, linear_error, color='green', label=r'Linear')
-    plt.plot(tab_lambda, white_error, color='red', label=r'White')
-    plt.plot(cb_lambda_error, cb_error, color='orange', label=r'Cebeci & Bradshaw')
-    plt.plot(tab_lambda, spline_error, color='purple', label=r'Spline')
-    plt.xlabel(r'$\lambda$')
-    plt.ylabel('Relative Error')
+    plt.plot(tab_lambda, linear_error, color="green", label=r"Linear")
+    plt.plot(tab_lambda, white_error, color="red", label=r"White")
+    plt.plot(cb_lambda_error, cb_error, color="orange", label=r"Cebeci & Bradshaw")
+    plt.plot(tab_lambda, spline_error, color="purple", label=r"Spline")
+    plt.xlabel(r"$\lambda$")
+    plt.ylabel("Relative Error")
     plt.xlim([-0.10, 0.25])
     plt.ylim([.00001,1])
-    plt.yscale('log')
+    plt.yscale("log")
     plt.grid(True)
     plt.legend()
     plt.show()
