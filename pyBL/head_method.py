@@ -213,10 +213,6 @@ class HeadMethod(IBLBase):
             raise ValueError("Cannot pass entrainment shape factor less than "
                              " 3: {}".format(np.amin(H1)))
         return 0.0306/(H1-3)**0.6169
-    
-    @staticmethod
-    def _c_f(delta_m, H1):
-        pass
 
 
 

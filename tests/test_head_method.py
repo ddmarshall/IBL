@@ -11,6 +11,7 @@ import numpy.testing as npt
 from scipy.misc import derivative as fd
 
 from pyBL.head_method import HeadMethod
+from pyBL.skin_friction import c_f_LudwiegTillman
 
 
 class TestHeadMethod(unittest.TestCase):
@@ -75,8 +76,32 @@ class TestHeadMethod(unittest.TestCase):
         with self.assertRaises(ValueError):
             HeadMethod._E_on_Ue(3)
     
-    def testSkinFrictionCalculation(self):
-        pass
+# I don't think this will work because c_f needs momentum Reynolds number with 
+# requires edge velocity, and edge velocity 
+#    def testSkinFrictionCalculation(self):
+#        nu = 1e-5
+#        U_e = 10
+#        H_d_range = [1.2, 3.4]
+#        Re_delta_m_range = [1e2, 1e5]
+#        
+#        ## calculate range of displacement shape parameter
+#        Re_delta_m = np.average(Re_delta_m_range);
+#        H_d = np.linspace(H_d_range[0], H_d_range[-1])
+#        c_f_ref = c_f_LudwiegTillman(Re_delta_m, H_d)
+#        H1 = HeadMethod._H1(H_d)
+#        delta_m = Re_delta_m*nu/U_e
+#        c_f = HeadMethod._c_f(delta_m, H1)
+#        
+#        self.assertIsNone(npt.assert_allclose(c_f_ref, c_f))
+#        
+#        ## calculate range of Reynolds number
+#        Re_delta_m = np.logspace(np.log10(Re_delta_m_range[0]),
+#                                 np.log10(Re_delta_m_range[-1]));
+#        H_d = np.average(H_d_range)
+#        c_f_ref = fun(Re_delta_m, H_d)
+#        c_f = c_f_LudwiegTillman(Re_delta_m, H_d)
+#        self.assertIsNone(npt.assert_allclose(c_f_ref, c_f))
+#        pass
 
 
 if (__name__ == "__main__"):
