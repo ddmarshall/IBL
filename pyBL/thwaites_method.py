@@ -55,8 +55,8 @@ class ThwaitesMethodBase(IBLBase):
         
         Throws
         ------
-            ValueError if negative viscosity provided
-        
+            ValueError if negative viscosity provided, or invalid initial
+            conditions
         """
         if nu < 0:
             raise ValueError("Viscosity must be positive")
@@ -241,7 +241,6 @@ class ThwaitesMethodBase(IBLBase):
             delta_m2_on_nu: current step square of momentum thickness divided
             by the kinematic viscosity
         """
-        
         return self._calc_F(x, delta_m2_on_nu)/self.U_e(x)
     
     @abstractmethod
