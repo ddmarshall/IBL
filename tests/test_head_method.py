@@ -41,7 +41,7 @@ class TestHeadMethod(unittest.TestCase):
                 return 3.3 + 0.8234/(H_d - 1.1)**1.287
             else:
                 return 3.32254659218600974 + 1.5501/(H_d - 0.6778)**3.064
-        H_d = np.linspace(1.11, 2.4, 11)
+        H_d = np.linspace(1.11, 2.4, 101)
         H1_ref = np.zeros_like(H_d)
         for i, H_di in enumerate(H_d):
             H1_ref[i] = H1_fun(H_di)
@@ -53,7 +53,7 @@ class TestHeadMethod(unittest.TestCase):
         H_d = HeadMethod._H_d(H1)
         self.assertIsNone(npt.assert_allclose(H_d, H_d_ref))
         
-        ## test for invalid values H1(1.1), H_d(3.322)
+        ## test for invalid values
         with self.assertRaises(ValueError):
             HeadMethod._H1(1.1)
         with self.assertRaises(ValueError):

@@ -193,7 +193,7 @@ class HeadMethod(IBLBase):
     def _H_d(H1):
         H1 = np.asarray(H1)
         if (H1 <= 3.32254659218600974).any():
-            raise ValueError("Cannot pass displacement shape factor less than "
+            raise ValueError("Cannot pass entrainment shape factor less than "
                              "1.1: {}".format(np.amin(H1)))
         def H_d_low(H1):
             a = 1.5501
