@@ -11,7 +11,7 @@ import numpy as np
 import numpy.testing as npt
 from scipy.integrate import quadrature
 
-from pyBL.blasius_solution import BlasiusSolution
+from pyBL.blasius import BlasiusSolution
 
 
 class TestCurveFits(unittest.TestCase):

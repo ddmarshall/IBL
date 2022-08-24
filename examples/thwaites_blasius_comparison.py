@@ -14,7 +14,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.gridspec import GridSpec
 
-from pyBL.blasius_solution import BlasiusSolution
+from pyBL.blasius import BlasiusSolution
 from pyBL.thwaites_method import ThwaitesMethodLinear
 from pyBL.thwaites_method import ThwaitesMethodNonlinear
 
