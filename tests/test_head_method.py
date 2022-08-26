@@ -11,7 +11,6 @@ import numpy.testing as npt
 from scipy.misc import derivative as fd
 
 from pyBL.head_method import HeadMethod
-from pyBL.skin_friction import c_f_LudwiegTillman
 
 
 class TestHeadMethod(unittest.TestCase):

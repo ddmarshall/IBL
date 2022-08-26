@@ -85,7 +85,6 @@ def compare_stagnation_solution():
     U_n_nonlinear = tmn.U_n(x)
     
     ## plot functions
-    # Plot the quad plot with boundary layer parameters
     fig = plt.figure()
     fig.set_figwidth(10)
     fig.set_figheight(15)
