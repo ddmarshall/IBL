@@ -415,6 +415,16 @@ class IBLResult:
         self.status = status
         self.message = message
         self.success = success
+    
+    def __str__(self):
+        strout = "%s:\n" % (self.__class__.__name__)
+        strout += "    x_end: {}\n".format(self.x_end)
+        strout += "    F_end: {}\n" .format(self.F_end)
+        strout += "    status: {}\n".format(self.status)
+        strout += "    message: {}\n".format(self.message)
+        strout += "    success: {}".format(self.success)
+        
+        return strout
 
 
 class IBLTermEventBase(ABC):

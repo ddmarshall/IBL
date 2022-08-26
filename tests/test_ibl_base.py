@@ -14,6 +14,20 @@ from scipy.interpolate import CubicSpline
 
 from pyBL.ibl_base import IBLBase
 from pyBL.ibl_base import IBLTermEventBase
+from pyBL.ibl_base import IBLResult
+
+
+class TestIBLResult(unittest.TestCase):
+    def test_string(self):
+        iblr = IBLResult(x_end = 2.1, F_end = [1.4, -2.3], status = 0,
+                         message = "Success", success = True)
+        str_ref = ("IBLResult:\n"
+                   "    x_end: 2.1\n"
+                   "    F_end: [1.4, -2.3]\n"
+                   "    status: 0\n"
+                   "    message: Success\n"
+                   "    success: True")
+        self.assertEqual(str_ref, str(iblr))
 
 
 class _IBLBaseTestTermEvent(IBLTermEventBase):
