@@ -52,7 +52,7 @@ class StanfordOlympics1968:
             self.x = float(col[0])
             self.U_e = float(col[1])
             self.dU_edx = float(col[2])
-            self.delta_m = float(col[3])
+            self.delta_m = float(col[3])*1e-2
             self.H_d = float(col[4])
             self.H_k = float(col[5])
             self.G = float(col[6])
@@ -144,7 +144,7 @@ class StanfordOlympics1968:
             else:
                 raise Exception("Expected IDENT line but have: {}".format(chunk[0]))
             if chunk[1].startswith("V = "):
-                self.nu = float(chunk[1].split()[2])
+                self.nu = float(chunk[1].split()[2])*1e-4
             else:
                 raise Exception("Expected V line but have: {}".format(chunk[1]))
             
