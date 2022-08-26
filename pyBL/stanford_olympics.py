@@ -174,3 +174,81 @@ class StanfordOlympics1968:
     
     def get_smooth_velocity(self):
         return self._x_sm, self._U_e_sm, self._dU_edx_sm
+    
+    def get_x(self):
+        x = []
+        for s in self._station:
+            x.append(s.x)
+        return x
+    
+    def get_U_e(self):
+        U_e = []
+        for s in self._station:
+            U_e.append(s.U_e)
+        return U_e
+        
+    def get_dU_edx(self):
+        dU_edx = []
+        for s in self._station:
+            dU_edx.append(s.dU_edx)
+        return dU_edx
+        
+    def get_delta_d(self):
+        delta_d = []
+        for s in self._station:
+            delta_d.append(s.H_d*s.delta_m)
+        return delta_d
+    
+    def get_delta_m(self):
+        delta_m = []
+        for s in self._station:
+            delta_m.append(s.delta_m)
+        return delta_m
+    
+    def get_delta_k(self):
+        delta_k = []
+        for s in self._station:
+            delta_k.append(s.H_k*s.delta_m)
+        return delta_k
+    
+    def get_H_d(self):
+        H_d = []
+        for s in self._station:
+            H_d.append(s.H_d)
+        return H_d
+    
+    def get_H_k(self):
+        H_k = []
+        for s in self._station:
+            H_k.append(s.H_k)
+        return H_k
+    
+    def get_G(self):
+        G = []
+        for s in self._station:
+            G.append(s.G)
+        return G
+    
+    def get_c_f(self):
+        c_f = []
+        for s in self._station:
+            c_f.append(s.c_f)
+        return c_f
+    
+    def get_c_f_LT(self):
+        c_f_LT = []
+        for s in self._station:
+            c_f_LT.append(s.c_f_LT)
+        return c_f_LT
+    
+    def get_c_f_E(self):
+        c_f_E = []
+        for s in self._station:
+            c_f_E.append(s.c_f_E)
+        return c_f_E
+    
+    def get_beta(self):
+        beta = []
+        for s in self._station:
+            beta.append(s.beta)
+        return beta
