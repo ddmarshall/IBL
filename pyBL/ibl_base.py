@@ -7,7 +7,7 @@ Created on Wed Jun 29 14:17:53 2022
 """
 
 import numpy as np
-from scipy.interpolate import CubicSpline
+from scipy.interpolate import PchipInterpolator
 from scipy.integrate import solve_ivp
 from scipy.misc import derivative as fd
 from abc import ABC, abstractmethod
@@ -63,8 +63,13 @@ class IBLBase(ABC):
         A number of different ways can be used to set the velocity relation and
         its derivatives.
         * U_e can be a 2-tuple of xpoints and velocity values. In this case a
-          cubic spline will be created and the derivative functionss will be
-          taken from the cubic spline.
+          monotonic cubic spline will be created and the derivative functions
+          will be taken from the cubic spline.
+        * U_e can be a scalar and dU_edx is a 2-tple of xpoints and rates of 
+          change of velocity values. In this case a monotonic cubic spline will
+          by created for dU_edx. U_e will be found from the antiderivative and 
+          the scalar passed in as U_e as the initial velocity. The other
+          derivative(s) will be taken from the cubic spline.
         * U_e and the derivatives can be callable objects.
             * If the first derivative object is provided but not the second 
               derivative object, then if the first derivative object has a
@@ -150,7 +155,7 @@ class IBLBase(ABC):
                     raise ValueError("Must pass at least two points for edge "
                                      "velocity")
                 
-                U_e_spline = CubicSpline(x_pts, U_e_pts)
+                U_e_spline = PchipInterpolator(x_pts, U_e_pts)
                 self.set_velocity(U_e_spline)
             else:
                 # otherwise unknown velocity input

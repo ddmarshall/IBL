@@ -10,7 +10,7 @@ Created on Tue Aug  9 17:26:49 2022
 import unittest
 import numpy as np
 import numpy.testing as npt
-from scipy.interpolate import CubicSpline
+from scipy.interpolate import PchipInterpolator
 
 from pyBL.ibl_base import IBLBase
 from pyBL.ibl_base import IBLTermEventBase
@@ -218,7 +218,7 @@ class TestEdgeVelocity(unittest.TestCase):
         x_sample = np.linspace(0.1, 5, 8)
         U_inf = 10
         m = 1.25
-        U_e = CubicSpline(x_sample, self.U_e_fun(x_sample, U_inf, m))
+        U_e = PchipInterpolator(x_sample, self.U_e_fun(x_sample, U_inf, m))
         dU_edx = U_e.derivative()
         d2U_edx2 = dU_edx.derivative()
         iblb = IBLBaseTest(U_e = U_e)
@@ -235,11 +235,8 @@ class TestEdgeVelocity(unittest.TestCase):
         x_sample = np.linspace(0.1, 5, 8)
         U_inf = 10
         m = 1.25
-        dU_edx = CubicSpline(x_sample, self.dU_edx_fun(x_sample, U_inf, m),
-                             bc_type=((1, self.d2U_edx2_fun(x_sample[0],
-                                                            U_inf, m)),
-                                      (1, self.d2U_edx2_fun(x_sample[-1],
-                                                            U_inf, m))))
+        dU_edx = PchipInterpolator(x_sample,
+                                   self.dU_edx_fun(x_sample, U_inf, m))
         U_e = dU_edx.antiderivative()
         U_e.c[-1,:] = U_e.c[-1,:]+self.U_e_fun(x_sample[0], U_inf, m)
         d2U_edx2 = dU_edx.derivative()
@@ -257,11 +254,8 @@ class TestEdgeVelocity(unittest.TestCase):
         x_sample = np.linspace(0.1, 5, 8)
         U_inf = 10
         m = 1.25
-        d2U_edx2 = CubicSpline(x_sample, self.d2U_edx2_fun(x_sample, U_inf, m),
-                               bc_type=((1, self.d3U_edx3_fun(x_sample[0],
-                                                              U_inf, m)),
-                                        (1, self.d3U_edx3_fun(x_sample[-1],
-                                                              U_inf, m))))
+        d2U_edx2 = PchipInterpolator(x_sample,
+                                     self.d2U_edx2_fun(x_sample, U_inf, m))
         dU_edx = d2U_edx2.antiderivative()
         dU_edx.c[-1,:] = dU_edx.c[-1,:]+self.dU_edx_fun(x_sample[0], U_inf, m)
         U_e = dU_edx.antiderivative()
@@ -282,7 +276,8 @@ class TestEdgeVelocity(unittest.TestCase):
         U_inf = 10
         m = 1.25
         U_e = [x_sample, self.U_e_fun(x_sample, U_inf, m)]
-        U_e_spline = CubicSpline(x_sample, self.U_e_fun(x_sample, U_inf, m))
+        U_e_spline = PchipInterpolator(x_sample,
+                                       self.U_e_fun(x_sample, U_inf, m))
         dU_edx_spline = U_e_spline.derivative()
         d2U_edx2_spline = dU_edx_spline.derivative()
         iblb = IBLBaseTest(U_e = U_e)
