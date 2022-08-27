@@ -289,6 +289,28 @@ class TestEdgeVelocity(unittest.TestCase):
         self.assertIsNone(npt.assert_allclose(iblb.U_e(x), U_e_ref))
         self.assertIsNone(npt.assert_allclose(iblb.dU_edx(x), dU_edx_ref))
         self.assertIsNone(npt.assert_allclose(iblb.d2U_edx2(x), d2U_edx2_ref))
+        
+        ## set the edge velocity derivative points
+        x_sample = np.linspace(0.1, 5, 8)
+        U_inf = 10
+        m = 1.25
+        U_e = self.U_e_fun(x_sample[0], U_inf, m)
+        dU_edx = [x_sample, self.dU_edx_fun(x_sample, U_inf, m)]
+        dU_edx_spline = PchipInterpolator(x_sample,
+                                          self.dU_edx_fun(x_sample, U_inf, m))
+        U_e_spline = dU_edx_spline.antiderivative()
+        U_e_spline.c[-1,:] = (U_e_spline.c[-1,:]
+                             + self.U_e_fun(x_sample[0], U_inf, m))
+        d2U_edx2_spline = dU_edx_spline.derivative()
+        iblb = IBLBaseTest(U_e = U_e, dU_edx = dU_edx)
+        
+        x=np.linspace(0.1, 5, 21)
+        U_e_ref = U_e_spline(x)
+        dU_edx_ref = dU_edx_spline(x)
+        d2U_edx2_ref = d2U_edx2_spline(x)
+        self.assertIsNone(npt.assert_allclose(iblb.U_e(x), U_e_ref))
+        self.assertIsNone(npt.assert_allclose(iblb.dU_edx(x), dU_edx_ref))
+        self.assertIsNone(npt.assert_allclose(iblb.d2U_edx2(x), d2U_edx2_ref))
     
     def test_delay_setting_velocity(self):
         ## create test class with all three functions

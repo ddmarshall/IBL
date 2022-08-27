@@ -134,8 +134,21 @@ class IBLBase(ABC):
                                          "given")
                     
                     self._d2U_edx2 = d2U_edx2
+        elif isinstance(U_e, (int, float)):
+            # if is 2-tuple then assume x, dU_edx pairs to build spline
+            if len(dU_edx) == 2:
+                x_pts = np.asarray(dU_edx[0])
+                dU_edx_pts = np.asarray(dU_edx[1])
+                self._dU_edx = PchipInterpolator(x_pts, dU_edx_pts)
+                self._U_e = self._dU_edx.antiderivative()
+                self._U_e.c[-1, :] = self._U_e.c[-1, :] + U_e
+                self._d2U_edx2 = self._dU_edx.derivative()
+            else:
+                # otherwise unknown velocity input
+                raise ValueError("Don't know how to use {} to initialize "
+                                 "velocity derivative".format(dU_edx))
         else:
-            # if is 2-tuple the assume x, U_e pairs to build Cubic Spline
+            # if is 2-tuple then assume x, U_e pairs to build spline
             if len(U_e) == 2:
                 x_pts = np.asarray(U_e[0])
                 U_e_pts = np.asarray(U_e[1])
