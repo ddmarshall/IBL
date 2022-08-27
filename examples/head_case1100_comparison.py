@@ -66,16 +66,27 @@ def compare_case1100():
     c_f_ref = so1100.get_c_f()
     
     x = np.linspace(x_ref[0], x_ref[-1], 101)
-    delta_d_head = hm.delta_d(x)
-    delta_m_head = hm.delta_m(x)
-    H_d_head = hm.H_d(x)
-    c_f_head = 2*hm.tau_w(x, rho)/(rho*hm.U_e(x)**2)
+    delta_d_head_reg = hm_reg.delta_d(x)
+    delta_m_head_reg = hm_reg.delta_m(x)
+    H_d_head_reg = hm_reg.H_d(x)
+    c_f_head_reg = 2*hm_sm.tau_w(x, rho)/(rho*hm_reg.U_e(x)**2)
+    U_n_head_reg = hm_reg.U_n(x)
+    delta_d_head_sm = hm_sm.delta_d(x)
+    delta_m_head_sm = hm_sm.delta_m(x)
+    H_d_head_sm = hm_sm.H_d(x)
+    c_f_head_sm = 2*hm_sm.tau_w(x, rho)/(rho*hm_sm.U_e(x)**2)
+    U_n_head_sm = hm_sm.U_n(x)
+    delta_d_head_sm2 = hm_sm2.delta_d(x)
+    delta_m_head_sm2 = hm_sm2.delta_m(x)
+    H_d_head_sm2 = hm_sm2.H_d(x)
+    c_f_head_sm2 = 2*hm_sm2.tau_w(x, rho)/(rho*hm_sm2.U_e(x)**2)
+    U_n_head_sm2 = hm_sm2.U_n(x)
     
     ## Plot results
     fig = plt.figure()
     fig.set_figwidth(10)
     fig.set_figheight(15)
-    gs = GridSpec(4, 2, figure = fig)
+    gs = GridSpec(5, 2, figure = fig)
     axis_delta_d = fig.add_subplot(gs[0, 0])
     axis_delta_d_diff = fig.add_subplot(gs[0, 1])
     axis_delta_m = fig.add_subplot(gs[1, 0])
@@ -84,8 +95,8 @@ def compare_case1100():
     axis_H_d_diff = fig.add_subplot(gs[2, 1])
     axis_c_f = fig.add_subplot(gs[3, 0])
     axis_c_f_diff = fig.add_subplot(gs[3, 1])
-#    axis_U_n = fig.add_subplot(gs[4, 0])
-#    axis_U_n_diff = fig.add_subplot(gs[4, 1])
+    axis_U_e = fig.add_subplot(gs[4, 0])
+    axis_U_n = fig.add_subplot(gs[4, 1])
     
     ref_color = "black"
     ref_label = "Ludwieg & Tillman"
@@ -185,26 +196,28 @@ def compare_case1100():
     ax.set_yscale('log')
     ax.grid(True)
     
-#    # Transpiration velocity in 4,:
-#    ax = axis_U_n
-#    ax.plot(x, U_n_exact/U_inf, color = exact_color)
-#    ax.plot(x, U_n_standard/U_inf, color = standard_color)
-#    ax.set_ylim(0, 0.01)
-#    ax.set_xlabel(r"$x$ (m)")
-#    ax.set_ylabel(r"$U_n/U_\infty$")
-#    ax.grid(True)
-#    
-#    ax = axis_U_n_error
-#    ax.plot(x/c, np.abs(1-U_n_standard/U_n_exact),
-#            color = standard_color)
-#    ax.plot(x/c, np.abs(1-U_n_nonlinear/U_n_exact),
-#            color = nonlinear_color)
-#    ax.set_xlabel(r"$x/c$")
-#    ax.set_ylabel("Relative Error")
-#    ax.set_ylim([1e-4,1])
-#    ax.set_yscale('log')
-#    ax.grid(True)
-#    
+    # Edge velocities in 4,:
+    ax = axis_U_e
+    ax.plot(np.array(x_sm)[(x_sm>x[0]) * (x_sm<x[-1])],
+            np.array(dU_edx_sm)[(x_sm>x[0]) * (x_sm<x[-1])],
+            color = ref_color, linestyle = "", marker = "o")
+    ax.plot(x, hm_reg.dU_edx(x), color = head_reg_color)
+    ax.plot(x, hm_sm.dU_edx(x), color = head_sm_color)
+    ax.plot(x, hm_sm2.dU_edx(x), color = head_sm2_color)
+    ax.set_ylim(-1, -5)
+    ax.set_xlabel(r"$x$ (m)")
+    ax.set_ylabel(r"d$U_e/$d$x$ (m/s)")
+    ax.grid(True)
+    
+    ax = axis_U_n
+    ax.plot(x, U_n_head_reg, color = head_reg_color)
+    ax.plot(x, U_n_head_sm, color = head_sm_color)
+    ax.plot(x, U_n_head_sm2, color = head_sm2_color)
+    ax.set_ylim(0, 0.4)
+    ax.set_xlabel(r"$x$ (m)")
+    ax.set_ylabel(r"$U_n$ (m/s)")
+    ax.grid(True)
+    
     fig.subplots_adjust(bottom=0.075, wspace=0.5)
     fig.legend(handles = [ref_curve[0], head_reg_curve[0], head_sm_curve[0],
                           head_sm2_curve[0]], 
