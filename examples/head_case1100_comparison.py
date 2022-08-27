@@ -13,57 +13,56 @@ Created on Tue Aug 16 16:20:20 2022
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.gridspec import GridSpec
-from scipy.interpolate import PchipInterpolator
 
 from pyBL.head_method import HeadMethod
 from pyBL.stanford_olympics import StanfordOlympics1968
 
 
 def compare_case1100():
-    so1100 = StanfordOlympics1968("1100")
-    x, U_e, dU_edx = so1100.get_velocity()
-    x_sm, U_e_sm, dU_edx_sm = so1100.get_smooth_velocity()
+    so68 = StanfordOlympics1968("1100")
+    x, U_e, dU_edx = so68.get_velocity()
+    x_sm, U_e_sm, dU_edx_sm = so68.get_smooth_velocity()
     rho = 1.2
     
     hm_reg = HeadMethod(U_e = [x, U_e])
-    hm_reg.set_solution_parameters(x0 = so1100.get_x()[0],
-                                   x_end = so1100.get_x()[-1],
-                                   delta_m0 = so1100.get_delta_m()[0],
-                                   H_d0 = so1100.get_H_d()[0],
-                                   nu = so1100.nu)
+    hm_reg.set_solution_parameters(x0 = so68.get_x()[0],
+                                   x_end = so68.get_x()[-1],
+                                   delta_m0 = so68.get_delta_m()[0],
+                                   H_d0 = so68.get_H_d()[0],
+                                   nu = so68.nu)
     rtn = hm_reg.solve()
     if not rtn.success:
         print("Could not get solution for Head method: " + rtn.message)
         return
     
     hm_sm = HeadMethod(U_e = [x_sm, U_e_sm])
-    hm_sm.set_solution_parameters(x0 = so1100.get_x()[0],
-                                 x_end = so1100.get_x()[-1],
-                                 delta_m0 = so1100.get_delta_m()[0],
-                                 H_d0 = so1100.get_H_d()[0],
-                                 nu = so1100.nu)
+    hm_sm.set_solution_parameters(x0 = so68.get_x()[0],
+                                 x_end = so68.get_x()[-1],
+                                 delta_m0 = so68.get_delta_m()[0],
+                                 H_d0 = so68.get_H_d()[0],
+                                 nu = so68.nu)
     rtn = hm_sm.solve()
     if not rtn.success:
         print("Could not get solution for Head method: " + rtn.message)
         return
     
     hm_sm2 = HeadMethod(U_e = U_e[0], dU_edx = [x, dU_edx])
-    hm_sm2.set_solution_parameters(x0 = so1100.get_x()[0],
-                                  x_end = so1100.get_x()[-1],
-                                  delta_m0 = so1100.get_delta_m()[0],
-                                  H_d0 = so1100.get_H_d()[0],
-                                  nu = so1100.nu)
+    hm_sm2.set_solution_parameters(x0 = so68.get_x()[0],
+                                  x_end = so68.get_x()[-1],
+                                  delta_m0 = so68.get_delta_m()[0],
+                                  H_d0 = so68.get_H_d()[0],
+                                  nu = so68.nu)
     rtn = hm_sm2.solve()
     if not rtn.success:
         print("Could not get solution for Head method: " + rtn.message)
         return
     
     ## Calculate the boundary layer parameters
-    x_ref = so1100.get_x()
-    delta_d_ref = so1100.get_delta_d()
-    delta_m_ref = so1100.get_delta_m()
-    H_d_ref = so1100.get_H_d()
-    c_f_ref = so1100.get_c_f()
+    x_ref = so68.get_x()
+    delta_d_ref = so68.get_delta_d()
+    delta_m_ref = so68.get_delta_m()
+    H_d_ref = so68.get_H_d()
+    c_f_ref = so68.get_c_f()
     
     x = np.linspace(x_ref[0], x_ref[-1], 101)
     delta_d_head_reg = hm_reg.delta_d(x)
