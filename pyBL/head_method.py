@@ -207,7 +207,7 @@ class HeadMethod(IBLBase):
                             [H_d_low, H_d_high])
     
     @staticmethod
-    def _E_on_Ue(H1):
+    def _S(H1):
         H1 = np.asarray(H1)
         if (H1 <= 3).any():
             raise ValueError("Cannot pass entrainment shape factor less than "

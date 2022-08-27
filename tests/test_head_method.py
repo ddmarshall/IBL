@@ -68,12 +68,12 @@ class TestHeadMethod(unittest.TestCase):
         Eterm_ref = np.zeros_like(H1)
         for i, H1i in enumerate(H1):
             Eterm_ref[i] = fun(H1i)
-        Eterm = HeadMethod._E_on_Ue(H1)
+        Eterm = HeadMethod._S(H1)
         self.assertIsNone(npt.assert_allclose(Eterm, Eterm_ref))
         
         ## test invalid values
         with self.assertRaises(ValueError):
-            HeadMethod._E_on_Ue(3)
+            HeadMethod._S(3)
     
 # I don't think this will work because c_f needs momentum Reynolds number with 
 # requires edge velocity, and edge velocity 
