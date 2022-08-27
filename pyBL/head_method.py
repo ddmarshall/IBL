@@ -10,7 +10,7 @@ import numpy as np
 
 from pyBL.ibl_base import IBLBase
 from pyBL.ibl_base import IBLTermEventBase
-from pyBL.skin_friction import c_f_LudwiegTillman as c_f_LT
+from pyBL.skin_friction import c_f_LudwiegTillman as c_f_fun
 
 
 class HeadMethod(IBLBase):
@@ -27,7 +27,7 @@ class HeadMethod(IBLBase):
     def __init__(self, U_e = None, dU_edx = None, d2U_edx2 = None):
         super().__init__(U_e, dU_edx, d2U_edx2)
     
-    def set_solution_parameers(self, x0, x_end, delta_m0, H_d0, nu):
+    def set_solution_parameters(self, x0, x_end, delta_m0, H_d0, nu):
         """
         Set the parameters needed for the solver to propagate
         
@@ -189,7 +189,7 @@ class HeadMethod(IBLBase):
         H1 = np.asarray(H1)
         if (H1 <= 3.32254659218600974).any():
             raise ValueError("Cannot pass entrainment shape factor less than "
-                             "1.1: {}".format(np.amin(H1)))
+                             "3.323: {}".format(np.amin(H1)))
         def H_d_low(H1):
             a = 1.5501
             b = 0.6778
