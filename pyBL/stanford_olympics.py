@@ -172,6 +172,9 @@ class StanfordOlympics1968:
     def get_station(self, i):
         return self._station[i]
     
+    def get_velocity(self):
+        return self.get_x(), self.get_U_e(), self.get_dU_edx()
+    
     def get_smooth_velocity(self):
         return self._x_sm, self._U_e_sm, self._dU_edx_sm
     
