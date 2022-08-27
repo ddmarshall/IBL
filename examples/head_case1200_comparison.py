@@ -1,9 +1,8 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-This example shows a comparison between Head's method and case 1100 from the 
-1968 Stanford Olympics from Luwieg and Tillman. It shows similar results to 
-Figures 3.10 to 3.16 in Edland thesis.
+This example shows a comparison between Head's method and case 1200 from the 
+1968 Stanford Olympics from Luwieg and Tillman.
 
 Created on Sat Aug 27 01:02:14 2022
 
