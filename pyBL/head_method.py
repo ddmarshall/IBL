@@ -131,9 +131,7 @@ class HeadMethod(IBLBase):
         -------
             Desired property at the specified locations
         """
-        pass
-#        lam = self._calc_lambda(x, self._solution(x)[0])
-#        return self._model.H(lam)
+        return self._solution(x)[1]
     
     def tau_w(self, x, rho):
         """
@@ -148,21 +146,34 @@ class HeadMethod(IBLBase):
         -------
             Desired property at the specified locations
         """
-        pass
-#        lam = self._calc_lambda(x, self._solution(x)[0])
-#        return rho*self._nu*self.U_e(x)*self._model.S(lam)/self.delta_m(x)
+        delta_m = self._solution(x)[0]
+        H_d = self._solution(x)[1]
+        U_e = self.U_e(x)
+        Re_delta_m = U_e*delta_m/self._nu
+        c_f = c_f_fun(Re_delta_m, H_d)
+        return 0.5*rho*U_e**2*c_f
     
-    def _ode_impl(self, x, delta_m2_on_nu):
+    def _ode_impl(self, x, y):
         """
         This is the right-hand-side of the ODE representing Head's method.
         
         Args
         ----
             x: x-location of current step
-            sol: current step solution vector of momentum thickness and H1
+            y: current step solution vector of momentum thickness and H_d
         """
-        pass
-#        return self._calc_F(x, delta_m2_on_nu)/self.U_e(x)
+        yp = np.zeros_like(y)
+        delta_m = y[0]
+        H_d = y[1]
+        U_e = self.U_e(x)
+        dU_edx = self.dU_edx(x)
+        Re_delta_m = U_e*delta_m/self._nu
+        c_f = c_f_fun(Re_delta_m, H_d)
+        H1 = self._H1(H_d)
+        H1p = self._H1p(H_d)
+        yp[0] = 0.5*c_f-delta_m*(2+H_d)*dU_edx/U_e
+        yp[1] = (U_e*self._S(H1) - U_e*yp[0]*H1 - dU_edx*delta_m*H1)/(H1p*U_e*delta_m)
+        return yp
     
     @staticmethod
     def _H1(H_d):
@@ -182,6 +193,24 @@ class HeadMethod(IBLBase):
             c = 3.064
             d = 3.32254659218600974
             return d + a/(H_d - b)**c
+        return np.piecewise(H_d, [H_d<=1.6, H_d>1.6], [H1_low, H1_high])
+    
+    @staticmethod
+    def _H1p(H_d):
+        H_d = np.asarray(H_d)
+        if (H_d <= 1.1).any():
+            raise ValueError("Cannot pass displacement shape factor less than "
+                             "1.1: {}".format(np.amin(H_d)))
+        def H1_low(H_d):
+            a = 0.8234
+            b = 1.1
+            c = 1.287
+            return -a*c/(H_d - b)**(c+1)
+        def H1_high(H_d):
+            a = 1.5501
+            b = 0.6778
+            c = 3.064
+            return -a*c/(H_d - b)**(c+1)
         return np.piecewise(H_d, [H_d<=1.6, H_d>1.6], [H1_low, H1_high])
     
     @staticmethod

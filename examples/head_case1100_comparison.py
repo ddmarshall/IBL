@@ -41,14 +41,11 @@ def compare_case1100():
     H_d_ref = so1100.get_H_d()
     c_f_ref = so1100.get_c_f()
     
-    temp = hm.delta_d(x_ref)
-    
-    # TODO: Replace this with actual calculations
     x = np.linspace(x_ref[0], x_ref[-1], 101)
     delta_d_head = hm.delta_d(x)
     delta_m_head = hm.delta_m(x)
     H_d_head = hm.H_d(x)
-#    c_f_head = 2*hm.tau_w(x, rho)/(rho*hm.U_e(x))
+    c_f_head = 2*hm.tau_w(x, rho)/(rho*hm.U_e(x)**2)
     
     ## Plot results
     fig = plt.figure()
@@ -73,8 +70,8 @@ def compare_case1100():
     
     # Displacement thickness in 0,:
     ax = axis_delta_d
-    ref_curve = ax.plot(x_ref, delta_d_ref, color = ref_color,
-                          label = ref_label)
+    ref_curve = ax.plot(x_ref, delta_d_ref, color = ref_color, linestyle = "",
+                        marker = "o", label = ref_label)
     head_curve = ax.plot(x, delta_d_head, color = head_color,
             label = head_label)
     ax.set_ylim(0, 0.040)
@@ -90,7 +87,7 @@ def compare_case1100():
     
     # Momentum thickness in 1,:
     ax = axis_delta_m
-    ax.plot(x_ref, delta_m_ref, color = ref_color)
+    ax.plot(x_ref, delta_m_ref, color = ref_color, linestyle = "", marker = "o")
     ax.plot(x, delta_m_head, color = head_color)
     ax.set_ylim(0, 0.025)
     ax.set_ylabel(r"$\delta_m$ (m)")
@@ -105,7 +102,7 @@ def compare_case1100():
     
     # Displacement shape factor in 2,:
     ax = axis_H_d
-    ax.plot(x_ref, H_d_ref, color = ref_color)
+    ax.plot(x_ref, H_d_ref, color = ref_color, linestyle = "", marker = "o")
     ax.plot(x, H_d_head, color = head_color)
     ax.set_ylim(1, 2)
     ax.set_ylabel(r"$H_d$")
@@ -118,20 +115,20 @@ def compare_case1100():
     ax.set_yscale('log')
     ax.grid(True)
     
-#    # Skin friction coefficient in 3,:
-#    ax = axis_c_f
-#    ax.plot(x_ref, c_f_ref, color = ref_color)
-#    ax.plot(x_ref, c_f_head, color = head_color)
-#    ax.set_ylim(0, 0.003)
-#    ax.set_ylabel(r"$c_f$")
-#    ax.grid(True)
-#    
-#    ax = axis_c_f_error
-#    ax.plot(x/c, np.abs(1-c_f_standard/c_f_exact), color = head_color)
-#    ax.set_ylabel("Relative Difference")
-#    ax.set_ylim([1e-3,1])
-#    ax.set_yscale('log')
-#    ax.grid(True)
+    # Skin friction coefficient in 3,:
+    ax = axis_c_f
+    ax.plot(x_ref, c_f_ref, color = ref_color, linestyle = "", marker = "o")
+    ax.plot(x, c_f_head, color = head_color)
+    ax.set_ylim(0, 0.003)
+    ax.set_ylabel(r"$c_f$")
+    ax.grid(True)
+    
+    ax = axis_c_f_diff
+    ax.plot(x_ref, np.abs(1-2*hm.tau_w(x_ref, rho)/(rho*hm.U_e(x_ref)**2)/c_f_ref), color = head_color)
+    ax.set_ylabel("Relative Difference")
+    ax.set_ylim([1e-3,1])
+    ax.set_yscale('log')
+    ax.grid(True)
     
 #    # Transpiration velocity in 4,:
 #    ax = axis_U_n
