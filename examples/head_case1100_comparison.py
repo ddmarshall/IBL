@@ -63,6 +63,7 @@ def compare_case1100():
     delta_m_ref = so68.get_delta_m()
     H_d_ref = so68.get_H_d()
     c_f_ref = so68.get_c_f()
+    U_e_ref = so68.get_U_e()
     
     x = np.linspace(x_ref[0], x_ref[-1], 101)
     delta_d_head_reg = hm_reg.delta_d(x)
@@ -85,7 +86,7 @@ def compare_case1100():
     fig = plt.figure()
     fig.set_figwidth(10)
     fig.set_figheight(15)
-    gs = GridSpec(5, 2, figure = fig)
+    gs = GridSpec(6, 2, figure = fig)
     axis_delta_d = fig.add_subplot(gs[0, 0])
     axis_delta_d_diff = fig.add_subplot(gs[0, 1])
     axis_delta_m = fig.add_subplot(gs[1, 0])
@@ -95,7 +96,9 @@ def compare_case1100():
     axis_c_f = fig.add_subplot(gs[3, 0])
     axis_c_f_diff = fig.add_subplot(gs[3, 1])
     axis_U_e = fig.add_subplot(gs[4, 0])
-    axis_U_n = fig.add_subplot(gs[4, 1])
+    axis_U_e_diff = fig.add_subplot(gs[4, 1])
+    axis_dU_edx = fig.add_subplot(gs[5, 0])
+    axis_U_n = fig.add_subplot(gs[5, 1])
     
     ref_color = "black"
     ref_label = "Ludwieg & Tillman"
@@ -195,17 +198,35 @@ def compare_case1100():
     ax.set_yscale('log')
     ax.grid(True)
     
-    # Edge velocities in 4,:
+    # Edge velocity in 4,:
     ax = axis_U_e
-    ax.plot(np.array(x_sm)[(x_sm>x[0]) * (x_sm<x[-1])],
-            np.array(dU_edx_sm)[(x_sm>x[0]) * (x_sm<x[-1])],
-            color = ref_color, linestyle = "", marker = "o")
+    ax.plot(x_sm, U_e_sm, color = ref_color, linestyle = "", marker = "o")
+    ax.plot(x, hm_reg.U_e(x), color = head_reg_color)
+    ax.plot(x, hm_sm.U_e(x), color = head_sm_color)
+    ax.plot(x, hm_sm2.U_e(x), color = head_sm2_color)
+    ax.set_ylim(20, 35)
+    ax.set_xlabel(r"$x$ (m)")
+    ax.set_ylabel(r"$U_e$ (m/s)")
+    ax.grid(True)
+    
+    ax = axis_U_e_diff
+    ax.plot(x_ref, np.abs(1-hm_reg.U_e(x_ref)/U_e_ref), color = head_reg_color)
+    ax.plot(x_ref, np.abs(1-hm_sm.U_e(x_ref)/U_e_ref), color = head_sm_color)
+    ax.plot(x_ref, np.abs(1-hm_sm2.U_e(x_ref)/U_e_ref), color = head_sm2_color)
+    ax.set_ylabel("Relative Difference")
+    ax.set_ylim([1e-3,1])
+    ax.set_yscale('log')
+    ax.grid(True)
+
+    # Transpiration velocity in 5,:
+    ax = axis_dU_edx
+    ax.plot(x_sm, dU_edx_sm, color = ref_color, linestyle = "", marker = "o")
     ax.plot(x, hm_reg.dU_edx(x), color = head_reg_color)
     ax.plot(x, hm_sm.dU_edx(x), color = head_sm_color)
     ax.plot(x, hm_sm2.dU_edx(x), color = head_sm2_color)
     ax.set_ylim(-1, -5)
     ax.set_xlabel(r"$x$ (m)")
-    ax.set_ylabel(r"d$U_e/$d$x$ (m/s)")
+    ax.set_ylabel(r"d$U_e/$d$x$ (1/s)")
     ax.grid(True)
     
     ax = axis_U_n
