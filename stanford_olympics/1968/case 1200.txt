@@ -1,4 +1,4 @@
-# Ludwieg and Tillman Mild Adverse Pressure Gradient
+# Ludwieg and Tillman Strong Adverse Pressure Gradient
 IDENT = 1200
 V = 0.150000
 
