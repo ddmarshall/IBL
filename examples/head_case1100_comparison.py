@@ -13,6 +13,7 @@ Created on Tue Aug 16 16:20:20 2022
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.gridspec import GridSpec
+from scipy.interpolate import PchipInterpolator
 
 from pyBL.head_method import HeadMethod
 from pyBL.stanford_olympics import StanfordOlympics1968
@@ -20,16 +21,39 @@ from pyBL.stanford_olympics import StanfordOlympics1968
 
 def compare_case1100():
     so1100 = StanfordOlympics1968("1100")
-    x, U_e, _ = so1100.get_smooth_velocity()
+    x, U_e, dU_edx = so1100.get_velocity()
+    x_sm, U_e_sm, dU_edx_sm = so1100.get_smooth_velocity()
     rho = 1.2
     
-    hm = HeadMethod(U_e = [x, U_e])
-    hm.set_solution_parameters(x0 = so1100.get_x()[0],
-                               x_end = so1100.get_x()[-1],
-                               delta_m0 = so1100.get_delta_m()[0],
-                               H_d0 = so1100.get_H_d()[0],
-                               nu = so1100.nu)
-    rtn = hm.solve()
+    hm_reg = HeadMethod(U_e = [x, U_e])
+    hm_reg.set_solution_parameters(x0 = so1100.get_x()[0],
+                                   x_end = so1100.get_x()[-1],
+                                   delta_m0 = so1100.get_delta_m()[0],
+                                   H_d0 = so1100.get_H_d()[0],
+                                   nu = so1100.nu)
+    rtn = hm_reg.solve()
+    if not rtn.success:
+        print("Could not get solution for Head method: " + rtn.message)
+        return
+    
+    hm_sm = HeadMethod(U_e = [x_sm, U_e_sm])
+    hm_sm.set_solution_parameters(x0 = so1100.get_x()[0],
+                                 x_end = so1100.get_x()[-1],
+                                 delta_m0 = so1100.get_delta_m()[0],
+                                 H_d0 = so1100.get_H_d()[0],
+                                 nu = so1100.nu)
+    rtn = hm_sm.solve()
+    if not rtn.success:
+        print("Could not get solution for Head method: " + rtn.message)
+        return
+    
+    hm_sm2 = HeadMethod(U_e = U_e[0], dU_edx = [x, dU_edx])
+    hm_sm2.set_solution_parameters(x0 = so1100.get_x()[0],
+                                  x_end = so1100.get_x()[-1],
+                                  delta_m0 = so1100.get_delta_m()[0],
+                                  H_d0 = so1100.get_H_d()[0],
+                                  nu = so1100.nu)
+    rtn = hm_sm2.solve()
     if not rtn.success:
         print("Could not get solution for Head method: " + rtn.message)
         return
@@ -65,21 +89,34 @@ def compare_case1100():
     
     ref_color = "black"
     ref_label = "Ludwieg & Tillman"
-    head_color = "green"
-    head_label = "Head"
+    head_reg_color = "red"
+    head_reg_label = "Head"
+    head_sm_color = "green"
+    head_sm_label = "Head (Smooth $U_e$)"
+    head_sm2_color = "orange"
+    head_sm2_label = "Head (Smooth d$U_e/$d$x$)"
     
     # Displacement thickness in 0,:
     ax = axis_delta_d
     ref_curve = ax.plot(x_ref, delta_d_ref, color = ref_color, linestyle = "",
                         marker = "o", label = ref_label)
-    head_curve = ax.plot(x, delta_d_head, color = head_color,
-            label = head_label)
-    ax.set_ylim(0, 0.040)
+    head_reg_curve = ax.plot(x, delta_d_head_reg, color = head_reg_color,
+                             label = head_reg_label)
+    head_sm_curve = ax.plot(x, delta_d_head_sm, color = head_sm_color,
+                            label = head_sm_label)
+    head_sm2_curve = ax.plot(x, delta_d_head_sm2, color = head_sm2_color,
+                             label = head_sm2_label)
+    ax.set_ylim(0, 0.05)
     ax.set_ylabel(r"$\delta_d$ (m)")
     ax.grid(True)
     
     ax = axis_delta_d_diff
-    ax.plot(x_ref, np.abs(1-hm.delta_d(x_ref)/delta_d_ref), color = head_color)
+    ax.plot(x_ref, np.abs(1-hm_reg.delta_d(x_ref)/delta_d_ref),
+            color = head_reg_color)
+    ax.plot(x_ref, np.abs(1-hm_sm.delta_d(x_ref)/delta_d_ref),
+            color = head_sm_color)
+    ax.plot(x_ref, np.abs(1-hm_sm2.delta_d(x_ref)/delta_d_ref),
+            color = head_sm2_color)
     ax.set_ylabel("Relative Difference")
     ax.set_ylim([1e-3,1])
     ax.set_yscale('log')
@@ -88,13 +125,20 @@ def compare_case1100():
     # Momentum thickness in 1,:
     ax = axis_delta_m
     ax.plot(x_ref, delta_m_ref, color = ref_color, linestyle = "", marker = "o")
-    ax.plot(x, delta_m_head, color = head_color)
-    ax.set_ylim(0, 0.025)
+    ax.plot(x, delta_m_head_reg, color = head_reg_color)
+    ax.plot(x, delta_m_head_sm, color = head_sm_color)
+    ax.plot(x, delta_m_head_sm2, color = head_sm2_color)
+    ax.set_ylim(0, 0.03)
     ax.set_ylabel(r"$\delta_m$ (m)")
     ax.grid(True)
     
     ax = axis_delta_m_diff
-    ax.plot(x_ref, np.abs(1-hm.delta_m(x_ref)/delta_m_ref), color = head_color)
+    ax.plot(x_ref, np.abs(1-hm_reg.delta_m(x_ref)/delta_m_ref),
+            color = head_reg_color)
+    ax.plot(x_ref, np.abs(1-hm_sm.delta_m(x_ref)/delta_m_ref),
+            color = head_sm_color)
+    ax.plot(x_ref, np.abs(1-hm_sm2.delta_m(x_ref)/delta_m_ref),
+            color = head_sm2_color)
     ax.set_ylabel("Relative Difference")
     ax.set_ylim([1e-3,1])
     ax.set_yscale('log')
@@ -103,13 +147,17 @@ def compare_case1100():
     # Displacement shape factor in 2,:
     ax = axis_H_d
     ax.plot(x_ref, H_d_ref, color = ref_color, linestyle = "", marker = "o")
-    ax.plot(x, H_d_head, color = head_color)
+    ax.plot(x, H_d_head_reg, color = head_reg_color)
+    ax.plot(x, H_d_head_sm, color = head_sm_color)
+    ax.plot(x, H_d_head_sm2, color = head_sm2_color)
     ax.set_ylim(1, 2)
     ax.set_ylabel(r"$H_d$")
     ax.grid(True)
     
     ax = axis_H_d_diff
-    ax.plot(x_ref, np.abs(1-hm.H_d(x_ref)/H_d_ref), color = head_color)
+    ax.plot(x_ref, np.abs(1-hm_reg.H_d(x_ref)/H_d_ref), color = head_reg_color)
+    ax.plot(x_ref, np.abs(1-hm_sm.H_d(x_ref)/H_d_ref), color = head_sm_color)
+    ax.plot(x_ref, np.abs(1-hm_sm2.H_d(x_ref)/H_d_ref), color = head_sm2_color)
     ax.set_ylabel("Relative Difference")
     ax.set_ylim([1e-3,1])
     ax.set_yscale('log')
@@ -118,13 +166,20 @@ def compare_case1100():
     # Skin friction coefficient in 3,:
     ax = axis_c_f
     ax.plot(x_ref, c_f_ref, color = ref_color, linestyle = "", marker = "o")
-    ax.plot(x, c_f_head, color = head_color)
+    ax.plot(x, c_f_head_reg, color = head_reg_color)
+    ax.plot(x, c_f_head_sm, color = head_sm_color)
+    ax.plot(x, c_f_head_sm2, color = head_sm2_color)
     ax.set_ylim(0, 0.003)
     ax.set_ylabel(r"$c_f$")
     ax.grid(True)
     
     ax = axis_c_f_diff
-    ax.plot(x_ref, np.abs(1-2*hm.tau_w(x_ref, rho)/(rho*hm.U_e(x_ref)**2)/c_f_ref), color = head_color)
+    ax.plot(x_ref, np.abs(1-2*hm_reg.tau_w(x_ref, rho)/(rho*hm_reg.U_e(x_ref)**2)/c_f_ref),
+            color = head_reg_color)
+    ax.plot(x_ref, np.abs(1-2*hm_sm.tau_w(x_ref, rho)/(rho*hm_sm.U_e(x_ref)**2)/c_f_ref),
+            color = head_sm_color)
+    ax.plot(x_ref, np.abs(1-2*hm_sm2.tau_w(x_ref, rho)/(rho*hm_sm2.U_e(x_ref)**2)/c_f_ref),
+            color = head_sm2_color)
     ax.set_ylabel("Relative Difference")
     ax.set_ylim([1e-3,1])
     ax.set_yscale('log')
@@ -151,10 +206,12 @@ def compare_case1100():
 #    ax.grid(True)
 #    
     fig.subplots_adjust(bottom=0.075, wspace=0.5)
-    fig.legend(handles = [ref_curve[0], head_curve[0]], 
-               labels = [ref_label, head_label],
+    fig.legend(handles = [ref_curve[0], head_reg_curve[0], head_sm_curve[0],
+                          head_sm2_curve[0]], 
+               labels = [ref_label, head_reg_label, head_sm_label,
+                         head_sm2_label],
                loc = "upper center", bbox_to_anchor = (0.45, 0.03),
-               ncol = 2, borderaxespad = 0.1)
+               ncol = 4, borderaxespad = 0.1)
 
 
 if (__name__ == "__main__"):
