@@ -106,7 +106,7 @@ def compare_case1200():
     head_sm_color = "green"
     head_sm_label = "Head (Smooth $U_e$)"
     head_sm2_color = "orange"
-    head_sm2_label = "Head (Smooth d$U_e/$d$x$)"
+    head_sm2_label = "Head (Mono. d$U_e/$d$x$)"
     
     # Displacement thickness in 0,:
     ax = axis_delta_d

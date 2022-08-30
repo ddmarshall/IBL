@@ -324,9 +324,11 @@ class _ThwaitesFunctionsBase:
         lam_min, lam_max = self.range()
         
         if (np.array(lam) < lam_min).any():
-            raise ValueError('cannot pass value less than {} into this function: {}'.format(lam_min, lam))
+            raise ValueError("Cannot pass value less than {} into this "
+                             "function: {}".format(lam_min, lam))
         elif (np.array(lam) > lam_max).any():
-            raise ValueError('cannot pass value greater than {} into this function: {}'.format(lam_max, lam))
+            raise ValueError("Cannot pass value greater than {} into this "
+                             "function: {}".format(lam_max, lam))
 
 
 class _ThwaitesFunctionsWhite(_ThwaitesFunctionsBase):
@@ -370,6 +372,7 @@ class _ThwaitesFunctionsCebeciBradshaw(_ThwaitesFunctionsBase):
         
         super().__init__("Cebeci and Bradshaw", S, H, Hp, -0.1, 0.1)
 
+
 class _ThwaitesFunctionsSpline(_ThwaitesFunctionsBase):
     """Returns cubic splines of Thwaites original tables based on Edland 2021"""
     def __init__(self):
@@ -402,7 +405,7 @@ class _ThwaitesFunctionsSpline(_ThwaitesFunctionsBase):
                             -0.048,-0.040, -0.032, -0.024, -0.016, -0.008,
                              0.000, 0.016,  0.032,  0.048,  0.064,  0.080,
                              0.10,  0.12,   0.14,   0.20,   0.25])
-    
+
 
 class _ThwaitesSeparationEvent(IBLTermEventBase):
     """
@@ -413,7 +416,8 @@ class _ThwaitesSeparationEvent(IBLTermEventBase):
     
     Attributes
     ----------
-        _x_kill: x-location that the integrator should stop.
+        _calc_lam: Callable that can calculate lambda
+        _S_fun: Callable that can calculate the shear function
     """
     def __init__(self, calc_lam, S_fun):
         super().__init__()
