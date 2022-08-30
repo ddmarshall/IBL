@@ -247,19 +247,16 @@ class XFoilReader:
                             stag_info.s = frac*u.s + (1-frac)*info.s
                             stag_info.y = frac*u.y + (1-frac)*info.y
                             # invert sign for one term for rest
-                            stag_info.delta_d = np.abs(-frac*u.delta_d
-                                                       + (1-frac)*info.delta_d)
-                            stag_info.delta_m = np.abs(-frac*u.delta_m
-                                                       + (1-frac)*info.delta_m)
-                            stag_info.c_f = np.abs(-frac*u.c_f
-                                                   + (1-frac)*info.c_f)
-                            stag_info.H_d = np.abs(-frac*u.H_d
-                                                   + (1-frac)*info.H_d)
-                            stag_info.H_k = np.abs(-frac*u.H_k
-                                                   + (1-frac)*info.H_k)
-                            stag_info.P = np.abs(-frac*u.P + (1-frac)*info.P)
-                            stag_info.m = np.abs(-frac*u.m + (1-frac)*info.m)
-                            stag_info.K = np.abs(-frac*u.K + (1-frac)*info.K)
+                            stag_info.delta_d = (frac*u.delta_d
+                                                 + (1-frac)*info.delta_d)
+                            stag_info.delta_m = (frac*u.delta_m
+                                                 + (1-frac)*info.delta_m)
+                            stag_info.c_f = frac*u.c_f + (1-frac)*info.c_f
+                            stag_info.H_d = frac*u.H_d + (1-frac)*info.H_d
+                            stag_info.H_k = frac*u.H_k + (1-frac)*info.H_k
+                            stag_info.P = frac*u.P + (1-frac)*info.P
+                            stag_info.m = frac*u.m + (1-frac)*info.m
+                            stag_info.K = frac*u.K + (1-frac)*info.K
                             
                             # append stag_info to upper
                             stag_s = stag_info.s
