@@ -15,11 +15,6 @@ from pyBL.ibl_base import IBLBase
 from pyBL.ibl_base import IBLTermEventBase
 
 
-#def _stagnation_y0(iblsimdata,x0):
-#    #From Moran
-#      return .075*iblsimdata.nu/iblsimdata.du_edx(x0)
-
-
 class ThwaitesMethodBase(IBLBase):
     """
     Models a laminar boundary layer using Thwaites Method (1949) when provided 

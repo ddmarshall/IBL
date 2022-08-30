@@ -13,6 +13,11 @@ from scipy.misc import derivative as fd
 from abc import ABC, abstractmethod
 
 
+#def _stagnation_y0(iblsimdata,x0):
+#    #From Moran
+#      return .075*iblsimdata.nu/iblsimdata.du_edx(x0)
+
+
 class IBLBase(ABC):
     """
     The base class for integral boundary layer classes.
