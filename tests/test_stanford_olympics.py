@@ -50,15 +50,15 @@ class TestStanfordOlympics1968(unittest.TestCase):
         
         ## test some smooth data
         x, U_e, dU_edx = so1100.get_smooth_velocity()
-        self.assertIsNone(npt.assert_allclose(x[0], 0.50))
-        self.assertIsNone(npt.assert_allclose(U_e[0], 34.41))
-        self.assertIsNone(npt.assert_allclose(dU_edx[0], -1.69))
-        self.assertIsNone(npt.assert_allclose(x[7], 2.25))
-        self.assertIsNone(npt.assert_allclose(U_e[7], 28.78))
-        self.assertIsNone(npt.assert_allclose(dU_edx[7], -3.62))
-        self.assertIsNone(npt.assert_allclose(x[14], 4.00))
-        self.assertIsNone(npt.assert_allclose(U_e[14], 23.85))
-        self.assertIsNone(npt.assert_allclose(dU_edx[14], -2.29))
+        self.assertIsNone(npt.assert_allclose(x[0], 0.75))
+        self.assertIsNone(npt.assert_allclose(U_e[0], 33.98))
+        self.assertIsNone(npt.assert_allclose(dU_edx[0], -2.25))
+        self.assertIsNone(npt.assert_allclose(x[6], 2.25))
+        self.assertIsNone(npt.assert_allclose(U_e[6], 28.78))
+        self.assertIsNone(npt.assert_allclose(dU_edx[6], -3.62))
+        self.assertIsNone(npt.assert_allclose(x[13], 4.00))
+        self.assertIsNone(npt.assert_allclose(U_e[13], 23.85))
+        self.assertIsNone(npt.assert_allclose(dU_edx[13], -2.29))
 
 
 if (__name__ == "__main__"):
