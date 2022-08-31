@@ -236,7 +236,7 @@ class ThwaitesMethodBase(IBLBase):
             delta_m2_on_nu: current step square of momentum thickness divided
             by the kinematic viscosity
         """
-        return self._calc_F(x, delta_m2_on_nu)/self.U_e(x)
+        return self._calc_F(x, delta_m2_on_nu)/(1e-3+self.U_e(x))
     
     @abstractmethod
     def _calc_F(self, x, delta_m2_on_nu):
@@ -319,11 +319,13 @@ class _ThwaitesFunctionsBase:
         lam_min, lam_max = self.range()
         
         if (np.array(lam) < lam_min).any():
-            raise ValueError("Cannot pass value less than {} into this "
-                             "function: {}".format(lam_min, lam))
+            lam[lam < lam_min] = lam_min
+#            raise ValueError("Cannot pass value less than {} into this "
+#                             "function: {}".format(lam_min, lam))
         elif (np.array(lam) > lam_max).any():
-            raise ValueError("Cannot pass value greater than {} into this "
-                             "function: {}".format(lam_max, lam))
+            lam[lam > lam_max] = lam_max
+#            raise ValueError("Cannot pass value greater than {} into this "
+#                             "function: {}".format(lam_max, lam))
 
 
 class _ThwaitesFunctionsWhite(_ThwaitesFunctionsBase):
