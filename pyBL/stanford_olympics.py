@@ -100,9 +100,9 @@ class StanfordOlympics1968:
     
     
     def __init__(self, case = None):
-        self.changeCaseData(case)
+        self.change_case_data(case)
     
-    def changeCaseData(self, case):
+    def change_case_data(self, case):
         ## Reset everything
         self.case = ""
         self.nu = 0
@@ -169,88 +169,88 @@ class StanfordOlympics1968:
     def num_stations(self):
         return len(self._station)
     
-    def get_station(self, i):
+    def station(self, i):
         return self._station[i]
     
-    def get_velocity(self):
-        return self.get_x(), self.get_U_e(), self.get_dU_edx()
+    def velocity(self):
+        return self.x(), self.U_e(), self.dU_edx()
     
-    def get_smooth_velocity(self):
+    def velocity_smooth(self):
         return self._x_sm, self._U_e_sm, self._dU_edx_sm
     
-    def get_x(self):
+    def x(self):
         x = []
         for s in self._station:
             x.append(s.x)
         return x
     
-    def get_U_e(self):
+    def U_e(self):
         U_e = []
         for s in self._station:
             U_e.append(s.U_e)
         return U_e
         
-    def get_dU_edx(self):
+    def dU_edx(self):
         dU_edx = []
         for s in self._station:
             dU_edx.append(s.dU_edx)
         return dU_edx
         
-    def get_delta_d(self):
+    def delta_d(self):
         delta_d = []
         for s in self._station:
             delta_d.append(s.H_d*s.delta_m)
         return delta_d
     
-    def get_delta_m(self):
+    def delta_m(self):
         delta_m = []
         for s in self._station:
             delta_m.append(s.delta_m)
         return delta_m
     
-    def get_delta_k(self):
+    def delta_k(self):
         delta_k = []
         for s in self._station:
             delta_k.append(s.H_k*s.delta_m)
         return delta_k
     
-    def get_H_d(self):
+    def H_d(self):
         H_d = []
         for s in self._station:
             H_d.append(s.H_d)
         return H_d
     
-    def get_H_k(self):
+    def H_k(self):
         H_k = []
         for s in self._station:
             H_k.append(s.H_k)
         return H_k
     
-    def get_G(self):
+    def G(self):
         G = []
         for s in self._station:
             G.append(s.G)
         return G
     
-    def get_c_f(self):
+    def c_f(self):
         c_f = []
         for s in self._station:
             c_f.append(s.c_f)
         return c_f
     
-    def get_c_f_LT(self):
+    def c_f_LT(self):
         c_f_LT = []
         for s in self._station:
             c_f_LT.append(s.c_f_LT)
         return c_f_LT
     
-    def get_c_f_E(self):
+    def c_f_E(self):
         c_f_E = []
         for s in self._station:
             c_f_E.append(s.c_f_E)
         return c_f_E
     
-    def get_beta(self):
+    def beta(self):
         beta = []
         for s in self._station:
             beta.append(s.beta)

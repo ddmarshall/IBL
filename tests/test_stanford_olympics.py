@@ -23,7 +23,7 @@ class TestStanfordOlympics1968(unittest.TestCase):
         self.assertIsNone(npt.assert_allclose(so1100.nu, 1.55e-5))
         
         ## test some station data
-        station = so1100.get_station(0)
+        station = so1100.station(0)
         self.assertIsNone(npt.assert_allclose(station.x, 0.782))
         self.assertIsNone(npt.assert_allclose(station.U_e, 33.90))
         self.assertIsNone(npt.assert_allclose(station.dU_edx, -2.300))
@@ -35,7 +35,7 @@ class TestStanfordOlympics1968(unittest.TestCase):
         self.assertIsNone(npt.assert_allclose(station.c_f_LT, 0.00276))
         self.assertIsNone(npt.assert_allclose(station.c_f_E, 0.00271))
         self.assertIsNone(npt.assert_allclose(station.beta, 0.181))
-        station = so1100.get_station(10)
+        station = so1100.station(10)
         self.assertIsNone(npt.assert_allclose(station.x, 4.132))
         self.assertIsNone(npt.assert_allclose(station.U_e, 23.60))
         self.assertIsNone(npt.assert_allclose(station.dU_edx, -2.250))
@@ -49,7 +49,7 @@ class TestStanfordOlympics1968(unittest.TestCase):
         self.assertIsNone(npt.assert_allclose(station.beta, 5.499))
         
         ## test some smooth data
-        x, U_e, dU_edx = so1100.get_smooth_velocity()
+        x, U_e, dU_edx = so1100.velocity_smooth()
         self.assertIsNone(npt.assert_allclose(x[0], 0.75))
         self.assertIsNone(npt.assert_allclose(U_e[0], 33.98))
         self.assertIsNone(npt.assert_allclose(dU_edx[0], -2.25))
