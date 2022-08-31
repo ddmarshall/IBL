@@ -162,10 +162,10 @@ class XFoilReader:
     
     def __init__(self, filename = "", airfoil = "", alpha = np.inf, c = 1,
                  Re = None, x_trans = None, n_trans = None):
-        self.changeCaseData(filename, airfoil, alpha, c, Re, x_trans, n_trans)
+        self.change_case_data(filename, airfoil, alpha, c, Re, x_trans, n_trans)
     
-    def changeCaseData(self, filename, airfoil = "", alpha = np.inf, c = 1,
-                       Re = None, x_trans = None, n_trans = None):
+    def change_case_data(self, filename, airfoil = "", alpha = np.inf, c = 1,
+                         Re = None, x_trans = None, n_trans = None):
         ## Reset everything
         self._filename = filename
         self.aifoil = airfoil
@@ -292,217 +292,217 @@ class XFoilReader:
                 else:
                     raise Exception("Invalid data in XFoil dump file: {}".format(col))
     
-    def num_upper_points(self):
+    def num_points_upper(self):
         return len(self._upper)
     
-    def num_lower_points(self):
+    def num_points_lower(self):
         return len(self._lower)
     
-    def num_wake_points(self):
+    def num_points_wake(self):
         return len(self._wake)
     
-    def get_upper_point(self, i):
+    def point_upper(self, i):
         return self._upper[i]
     
-    def get_lower_point(self, i):
+    def point_lower(self, i):
         return self._lower[i]
     
-    def get_wake_point(self, i):
+    def point_wake(self, i):
         return self._wake[i]
     
-    def get_upper_s(self):
+    def s_upper(self):
         s = []
         for sd in self._upper:
             s.append(sd.s)
         return s
     
-    def get_lower_s(self):
+    def s_lower(self):
         s = []
         for sd in self._lower:
             s.append(sd.s)
         return s
     
-    def get_wake_s(self):
+    def s_wake(self):
         s = []
         for sd in self._wake:
             s.append(sd.s)
         return s
     
-    def get_upper_x(self):
+    def x_upper(self):
         x = []
         for sd in self._upper:
             x.append(sd.x)
         return x
     
-    def get_lower_x(self):
+    def x_lower(self):
         x = []
         for sd in self._lower:
             x.append(sd.x)
         return x
     
-    def get_wake_x(self):
+    def x_wake(self):
         x = []
         for sd in self._wake:
             x.append(sd.x)
         return x
     
-    def get_upper_y(self):
+    def y_upper(self):
         y = []
         for sd in self._upper:
             y.append(sd.y)
         return y
     
-    def get_lower_y(self):
+    def y_lower(self):
         y = []
         for sd in self._lower:
             y.append(sd.y)
         return y
     
-    def get_wake_y(self):
+    def y_wake(self):
         y = []
         for sd in self._wake:
             y.append(sd.y)
         return y
     
-    def get_upper_U_e(self):
+    def U_e_upper(self):
         U_e = []
         for sd in self._upper:
             U_e.append(sd.U_e)
         return U_e
     
-    def get_lower_U_e(self):
+    def U_e_lower(self):
         U_e = []
         for sd in self._lower:
             U_e.append(sd.U_e)
         return U_e
     
-    def get_wake_U_e(self):
+    def U_e_wake(self):
         U_e = []
         for sd in self._wake:
             U_e.append(sd.U_e)
         return U_e
     
-    def get_upper_delta_d(self):
+    def delta_d_upper(self):
         delta_d = []
         for sd in self._upper:
             delta_d.append(sd.delta_d)
         return delta_d
     
-    def get_lower_delta_d(self):
+    def delta_d_lower(self):
         delta_d = []
         for sd in self._lower:
             delta_d.append(sd.delta_d)
         return delta_d
     
-    def get_wake_delta_d(self):
+    def delta_d_wake(self):
         delta_d = []
         for sd in self._wake:
             delta_d.append(sd.delta_d)
         return delta_d
     
-    def get_upper_delta_m(self):
+    def delta_m_upper(self):
         delta_m = []
         for sd in self._upper:
             delta_m.append(sd.delta_m)
         return delta_m
     
-    def get_lower_delta_m(self):
+    def delta_m_lower(self):
         delta_m = []
         for sd in self._lower:
             delta_m.append(sd.delta_m)
         return delta_m
     
-    def get_wake_delta_m(self):
+    def delta_m_wake(self):
         delta_m = []
         for sd in self._wake:
             delta_m.append(sd.delta_m)
         return delta_m
     
-    def get_upper_delta_k(self):
+    def delta_k_upper(self):
         delta_k = []
         for sd in self._upper:
             delta_k.append(sd.H_k*sd.delta_m)
         return delta_k
     
-    def get_lower_delta_k(self):
+    def delta_k_lower(self):
         delta_k = []
         for sd in self._lower:
             delta_k.append(sd.H_k*sd.delta_m)
         return delta_k
     
-    def get_upper_H_d(self):
+    def H_d_upper(self):
         H_d = []
         for sd in self._upper:
             H_d.append(sd.H_d)
         return H_d
     
-    def get_lower_H_d(self):
+    def H_d_lower(self):
         H_d = []
         for sd in self._lower:
             H_d.append(sd.H_d)
         return H_d
     
-    def get_wake_H_d(self):
+    def H_d_wake(self):
         H_d = []
         for sd in self._wake:
             H_d.append(sd.H_d)
         return H_d
     
-    def get_upper_H_k(self):
+    def H_k_upper(self):
         H_k = []
         for sd in self._upper:
             H_k.append(sd.H_k)
         return H_k
     
-    def get_lower_H_k(self):
+    def H_k_lower(self):
         H_k = []
         for sd in self._lower:
             H_k.append(sd.H_k)
         return H_k
     
-    def get_upper_c_f(self):
+    def c_f_upper(self):
         c_f = []
         for sd in self._upper:
             c_f.append(sd.c_f)
         return c_f
     
-    def get_lower_c_f(self):
+    def c_f_lower(self):
         c_f = []
         for sd in self._lower:
             c_f.append(sd.c_f)
         return c_f
     
-    def get_upper_m(self):
+    def m_upper(self):
         m = []
         for sd in self._upper:
             m.append(sd.m)
         return m
     
-    def get_lower_m(self):
+    def m_lower(self):
         m = []
         for sd in self._lower:
             m.append(sd.m)
         return m
     
-    def get_upper_P(self):
+    def P_upper(self):
         P = []
         for sd in self._upper:
             P.append(sd.P)
         return P
     
-    def get_lower_P(self):
+    def P_lower(self):
         P = []
         for sd in self._lower:
             P.append(sd.P)
         return P
     
-    def get_upper_K(self):
+    def K_upper(self):
         K = []
         for sd in self._upper:
             K.append(sd.K)
         return K
     
-    def get_lower_K(self):
+    def K_lower(self):
         K = []
         for sd in self._lower:
             K.append(sd.K)

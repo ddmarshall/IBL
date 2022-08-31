@@ -35,9 +35,9 @@ class TestXFoilDumpReader(unittest.TestCase):
         self.assertIsNone(xfoil_inv.Re)
         self.assertIsNone(xfoil_inv.x_trans)
         self.assertIsNone(xfoil_inv.n_trans)
-        self.assertEqual(xfoil_inv.num_upper_points(), 12)
-        self.assertEqual(xfoil_inv.num_lower_points(), 12)
-        self.assertEqual(xfoil_inv.num_wake_points(), 0)
+        self.assertEqual(xfoil_inv.num_points_upper(), 12)
+        self.assertEqual(xfoil_inv.num_points_lower(), 12)
+        self.assertEqual(xfoil_inv.num_points_wake(), 0)
         
         # test point info
         s_upper_ref = [0.0, 0.000695, 0.092695, 0.196925, 0.301285, 0.392635,
@@ -103,64 +103,64 @@ class TestXFoilDumpReader(unittest.TestCase):
         K_lower_ref = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
                        0.0]
         self.assertIsNone(npt.assert_allclose(s_upper_ref,
-                                              xfoil_inv.get_upper_s()))
+                                              xfoil_inv.s_upper()))
         self.assertIsNone(npt.assert_allclose(s_lower_ref,
-                                              xfoil_inv.get_lower_s()))
-        self.assertEqual(s_wake_ref, xfoil_inv.get_wake_s())
+                                              xfoil_inv.s_lower()))
+        self.assertEqual(s_wake_ref, xfoil_inv.s_wake())
         self.assertIsNone(npt.assert_allclose(x_upper_ref,
-                                              xfoil_inv.get_upper_x()))
+                                              xfoil_inv.x_upper()))
         self.assertIsNone(npt.assert_allclose(x_lower_ref,
-                                              xfoil_inv.get_lower_x()))
-        self.assertEqual(x_wake_ref, xfoil_inv.get_wake_x())
+                                              xfoil_inv.x_lower()))
+        self.assertEqual(x_wake_ref, xfoil_inv.x_wake())
         self.assertIsNone(npt.assert_allclose(y_upper_ref,
-                                              xfoil_inv.get_upper_y()))
+                                              xfoil_inv.y_upper()))
         self.assertIsNone(npt.assert_allclose(y_lower_ref,
-                                              xfoil_inv.get_lower_y()))
-        self.assertEqual(y_wake_ref, xfoil_inv.get_wake_y())
+                                              xfoil_inv.y_lower()))
+        self.assertEqual(y_wake_ref, xfoil_inv.y_wake())
         self.assertIsNone(npt.assert_allclose(U_e_upper_ref,
-                                              xfoil_inv.get_upper_U_e()))
+                                              xfoil_inv.U_e_upper()))
         self.assertIsNone(npt.assert_allclose(U_e_lower_ref,
-                                              xfoil_inv.get_lower_U_e()))
-        self.assertEqual(U_e_wake_ref, xfoil_inv.get_wake_U_e())
+                                              xfoil_inv.U_e_lower()))
+        self.assertEqual(U_e_wake_ref, xfoil_inv.U_e_wake())
         self.assertIsNone(npt.assert_allclose(delta_d_upper_ref,
-                                              xfoil_inv.get_upper_delta_d()))
+                                              xfoil_inv.delta_d_upper()))
         self.assertIsNone(npt.assert_allclose(delta_d_lower_ref,
-                                              xfoil_inv.get_lower_delta_d()))
-        self.assertEqual(delta_d_wake_ref, xfoil_inv.get_wake_delta_d())
+                                              xfoil_inv.delta_d_lower()))
+        self.assertEqual(delta_d_wake_ref, xfoil_inv.delta_d_wake())
         self.assertIsNone(npt.assert_allclose(delta_m_upper_ref,
-                                              xfoil_inv.get_upper_delta_m()))
+                                              xfoil_inv.delta_m_upper()))
         self.assertIsNone(npt.assert_allclose(delta_m_lower_ref,
-                                              xfoil_inv.get_lower_delta_m()))
-        self.assertEqual(delta_m_wake_ref, xfoil_inv.get_wake_delta_m())
+                                              xfoil_inv.delta_m_lower()))
+        self.assertEqual(delta_m_wake_ref, xfoil_inv.delta_m_wake())
         self.assertIsNone(npt.assert_allclose(delta_k_upper_ref,
-                                              xfoil_inv.get_upper_delta_k()))
+                                              xfoil_inv.delta_k_upper()))
         self.assertIsNone(npt.assert_allclose(delta_k_lower_ref,
-                                              xfoil_inv.get_lower_delta_k()))
+                                              xfoil_inv.delta_k_lower()))
         self.assertIsNone(npt.assert_allclose(H_d_upper_ref,
-                                              xfoil_inv.get_upper_H_d()))
+                                              xfoil_inv.H_d_upper()))
         self.assertIsNone(npt.assert_allclose(H_d_lower_ref,
-                                              xfoil_inv.get_lower_H_d()))
-        self.assertEqual(H_d_wake_ref, xfoil_inv.get_wake_H_d())
+                                              xfoil_inv.H_d_lower()))
+        self.assertEqual(H_d_wake_ref, xfoil_inv.H_d_wake())
         self.assertIsNone(npt.assert_allclose(H_k_upper_ref,
-                                              xfoil_inv.get_upper_H_k()))
+                                              xfoil_inv.H_k_upper()))
         self.assertIsNone(npt.assert_allclose(H_k_lower_ref,
-                                              xfoil_inv.get_lower_H_k()))
+                                              xfoil_inv.H_k_lower()))
         self.assertIsNone(npt.assert_allclose(c_f_upper_ref,
-                                              xfoil_inv.get_upper_c_f()))
+                                              xfoil_inv.c_f_upper()))
         self.assertIsNone(npt.assert_allclose(c_f_lower_ref,
-                                              xfoil_inv.get_lower_c_f()))
+                                              xfoil_inv.c_f_lower()))
         self.assertIsNone(npt.assert_allclose(m_upper_ref,
-                                              xfoil_inv.get_upper_m()))
+                                              xfoil_inv.m_upper()))
         self.assertIsNone(npt.assert_allclose(m_lower_ref,
-                                              xfoil_inv.get_lower_m()))
+                                              xfoil_inv.m_lower()))
         self.assertIsNone(npt.assert_allclose(P_upper_ref,
-                                              xfoil_inv.get_upper_P()))
+                                              xfoil_inv.P_upper()))
         self.assertIsNone(npt.assert_allclose(P_lower_ref,
-                                              xfoil_inv.get_lower_P()))
+                                              xfoil_inv.P_lower()))
         self.assertIsNone(npt.assert_allclose(K_upper_ref,
-                                              xfoil_inv.get_upper_K()))
+                                              xfoil_inv.K_upper()))
         self.assertIsNone(npt.assert_allclose(K_lower_ref,
-                                              xfoil_inv.get_lower_K()))
+                                              xfoil_inv.K_lower()))
     
     def test_case_viscous(self):
         
@@ -186,9 +186,9 @@ class TestXFoilDumpReader(unittest.TestCase):
         self.assertEqual(xfoil_visc.x_trans[0], x_trans)
         self.assertEqual(xfoil_visc.x_trans[1], x_trans)
         self.assertEqual(xfoil_visc.n_trans, n_trans)
-        self.assertEqual(xfoil_visc.num_upper_points(), 12)
-        self.assertEqual(xfoil_visc.num_lower_points(), 12)
-        self.assertEqual(xfoil_visc.num_wake_points(), 8)
+        self.assertEqual(xfoil_visc.num_points_upper(), 12)
+        self.assertEqual(xfoil_visc.num_points_lower(), 12)
+        self.assertEqual(xfoil_visc.num_points_wake(), 8)
         
         # test point info
         s_upper_ref = [0.0, 0.000695, 0.092695, 0.196925, 0.301285, 0.392635,
@@ -270,71 +270,71 @@ class TestXFoilDumpReader(unittest.TestCase):
         K_lower_ref = [5e-05, 5e-05, 0.01214, 0.01732, 0.02075, 0.024, 0.02679,
                        0.02896, 0.03121, 0.03327, 0.03494, 0.03656]
         self.assertIsNone(npt.assert_allclose(s_upper_ref,
-                                              xfoil_visc.get_upper_s()))
+                                              xfoil_visc.s_upper()))
         self.assertIsNone(npt.assert_allclose(s_lower_ref,
-                                              xfoil_visc.get_lower_s()))
+                                              xfoil_visc.s_lower()))
         self.assertIsNone(npt.assert_allclose(s_wake_ref,
-                                              xfoil_visc.get_wake_s()))
+                                              xfoil_visc.s_wake()))
         self.assertIsNone(npt.assert_allclose(x_upper_ref,
-                                              xfoil_visc.get_upper_x()))
+                                              xfoil_visc.x_upper()))
         self.assertIsNone(npt.assert_allclose(x_lower_ref,
-                                              xfoil_visc.get_lower_x()))
+                                              xfoil_visc.x_lower()))
         self.assertIsNone(npt.assert_allclose(x_wake_ref,
-                                              xfoil_visc.get_wake_x()))
+                                              xfoil_visc.x_wake()))
         self.assertIsNone(npt.assert_allclose(y_upper_ref,
-                                              xfoil_visc.get_upper_y()))
+                                              xfoil_visc.y_upper()))
         self.assertIsNone(npt.assert_allclose(y_lower_ref,
-                                              xfoil_visc.get_lower_y()))
+                                              xfoil_visc.y_lower()))
         self.assertIsNone(npt.assert_allclose(y_wake_ref,
-                                              xfoil_visc.get_wake_y()))
+                                              xfoil_visc.y_wake()))
         self.assertIsNone(npt.assert_allclose(U_e_upper_ref,
-                                              xfoil_visc.get_upper_U_e()))
+                                              xfoil_visc.U_e_upper()))
         self.assertIsNone(npt.assert_allclose(U_e_lower_ref,
-                                              xfoil_visc.get_lower_U_e()))
+                                              xfoil_visc.U_e_lower()))
         self.assertIsNone(npt.assert_allclose(U_e_wake_ref,
-                                              xfoil_visc.get_wake_U_e()))
+                                              xfoil_visc.U_e_wake()))
         self.assertIsNone(npt.assert_allclose(delta_d_upper_ref,
-                                              xfoil_visc.get_upper_delta_d()))
+                                              xfoil_visc.delta_d_upper()))
         self.assertIsNone(npt.assert_allclose(delta_d_lower_ref,
-                                              xfoil_visc.get_lower_delta_d()))
+                                              xfoil_visc.delta_d_lower()))
         self.assertIsNone(npt.assert_allclose(delta_d_wake_ref,
-                                              xfoil_visc.get_wake_delta_d()))
+                                              xfoil_visc.delta_d_wake()))
         self.assertIsNone(npt.assert_allclose(delta_m_upper_ref,
-                                              xfoil_visc.get_upper_delta_m()))
+                                              xfoil_visc.delta_m_upper()))
         self.assertIsNone(npt.assert_allclose(delta_m_lower_ref,
-                                              xfoil_visc.get_lower_delta_m()))
+                                              xfoil_visc.delta_m_lower()))
         self.assertIsNone(npt.assert_allclose(delta_m_wake_ref,
-                                              xfoil_visc.get_wake_delta_m()))
+                                              xfoil_visc.delta_m_wake()))
         self.assertIsNone(npt.assert_allclose(delta_k_upper_ref,
-                                              xfoil_visc.get_upper_delta_k()))
+                                              xfoil_visc.delta_k_upper()))
         self.assertIsNone(npt.assert_allclose(delta_k_lower_ref,
-                                              xfoil_visc.get_lower_delta_k()))
+                                              xfoil_visc.delta_k_lower()))
         self.assertIsNone(npt.assert_allclose(H_d_upper_ref,
-                                              xfoil_visc.get_upper_H_d()))
+                                              xfoil_visc.H_d_upper()))
         self.assertIsNone(npt.assert_allclose(H_d_lower_ref,
-                                              xfoil_visc.get_lower_H_d()))
+                                              xfoil_visc.H_d_lower()))
         self.assertIsNone(npt.assert_allclose(H_d_wake_ref,
-                                              xfoil_visc.get_wake_H_d()))
+                                              xfoil_visc.H_d_wake()))
         self.assertIsNone(npt.assert_allclose(H_k_upper_ref,
-                                              xfoil_visc.get_upper_H_k()))
+                                              xfoil_visc.H_k_upper()))
         self.assertIsNone(npt.assert_allclose(H_k_lower_ref,
-                                              xfoil_visc.get_lower_H_k()))
+                                              xfoil_visc.H_k_lower()))
         self.assertIsNone(npt.assert_allclose(c_f_upper_ref,
-                                              xfoil_visc.get_upper_c_f()))
+                                              xfoil_visc.c_f_upper()))
         self.assertIsNone(npt.assert_allclose(c_f_lower_ref,
-                                              xfoil_visc.get_lower_c_f()))
+                                              xfoil_visc.c_f_lower()))
         self.assertIsNone(npt.assert_allclose(m_upper_ref,
-                                              xfoil_visc.get_upper_m()))
+                                              xfoil_visc.m_upper()))
         self.assertIsNone(npt.assert_allclose(m_lower_ref,
-                                              xfoil_visc.get_lower_m()))
+                                              xfoil_visc.m_lower()))
         self.assertIsNone(npt.assert_allclose(P_upper_ref,
-                                              xfoil_visc.get_upper_P()))
+                                              xfoil_visc.P_upper()))
         self.assertIsNone(npt.assert_allclose(P_lower_ref,
-                                              xfoil_visc.get_lower_P()))
+                                              xfoil_visc.P_lower()))
         self.assertIsNone(npt.assert_allclose(K_upper_ref,
-                                              xfoil_visc.get_upper_K()))
+                                              xfoil_visc.K_upper()))
         self.assertIsNone(npt.assert_allclose(K_lower_ref,
-                                              xfoil_visc.get_lower_K()))
+                                              xfoil_visc.K_lower()))
 
 
 if (__name__ == "__main__"):

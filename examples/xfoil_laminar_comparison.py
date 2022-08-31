@@ -37,14 +37,14 @@ def compare_xfoil_laminar():
                              alpha = alpha, c = c, Re = Re, x_trans = x_trans,
                              n_trans = n_trans)
     
-    s_ref = np.array(xfoil_inv.get_upper_s())
-    U_e_inv = U_inf*np.array(xfoil_inv.get_upper_U_e())
-    U_e_visc = U_inf*np.array(xfoil_visc.get_upper_U_e())
+    s_ref = np.array(xfoil_inv.s_upper())
+    U_e_inv = U_inf*np.array(xfoil_inv.U_e_upper())
+    U_e_visc = U_inf*np.array(xfoil_visc.U_e_upper())
     s = np.linspace(s_ref[0], s_ref[-1], 101)
     
     ## Setup Thwaites methods
     ivisc = 0
-    delta_m0 = xfoil_visc.get_upper_delta_m()[ivisc]
+    delta_m0 = xfoil_visc.delta_m_upper()[ivisc]
     tm_visc = ThwaitesMethodNonlinear(U_e = [s_ref, U_e_visc],
                                       data_fits = "Spline")
     tm_visc.set_solution_parameters(x0 = s[ivisc], x_end = s[-1], 
@@ -71,10 +71,10 @@ def compare_xfoil_laminar():
         s_sep_inv = rtn.x_end
     
     ## Calculate the boundary layer parameters
-    delta_d_ref = np.array(xfoil_visc.get_upper_delta_d())
-    delta_m_ref = np.array(xfoil_visc.get_upper_delta_m())
-    H_d_ref = np.array(xfoil_visc.get_upper_H_d())
-    c_f_ref = np.array(xfoil_visc.get_upper_c_f())
+    delta_d_ref = np.array(xfoil_visc.delta_d_upper())
+    delta_m_ref = np.array(xfoil_visc.delta_m_upper())
+    H_d_ref = np.array(xfoil_visc.H_d_upper())
+    c_f_ref = np.array(xfoil_visc.c_f_upper())
 
     s_ref_visc = s_ref[s_ref<s_sep_visc]
     delta_d_ref_visc = delta_d_ref[s_ref<s_sep_visc]
