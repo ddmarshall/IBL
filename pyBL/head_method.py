@@ -148,6 +148,7 @@ class HeadMethod(IBLBase):
         delta_m = self._solution(x)[0]
         H_d = self._solution(x)[1]
         U_e = self.U_e(x)
+        U_e[np.abs(U_e)<0.001] = 0.001
         Re_delta_m = U_e*delta_m/self._nu
         c_f = c_f_fun(Re_delta_m, H_d)
         return 0.5*rho*U_e**2*c_f
@@ -163,8 +164,11 @@ class HeadMethod(IBLBase):
         """
         yp = np.zeros_like(y)
         delta_m = y[0]
-        H_d = y[1]
+        H_d = np.asarray(y[1])
+        if (H_d < 1.11).any():
+            H_d[H_d < 1.11] = 1.11
         U_e = self.U_e(x)
+        U_e[np.abs(U_e)<0.001] = 0.001
         dU_edx = self.dU_edx(x)
         Re_delta_m = U_e*delta_m/self._nu
         c_f = c_f_fun(Re_delta_m, H_d)
@@ -178,8 +182,9 @@ class HeadMethod(IBLBase):
     def _H1(H_d):
         H_d = np.asarray(H_d)
         if (H_d <= 1.1).any():
-            raise ValueError("Cannot pass displacement shape factor less than "
-                             "1.1: {}".format(np.amin(H_d)))
+            H_d[H_d <= 1.1] = 1.1001
+#            raise ValueError("Cannot pass displacement shape factor less than "
+#                             "1.1: {}".format(np.amin(H_d)))
         def H1_low(H_d):
             a = 0.8234
             b = 1.1
@@ -198,8 +203,9 @@ class HeadMethod(IBLBase):
     def _H1p(H_d):
         H_d = np.asarray(H_d)
         if (H_d <= 1.1).any():
-            raise ValueError("Cannot pass displacement shape factor less than "
-                             "1.1: {}".format(np.amin(H_d)))
+            H_d[H_d <= 1.1] = 1.1001
+#            raise ValueError("Cannot pass displacement shape factor less than "
+#                             "1.1: {}".format(np.amin(H_d)))
         def H1_low(H_d):
             a = 0.8234
             b = 1.1
@@ -238,8 +244,9 @@ class HeadMethod(IBLBase):
     def _S(H1):
         H1 = np.asarray(H1)
         if (H1 <= 3).any():
-            raise ValueError("Cannot pass entrainment shape factor less than "
-                             " 3: {}".format(np.amin(H1)))
+            H1[H1 <= 3] = 3.001
+#            raise ValueError("Cannot pass entrainment shape factor less than "
+#                             " 3: {}".format(np.amin(H1)))
         return 0.0306/(H1-3)**0.6169
 
 
