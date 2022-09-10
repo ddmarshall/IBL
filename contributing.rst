@@ -17,7 +17,7 @@ identity and expression, level of experience, education, socio-economic
 status, nationality, personal appearance, race, religion, or sexual
 identity and orientation.
 
-For information see the `code of conduct <CODE_OF_CONDUCT.rst>`__ file in
+For information see the `code of conduct <code_of_conduct.rst>`__ file in
 the root directory of this project.
 
 Style Guide
