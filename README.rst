@@ -1,59 +1,83 @@
-Overview
-========
+Summary
+=======
 
-Tools to model boundary layer flows using integral relations based on
-the Karman integral equation.
+This project provides a python library to model the viscous effects for thin boundary layers using the integral boundary layer method.
 
-Getting Started
----------------
+Example Usage
+-------------
 
-**To Do**
+Currently there are a few concrete models to use. One is Thwaites' method [Thwaites1949]_, which is a single equation model for laminar boundary layers.
+Given an edge velocity distribution, ``U_e``, points along the boundary layer edge, ``s``, and initial momentum thickness, ``delta_m0``, the class will calculate the boundary layer properties.
+These properties can then be queried at any point along the body.
+For example:
 
-Installing
-----------
+.. code-block:: python
 
-**To Do**
+    from pyBL.thwaites_method import ThwaitesMethodNonlinear
+    
+    # Configure edge information
+    U_e = ...
+    s = ...
+    rho_inf = ...
+    nu_inf = ...
+    
+    # Set the initial coditions
+    delta_m0 = ...
+    
+    tm = ThwaitesMethodNonlinear(U_e = U_e)
+    tm.set_solution_parameters(x0 = s[0], x_end = s[-1], delta_m0 = delta_m0, nu = nu_inf)
+    rtn = tm.solve()
+    if not rtn.success:
+        print("Could not get solution for Thwaites method: " + rtn.message)
+    else
+        tau_wall = tm.tau_w(s, rho_inf)
 
-Examples
---------
+Similarly for a turbulent boundary layer, Head's method [Head1958]_ can be used to calculate the properties for a turbulent boundary layer.
+In addition to the initial momentum thickness, the initial displacement shape factor, ``H_d0`` is needed to initialize the model.
+Otherwise, the interface is the same as for Thwaites' method:
 
-**To Do**
+.. code-block:: python
 
-Testing
--------
+    from pyBL.head_method import HeadMethod
+    
+    # Configure edge information
+    U_e = ...
+    s = ...
+    rho_inf = ...
+    nu_inf = ...
+    
+    # Set the initial coditions
+    delta_m0 = ...
+    H_d0 = ...
+    
+    hm = ThwaitesMethodNonlinear(U_e = U_e)
+    hm.set_solution_parameters(x0 = s[0], x_end = s[-1], delta_m0 = delta_m0, H_d0 = H_d0, nu = nu_inf)
+    rtn = hm.solve()
+    if not rtn.success:
+        print("Could not get solution for Thwaites method: " + rtn.message)
+    else
+        tau_wall = hm.tau_w(s, rho_inf)
 
-**To Do**
+.. [Thwaites1949] Thwaites, B. “Approximate Calculation of the Laminar Boundary Layer.” **The Aeronautical Journal**, Vol. 1, No. 3, 1949, pp. 245–280.
+.. [Head1958] Head, M. R. Entrainment in the Turbulent Boundary Layer. Publication 3152. Ministry of Aviation, Aeronautical Research Council, 1958.
 
-Contributing
-------------
-
-If you’d like to contribute, read `contributing <contributing.rst>`__
-for details on how to start and our `code of
-conduct <code_of_conduct.md>`__.
-
-Versioning
-----------
-
-For this project, the `SemVer <https://semver.org/>`__ versioning system
-is used. Each version should be `tagged in the
-repository <https://github.com/ddmarshall/IBL/releases>`__ as a release.
 
 Contributors
 ------------
 
 The main contributors to this project are:
 
-*  David D. Marshall
-*  Malachi Edland (original implementation of Thwaites’ Method, Head’s
-   Method, and Michel transition criteria).
+- David D. Marshall
+- Malachi Edland (original implementation of Thwaites’ Method, Head’s
+  Method, and Michel transition criteria).
 
 Version History
 ---------------
 
--  0.0.4-develop - Latest development effort
--  0.0.3 - Last release directly supporting Malachi’s thesis
--  0.0.2 - Has code mostly working as from Malachi’s thesis
--  0.0.1 - Initial Release
+*  0.0.4-develop - Latest development effort
+*  0.0.3 - Last release directly supporting Malachi’s thesis
+*  0.0.2 - Has code mostly working as from Malachi’s thesis
+*  0.0.1 - Initial Release
 
 License
 -------
@@ -69,9 +93,3 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General
 Public License for more details.
 
 You should have received a copy of the `GNU General Public License <license.md>`__ along with this program. If not, see http://www.gnu.org/licenses/.
-
-Acknowledgements
-----------------
-
-**To Do**
-
