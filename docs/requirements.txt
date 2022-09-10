@@ -1,0 +1,4 @@
+# These are needed for Sphinx
+sphinx
+sphinx-rtd-theme
+myst-parser
