@@ -27,9 +27,9 @@ Testing
 Contributing
 ------------
 
-If you’d like to contribute, read `CONTRIBUTING <CONTRIBUTING.rst>`__
+If you’d like to contribute, read `contributing <contributing.rst>`__
 for details on how to start and our `code of
-conduct <CODE_OF_CONDUCT.md>`__.
+conduct <code_of_conduct.md>`__.
 
 Versioning
 ----------
@@ -46,9 +46,6 @@ The main contributors to this project are:
 *  David D. Marshall
 *  Malachi Edland (original implementation of Thwaites’ Method, Head’s
    Method, and Michel transition criteria).
-
-A list of all source code contributors can be found
-`here <https://github.com/ddmarshall/ibl/graphs/graphs/contributors>`__.
 
 Version History
 ---------------
@@ -71,9 +68,7 @@ WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General
 Public License for more details.
 
-You should have received a copy of the GNU General Public License along
-with `this program <LICENSE.md>`__. If not, see
-http://www.gnu.org/licenses/.
+You should have received a copy of the `GNU General Public License <license.md>`__ along with this program. If not, see http://www.gnu.org/licenses/.
 
 Acknowledgements
 ----------------
