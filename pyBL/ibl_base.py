@@ -94,17 +94,22 @@ class IBLBase(ABC):
     """
     
     # Attributes
-    #    _U_e: Function representing the edge velocity profile
-    #    _dU_edx: Function representing the streamwise derivative of the edge
-    #             velocity
-    #    _d2U_edx2: Function representing the streamwise second derivative of
-    #               the edge velocity
-    #    _x_range: 2-tuple for start and end location for integration
-    #    _kill_events: List of events that should be passed into ODE solver
-    #                  that might cause the integration to terminate early
-    #    _F: Piecewise polynomials representing the state variables from the
+    #    _U_e: Callable
+    #        Function representing the edge velocity profile
+    #    _dU_edx: Callable
+    #        Function representing the streamwise derivative of the edge
+    #        velocity
+    #    _d2U_edx2: Callable
+    #        Function representing the streamwise second derivative of the edge
+    #        velocity
+    #    _x_range: 2-tuple
+    #        Start and end location for integration
+    #    _kill_events: List of classes based on :class:`IBLTermEventBase`
+    #        Events that should be passed into ODE solver that might cause the
+    #        integration to terminate early
+    #    _solution: vector of callables
+    #        Piecewise polynomials representing the state variables from the
     #        ODE solution
-    
     def __init__(self, U_e = None, dU_edx = None, d2U_edx2 = None):
         # set the velocity terms
         if U_e is None:
