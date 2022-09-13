@@ -121,7 +121,7 @@ class IBLBase(ABC):
         # initialize other parameters
         self._x_range = None
         self._kill_events = None
-        self._F = None
+        self._solution = None
 
     def set_velocity(self, U_e, dU_edx = None, d2U_edx2 = None):
         """
