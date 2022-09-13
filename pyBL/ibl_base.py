@@ -1,9 +1,17 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Created on Wed Jun 29 14:17:53 2022
+All base classes and data for integral boundary layer method classes.
 
-@author: ddmarsha
+There are a lot of common characterstics associated with the various integral
+boundary layer methods. This module provides as much of that common code as
+possible.
+
+All integral boundary layer method classes should inherit from
+:class:`IBLBase`.
+
+All integral boundary layer method classes return an instance of
+:class:`IBLResult` when the solver has completed.
 """
 
 import numpy as np
@@ -20,29 +28,83 @@ from abc import ABC, abstractmethod
 
 class IBLBase(ABC):
     """
-    The base class for integral boundary layer classes.
+    Base class for integral boundary layer classes.
     
-    This encapsulates the common features and needed parameters for all IBL 
-    methods. At the very least it provides the inteface that is expected for all
-    IBL classes.
+    This encapsulates the common features and needed parameters for all IBL
+    methods. At the very least it provides the inteface that is expected for
+    all IBL classes.
     
-    Attributes
-    ----------
-        _U_e: Function representing the edge velocity profile
-        _dU_edx: Function representing the streamwise derivative of the edge 
-                 velocity
-        _d2U_edx2: Function representing the streamwise second derivative of the
-                   edge velocity
-        _x_range: 2-tuple for start and end location for integration
-        _kill_events: List of events that should be passed into ODE solver that
-                      might cause the integration to terminate early
-        _F: Piecewise polynomials representing the state variables from the
-            ODE solution
+    **Integration**
+    
+    The intengral boundary layer method is based on solving one or more
+    ordinary differential equations in the streamwise direction. These ODEs
+    are solved explicitly with the `solve_ivp` class from `SciPy`. This
+    class stores the resulting solution as interpolating polynomials of the
+    same degree as the solver (known as a dense output). This allows the
+    querying of the solution at any point between the start of the boundary
+    layer and the end of the boundary layer to return a uniformly accurate
+    result.
+    
+    **Edge Velocity**
+    
+    In order to solve these differential equations, the edge velocity
+    variation is needed. There are a number of different ways to specify the
+    edge velocity (`U_e`), the first derivative of the edge velocity
+    (`dU_edx`), and the sedond derivative of the edge velocity (`d2U_edx2`):
+    
+        - `U_e` can be a 2-tuple of xpoints and velocity values.
+          
+          In this case a
+          monotonic cubic spline will be created and the derivative functions
+          will be taken from the cubic spline.
+          
+        - `U_e` can be a scalar and `dU_edx` is a 2-tuple of xpoints and rates
+          of change of velocity values.
+          
+          In this case a monotonic cubic spline
+          will be created for `dU_edx`. `U_e` will be found from the
+          antiderivative and the scalar passed in as `U_e` will be used as the
+          initial velocity. The other derivative(s) will be taken from the
+          cubic spline.
+          
+        - `U_e` and the derivatives can be callable objects.
+        
+            + If the first derivative object is provided but not the second 
+              derivative object, then if the first derivative object has a
+              method called `derivative` then that method will be used to
+              generate the second derivative object. Otherwise the second
+              derivative will be approximated by finite differences of the
+              first derivative.
+              
+            + If neither derivative objects are provided, then if `U_e` has a
+              method called `derivative` (like the classes from the 
+              `interpolate` module of `SciPy`) then that method will be used
+              to generate both derivative objects. Otherwise the derivative
+              objects will be created from finite difference approximations.
+    
+    **Initial Conditions**
+    
+    The initial conditions needed to start the integration will depend on
+    the specific method being implemented.
     
     Raises
     ------
-        ValueError: if configuration parameter is invalid (see message)
+        ValueError
+            When configuration parameter is invalid (see message)
     """
+    
+    # Attributes
+    #    _U_e: Function representing the edge velocity profile
+    #    _dU_edx: Function representing the streamwise derivative of the edge
+    #             velocity
+    #    _d2U_edx2: Function representing the streamwise second derivative of
+    #               the edge velocity
+    #    _x_range: 2-tuple for start and end location for integration
+    #    _kill_events: List of events that should be passed into ODE solver
+    #                  that might cause the integration to terminate early
+    #    _F: Piecewise polynomials representing the state variables from the
+    #        ODE solution
+    
     def __init__(self, U_e = None, dU_edx = None, d2U_edx2 = None):
         # set the velocity terms
         if U_e is None:
@@ -65,37 +127,24 @@ class IBLBase(ABC):
         """
         Set the edge velocity relations.
         
-        A number of different ways can be used to set the velocity relation and
-        its derivatives.
-        * U_e can be a 2-tuple of xpoints and velocity values. In this case a
-          monotonic cubic spline will be created and the derivative functions
-          will be taken from the cubic spline.
-        * U_e can be a scalar and dU_edx is a 2-tple of xpoints and rates of 
-          change of velocity values. In this case a monotonic cubic spline will
-          by created for dU_edx. U_e will be found from the antiderivative and 
-          the scalar passed in as U_e as the initial velocity. The other
-          derivative(s) will be taken from the cubic spline.
-        * U_e and the derivatives can be callable objects.
-            * If the first derivative object is provided but not the second 
-              derivative object, then if the first derivative object has a
-              method called 'derivative' then that method will be used to
-              generate the second derivative object. Otherwise the second
-              derivative will be approximated by finite differences of the first
-              derivative.
-            * If neither derivative objects are provided, then if U_e has a
-              method called 'derivative' then that method will be used to
-              generate both derivative objects. Otherwise the derivative
-              objects will be created from finite difference approximations.
+        There are a number of different ways to set the velocity relation and
+        its derivatives. See class definition for details.
         
-        Args
-        ----
-        U_e: Edge velocity
-        dU_edx: First derivative of the edge velocity
-        d2U_edx2: Second derivative of the edge velocity
+        Parameters
+        ----------
+        U_e : 2-tuple of array-like, scalar, or function-like
+            Representation of the edge velocity to be used in analysis
+        dU_edx : None, 2-tuple of array-like, or function-like, optional
+            Representation of the first derivative of the edge velocity to be
+            used in analysis
+        d2U_edx2 : None or function-like, optional
+            Representationa of the second derivative of the edge velocity to
+            be used in analysis
         
         Raises
         ------
-            ValueError: if configuration parameter is invalid (see message)
+            ValueError
+                When configuration parameter is invalid (see message)
         """
         # check if U_e is callable
         if callable(U_e):
@@ -164,8 +213,8 @@ class IBLBase(ABC):
                     raise ValueError("First element of U_e 2-tuple must be 1D "
                                      "vector of distances")
                 if (U_e_pts.ndim != 1):
-                    raise ValueError("Second element of U_e 2-tuple must be 1D "
-                                     "vector of Velocities")
+                    raise ValueError("Second element of U_e 2-tuple must be "
+                                     "1D vector of Velocities")
                 if npts != U_e_pts.shape[0]:
                     raise ValueError("Vectors in U_e 2-tuple must be of same "
                                      "length")
@@ -184,25 +233,34 @@ class IBLBase(ABC):
         """
         Solve the ODEs to determine the boundary layer properties.
         
-        Args
-        ----
-        y0i: Initial condition of the state vector for integration
-        rtol: Relative tolerance for integration scheme
-        atol: Absolute tolerance for integration scheme
-        term_event: List of classes based on IBLTermEventBase, in addition to
-                    any internal ones, to be used to determine if the 
-                    integration should terminate before the end location. These
-                    should mostly be for transition to turbulent boundary layer
-                    or separation.
+        Parameters
+        ----------
+        y0i: scalar or array-like
+            Initial condition of the state vector for integration
+            
+            The specific type will depend on the details of the differential
+            equations that the child class needs solved.
+        rtol: float
+            Relative tolerance for integration scheme
+        atol: float
+            Absolute tolerance for integration scheme
+        term_event: List of classes based on :class:`IBLTermEventBase`
+            Additional termination events.
+            
+            These events will be used in addition to any internal ones to
+            determine if/when the integration should terminate before the end
+            location. These should mostly be for transition to turbulent
+            boundary layer or separation.
         
         Returns
         -------
-            Bunch object (IBLResult) with information about the solution 
-            process and termination.
+            Bunch object: :class:`IBLResult` with information about the
+            solution process and termination.
         
-        Throws
+        Raises
         ------
-            TypeError if solution parameters have not been set
+            TypeError
+                When solution parameters have not been set
         """
         ## setup the ODE solver
         if (self._x_range is None):
@@ -266,19 +324,35 @@ class IBLBase(ABC):
                          message = message, success = rtn.success)
     
     def _set_x_range(self, x0, x1):
+        """
+        Set the start and end location for analysis.
+
+        Parameters
+        ----------
+        x0 : float
+            Starting location along surface for integration.
+        x1 : float
+            Ending location along surface for integration.
+        """
         self._x_range = [x0, x1]
     
     def U_e(self, x):
         """
         Return the inviscid edge velocity at specified location(s)
         
-        Args
-        ----
-            x: distance along surface
+        Parameters
+        ----------
+            x: array-like
+                Streamwise loations to calculate this property
             
         Returns
         -------
             Inviscid edge velocity
+        
+        Raises
+        ------
+            TypeError
+                When velocity parameters have not been set
         """
         if (self._U_e is not None):
             return self._U_e(x)
@@ -291,13 +365,19 @@ class IBLBase(ABC):
         Return the streamwise derivative of the inviscid edge velocity at 
         specified location(s)
         
-        Args
-        ----
-            x: distance along surface
+        Parameters
+        ----------
+            x: array-like
+                Streamwise loations to calculate this property
             
         Returns
         -------
             Derivative of inviscid edge velocity
+        
+        Raises
+        ------
+            TypeError
+                When velocity parameters have not been set
         """
         if (self._dU_edx is not None):
             return self._dU_edx(x)
@@ -310,13 +390,19 @@ class IBLBase(ABC):
         Return the streamwise second derivative of the inviscid edge velocity at 
         specified location(s)
         
-        Args
-        ----
-            x: distance along surface
+        Parameters
+        ----------
+            x: array-like
+                Streamwise loations to calculate this property
             
         Returns
         -------
             Second derivative of inviscid edge velocity
+        
+        Raises
+        ------
+            TypeError
+                When velocity parameters have not been set
         """
         if (self._d2U_edx2 is not None):
             return self._d2U_edx2(x)
@@ -329,13 +415,14 @@ class IBLBase(ABC):
         """
         Calculate the transpiration velocity
         
-        Args
-        ----
-            x: Streamwise loations to calculate this property
+        Parameters
+        ----------
+            x: array-like
+                Streamwise loations to calculate this property
         
         Returns
         -------
-            Desired property at the specified locations
+            Desired transpiration velocity at the specified locations
         """
         pass
     
@@ -344,13 +431,14 @@ class IBLBase(ABC):
         """
         Calculate the displacement thickness
         
-        Args
-        ----
-            x: Streamwise loations to calculate this property
+        Parameters
+        ----------
+            x: array-like
+                Streamwise loations to calculate this property
         
         Returns
         -------
-            Desired property at the specified locations
+            Desired displacement thickness at the specified locations
         """
         pass
     
@@ -359,28 +447,60 @@ class IBLBase(ABC):
         """
         Calcualte the momentum thickness
         
-        Args
-        ----
-            x: Streamwise loations to calculate this property
+        Parameters
+        ----------
+            x: array-like
+                Streamwise loations to calculate this property
         
         Returns
         -------
-            Desired property at the specified locations
+            Desired momentum thickness at the specified locations
+        """
+        pass
+    
+    @abstractmethod
+    def delta_k(self, x):
+        """
+        Calcualte the kinetic energy thickness
+        
+        Parameters
+        ----------
+            x: array-like
+                Streamwise loations to calculate this property
+        
+        Returns
+        -------
+            Desired kinetic energy thickness at the specified locations
         """
         pass
     
     @abstractmethod
     def H_d(self, x):
         """
-        Calculate the shape factor
+        Calculate the displacement shape factor
         
-        Args
-        ----
+        Parameters
+        ----------
             x: Streamwise loations to calculate this property
         
         Returns
         -------
-            Desired property at the specified locations
+            Desired displacement shape factor at the specified locations
+        """
+        pass
+    
+    @abstractmethod
+    def H_k(self, x):
+        """
+        Calculate the kinetic energy shape factor
+        
+        Parameters
+        ----------
+            x: Streamwise loations to calculate this property
+        
+        Returns
+        -------
+            Desired kinetic energy shape factor at the specified locations
         """
         pass
     
@@ -389,24 +509,44 @@ class IBLBase(ABC):
         """
         Calculate the wall shear stress
         
-        Args
-        ----
-            x: Streamwise loations to calculate this property
-            rho: Freestream density
+        Parameters
+        ----------
+            x: array-like
+                Streamwise loations to calculate this property
+            rho: float
+                Freestream density
         
         Returns
         -------
-            Desired property at the specified locations
+            Desired wall shear stress at the specified locations
         """
         pass
     
     def _add_kill_event(self, ke):
+        """
+        Add kill event to the ODE solver
+        
+        Parameters
+        ----------
+        ke: List of classes based on :class:`IBLTermEventBase`
+            Way of child classes to automatically add kill events to the ODE
+            solver.
+        """
         if self._kill_events is None:
             self._set_kill_event(ke)
         else:
             self._kill_events.append(ke)
     
     def _set_kill_event(self, ke):
+        """
+        Set kill events for the ODE solver
+        
+        Parameters
+        ----------
+        ke: List of classes based on :class:`IBLTermEventBase`
+            Way of setting the kill events to the ODE solver and removing all
+            existing events.
+        """
         self._kill_events = [ke]
 
 
@@ -417,19 +557,34 @@ TERMINATION_MESSAGES = {0: "Completed",
 
 
 class IBLResult:
-    """Bunch object representing the results of the IBL integration.
+    """
+    Bunch object representing the results of the IBL integration.
+    
+    The integrator within the :class:`IBLBase` is `solve_ivp` from the
+    integrate package from SciPy. To provide as much information as possible
+    after the integration has completed this class is returned to provide
+    detailed information about the integration process. The most important
+    attributes are `success`, `status`, and `message`.
     
     Attributes
     ----------
-        x_end: x-location of end of integration
-        F_end: State value(s) at end of integration
-        status: Reason integration terminated:
-            * 0: Reached final distance
-            * -1: Separation occured at x_end
-            * 1: Transition occured at x_end
-            * Other values can be used by specific implementations
-        message: Description of termination reason
-        success: True if solver successfully completed
+        x_end: float
+            x-location of end of integration
+        F_end: np.array
+            State value(s) at end of integration
+        status: int
+            Reason integration terminated:
+                **0** Reached final distance
+                
+                **-1** Separation occured at x_end
+                
+                **1** Transition occured at x_end
+                
+                **Other values** Specified by implementations
+        message: string
+            Description of termination reason
+        success: Boolean
+            True if solver successfully completed
     """
     def __init__(self, x_end = np.inf, F_end = np.inf,
                  status = -99, message = "Not Set", success = False):
@@ -454,11 +609,20 @@ class IBLTermEventBase(ABC):
     """
     Base class for a termination event for IBL solver.
     
-    The two abstract methods that have to be implemented are event_info and 
-    _call_impl. Classes derived from this class can either be used within an 
-    IBL implementation or as a parameter into the solve method.
+    The two abstract methods that have to be implemented are `event_info` and 
+    `_call_impl` for a valid termination event for use in an :class:`IBLBase`
+    derived class. Classes derived from this class can either be used within
+    an IBL implementation (i.e., an implementation specific reason why the
+    integration should terminate) or as a parameter into the solve method
+    (i.e., the user has a particular reason for the integration to terminate).
+    
+    This class needs to return a float when called that changes sign when the
+    integration should terminate. See the `solve_ivp` and related documentation
+    for details.
     """
     def __init__(self):
+        # This is needed by ivp_solver to know that the event means that the
+        # integration should terminate
         self.terminal = True
         
     def __call__(self, x, F):
@@ -466,10 +630,12 @@ class IBLTermEventBase(ABC):
         ODE solver is going to call this method to determine if the integration 
         should terminate.
         
-        Args
-        ----
-            x: Current x-location of the integration
-            F: Current state value(s)
+        Parameters
+        ----------
+            x: float
+                Current x-location of the integration
+            F: np.array
+                Current state value(s)
         
         Returns
         -------
@@ -487,8 +653,12 @@ class IBLTermEventBase(ABC):
         Returns
         -------
             2-tuple of event index and string providing any extra information.
-            Event index should be -1 for separation and 1 for transition. Other 
-            values may not be handled correctly.
+        
+        Notes
+        -----
+            The event index should be -1 for separation and 1 for transition.
+            Other values are considered general termination situations and may
+            not be cleanly handled by this package.
         """
         pass
     
@@ -497,15 +667,20 @@ class IBLTermEventBase(ABC):
         """
         Information used to determine if IBL integrator should terminate.
         
-        The return value is used in a root finder to find what x,F will result
-        in the termination of the integrator. The function should return zero 
-        when the integrator should terminate, and change signs around the
-        termination state.
+        The return value is used in a root finder to find what `(x, F)` will
+        result in the termination of the integrator. The function should
+        return zero when the integrator should terminate, and change signs
+        around the termination state.
         
-        Args
-        ----
+        Parameters
+        ----------
             x: Current x-location of the integration
             F: Current state value(s)
+            
+        Returns
+        -------
+            The current value of the criteria being used to determine if the
+            ODE solver should terminate.
         """
         pass
 
