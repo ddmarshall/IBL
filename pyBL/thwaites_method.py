@@ -195,6 +195,21 @@ class ThwaitesMethodBase(IBLBase):
         """
         return np.sqrt(self._solution(x)[0]*self._nu)
     
+    def delta_k(self, x):
+        """
+        Calcualte the kinetic energy thickness
+        
+        Parameters
+        ----------
+            x: array-like
+                Streamwise loations to calculate this property
+        
+        Returns
+        -------
+            Desired kinetic energy thickness at the specified locations
+        """
+        return np.zeros_like(x)
+    
     def H_d(self, x):
         """
         Calculate the shape factor
@@ -209,6 +224,21 @@ class ThwaitesMethodBase(IBLBase):
         """
         lam = self._calc_lambda(x, self._solution(x)[0])
         return self._model.H(lam)
+    
+    def H_k(self, x):
+        """
+        Calculate the kinetic energy shape factor
+        
+        Parameters
+        ----------
+            x: array-like
+                Streamwise loations to calculate this property
+        
+        Returns
+        -------
+            Desired kinetic energy shape factor at the specified locations
+        """
+        return self.delta_k(x)/self.delta_m(x)
     
     def tau_w(self, x, rho):
         """
