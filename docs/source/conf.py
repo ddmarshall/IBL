@@ -24,7 +24,8 @@ extensions = [
     'myst_parser',
     'sphinx.ext.autodoc',
     'sphinx.ext.napoleon',
-    'sphinx.ext.viewcode'
+    'sphinx.ext.viewcode',
+    'sphinx.ext.imgmath'
 ]
 
 napoleon_google_docstring = False
@@ -32,6 +33,9 @@ autosummary_generate = True
 html_show_sourcelink = False
 autodoc_inherit_docstrings = True
 add_module_names = False
+numpydoc_class_members_toctree = False
+imgmath_image_format = 'svg'
+imgmath_font_size = 14
 
 templates_path = ['_templates']
 exclude_patterns = []

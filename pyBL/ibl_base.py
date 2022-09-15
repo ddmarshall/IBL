@@ -89,27 +89,27 @@ class IBLBase(ABC):
     
     Raises
     ------
-        ValueError
-            When configuration parameter is invalid (see message)
+    ValueError
+        When configuration parameter is invalid (see message).
     """
     
     # Attributes
-    #    _U_e: Callable
-    #        Function representing the edge velocity profile
-    #    _dU_edx: Callable
-    #        Function representing the streamwise derivative of the edge
-    #        velocity
-    #    _d2U_edx2: Callable
-    #        Function representing the streamwise second derivative of the edge
-    #        velocity
-    #    _x_range: 2-tuple
-    #        Start and end location for integration
-    #    _kill_events: List of classes based on :class:`IBLTermEventBase`
-    #        Events that should be passed into ODE solver that might cause the
-    #        integration to terminate early
-    #    _solution: vector of callables
-    #        Piecewise polynomials representing the state variables from the
-    #        ODE solution
+    # ----------
+    #_U_e: Callable
+    #    Function representing the edge velocity profile.
+    #_dU_edx: Callable
+    #    Function representing the streamwise derivative of the edge velocity.
+    #_d2U_edx2: Callable
+    #    Function representing the streamwise second derivative of the edge
+    #    velocity.
+    #_x_range: 2-tuple
+    #    Start and end location for integration.
+    #_kill_events: List of classes based on :class:`IBLTermEventBase`
+    #    Events that should be passed into ODE solver that might cause the
+    #    integration to terminate early.
+    #_solution: vector of callables
+    #    Piecewise polynomials representing the state variables from the ODE
+    #    solution.
     def __init__(self, U_e = None, dU_edx = None, d2U_edx2 = None):
         # set the velocity terms
         if U_e is None:
@@ -141,15 +141,15 @@ class IBLBase(ABC):
             Representation of the edge velocity to be used in analysis
         dU_edx : None, 2-tuple of array-like, or function-like, optional
             Representation of the first derivative of the edge velocity to be
-            used in analysis
+            used in analysis. The default is None.
         d2U_edx2 : None or function-like, optional
             Representationa of the second derivative of the edge velocity to
-            be used in analysis
+            be used in analysis. The default is None.
         
         Raises
         ------
-            ValueError
-                When configuration parameter is invalid (see message)
+        ValueError
+            When configuration parameter is invalid (see message).
         """
         # check if U_e is callable
         if callable(U_e):
@@ -245,27 +245,29 @@ class IBLBase(ABC):
             
             The specific type will depend on the details of the differential
             equations that the child class needs solved.
-        rtol: float
-            Relative tolerance for integration scheme
-        atol: float
-            Absolute tolerance for integration scheme
-        term_event: List of classes based on :class:`IBLTermEventBase`
-            Additional termination events.
+        rtol: float, optional
+            Relative tolerance for integration scheme. The default is 1e-8.
+        atol: float, optional
+            Absolute tolerance for integration scheme. The default is 1e-11.
+        term_event: List of classes based on :class:`IBLTermEventBase`, optional
+            Additional termination events. The default is None.
             
-            These events will be used in addition to any internal ones to
-            determine if/when the integration should terminate before the end
-            location. These should mostly be for transition to turbulent
-            boundary layer or separation.
+        Notes
+        -----
+        These events will be used in addition to any internal ones to determine
+        if/when the integration should terminate before the end location. These
+        should mostly be for transition to turbulent boundary layer or
+        separation.
         
         Returns
         -------
-            Bunch object: :class:`IBLResult` with information about the
-            solution process and termination.
+        Bunch object: :class:`IBLResult`
+            Information about the solution process and termination.
         
         Raises
         ------
-            TypeError
-                When solution parameters have not been set
+        TypeError
+            When solution parameters have not been set.
         """
         ## setup the ODE solver
         if (self._x_range is None):
@@ -331,7 +333,7 @@ class IBLBase(ABC):
     def _set_x_range(self, x0, x1):
         """
         Set the start and end location for analysis.
-
+        
         Parameters
         ----------
         x0 : float
@@ -343,21 +345,22 @@ class IBLBase(ABC):
     
     def U_e(self, x):
         """
-        Return the inviscid edge velocity at specified location(s)
+        Return the inviscid edge velocity at specified location(s).
         
         Parameters
         ----------
-            x: array-like
-                Streamwise loations to calculate this property
+        x: array-like
+            Streamwise loations to calculate this property.
             
         Returns
         -------
-            Inviscid edge velocity
+        array-like same shape as `x`
+            Inviscid edge velocity.
         
         Raises
         ------
-            TypeError
-                When velocity parameters have not been set
+        TypeError
+            When velocity parameters have not been set.
         """
         if (self._U_e is not None):
             return self._U_e(x)
@@ -368,21 +371,22 @@ class IBLBase(ABC):
     def dU_edx(self, x):
         """
         Return the streamwise derivative of the inviscid edge velocity at 
-        specified location(s)
+        specified location(s).
         
         Parameters
         ----------
-            x: array-like
-                Streamwise loations to calculate this property
+        x: array-like
+            Streamwise loations to calculate this property.
             
         Returns
         -------
-            Derivative of inviscid edge velocity
+        array-like same shape as `x`
+            Derivative of inviscid edge velocity.
         
         Raises
         ------
-            TypeError
-                When velocity parameters have not been set
+        TypeError
+            When velocity parameters have not been set.
         """
         if (self._dU_edx is not None):
             return self._dU_edx(x)
@@ -392,22 +396,23 @@ class IBLBase(ABC):
     
     def d2U_edx2(self, x):
         """
-        Return the streamwise second derivative of the inviscid edge velocity at 
-        specified location(s)
+        Return the streamwise second derivative of the inviscid edge velocity
+        at specified location(s).
         
         Parameters
         ----------
-            x: array-like
-                Streamwise loations to calculate this property
+        x: array-like
+            Streamwise loations to calculate this property.
             
         Returns
         -------
-            Second derivative of inviscid edge velocity
+        array-like same shape as `x`
+            Second derivative of inviscid edge velocity.
         
         Raises
         ------
-            TypeError
-                When velocity parameters have not been set
+        TypeError
+            When velocity parameters have not been set.
         """
         if (self._d2U_edx2 is not None):
             return self._d2U_edx2(x)
@@ -418,118 +423,127 @@ class IBLBase(ABC):
     @abstractmethod
     def U_n(self, x):
         """
-        Calculate the transpiration velocity
+        Calculate the transpiration velocity.
         
         Parameters
         ----------
-            x: array-like
-                Streamwise loations to calculate this property
+        x: array-like
+            Streamwise loations to calculate this property.
         
         Returns
         -------
-            Desired transpiration velocity at the specified locations
+        array-like same shape as `x`
+            Desired transpiration velocity at the specified locations.
         """
         pass
     
     @abstractmethod
     def delta_d(self, x):
         """
-        Calculate the displacement thickness
+        Calculate the displacement thickness.
         
         Parameters
         ----------
-            x: array-like
-                Streamwise loations to calculate this property
+        x: array-like
+            Streamwise loations to calculate this property.
         
         Returns
         -------
-            Desired displacement thickness at the specified locations
+        array-like same shape as `x`
+            Desired displacement thickness at the specified locations.
         """
         pass
     
     @abstractmethod
     def delta_m(self, x):
         """
-        Calcualte the momentum thickness
+        Calcualte the momentum thickness.
         
         Parameters
         ----------
-            x: array-like
-                Streamwise loations to calculate this property
+        x: array-like
+            Streamwise loations to calculate this property.
         
         Returns
         -------
-            Desired momentum thickness at the specified locations
+        array-like same shape as `x`
+            Desired momentum thickness at the specified locations.
         """
         pass
     
     @abstractmethod
     def delta_k(self, x):
         """
-        Calcualte the kinetic energy thickness
+        Calcualte the kinetic energy thickness.
         
         Parameters
         ----------
-            x: array-like
-                Streamwise loations to calculate this property
+        x: array-like
+            Streamwise loations to calculate this property.
         
         Returns
         -------
-            Desired kinetic energy thickness at the specified locations
+        array-like same shape as `x`
+            Desired kinetic energy thickness at the specified locations.
         """
         pass
     
     @abstractmethod
     def H_d(self, x):
         """
-        Calculate the displacement shape factor
+        Calculate the displacement shape factor.
         
         Parameters
         ----------
-            x: Streamwise loations to calculate this property
+        x: array-like
+            Streamwise loations to calculate this property.
         
         Returns
         -------
-            Desired displacement shape factor at the specified locations
+        array-like same shape as `x`
+            Desired displacement shape factor at the specified locations.
         """
         pass
     
     @abstractmethod
     def H_k(self, x):
         """
-        Calculate the kinetic energy shape factor
+        Calculate the kinetic energy shape factor.
         
         Parameters
         ----------
-            x: Streamwise loations to calculate this property
+        x: array-like
+            Streamwise loations to calculate this property.
         
         Returns
         -------
-            Desired kinetic energy shape factor at the specified locations
+        array-like same shape as `x`
+            Desired kinetic energy shape factor at the specified locations.
         """
         pass
     
     @abstractmethod
     def tau_w(self, x, rho):
         """
-        Calculate the wall shear stress
+        Calculate the wall shear stress.
         
         Parameters
         ----------
-            x: array-like
-                Streamwise loations to calculate this property
-            rho: float
-                Freestream density
+        x: array-like
+            Streamwise loations to calculate this property.
+        rho: float
+            Freestream density.
         
         Returns
         -------
-            Desired wall shear stress at the specified locations
+        array-like same shape as `x`
+            Desired wall shear stress at the specified locations.
         """
         pass
     
     def _add_kill_event(self, ke):
         """
-        Add kill event to the ODE solver
+        Add kill event to the ODE solver.
         
         Parameters
         ----------
@@ -544,7 +558,7 @@ class IBLBase(ABC):
     
     def _set_kill_event(self, ke):
         """
-        Set kill events for the ODE solver
+        Set kill events for the ODE solver.
         
         Parameters
         ----------
@@ -573,23 +587,23 @@ class IBLResult:
     
     Attributes
     ----------
-        x_end: float
-            x-location of end of integration
-        F_end: np.array
-            State value(s) at end of integration
-        status: int
-            Reason integration terminated:
-                **0** Reached final distance
-                
-                **-1** Separation occured at x_end
-                
-                **1** Transition occured at x_end
-                
-                **Other values** Specified by implementations
-        message: string
-            Description of termination reason
-        success: Boolean
-            True if solver successfully completed
+    x_end: float
+        x-location of end of integration.
+    F_end: np.array
+        State value(s) at end of integration.
+    status: int
+        Reason integration terminated:
+            **0** Reached final distance
+            
+            **-1** Separation occured at x_end
+            
+            **1** Transition occured at x_end
+            
+            **Other values** Specified by implementations
+    message: string
+        Description of termination reason.
+    success: Boolean
+        True if solver successfully completed.
     """
     def __init__(self, x_end = np.inf, F_end = np.inf,
                  status = -99, message = "Not Set", success = False):
@@ -637,14 +651,15 @@ class IBLTermEventBase(ABC):
         
         Parameters
         ----------
-            x: float
-                Current x-location of the integration
-            F: np.array
-                Current state value(s)
+        x: float
+            Current x-location of the integration.
+        F: np.array
+            Current state value(s).
         
         Returns
         -------
-            Floating point number that is zero when the solver should stop
+        float
+            Value that is zero when the solver should stop.
         """
         return self._call_impl(x, np.asarray(F))
     
@@ -657,13 +672,16 @@ class IBLTermEventBase(ABC):
         
         Returns
         -------
-            2-tuple of event index and string providing any extra information.
+        Event index
+            Value indicating reason this event would terminate integration
+        Description
+            Extra information associated with reason for termination.
         
         Notes
         -----
-            The event index should be -1 for separation and 1 for transition.
-            Other values are considered general termination situations and may
-            not be cleanly handled by this package.
+        The event index should be -1 for separation and 1 for transition.
+        Other values are considered general termination situations and may not
+        be cleanly handled by this package.
         """
         pass
     
@@ -679,11 +697,14 @@ class IBLTermEventBase(ABC):
         
         Parameters
         ----------
-            x: Current x-location of the integration
-            F: Current state value(s)
+        x: float
+            Current x-location of the integration.
+        F: array-like
+            Current state value(s).
             
         Returns
         -------
+        array-like
             The current value of the criteria being used to determine if the
             ODE solver should terminate.
         """

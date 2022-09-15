@@ -1,9 +1,14 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Created on Thu Jun 30 12:42:04 2022
+Implementations of Thwaites' method.
 
-@author: ddmarsha
+This module contains the necessary classes and data for the implementation of
+Thwaites' one equation integral boundary layer method. There are two concrete
+implementations: :class:`ThwaitesMethodLinear` that is based on the traditional
+assumption that the ODE to be solved fits a linear relationship, and
+:class:`ThwaitesMethodNonlinear` that removes the linear relationship
+assumption and provides slightly better results in all cases tested.
 """
 
 import numpy as np
@@ -17,19 +22,24 @@ from pyBL.ibl_base import IBLTermEventBase
 
 class ThwaitesMethodBase(IBLBase):
     """
-    Models a laminar boundary layer using Thwaites Method (1949) when provided 
-    the edge velocity profile. There are a few different ways of modeling the 
-    tabular data from Thwaites original work that can be set.
+    Base class for Thwaites' Method
     
-    This class is the base class for the linear and nonlinear versions of
-    Thwaites method.
+    This class models a laminar boundary layer using Thwaites' Method from,
+    “Approximate Calculation of the Laminar Boundary Layer.” **The Aeronautical
+    Journal**, Vol. 1, No. 3, 1949, pp. 245–280. It is the base class for the
+    linear (:class:`ThwaitesMethodLinear`)and nonlinear
+    (:class:`ThwaitesMethodNonlinear`) versions of Thwaites method.
     
-    Attributes
-    ----------
-        _delta_m0: Momentum thickness at start location
-        _nu: Kinematic viscosity
-        _model: Collection of functions for S, H, and H'
+    In addition to the :class:`IBLBase` configuration information, the
+    initial momentum thickness is needed along with the kinematic viscosity.
+    Thwaites' original algorithm relied upon tabulated data for the analysis,
+    and there are few different ways of modeling that data in this class.
     """
+    
+    # Attributes
+    #    _delta_m0: Momentum thickness at start location
+    #    _nu: Kinematic viscosity
+    #    _model: Collection of functions for S, H, and H'
     def __init__(self, U_e = None, dU_edx = None, d2U_edx2 = None,
                  data_fits = "Spline"):
         super().__init__(U_e, dU_edx, d2U_edx2)
@@ -41,17 +51,21 @@ class ThwaitesMethodBase(IBLBase):
         """
         Set the parameters needed for the solver to propagate
         
-        Args
-        ----
-            x0: location to start integration
-            x_end: location to end integration
-            delta_m0: Momentum thickness at start location
-            nu: Kinematic viscosity
+        Parameters
+        ----------
+        x0: float
+            Location to start integration.
+        x_end: float
+            Location to end integration.
+        delta_m0: float
+            Momentum thickness at start location.
+        nu: float
+            Kinematic viscosity.
         
-        Throws
+        Raises
         ------
-            ValueError if negative viscosity provided, or invalid initial
-            conditions
+        ValueError
+            When negative viscosity provided, or invalid initial conditions
         """
         if nu < 0:
             raise ValueError("Viscosity must be positive")
@@ -64,34 +78,47 @@ class ThwaitesMethodBase(IBLBase):
         self._set_x_range(x0, x_end)
     
     def nu(self):
-        """Getter for kinematic viscosity"""
+        """
+        Return kinematic viscosity used for the solution.
+        
+        Returns
+        -------
+        float
+            Kinematic viscosity.
+        """
         return self._nu
     
     def set_data_fits(self, data_fits):
         """
-        Set the functions used for the data fits of the shear function,
-        S(\lambda), shape function, H(\lambda), and the slope of the shape
-        function dH/d\lambda.
+        Set the data fit functions.
         
-        Args
-        ----
-            data_fits: * either a 2-tuple or 3-tuple of functions that each take
-                         one parameter, lambda, where the first is the shear 
-                         function, the second is the shape function and if 
-                         provided, the third is the derivative of the shape
-                         function; or 
-                       * a string for representing one of the three internal 
-                         implementations:
-                           * "Spline" - Spline fits of Thwaites original 
-                             data (Edland 2022)
-                           * "White" - Curve fits from White (2011)
-                           * "Cebeci-Bradshaw" - Curve fits from 
-                             Cebeci-Bradshaw 1977"
+        This method sets the functions used for the data fits of the shear
+        function, shape function, and the slope of the shape function.
         
-        Throws
+        Parameters
+        ----------
+            data_fits: 2-tuple, 3-tuple, or string
+                The data fits can be set via one of the following methods:
+                    - 3-tuple of callable objects taking one parameter that
+                      represent the shear function, the shape function, and
+                      the derivative of the shape function;
+                    - 2-tuple of callable objects taking one parameter that
+                      represent the shear function and the shape function.
+                      The derivative of the shear function is then
+                      approximated using finite differences; or
+                    - String for representing one of the three internal
+                      implementations:
+                    
+                         - "Spline" for spline fits of Thwaites original
+                           data (Edland 2022)
+                         - "White" for the curve fits from White (2011)
+                         - "Cebeci-Bradshaw" for curve fits from
+                           Cebeci-Bradshaw (1977)
+        
+        Raises
         ------
-            ValueError if an invalid fit name or unusable 2-tuple or
-            3-tuple provided
+        ValueError
+            When an invalid fit name or unusable 2-tuple or 3-tuple provided
         """
         # data_fits can either be string or 2-tuple of callables
         self._model = None
@@ -140,20 +167,42 @@ class ThwaitesMethodBase(IBLBase):
                                                       self._model.S))
     
     def solve(self, term_event = None):
+        r"""
+        Solve the ODE associated with Thwaites' method. This actually solves
+        the following differential equation
+        
+        .. math:: \frac{d}{dx}\left(\frac{\delta_m^2}{\nu}\right)=\frac{F}{U_e}
+        
+        where :math:`F` is either the linear approximation or the actual term
+        from Thwaites' original paper.
+        
+        Parameters
+        ----------
+        term_event : List of classes based on :class:`IBLTermEventBase`, optional
+            User events that can terminate the integration process before the
+            end location of the integration is reached. The default is None.
+            
+        Returns
+        -------
+        :class:`IBLResult`
+            Information associated with the integration process.
+        """
         return self._solve_impl(self._delta_m0**2/self._nu,
                                 term_event = term_event)
     
     def U_n(self, x):
         """
-        Calculate the transpiration velocity
+        Calculate the transpiration velocity.
         
-        Args
-        ----
-            x: Streamwise loations to calculate this property
+        Parameters
+        ----------
+        x: array-like
+            Streamwise loations to calculate this property.
         
         Returns
         -------
-            Desired property at the specified locations
+        array-like same shape as `x`
+            Desired transpiration velocity at the specified locations.
         """
         U_e = self.U_e(x)
         dU_edx = self.dU_edx(x)
@@ -169,89 +218,100 @@ class ThwaitesMethodBase(IBLBase):
     
     def delta_d(self, x):
         """
-        Calculate the displacement thickness
+        Calculate the displacement thickness.
         
-        Args
-        ----
-            x: Streamwise loations to calculate this property
+        Parameters
+        ----------
+        x: array-like
+            Streamwise loations to calculate this property.
         
         Returns
         -------
-            Desired property at the specified locations
+        array-like same shape as `x`
+            Desired displacement thickness at the specified locations.
         """
         return self.delta_m(x)*self.H_d(x)
     
     def delta_m(self, x):
         """
-        Calcualte the momentum thickness
+        Calcualte the momentum thickness.
         
-        Args
-        ----
-            x: Streamwise loations to calculate this property
+        Parameters
+        ----------
+        x: array-like
+            Streamwise loations to calculate this property.
         
         Returns
         -------
-            Desired property at the specified locations
+        array-like same shape as `x`
+            Desired momentum thickness at the specified locations.
         """
         return np.sqrt(self._solution(x)[0]*self._nu)
     
     def delta_k(self, x):
         """
-        Calcualte the kinetic energy thickness
+        Calcualte the kinetic energy thickness.
         
         Parameters
         ----------
-            x: array-like
-                Streamwise loations to calculate this property
+        x: array-like
+            Streamwise loations to calculate this property.
         
         Returns
         -------
-            Desired kinetic energy thickness at the specified locations
+        array-like same shape as `x`
+            Desired kinetic energy thickness at the specified locations.
         """
         return np.zeros_like(x)
     
     def H_d(self, x):
         """
-        Calculate the shape factor
+        Calculate the displacement shape factor.
         
-        Args
-        ----
-            x: Streamwise loations to calculate this property
+        Parameters
+        ----------
+        x: array-like
+            Streamwise loations to calculate this property.
         
         Returns
         -------
-            Desired property at the specified locations
+        array-like same shape as `x`
+            Desired displacement shape factor at the specified locations.
         """
         lam = self._calc_lambda(x, self._solution(x)[0])
         return self._model.H(lam)
     
     def H_k(self, x):
         """
-        Calculate the kinetic energy shape factor
+        Calculate the kinetic energy shape factor.
         
         Parameters
         ----------
-            x: array-like
-                Streamwise loations to calculate this property
+        x: array-like
+            Streamwise loations to calculate this property.
         
         Returns
         -------
-            Desired kinetic energy shape factor at the specified locations
+        array-like same shape as `x`
+            Desired kinetic energy shape factor at the specified locations.
         """
         return self.delta_k(x)/self.delta_m(x)
     
     def tau_w(self, x, rho):
         """
-        Calculate the wall shear stress
+        Calculate the wall shear stress.
         
-        Args
-        ----
-            x: Streamwise loations to calculate this property
-            rho: Freestream density
+        Parameters
+        ----------
+        x: array-like
+            Streamwise loations to calculate this property.
+        rho: float
+            Freestream density.
         
         Returns
         -------
-            Desired property at the specified locations
+        array-like same shape as `x`
+            Desired wall shear stress at the specified locations.
         """
         lam = self._calc_lambda(x, self._solution(x)[0])
         return rho*self._nu*self.U_e(x)*self._model.S(lam)/self.delta_m(x)
@@ -260,36 +320,100 @@ class ThwaitesMethodBase(IBLBase):
         """
         This is the right-hand-side of the ODE representing Thwaites method.
         
-        Args
-        ----
-            x: x-location of current step
-            delta_m2_on_nu: current step square of momentum thickness divided
-            by the kinematic viscosity
+        Parameters
+        ----------
+        x: array-like
+            Streamwise location of current step.
+        delta_m2_on_nu: array-like
+            Current step's square of momentum thickness divided by the
+            kinematic viscosity.
         """
         return self._calc_F(x, delta_m2_on_nu)/(1e-3+self.U_e(x))
     
     @abstractmethod
     def _calc_F(self, x, delta_m2_on_nu):
+        """
+        Calculate the :math:`F` term in the ODE.
+        
+        The F term captures the interaction between the shear function and the
+        shape function and can be modeled as a linear expression (as the
+        standard Thwaites' method does) or can be calculated directly using
+        the data fit relations for the shear function and the shape function.
+        
+        Parameters
+        ----------
+        x : array-like
+            Streamwise location of current step.
+        delta_m2_on_nu : array-like
+            Dependent variable in the ODE solver.
+        
+        Returns
+        -------
+        array-like same shape as `x`
+            The calculated value of :math:`F`
+        """
         pass
     
     def _calc_lambda(self, x, delta_m2_on_nu):
+        r"""
+        Calculate the :math:`\lambda` term needed in Thwaites' method
+        
+        Parameters
+        ----------
+        x : array-like
+            Streamwise location of current step.
+        delta_m2_on_nu : array-like
+            Dependent variable in the ODE solver.
+            
+        Returns
+        -------
+        array-like same shape as `x`
+            The :math:`\lambda` parameter that corresponds to the given state.
+        """
         return delta_m2_on_nu*self.dU_edx(x)
 
 
 class ThwaitesMethodLinear(ThwaitesMethodBase):
-    """
-    Models a laminar boundary layer using Thwaites Method (1949) when provided 
-    the edge velocity profile. There are a few different ways of modeling the 
+    r"""
+    Models a laminar boundary layer using Thwaites Method (1949) when provided
+    the edge velocity profile. There are a few different ways of modeling the
     tabular data from Thwaites original work that can be set.
     
-    This class solves for \frac{\delta_m^2}{\nu} using the IBLBase ODE solver
-    with the linear approximation for the differential equation relationship.
+    This class solves the following differential equation using the linear 
+    approximation from Thwaites' original paper
+    
+    .. math::
+        \frac{d}{dx}\left(\frac{\delta_m^2}{\nu}\right)
+            =\frac{1}{U_e}\left(0.45-6\lambda\right)
+    
+    using the :class:`IBLBase` ODE solver.
     """
     def __init__(self, U_e = None, dU_edx = None, d2U_edx2 = None,
                  data_fits = "Spline"):
         super().__init__(U_e, dU_edx, d2U_edx2, data_fits)
     
     def _calc_F(self, x, delta_m2_on_nu):
+        r"""
+        Calculate the :math:`F` term in the ODE using the linear approximation.
+        
+        The F term captures the interaction between the shear function and the
+        shape function and is modeled as the following linear expression (as
+        the standard Thwaites' method does)
+        
+        .. math:: F\left(\lambda\right)=0.45-6\lambda
+        
+        Parameters
+        ----------
+        x : array-like
+            Streamwise location of current step.
+        delta_m2_on_nu : array-like
+            Dependent variable in the ODE solver.
+        
+        Returns
+        -------
+        array-like same shape as `x`
+            The calculated value of :math:`F`
+        """
         lam = self._calc_lambda(x, delta_m2_on_nu)
         a = 0.45
         b = 6
@@ -297,25 +421,53 @@ class ThwaitesMethodLinear(ThwaitesMethodBase):
 
 
 class ThwaitesMethodNonlinear(ThwaitesMethodBase):
-    """
-    Models a laminar boundary layer using Thwaites Method (1949) when provided 
-    the edge velocity profile. There are a few different ways of modeling the 
+    r"""
+    Models a laminar boundary layer using Thwaites Method (1949) when provided
+    the edge velocity profile. There are a few different ways of modeling the
     tabular data from Thwaites original work that can be set.
     
-    This class solves for \frac{\delta_m^2}{\nu} using the IBLBase ODE solver
-    with the nonlinear formulation for the differential equation relationship.
+    This class solves the following differential equation using the data fits
+    for the shear function, :math:`S`, and the shape function, :math`H`, to
+    capture a more accurate representation of the laminar boundary layer flow
+    
+    .. math::
+        \frac{d}{dx}\left(\frac{\delta_m^2}{\nu}\right)
+            =\frac{2}{U_e}\left[S-\lambda\left(H+2\right)\right]
+    
+    using the :class:`IBLBase` ODE solver.
     """
     def __init__(self, U_e = None, dU_edx = None, d2U_edx2 = None,
                  data_fits = "Spline"):
         super().__init__(U_e, dU_edx, d2U_edx2, data_fits)
     
     def _calc_F(self, x, delta_m2_on_nu):
+        r"""
+        Calculate the :math:`F` term in the ODE using the actual relationship.
+        
+        The F term captures the interaction between the shear function and the
+        shape function and is modeled as the original ODE expression from
+        Thwaites' paper as
+        
+        .. math:: F\left(\lambda\right)=2\left[S-\lambda\left(H+2\right)\right]
+        
+        Parameters
+        ----------
+        x : array-like
+            Streamwise location of current step.
+        delta_m2_on_nu : array-like
+            Dependent variable in the ODE solver.
+        
+        Returns
+        -------
+        array-like same shape as `x`
+            The calculated value of :math:`F`
+        """
         lam = self._calc_lambda(x, delta_m2_on_nu)
         return self._model.F(lam)
 
 
 class _ThwaitesFunctionsBase:
-    """Base class for curve fits for Thwaites data"""
+    """Base class for curve fits for Thwaites data."""
     def __init__(self, name, S_fun, H_fun, Hp_fun, lambda_min, lambda_max):
         self._range = [lambda_min, lambda_max]
         self._name = name
@@ -359,7 +511,7 @@ class _ThwaitesFunctionsBase:
 
 
 class _ThwaitesFunctionsWhite(_ThwaitesFunctionsBase):
-    """Returns White's calculation of Thwaites functions from 2011 book"""
+    """Returns White's calculation of Thwaites functions from 2011 book."""
     def __init__(self):
         def S(lam):
             return pow(lam + 0.09, 0.62)
@@ -376,7 +528,7 @@ class _ThwaitesFunctionsWhite(_ThwaitesFunctionsBase):
 class _ThwaitesFunctionsCebeciBradshaw(_ThwaitesFunctionsBase):
     """
     Returns Cebeci and Bradshaw's calculation of Thwaites functions from
-    1977 book
+    1977 book.
     """
     def __init__(self):
         def S(lam):
@@ -401,7 +553,7 @@ class _ThwaitesFunctionsCebeciBradshaw(_ThwaitesFunctionsBase):
 
 
 class _ThwaitesFunctionsSpline(_ThwaitesFunctionsBase):
-    """Returns cubic splines of Thwaites original tables based on Edland 2021"""
+    """Returns cubic splines of Thwaites original tables based on Edland 2021."""
     def __init__(self):
         # Spline fits to Thwaites original data Edland
         S = CubicSpline(self._tab_lambda, self._tab_S)
@@ -443,8 +595,8 @@ class _ThwaitesSeparationEvent(IBLTermEventBase):
     
     Attributes
     ----------
-        _calc_lam: Callable that can calculate lambda
-        _S_fun: Callable that can calculate the shear function
+        _calc_lam: Callable that can calculate lambda.
+        _S_fun: Callable that can calculate the shear function.
     """
     def __init__(self, calc_lam, S_fun):
         super().__init__()
@@ -458,11 +610,11 @@ class _ThwaitesSeparationEvent(IBLTermEventBase):
         
         This will terminate once the shear function goes negative.
         
-        Args
-        ----
-            x: Current x-location of the integration
+        Parameters
+        ----------
+            x: Current x-location of the integration.
             delta_m2_on_nu: Current step square of momentum thickness divided
-                            by the kinematic viscosity
+                            by the kinematic viscosity.
         
         Returns
         -------
