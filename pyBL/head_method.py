@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Created on Wed Jun 29 14:15:11 2022
+Implementation of Head's method.
 
-@author: ddmarsha
+This module contains the necessary classes and data for the implementation of
+Head's two equation integral boundary layer method.
 """
 
 import numpy as np
@@ -15,38 +16,60 @@ from pyBL.skin_friction import c_f_LudwiegTillman as c_f_fun
 
 class HeadMethod(IBLBase):
     """
-    Models a turbulent bondary layer using Head's Method (1958) when provided
-    the edge velocity profile.
+    Models a turbulent bondary layer using Head's Method (1958).
     
-    Attributes
-    ----------
-        _delta_m0: Momentum thickness at start location
-        _H_d0: Displacement shape factor at start location
-        _nu: Kinematic viscosity
+    Solves the system of ODEs from Head's method when provided the edge
+    velocity profile and other configuration information.
     """
+    
+    # Attributes
+    # ----------
+    #    _delta_m0: Momentum thickness at start location
+    #    _H_d0: Displacement shape factor at start location
+    #    _nu: Kinematic viscosity
     def __init__(self, U_e = None, dU_edx = None, d2U_edx2 = None,
                  H_d_crit = 2.4):
         super().__init__(U_e, dU_edx, d2U_edx2)
         self.set_H_d_critical(H_d_crit)
     
     def set_H_d_critical(self, H_d_crit):
+        """
+        Set the critical displacement shape factor for separation.
+        
+        Since Head's method does not predict when the skin friction will be
+        zero, another mechanism needs to be employed to determine if/when
+        separation will occur. This value is used as the threshold for the
+        displacement shape factor to indicate separation has occurred.
+        
+        Parameters
+        ----------
+        H_d_crit : float
+            New value for the .displacement shape factor to be used to indicate
+            that the boundary layer has separated.
+        """
         self._set_kill_event(_HeadSeparationEvent(H_d_crit))
     
     def set_solution_parameters(self, x0, x_end, delta_m0, H_d0, nu):
         """
         Set the parameters needed for the solver to propagate
         
-        Args
-        ----
-            x0: location to start integration
-            x_end: location to end integration
-            delta_m0: Momentum thickness at start location
-            nu: Kinematic viscosity
+        Parameters
+        ----------
+        x0: float
+            Location to start integration.
+        x_end: float
+            Location to end integration.
+        delta_m0: float
+            Momentum thickness at start location.
+        H_d0: float
+            Displacement shape factor at start location.
+        nu: float
+            Kinematic viscosity.
         
-        Throws
+        Raises
         ------
-            ValueError if negative viscosity provided, or invalid initial
-            conditions
+        ValueError
+            When negative viscosity provided, or invalid initial conditions
         """
         if nu < 0:
             raise ValueError("Viscosity must be positive")
@@ -64,24 +87,47 @@ class HeadMethod(IBLBase):
         self._set_x_range(x0, x_end)
     
     def nu(self):
-        """Getter for kinematic viscosity"""
+        """
+        Return kinematic viscosity used for the solution.
+        
+        Returns
+        -------
+        float
+            Kinematic viscosity.
+        """
         return self._nu
     
     def solve(self, term_event = None):
+        """
+        Solve the ODEs associated with Head's method.
+        
+        Parameters
+        ----------
+        term_event : List of classes based on :class:`IBLTermEventBase`, optional
+            User events that can terminate the integration process before the
+            end location of the integration is reached. The default is None.
+            
+        Returns
+        -------
+        :class:`IBLResult`
+            Information associated with the integration process.
+        """
         return self._solve_impl([self._delta_m0, self._H_d0],
                                 term_event = term_event)
     
     def U_n(self, x):
         """
-        Calculate the transpiration velocity
+        Calculate the transpiration velocity.
         
-        Args
-        ----
-            x: Streamwise loations to calculate this property
+        Parameters
+        ----------
+        x: array-like
+            Streamwise loations to calculate this property.
         
         Returns
         -------
-            Desired property at the specified locations
+        array-like same shape as `x`
+            Desired transpiration velocity at the specified locations.
         """
         yp = self._ode_impl(x, self._solution(x))
         H_d = self.H_d(x)
@@ -94,13 +140,15 @@ class HeadMethod(IBLBase):
         """
         Calculate the displacement thickness
         
-        Args
-        ----
-            x: Streamwise loations to calculate this property
+        Parameters
+        ----------
+        x: array-like
+            Streamwise loations to calculate this property
         
         Returns
         -------
-            Desired property at the specified locations
+        array-like same shape as `x`
+            Desired displacement thickness at the specified locations.
         """
         return self.delta_m(x)*self.H_d(x)
     
@@ -108,13 +156,15 @@ class HeadMethod(IBLBase):
         """
         Calcualte the momentum thickness
         
-        Args
-        ----
-            x: Streamwise loations to calculate this property
+        Parameters
+        ----------
+        x: array-like
+            Streamwise loations to calculate this property
         
         Returns
         -------
-            Desired property at the specified locations
+        array-like same shape as `x`
+            Desired momentum thickness at the specified locations.
         """
         return self._solution(x)[0]
     
@@ -124,26 +174,29 @@ class HeadMethod(IBLBase):
         
         Parameters
         ----------
-            x: array-like
-                Streamwise loations to calculate this property
+        x: array-like
+            Streamwise loations to calculate this property
         
         Returns
         -------
-            Desired kinetic energy thickness at the specified locations
+        array-like same shape as `x`
+            Desired kinetic energy thickness at the specified locations.
         """
         return np.zeros_like(x)
     
     def H_d(self, x):
         """
-        Calculate the shape factor
+        Calculate the displacement shape factor
         
-        Args
-        ----
-            x: Streamwise loations to calculate this property
+        Parameters
+        ----------
+        x: array-like
+            Streamwise loations to calculate this property
         
         Returns
         -------
-            Desired property at the specified locations
+        array-like same shape as `x`
+            Desired displacement shape factor at the specified locations.
         """
         return self._solution(x)[1]
     
@@ -153,12 +206,13 @@ class HeadMethod(IBLBase):
         
         Parameters
         ----------
-            x: array-like
-                Streamwise loations to calculate this property
+        x: array-like
+            Streamwise loations to calculate this property
         
         Returns
         -------
-            Desired kinetic energy shape factor at the specified locations
+        array-like same shape as `x`
+            Desired kinetic energy shape factor at the specified locations.
         """
         return self.delta_k(x)/self.delta_m(x)
     
@@ -166,14 +220,17 @@ class HeadMethod(IBLBase):
         """
         Calculate the wall shear stress
         
-        Args
-        ----
-            x: Streamwise loations to calculate this property
-            rho: Freestream density
+        Parameters
+        ----------
+        x: array-like
+            Streamwise loations to calculate this property
+        rho: float
+            Freestream density
         
         Returns
         -------
-            Desired property at the specified locations
+        array-like same shape as `x`
+            Desired wall shear stress at the specified locations.
         """
         delta_m = self._solution(x)[0]
         H_d = self._solution(x)[1]
@@ -187,10 +244,18 @@ class HeadMethod(IBLBase):
         """
         This is the right-hand-side of the ODE representing Head's method.
         
-        Args
-        ----
-            x: x-location of current step
-            y: current step solution vector of momentum thickness and H_d
+        Parameters
+        ----------
+        x: array-like
+            Streamwise location of current step.
+        y: array-like
+            Current step's solution vector of momentum thickness and
+            displacement shape factor.
+        
+        Returns
+        -------
+        array-like same shape as `delta_m2_on_nu`
+            The right-hand side of the ODE at the given state.
         """
         yp = np.zeros_like(y)
         delta_m = y[0]
@@ -282,7 +347,8 @@ class HeadMethod(IBLBase):
 
 class _HeadSeparationEvent(IBLTermEventBase):
     """
-    This class detects separation and will terminate integration when it occurs.
+    This class detects separation and will terminate integration when it
+    occurs.
     
     This is a callable object that the ODE integrator will use to determine if
     the integration should terminate before the end location.
@@ -300,17 +366,22 @@ class _HeadSeparationEvent(IBLTermEventBase):
         Information used to determine if Head method integrator should 
         terminate.
         
-        This will terminate once the displacement shape factor becomes greater 
+        This will terminate once the displacement shape factor becomes greater
         than critical H_d.
         
-        Args
-        ----
-            x: Current x-location of the integration
-            y: Current step momentum thickness and displacement shape factor
+        Parameters
+        ----------
+        x: array-like
+            Streamwise location of current step.
+        y: array-like
+            Current step's solution vector of momentum thickness and
+            displacement shape factor.
         
         Returns
         -------
-            Current value of the shear function.
+        float
+            Current value of the difference between the critical displacement
+            shape factor and the current displacement shape factor.
         """
         return self._H_d_crit - y[1]
     

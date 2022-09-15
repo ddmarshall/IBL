@@ -168,8 +168,9 @@ class ThwaitesMethodBase(IBLBase):
     
     def solve(self, term_event = None):
         r"""
-        Solve the ODE associated with Thwaites' method. This actually solves
-        the following differential equation
+        Solve the ODE associated with Thwaites' method.
+        
+        This actually solves the following differential equation
         
         .. math:: \frac{d}{dx}\left(\frac{\delta_m^2}{\nu}\right)=\frac{F}{U_e}
         
@@ -327,6 +328,11 @@ class ThwaitesMethodBase(IBLBase):
         delta_m2_on_nu: array-like
             Current step's square of momentum thickness divided by the
             kinematic viscosity.
+        
+        Returns
+        -------
+        array-like same shape as `delta_m2_on_nu`
+            The right-hand side of the ODE at the given state.
         """
         return self._calc_F(x, delta_m2_on_nu)/(1e-3+self.U_e(x))
     
@@ -375,7 +381,10 @@ class ThwaitesMethodBase(IBLBase):
 
 class ThwaitesMethodLinear(ThwaitesMethodBase):
     r"""
-    Models a laminar boundary layer using Thwaites Method (1949) when provided
+    Laminar boundary layer model using Thwaites Method (1949) linear
+    approximation.
+    
+    Solves the original approximate ODE from Thwaites' method when provided
     the edge velocity profile. There are a few different ways of modeling the
     tabular data from Thwaites original work that can be set.
     
@@ -422,9 +431,13 @@ class ThwaitesMethodLinear(ThwaitesMethodBase):
 
 class ThwaitesMethodNonlinear(ThwaitesMethodBase):
     r"""
-    Models a laminar boundary layer using Thwaites Method (1949) when provided
-    the edge velocity profile. There are a few different ways of modeling the
-    tabular data from Thwaites original work that can be set.
+    Laminar boundary layer model using Thwaites' Method (1949) without the
+    linear approximation.
+    
+    Solves the original ODE from Thwaites' Method (1949) without the linear
+    approximation when provided the edge velocity profile. There are a few
+    different ways of modeling the tabular data from Thwaites original work
+    that can be set.
     
     This class solves the following differential equation using the data fits
     for the shear function, :math:`S`, and the shape function, :math`H`, to
@@ -592,12 +605,12 @@ class _ThwaitesSeparationEvent(IBLTermEventBase):
     
     This is a callable object that the ODE integrator will use to determine if
     the integration should terminate before the end location.
-    
-    Attributes
-    ----------
-        _calc_lam: Callable that can calculate lambda.
-        _S_fun: Callable that can calculate the shear function.
     """
+    
+    # Attributes
+    # ----------
+    #    _calc_lam: Callable that can calculate lambda.
+    #    _S_fun: Callable that can calculate the shear function.
     def __init__(self, calc_lam, S_fun):
         super().__init__()
         self._calc_lam = calc_lam
@@ -612,12 +625,15 @@ class _ThwaitesSeparationEvent(IBLTermEventBase):
         
         Parameters
         ----------
-            x: Current x-location of the integration.
-            delta_m2_on_nu: Current step square of momentum thickness divided
-                            by the kinematic viscosity.
+        x: array-like
+            Current x-location of the integration.
+        delta_m2_on_nu: array-like
+            Current step square of momentum thickness divided by the
+            kinematic viscosity.
         
         Returns
         -------
+        float
             Current value of the shear function.
         """
         return self._S_fun(self._calc_lam(x, delta_m2_on_nu))
