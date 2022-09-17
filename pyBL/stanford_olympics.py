@@ -8,6 +8,14 @@ Created on Wed Aug 24 16:45:17 2022
 
 import pyBL
 
+
+# Unit conversions
+_METER_TO_FOOT = 0.3048
+_FOOT_TO_METER = 1/_METER_TO_FOOT
+_METER_TO_INCH = _METER_TO_FOOT/12
+_INCH_TO_METER = 1/_METER_TO_INCH
+
+
 class StanfordOlympics1968:
     """
     This class is an interface to the data from the Proceedings of the
@@ -45,21 +53,40 @@ class StanfordOlympics1968:
             c_f_E: Skin friction coefficient reported by data originator
             beta: Equilibrium parameter
         """
-        def __init__(self, row):
+        def __init__(self, row, si_unit):
             col = row.split()
             if len(col) != 11:
-                raise Exception("Invalid number of columns in summary data: {}".format(row))
-            self.x = float(col[0])
-            self.U_e = float(col[1])
-            self.dU_edx = float(col[2])
-            self.delta_m = float(col[3])*1e-2
-            self.H_d = float(col[4])
-            self.H_k = float(col[5])
-            self.G = float(col[6])
-            self.c_f = float(col[7])
-            self.c_f_LT = float(col[8])
-            self.c_f_E = float(col[9])
-            self.beta = float(col[10])
+                raise Exception("Invalid number of columns in summary "
+                                "data: {}".format(row))
+            
+            temp0 = float(col[0])
+            temp1 = float(col[1])
+            temp2 = float(col[2])
+            temp3 = float(col[3])
+            temp4 = float(col[4])
+            temp5 = float(col[5])
+            temp6 = float(col[6])
+            temp7 = float(col[7])
+            temp8 = float(col[8])
+            temp9 = float(col[9])
+            temp10 = float(col[10])
+            if si_unit:
+                temp3 = temp3*1e-2
+            else:
+                temp0 = temp0*_FOOT_TO_METER
+                temp1 = temp1*_FOOT_TO_METER
+                temp3 = temp1*_INCH_TO_METER
+            self.x = temp0
+            self.U_e = temp1
+            self.dU_edx = temp2
+            self.delta_m = temp3
+            self.H_d = temp4
+            self.H_k = temp5
+            self.G = temp6
+            self.c_f = temp7
+            self.c_f_LT = temp8
+            self.c_f_E = temp9
+            self.beta = temp10
             
             self.u_star = []
             self.delta_d = []
@@ -135,36 +162,55 @@ class StanfordOlympics1968:
                 line = f.readline()
             return chunk
         
-        case_filename = "{}/../stanford_olympics/1968/case {}.txt".format(pyBL.__path__[0], case)
+        case_filename = ("{}/../stanford_olympics/".format(pyBL.__path__[0])
+                        + "1968/case {}.txt".format(case))
         with open(case_filename, 'r') as case_file:
             # read case information
             chunk = next_chunk(case_file)
             if chunk[0].startswith("IDENT = "):
                 self.case = chunk[0].split()[2]
             else:
-                raise Exception("Expected IDENT line but have: {}".format(chunk[0]))
+                raise Exception("Expected IDENT line but have: "
+                                "{}".format(chunk[0]))
+            si_unit = self.case[0] == '1'
             if chunk[1].startswith("V = "):
-                self.nu = float(chunk[1].split()[2])*1e-4
+                temp0 = float(chunk[1].split()[2])
+                if si_unit:
+                    temp0 = temp0*1e-4
+                else:
+                    temp0 = temp0*_FOOT_TO_METER**2
+                self.nu = temp0
             else:
-                raise Exception("Expected V line but have: {}".format(chunk[1]))
+                raise Exception("Expected V line but have: "
+                                "{}".format(chunk[1]))
             
             # read the summary data
             chunk = next_chunk(case_file)
             for row in chunk:
-                self._station.append(self.StationData(row))
+                self._station.append(self.StationData(row, si_unit))
             
             # read the edge velocity info
             chunk = next_chunk(case_file)
             for row in chunk:
                 col = row.split()
                 if len(col) != 3:
-                    raise Exception("Invalid number of columns in summary data: {}".format(row))
-                self._x_sm.append(float(col[0]))
-                self._U_e_sm.append(float(col[1]))
-                self._dU_edx_sm.append(float(col[2]))
+                    raise Exception("Invalid number of columns in summary "
+                                    "data: {}".format(row))
+                tmp0 = float(col[0])
+                tmp1 = float(col[1])
+                tmp2 = float(col[2])
+                if not si_unit:
+                    tmp0 = tmp0*_FOOT_TO_METER
+                    tmp1 = tmp1*_FOOT_TO_METER
+                
+                self._x_sm.append(tmp0)
+                self._U_e_sm.append(tmp1)
+                self._dU_edx_sm.append(tmp2)
             
             # read the x-station data
             chunk = next_chunk(case_file)
+            
+            # Note: Use unit conversion flag
     
     def num_stations(self):
         return len(self._station)
