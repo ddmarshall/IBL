@@ -141,10 +141,10 @@ class IBLBase(ABC):
             Representation of the edge velocity to be used in analysis
         dU_edx : None, 2-tuple of array-like, or function-like, optional
             Representation of the first derivative of the edge velocity to be
-            used in analysis. The default is None.
+            used in analysis. The default is `None`.
         d2U_edx2 : None or function-like, optional
             Representationa of the second derivative of the edge velocity to
-            be used in analysis. The default is None.
+            be used in analysis. The default is `None`.
         
         Raises
         ------
@@ -250,7 +250,7 @@ class IBLBase(ABC):
         atol: float, optional
             Absolute tolerance for integration scheme. The default is 1e-11.
         term_event: List of classes based on :class:`IBLTermEventBase`, optional
-            Additional termination events. The default is None.
+            Additional termination events. The default is `None`.
             
         Notes
         -----

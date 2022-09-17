@@ -105,7 +105,7 @@ class HeadMethod(IBLBase):
         ----------
         term_event : List of classes based on :class:`IBLTermEventBase`, optional
             User events that can terminate the integration process before the
-            end location of the integration is reached. The default is None.
+            end location of the integration is reached. The default is `None`.
             
         Returns
         -------
