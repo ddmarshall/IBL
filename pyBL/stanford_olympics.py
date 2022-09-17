@@ -1,9 +1,14 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Created on Wed Aug 24 16:45:17 2022
+Classes needed to for the 1968 Stanford Turbulence Olympics data.
 
-@author: ddmarshall
+The 1968 Stanford Turbulence Olympics is the informal name for the Computation
+of Turbulent Boundary Layers AFOSR-IFP-Stanford Conference that met in 1968.
+The proceedings are a two volume set with volume I dedicated to the numerical
+methods used to predict the turbulent boundary layer behavior. Volume II is
+a currated collection of high quality experimental data of a wide variety of
+turbulent boundary layer flows.
 """
 
 import pyBL
@@ -18,40 +23,95 @@ _INCH_TO_METER = 1/_METER_TO_INCH
 
 class StanfordOlympics1968:
     """
+    Interface to 1958 Stanford Olympics data.
+    
     This class is an interface to the data from the Proceedings of the
     Computation of Turbulent Boundary Layers AFOSR-IFP-Stanford Conference in
-    1968, also referred to the 1968 Stanford Olympics. The data comes from 
-    volume II and comes from a variety of cases that were used as reference
-    data.
+    1968, also referred to the 1968 Stanford Olympics. The data comes from
+    volume II and is a compilation of a variety of cases that were used as
+    reference data.
+    
+    The experimental data consists of a number of measurements from the
+    boundary layer at variety of streamwise stations along the flow. These
+    measurements are both surface properties, boundary layer edge properties,
+    and measurements throughout the boundary layer between the surface and
+    the boundary layer edge.
+    
+    While the original reference data is a mixture of English and SI units,
+    this class provides all data in SI units.
     
     Attributes
     ----------
-        case: Case number
-        nu: Kinematic viscosity
-        _station: Data at each station
-        
-        _x_sm: Smoothed plot x-location
-        _U_e_sm: Smoothed edge velocity
-        _dU_edx: Smoothed change in edge velocity
-        
-        See page ix of proceedings for precise definition of each term
+    case: string
+        Four digit number corresponding to the case that the data come from.
+    nu: float
+        Kinematic viscosity in [m^2/s] for the case.
+    
+    Notes
+    -----
+    See page ix of proceedings for precise definition of each term.
     """
+    
+    # Attributes
+    # ----------
+    #_station: Data at each station
+    #_x_sm: Smoothed plot x-location
+    #_U_e_sm: Smoothed edge velocity
+    #_dU_edx: Smoothed change in edge velocity
     class StationData:
         """
         This class is the data that is reported for each station in flow.
         
+        This class is initialized with the row data associated with the
+        summary table and a flag indicating whether the case is in SI units.
+        
         Attributes
         ----------
-            U_e: Edge velocity
-            dU_edx: Change in edge velocity
-            delta_m: Momentum thickness
-            H_d: Displacement shape factor
-            H_k: Kinetic energy shape factor
-            G: Equilibrium shape factor
-            c_f: Skin friction coefficient
-            c_f_LT: Skin friction coefficient from Ludwieg-Tillman formula
-            c_f_E: Skin friction coefficient reported by data originator
-            beta: Equilibrium parameter
+        U_e: float
+            Edge velocity in [m/s] at this station.
+        dU_edx: float
+            Rate of change in edge velocity in [1/s] at this station.
+        delta_m: float
+            Momentum thickness in [m] at this station.
+        H_d: float
+            Displacement shape factor at this station.
+        H_k: float
+            Kinetic energy shape factor at this station.
+        G: float
+            Equilibrium shape factor at this station.
+        c_f: float
+            Skin friction coefficient at this station.
+        c_f_LT: float
+            Skin friction coefficient from Ludwieg-Tillman formula.
+        c_f_E: float
+            Skin friction coefficient reported by data originator.
+        beta: float
+            Equilibrium parameter at this station.
+        u_star: float
+            Wall shear velocity in [m/s] at this station.
+        delta_d: float
+            Displacement thickness in [m] at this station.
+        delta_k: float
+            Kinetic energy thickness in [m] at this station.
+        delta_c: float
+            Clauser thickness in [m] at this station.
+        Re_delta_m: float
+            Momentum thickness Reynolds number at this station.
+        Re_delta_d: float
+            Displacement thickness Reynolds number at this station.
+        y_plus: array-like
+            Non-dimensionalized turbulence distances from surface at this
+            station.
+        u_plus: array-like
+            Non-dimensionalized turbulence local velocities at this station.
+        y: array-like
+            Distances from surface in [m] at this station.
+        u_on_Ue: array-like
+            Non-dimensionalized relative local velocities at this station.
+        y_on_delta_c: array-like
+            Non-dimensionalized distances from surface at this station.
+        udef: array-like
+            Defect velocity at this station.
         """
         def __init__(self, row, si_unit):
             col = row.split()
@@ -105,9 +165,10 @@ class StanfordOlympics1968:
         def __str__(self):
             """
             Return a readable presentation of instance.
-    
+            
             Returns
             -------
+            string
                 Readable string representation of instance.
             """
             strout = "%s:\n" % (self.__class__.__name__)
@@ -125,11 +186,36 @@ class StanfordOlympics1968:
             
             return strout
     
-    
     def __init__(self, case = None):
+        """
+        Initialize class.
+        
+        Parameters
+        ----------
+        case : string, optional
+            String representation of the four digit case number. The default
+            is None.
+        """
         self.change_case_data(case)
     
     def change_case_data(self, case):
+        """
+        Changes the case data that this class stores.
+        
+        This method will either reset the case data to no data if the `case`
+        parameter is `None`, or it will load the specified case from the
+        collection of case files in the library.
+        
+        Parameters
+        ----------
+        case : string
+            String representation of the four digit case number.
+            
+        Raises
+        ------
+        Exception
+            When case file to be read contains invalid data.
+        """
         ## Reset everything
         self.case = ""
         self.nu = 0
@@ -213,90 +299,244 @@ class StanfordOlympics1968:
             # Note: Use unit conversion flag
     
     def num_stations(self):
+        """
+        Returns the number of stations for this case.
+        
+        Returns
+        -------
+        int
+            Number of stations for this case.
+        """
         return len(self._station)
     
     def station(self, i):
+        """
+        Returns the station class for the specified station.
+
+        Parameters
+        ----------
+        i : int
+            Particular station that the information is wanted.
+
+        Returns
+        -------
+        StationData
+            The entire data for this desired station.
+
+        """
         return self._station[i]
     
     def velocity(self):
+        """
+        Return 3-tuple with x positions, edge velocities, and rates of change
+        of the edge velocity.
+        
+        Returns
+        -------
+        x: array-like
+            Streamwise coordinate of edge velocities.
+        U_e: array-like
+            Edge velocities.
+        dU_edx: array-like
+            Rates of change of the edge velocity.
+        """
         return self.x(), self.U_e(), self.dU_edx()
     
     def velocity_smooth(self):
+        """
+        Return 3-tuple with x positions, smoothed edge velocities, and smoothed
+        rates of change of the edge velocity.
+        
+        Returns
+        -------
+        x: array-like
+            Streamwise coordinate of smoothed edge velocities.
+        U_e: array-like
+            Smoothed edge velocities.
+        dU_edx: array-like
+            Smoothed rates of change of the edge velocity.
+        """
         return self._x_sm, self._U_e_sm, self._dU_edx_sm
     
     def x(self):
+        """
+        Streamwise locations of each station.
+        
+        Returns
+        -------
+        x : array-like
+            Streamwise locations of each station.
+        """
         x = []
         for s in self._station:
             x.append(s.x)
         return x
     
     def U_e(self):
+        """
+        Edge velocity at each station.
+        
+        Returns
+        -------
+        U_e : array-like
+            Edge velocity at each station.
+        """
         U_e = []
         for s in self._station:
             U_e.append(s.U_e)
         return U_e
         
     def dU_edx(self):
+        """
+        Rates of change of the edge velocity at each station.
+        
+        Returns
+        -------
+        dU_edx : array-like
+            Rates of change of the edge velocity at each station.
+        """
         dU_edx = []
         for s in self._station:
             dU_edx.append(s.dU_edx)
         return dU_edx
         
     def delta_d(self):
+        """
+        Displacement thickness at each station.
+        
+        Returns
+        -------
+        delta_d : array-like
+            Displacement thickness at each station.
+        """
         delta_d = []
         for s in self._station:
             delta_d.append(s.H_d*s.delta_m)
         return delta_d
     
     def delta_m(self):
+        """
+        Momentum thickness at each station.
+        
+        Returns
+        -------
+        delta_m : array-like
+            Momentum thickness at each station.
+        """
         delta_m = []
         for s in self._station:
             delta_m.append(s.delta_m)
         return delta_m
     
     def delta_k(self):
+        """
+        Kinetic energy thickness at each station.
+        
+        Returns
+        -------
+        delta_k : array-like
+            Kinetic energy thickness at each station.
+        """
         delta_k = []
         for s in self._station:
             delta_k.append(s.H_k*s.delta_m)
         return delta_k
     
     def H_d(self):
+        """
+        Displacement shape factor at each station.
+        
+        Returns
+        -------
+        H_d : array-like
+            Displacement shape factor at each station.
+        """
         H_d = []
         for s in self._station:
             H_d.append(s.H_d)
         return H_d
     
     def H_k(self):
+        """
+        Kinetic energy shape factor at each station.
+        
+        Returns
+        -------
+        H_d : array-like
+            Kinetic energy shape factor at each station.
+        """
         H_k = []
         for s in self._station:
             H_k.append(s.H_k)
         return H_k
     
     def G(self):
+        """
+        Equilibrium shape factor at each station.
+        
+        Returns
+        -------
+        H_d : array-like
+            Equilibrium shape factor at each station.
+        """
         G = []
         for s in self._station:
             G.append(s.G)
         return G
     
     def c_f(self):
+        """
+        Calculated skin friction coefficient at each station.
+        
+        Returns
+        -------
+        c_f : array-like
+            Calculated skin friction coefficient at each station.
+        """
         c_f = []
         for s in self._station:
             c_f.append(s.c_f)
         return c_f
     
     def c_f_LT(self):
+        """
+        Skin friction coefficient obtained from the Ludwieg-Tillman formula at
+        each station.
+        
+        Returns
+        -------
+        c_f_LT : array-like
+            Skin friction coefficient obtained from the Ludwieg-Tillman
+            formula at each station.
+        """
         c_f_LT = []
         for s in self._station:
             c_f_LT.append(s.c_f_LT)
         return c_f_LT
     
     def c_f_E(self):
+        """
+        Original reported skin friction coefficient at each station.
+        
+        Returns
+        -------
+        c_f_E : array-like
+            Original reported skin friction coefficient at each station.
+        """
         c_f_E = []
         for s in self._station:
             c_f_E.append(s.c_f_E)
         return c_f_E
     
     def beta(self):
+        """
+        Equilibrium parameter at each station.
+        
+        Returns
+        -------
+        beta : array-like
+            Equilibrium parameter at each station.
+        """
         beta = []
         for s in self._station:
             beta.append(s.beta)
