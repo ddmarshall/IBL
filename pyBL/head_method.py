@@ -138,12 +138,12 @@ class HeadMethod(IBLBase):
     
     def delta_d(self, x):
         """
-        Calculate the displacement thickness
+        Calculate the displacement thickness.
         
         Parameters
         ----------
         x: array-like
-            Streamwise loations to calculate this property
+            Streamwise loations to calculate this property.
         
         Returns
         -------
@@ -154,12 +154,12 @@ class HeadMethod(IBLBase):
     
     def delta_m(self, x):
         """
-        Calcualte the momentum thickness
+        Calculate the momentum thickness.
         
         Parameters
         ----------
         x: array-like
-            Streamwise loations to calculate this property
+            Streamwise loations to calculate this property.
         
         Returns
         -------
@@ -170,12 +170,12 @@ class HeadMethod(IBLBase):
     
     def delta_k(self, x):
         """
-        Calcualte the kinetic energy thickness
+        Calculate the kinetic energy thickness.
         
         Parameters
         ----------
         x: array-like
-            Streamwise loations to calculate this property
+            Streamwise loations to calculate this property.
         
         Returns
         -------
@@ -186,12 +186,12 @@ class HeadMethod(IBLBase):
     
     def H_d(self, x):
         """
-        Calculate the displacement shape factor
+        Calculate the displacement shape factor.
         
         Parameters
         ----------
         x: array-like
-            Streamwise loations to calculate this property
+            Streamwise loations to calculate this property.
         
         Returns
         -------
@@ -202,12 +202,12 @@ class HeadMethod(IBLBase):
     
     def H_k(self, x):
         """
-        Calculate the kinetic energy shape factor
+        Calculate the kinetic energy shape factor.
         
         Parameters
         ----------
         x: array-like
-            Streamwise loations to calculate this property
+            Streamwise loations to calculate this property.
         
         Returns
         -------
@@ -218,14 +218,14 @@ class HeadMethod(IBLBase):
     
     def tau_w(self, x, rho):
         """
-        Calculate the wall shear stress
+        Calculate the wall shear stress.
         
         Parameters
         ----------
         x: array-like
-            Streamwise loations to calculate this property
+            Streamwise loations to calculate this property.
         rho: float
-            Freestream density
+            Freestream density.
         
         Returns
         -------

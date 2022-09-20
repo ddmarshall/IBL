@@ -457,7 +457,7 @@ class IBLBase(ABC):
     @abstractmethod
     def delta_m(self, x):
         """
-        Calcualte the momentum thickness.
+        Calculate the momentum thickness.
         
         Parameters
         ----------
@@ -474,7 +474,7 @@ class IBLBase(ABC):
     @abstractmethod
     def delta_k(self, x):
         """
-        Calcualte the kinetic energy thickness.
+        Calculate the kinetic energy thickness.
         
         Parameters
         ----------

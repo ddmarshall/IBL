@@ -308,7 +308,8 @@ class TestLinearThwaites(unittest.TestCase):
         
         # test with spline of tabular data
         tm = ThwaitesMethodLinear(U_e = U_e_fun, dU_edx = dU_edx_fun,
-                                  d2U_edx2 = d2U_edx2_fun, data_fits = "Spline")
+                                  d2U_edx2 = d2U_edx2_fun,
+                                  data_fits = "Spline")
         tm_ref = ThwaitesLinearAnalytic(U_ref, m, nu, tm._model.H, tm._model.S)
         tm.set_solution_parameters(x0 = x[0], x_end = x[-1],
                                    delta_m0 = tm_ref.delta_m(x[0]), nu = nu)
@@ -317,8 +318,10 @@ class TestLinearThwaites(unittest.TestCase):
         self.assertEqual(rtn.status, 0)
         self.assertEqual(rtn.message, "Completed")
         self.assertEqual(rtn.x_end, x[-1])
-        self.assertIsNone(npt.assert_allclose(tm.delta_d(x), tm_ref.delta_d(x)))
-        self.assertIsNone(npt.assert_allclose(tm.delta_m(x), tm_ref.delta_m(x)))
+        self.assertIsNone(npt.assert_allclose(tm.delta_d(x),
+                                              tm_ref.delta_d(x)))
+        self.assertIsNone(npt.assert_allclose(tm.delta_m(x),
+                                              tm_ref.delta_m(x)))
         self.assertIsNone(npt.assert_allclose(tm.H_d(x), tm_ref.H_d(x)))
         self.assertIsNone(npt.assert_allclose(tm.tau_w(x, rho),
                                               tm_ref.tau_w(x, rho)))
@@ -335,8 +338,10 @@ class TestLinearThwaites(unittest.TestCase):
         self.assertEqual(rtn.status, 0)
         self.assertEqual(rtn.message, "Completed")
         self.assertEqual(rtn.x_end, x[-1])
-        self.assertIsNone(npt.assert_allclose(tm.delta_d(x), tm_ref.delta_d(x)))
-        self.assertIsNone(npt.assert_allclose(tm.delta_m(x), tm_ref.delta_m(x)))
+        self.assertIsNone(npt.assert_allclose(tm.delta_d(x),
+                                              tm_ref.delta_d(x)))
+        self.assertIsNone(npt.assert_allclose(tm.delta_m(x),
+                                              tm_ref.delta_m(x)))
         self.assertIsNone(npt.assert_allclose(tm.H_d(x), tm_ref.H_d(x)))
         self.assertIsNone(npt.assert_allclose(tm.tau_w(x, rho),
                                               tm_ref.tau_w(x, rho)))
@@ -354,8 +359,10 @@ class TestLinearThwaites(unittest.TestCase):
         self.assertEqual(rtn.status, 0)
         self.assertEqual(rtn.message, "Completed")
         self.assertEqual(rtn.x_end, x[-1])
-        self.assertIsNone(npt.assert_allclose(tm.delta_d(x), tm_ref.delta_d(x)))
-        self.assertIsNone(npt.assert_allclose(tm.delta_m(x), tm_ref.delta_m(x)))
+        self.assertIsNone(npt.assert_allclose(tm.delta_d(x),
+                                              tm_ref.delta_d(x)))
+        self.assertIsNone(npt.assert_allclose(tm.delta_m(x),
+                                              tm_ref.delta_m(x)))
         self.assertIsNone(npt.assert_allclose(tm.H_d(x), tm_ref.H_d(x)))
         self.assertIsNone(npt.assert_allclose(tm.tau_w(x, rho),
                                               tm_ref.tau_w(x, rho)))
@@ -384,8 +391,10 @@ class TestLinearThwaites(unittest.TestCase):
         self.assertEqual(rtn.status, 0)
         self.assertEqual(rtn.message, "Completed")
         self.assertEqual(rtn.x_end, x[-1])
-        self.assertIsNone(npt.assert_allclose(tm.delta_d(x), tm_ref.delta_d(x)))
-        self.assertIsNone(npt.assert_allclose(tm.delta_m(x), tm_ref.delta_m(x)))
+        self.assertIsNone(npt.assert_allclose(tm.delta_d(x),
+                                              tm_ref.delta_d(x)))
+        self.assertIsNone(npt.assert_allclose(tm.delta_m(x),
+                                              tm_ref.delta_m(x)))
         self.assertIsNone(npt.assert_allclose(tm.H_d(x), tm_ref.H_d(x)))
         self.assertIsNone(npt.assert_allclose(tm.tau_w(x, rho),
                                               tm_ref.tau_w(x, rho)))
@@ -403,8 +412,10 @@ class TestLinearThwaites(unittest.TestCase):
         self.assertEqual(rtn.status, 0)
         self.assertEqual(rtn.message, "Completed")
         self.assertEqual(rtn.x_end, x[-1])
-        self.assertIsNone(npt.assert_allclose(tm.delta_d(x), tm_ref.delta_d(x)))
-        self.assertIsNone(npt.assert_allclose(tm.delta_m(x), tm_ref.delta_m(x)))
+        self.assertIsNone(npt.assert_allclose(tm.delta_d(x),
+                                              tm_ref.delta_d(x)))
+        self.assertIsNone(npt.assert_allclose(tm.delta_m(x),
+                                              tm_ref.delta_m(x)))
         self.assertIsNone(npt.assert_allclose(tm.H_d(x), tm_ref.H_d(x)))
         self.assertIsNone(npt.assert_allclose(tm.tau_w(x, rho),
                                               tm_ref.tau_w(x, rho)))
@@ -441,7 +452,8 @@ class TestLinearThwaites(unittest.TestCase):
         
         # test with spline of tabular data
         tm = ThwaitesMethodLinear(U_e = U_e_fun, dU_edx = dU_edx_fun,
-                                  d2U_edx2 = d2U_edx2_fun, data_fits = "Spline")
+                                  d2U_edx2 = d2U_edx2_fun,
+                                  data_fits = "Spline")
         tm_ref = ThwaitesLinearAnalytic(U_ref, m, nu, tm._model.H, tm._model.S)
         tm.set_solution_parameters(x0 = x[0], x_end = x[-1],
                                    delta_m0 = tm_ref.delta_m(x[0]), nu = nu)
@@ -450,8 +462,10 @@ class TestLinearThwaites(unittest.TestCase):
         self.assertEqual(rtn.status, 0)
         self.assertEqual(rtn.message, "Completed")
         self.assertEqual(rtn.x_end, x[-1])
-        self.assertIsNone(npt.assert_allclose(tm.delta_d(x), tm_ref.delta_d(x)))
-        self.assertIsNone(npt.assert_allclose(tm.delta_m(x), tm_ref.delta_m(x)))
+        self.assertIsNone(npt.assert_allclose(tm.delta_d(x),
+                                              tm_ref.delta_d(x)))
+        self.assertIsNone(npt.assert_allclose(tm.delta_m(x),
+                                              tm_ref.delta_m(x)))
         self.assertIsNone(npt.assert_allclose(tm.H_d(x), tm_ref.H_d(x)))
         self.assertIsNone(npt.assert_allclose(tm.tau_w(x, rho),
                                               tm_ref.tau_w(x, rho)))
@@ -468,8 +482,10 @@ class TestLinearThwaites(unittest.TestCase):
         self.assertEqual(rtn.status, 0)
         self.assertEqual(rtn.message, "Completed")
         self.assertEqual(rtn.x_end, x[-1])
-        self.assertIsNone(npt.assert_allclose(tm.delta_d(x), tm_ref.delta_d(x)))
-        self.assertIsNone(npt.assert_allclose(tm.delta_m(x), tm_ref.delta_m(x)))
+        self.assertIsNone(npt.assert_allclose(tm.delta_d(x),
+                                              tm_ref.delta_d(x)))
+        self.assertIsNone(npt.assert_allclose(tm.delta_m(x),
+                                              tm_ref.delta_m(x)))
         self.assertIsNone(npt.assert_allclose(tm.H_d(x), tm_ref.H_d(x)))
         self.assertIsNone(npt.assert_allclose(tm.tau_w(x, rho),
                                               tm_ref.tau_w(x, rho)))
@@ -487,8 +503,10 @@ class TestLinearThwaites(unittest.TestCase):
         self.assertEqual(rtn.status, 0)
         self.assertEqual(rtn.message, "Completed")
         self.assertEqual(rtn.x_end, x[-1])
-        self.assertIsNone(npt.assert_allclose(tm.delta_d(x), tm_ref.delta_d(x)))
-        self.assertIsNone(npt.assert_allclose(tm.delta_m(x), tm_ref.delta_m(x)))
+        self.assertIsNone(npt.assert_allclose(tm.delta_d(x),
+                                              tm_ref.delta_d(x)))
+        self.assertIsNone(npt.assert_allclose(tm.delta_m(x),
+                                              tm_ref.delta_m(x)))
         self.assertIsNone(npt.assert_allclose(tm.H_d(x), tm_ref.H_d(x)))
         self.assertIsNone(npt.assert_allclose(tm.tau_w(x, rho),
                                               tm_ref.tau_w(x, rho)))
@@ -520,7 +538,8 @@ class TestLinearThwaites(unittest.TestCase):
         
         # test with spline of tabular data
         tm = ThwaitesMethodLinear(U_e = U_e_fun, dU_edx = dU_edx_fun,
-                                  d2U_edx2 = d2U_edx2_fun, data_fits = "Spline")
+                                  d2U_edx2 = d2U_edx2_fun,
+                                  data_fits = "Spline")
         tm_ref = ThwaitesLinearAnalytic(U_ref, m, nu, tm._model.H, tm._model.S)
         tm.set_solution_parameters(x0 = x[0], x_end = x[-1],
                                    delta_m0 = tm_ref.delta_m(x[0]), nu = nu)
@@ -529,8 +548,10 @@ class TestLinearThwaites(unittest.TestCase):
         self.assertEqual(rtn.status, 0)
         self.assertEqual(rtn.message, "Completed")
         self.assertEqual(rtn.x_end, x[-1])
-        self.assertIsNone(npt.assert_allclose(tm.delta_d(x), tm_ref.delta_d(x)))
-        self.assertIsNone(npt.assert_allclose(tm.delta_m(x), tm_ref.delta_m(x)))
+        self.assertIsNone(npt.assert_allclose(tm.delta_d(x),
+                                              tm_ref.delta_d(x)))
+        self.assertIsNone(npt.assert_allclose(tm.delta_m(x),
+                                              tm_ref.delta_m(x)))
         self.assertIsNone(npt.assert_allclose(tm.H_d(x), tm_ref.H_d(x)))
         self.assertIsNone(npt.assert_allclose(tm.tau_w(x, rho),
                                               tm_ref.tau_w(x, rho)))
@@ -547,8 +568,10 @@ class TestLinearThwaites(unittest.TestCase):
         self.assertEqual(rtn.status, 0)
         self.assertEqual(rtn.message, "Completed")
         self.assertEqual(rtn.x_end, x[-1])
-        self.assertIsNone(npt.assert_allclose(tm.delta_d(x), tm_ref.delta_d(x)))
-        self.assertIsNone(npt.assert_allclose(tm.delta_m(x), tm_ref.delta_m(x)))
+        self.assertIsNone(npt.assert_allclose(tm.delta_d(x),
+                                              tm_ref.delta_d(x)))
+        self.assertIsNone(npt.assert_allclose(tm.delta_m(x),
+                                              tm_ref.delta_m(x)))
         self.assertIsNone(npt.assert_allclose(tm.H_d(x), tm_ref.H_d(x)))
         self.assertIsNone(npt.assert_allclose(tm.tau_w(x, rho),
                                               tm_ref.tau_w(x, rho)))
@@ -566,8 +589,10 @@ class TestLinearThwaites(unittest.TestCase):
         self.assertEqual(rtn.status, 0)
         self.assertEqual(rtn.message, "Completed")
         self.assertEqual(rtn.x_end, x[-1])
-        self.assertIsNone(npt.assert_allclose(tm.delta_d(x), tm_ref.delta_d(x)))
-        self.assertIsNone(npt.assert_allclose(tm.delta_m(x), tm_ref.delta_m(x)))
+        self.assertIsNone(npt.assert_allclose(tm.delta_d(x),
+                                              tm_ref.delta_d(x)))
+        self.assertIsNone(npt.assert_allclose(tm.delta_m(x),
+                                              tm_ref.delta_m(x)))
         self.assertIsNone(npt.assert_allclose(tm.H_d(x), tm_ref.H_d(x)))
         self.assertIsNone(npt.assert_allclose(tm.tau_w(x, rho),
                                               tm_ref.tau_w(x, rho)))
@@ -599,7 +624,8 @@ class TestLinearThwaites(unittest.TestCase):
         
         # test with spline of tabular data
         tm = ThwaitesMethodLinear(U_e = U_e_fun, dU_edx = dU_edx_fun,
-                                  d2U_edx2 = d2U_edx2_fun, data_fits = "Spline")
+                                  d2U_edx2 = d2U_edx2_fun,
+                                  data_fits = "Spline")
         tm_ref = ThwaitesLinearAnalytic(U_ref, m, nu, tm._model.H, tm._model.S)
         tm.set_solution_parameters(x0 = x[0], x_end = x[-1],
                                    delta_m0 = tm_ref.delta_m(x[0]), nu = nu)
@@ -608,8 +634,10 @@ class TestLinearThwaites(unittest.TestCase):
         self.assertEqual(rtn.status, 0)
         self.assertEqual(rtn.message, "Completed")
         self.assertEqual(rtn.x_end, x[-1])
-        self.assertIsNone(npt.assert_allclose(tm.delta_d(x), tm_ref.delta_d(x)))
-        self.assertIsNone(npt.assert_allclose(tm.delta_m(x), tm_ref.delta_m(x)))
+        self.assertIsNone(npt.assert_allclose(tm.delta_d(x),
+                                              tm_ref.delta_d(x)))
+        self.assertIsNone(npt.assert_allclose(tm.delta_m(x),
+                                              tm_ref.delta_m(x)))
         self.assertIsNone(npt.assert_allclose(tm.H_d(x), tm_ref.H_d(x)))
         self.assertIsNone(npt.assert_allclose(tm.tau_w(x, rho),
                                               tm_ref.tau_w(x, rho)))
@@ -626,8 +654,10 @@ class TestLinearThwaites(unittest.TestCase):
         self.assertEqual(rtn.status, 0)
         self.assertEqual(rtn.message, "Completed")
         self.assertEqual(rtn.x_end, x[-1])
-        self.assertIsNone(npt.assert_allclose(tm.delta_d(x), tm_ref.delta_d(x)))
-        self.assertIsNone(npt.assert_allclose(tm.delta_m(x), tm_ref.delta_m(x)))
+        self.assertIsNone(npt.assert_allclose(tm.delta_d(x),
+                                              tm_ref.delta_d(x)))
+        self.assertIsNone(npt.assert_allclose(tm.delta_m(x),
+                                              tm_ref.delta_m(x)))
         self.assertIsNone(npt.assert_allclose(tm.H_d(x), tm_ref.H_d(x)))
         self.assertIsNone(npt.assert_allclose(tm.tau_w(x, rho),
                                               tm_ref.tau_w(x, rho)))
@@ -645,8 +675,10 @@ class TestLinearThwaites(unittest.TestCase):
         self.assertEqual(rtn.status, 0)
         self.assertEqual(rtn.message, "Completed")
         self.assertEqual(rtn.x_end, x[-1])
-        self.assertIsNone(npt.assert_allclose(tm.delta_d(x), tm_ref.delta_d(x)))
-        self.assertIsNone(npt.assert_allclose(tm.delta_m(x), tm_ref.delta_m(x)))
+        self.assertIsNone(npt.assert_allclose(tm.delta_d(x),
+                                              tm_ref.delta_d(x)))
+        self.assertIsNone(npt.assert_allclose(tm.delta_m(x),
+                                              tm_ref.delta_m(x)))
         self.assertIsNone(npt.assert_allclose(tm.H_d(x), tm_ref.H_d(x)))
         self.assertIsNone(npt.assert_allclose(tm.tau_w(x, rho),
                                               tm_ref.tau_w(x, rho)))
