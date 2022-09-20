@@ -8,7 +8,6 @@ Created on Tue Aug 23 14:51:51 2022
 import unittest
 import numpy as np
 import numpy.testing as npt
-from scipy.misc import derivative as fd
 
 from pyBL.head_method import HeadMethod
 
@@ -54,10 +53,10 @@ class TestHeadMethod(unittest.TestCase):
         self.assertIsNone(npt.assert_allclose(H_d, H_d_ref))
         
         ## test for invalid values
-        with self.assertRaises(ValueError):
-            HeadMethod._H1(1.1)
-        with self.assertRaises(ValueError):
-            HeadMethod._H_d(3.322)
+        self.assertIsNone(npt.assert_allclose(HeadMethod._H1(1.1),
+                                              HeadMethod._H1(1.1001)))
+        self.assertIsNone(npt.assert_allclose(HeadMethod._H_d(3.3),
+                                              HeadMethod._H_d(3.323)))
     
     def testEntrainmentVelocityCalculation(self):
         ## test calculation of term
@@ -72,35 +71,8 @@ class TestHeadMethod(unittest.TestCase):
         self.assertIsNone(npt.assert_allclose(Eterm, Eterm_ref))
         
         ## test invalid values
-        with self.assertRaises(ValueError):
-            HeadMethod._S(3)
-    
-# I don't think this will work because c_f needs momentum Reynolds number with 
-# requires edge velocity, and edge velocity 
-#    def testSkinFrictionCalculation(self):
-#        nu = 1e-5
-#        U_e = 10
-#        H_d_range = [1.2, 3.4]
-#        Re_delta_m_range = [1e2, 1e5]
-#        
-#        ## calculate range of displacement shape parameter
-#        Re_delta_m = np.average(Re_delta_m_range);
-#        H_d = np.linspace(H_d_range[0], H_d_range[-1])
-#        c_f_ref = c_f_LudwiegTillman(Re_delta_m, H_d)
-#        H1 = HeadMethod._H1(H_d)
-#        delta_m = Re_delta_m*nu/U_e
-#        c_f = HeadMethod._c_f(delta_m, H1)
-#        
-#        self.assertIsNone(npt.assert_allclose(c_f_ref, c_f))
-#        
-#        ## calculate range of Reynolds number
-#        Re_delta_m = np.logspace(np.log10(Re_delta_m_range[0]),
-#                                 np.log10(Re_delta_m_range[-1]));
-#        H_d = np.average(H_d_range)
-#        c_f_ref = fun(Re_delta_m, H_d)
-#        c_f = c_f_LudwiegTillman(Re_delta_m, H_d)
-#        self.assertIsNone(npt.assert_allclose(c_f_ref, c_f))
-#        pass
+        self.assertIsNone(npt.assert_allclose(HeadMethod._S(3),
+                                              HeadMethod._S(3.001)))
 
 
 if (__name__ == "__main__"):
