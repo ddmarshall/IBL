@@ -317,6 +317,26 @@ class ThwaitesMethodBase(IBLBase):
         lam = self._calc_lambda(x, self._solution(x)[0])
         return rho*self._nu*self.U_e(x)*self._model.S(lam)/self.delta_m(x)
     
+    def D(self, x, rho):
+        """
+        Calculate the dissipation integral.
+        
+        Parameters
+        ----------
+        x: array-like
+            Streamwise loations to calculate this property.
+        rho: float
+            Freestream density.
+        
+        Returns
+        -------
+        array-like same shape as `x`
+            Desired dissipation integral at the specified locations.
+        """
+        # To Do: This needs to be implemented
+        raise NotImplementedError("This method needs to be implemented.")
+        return np.zeros_like(x)
+    
     def _ode_impl(self, x, delta_m2_on_nu):
         """
         This is the right-hand-side of the ODE representing Thwaites method.
@@ -492,19 +512,15 @@ class _ThwaitesFunctionsBase:
         return self._range[0], self._range[1]
     
     def H(self, lam):
-        self._check_range(lam)
-        return self._H_fun(lam)
+        return self._H_fun(self._check_range(lam))
     
     def Hp(self, lam):
-        self._check_range(lam)
-        return self._Hp_fun(lam)
+        return self._Hp_fun(self._check_range(lam))
     
     def S(self, lam):
-        self._check_range(lam)
-        return self._S_fun(lam)
+        return self._S_fun(self._check_range(lam))
     
     def F(self, lam):
-        self._check_range(lam)
         return 2*(self.S(lam)-lam*(self.H(lam)+2))
     
     def get_name(self):
@@ -512,15 +528,17 @@ class _ThwaitesFunctionsBase:
     
     def _check_range(self, lam):
         lam_min, lam_max = self.range()
+        lam_local = np.array(lam)
         
-        if (np.array(lam) < lam_min).any():
-            lam[lam < lam_min] = lam_min
+        if (lam_local < lam_min).any():
+            lam_local[lam_local < lam_min] = lam_min
 #            raise ValueError("Cannot pass value less than {} into this "
 #                             "function: {}".format(lam_min, lam))
-        elif (np.array(lam) > lam_max).any():
-            lam[lam > lam_max] = lam_max
+        elif (lam_local > lam_max).any():
+            lam_local[lam_local > lam_max] = lam_max
 #            raise ValueError("Cannot pass value greater than {} into this "
 #                             "function: {}".format(lam_max, lam))
+        return lam_local
 
 
 class _ThwaitesFunctionsWhite(_ThwaitesFunctionsBase):

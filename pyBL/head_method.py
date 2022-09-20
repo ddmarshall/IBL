@@ -240,6 +240,26 @@ class HeadMethod(IBLBase):
         c_f = c_f_fun(Re_delta_m, H_d)
         return 0.5*rho*U_e**2*c_f
     
+    def D(self, x, rho):
+        """
+        Calculate the dissipation integral.
+        
+        Parameters
+        ----------
+        x: array-like
+            Streamwise loations to calculate this property.
+        rho: float
+            Freestream density.
+        
+        Returns
+        -------
+        array-like same shape as `x`
+            Desired dissipation integral at the specified locations.
+        """
+        # To Do: This needs to be implemented
+        raise NotImplementedError("This method needs to be implemented.")
+        return np.zeros_like(x)
+    
     def _ode_impl(self, x, y):
         """
         This is the right-hand-side of the ODE representing Head's method.
@@ -296,9 +316,9 @@ class HeadMethod(IBLBase):
     
     @staticmethod
     def _H1p(H_d):
-        H_d = np.asarray(H_d)
-        if (H_d <= 1.1).any():
-            H_d[H_d <= 1.1] = 1.1001
+        H_d_local = np.asarray(H_d)
+        if (H_d_local <= 1.1).any():
+            H_d_local[H_d_local <= 1.1] = 1.1001
 #            raise ValueError("Cannot pass displacement shape factor less than "
 #                             "1.1: {}".format(np.amin(H_d)))
         def H1_low(H_d):
@@ -311,14 +331,16 @@ class HeadMethod(IBLBase):
             b = 0.6778
             c = 3.064
             return -a*c/(H_d - b)**(c+1)
-        return np.piecewise(H_d, [H_d<=1.6, H_d>1.6], [H1_low, H1_high])
+        return np.piecewise(H_d_local, [H_d_local<=1.6, H_d_local>1.6],
+                            [H1_low, H1_high])
     
     @staticmethod
     def _H_d(H1):
-        H1 = np.asarray(H1)
-        if (H1 <= 3.32254659218600974).any():
-            raise ValueError("Cannot pass entrainment shape factor less than "
-                             "3.323: {}".format(np.amin(H1)))
+        H1_local = np.asarray(H1)
+        if (H1_local <= 3.32254659218600974).any():
+            H1_local[H1_local <= 3.32254659218600974] = 3.323
+#            raise ValueError("Cannot pass entrainment shape factor less than "
+#                             "3.323: {}".format(np.amin(H1)))
         def H_d_low(H1):
             a = 1.5501
             b = 0.6778
@@ -332,17 +354,17 @@ class HeadMethod(IBLBase):
             d = 3.3
             return b + (a/(H1 - d))**(1/c)
         H1_break = HeadMethod._H1(1.6)
-        return np.piecewise(H1, [H1<=H1_break, H1>H1_break],
+        return np.piecewise(H1_local, [H1_local<=H1_break, H1_local>H1_break],
                             [H_d_low, H_d_high])
     
     @staticmethod
     def _S(H1):
-        H1 = np.asarray(H1)
-        if (H1 <= 3).any():
-            H1[H1 <= 3] = 3.001
+        H1_local = np.asarray(H1, float)
+        if (H1_local <= 3).any():
+            H1_local[H1_local <= 3] = 3.001
 #            raise ValueError("Cannot pass entrainment shape factor less than "
 #                             " 3: {}".format(np.amin(H1)))
-        return 0.0306/(H1-3)**0.6169
+        return 0.0306/(H1_local-3)**0.6169
 
 
 class _HeadSeparationEvent(IBLTermEventBase):

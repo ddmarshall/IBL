@@ -90,9 +90,9 @@ class TestCurveFits(unittest.TestCase):
             S[i] = S_fun(l)
         self.assertIsNone(npt.assert_allclose(S, white.S(lam)))
         
-        ## check to make sure raises error when asked for out of range data
-        with self.assertRaises(ValueError):
-            white.S(2*lam_min)
+        # check to make sure does not calculate outside of range
+        self.assertIsNone(npt.assert_allclose(white.S(lam_min),
+                                              white.S(2*lam_min)))
         
         ## test H function
         def H_fun(lam):
@@ -105,9 +105,9 @@ class TestCurveFits(unittest.TestCase):
             H[i] = H_fun(l)
         self.assertIsNone(npt.assert_allclose(H, white.H(lam)))
         
-        ## check to make sure raises error when asked for out of range data
-        with self.assertRaises(ValueError):
-            white.H(2*lam_min)
+        # check to make sure does not calculate outside of range
+        self.assertIsNone(npt.assert_allclose(white.H(lam_min),
+                                              white.H(2*lam_min)))
         
         ## test H' function
         Hp=np.zeros_like(lam)
@@ -116,9 +116,9 @@ class TestCurveFits(unittest.TestCase):
             Hp[i] = fd(H_fun, l, l*delta, n=1, order=3)
         self.assertIsNone(npt.assert_allclose(Hp, white.Hp(lam)))
         
-        ## check to make sure raises error when asked for out of range data
-        with self.assertRaises(ValueError):
-            white.Hp(2*lam_min)
+        # check to make sure does not calculate outside of range
+        self.assertIsNone(npt.assert_allclose(white.H(lam_min),
+                                              white.H(2*lam_min)))
     
     def test_cebeci_bradshaw_functions(self):
         
@@ -145,11 +145,9 @@ class TestCurveFits(unittest.TestCase):
             S[i] = S_fun(l)
         self.assertIsNone(npt.assert_allclose(S, cb.S(lam)))
         
-        # check to make sure raises error when asked for out of range data
-        with self.assertRaises(ValueError):
-            cb.S(2*lam_min)
-        with self.assertRaises(ValueError):
-            cb.S(2*lam_max)
+        # check to make sure does not calculate outside of range
+        self.assertIsNone(npt.assert_allclose(cb.S(lam_min), cb.S(2*lam_min)))
+        self.assertIsNone(npt.assert_allclose(cb.S(lam_max), cb.S(2*lam_max)))
         
         # test H function
         def H_fun(lam):
@@ -164,11 +162,9 @@ class TestCurveFits(unittest.TestCase):
             H[i] = H_fun(l)
         self.assertIsNone(npt.assert_allclose(H, cb.H(lam)))
         
-        # check to make sure raises error when asked for out of range data
-        with self.assertRaises(ValueError):
-            cb.H(2*lam_min)
-        with self.assertRaises(ValueError):
-            cb.H(2*lam_max)
+        # check to make sure does not calculate outside of range
+        self.assertIsNone(npt.assert_allclose(cb.H(lam_min), cb.H(2*lam_min)))
+        self.assertIsNone(npt.assert_allclose(cb.H(lam_max), cb.H(2*lam_max)))
         
         # test H' function
         # NOTE: Since H is discontinuous at 0, so is H' so remove that case
@@ -180,11 +176,11 @@ class TestCurveFits(unittest.TestCase):
         
         self.assertIsNone(npt.assert_allclose(Hp, cb.Hp(lam)))
         
-        # check to make sure raises error when asked for out of range data
-        with self.assertRaises(ValueError):
-            cb.Hp(2*lam_min)
-        with self.assertRaises(ValueError):
-            cb.Hp(2*lam_max)
+        # check to make sure does not calculate outside of range
+        self.assertIsNone(npt.assert_allclose(cb.Hp(lam_min),
+                                              cb.Hp(2*lam_min)))
+        self.assertIsNone(npt.assert_allclose(cb.Hp(lam_max),
+                                              cb.Hp(2*lam_max)))
     
     def test_spline_functions(self):
         
@@ -202,21 +198,21 @@ class TestCurveFits(unittest.TestCase):
         S=self.S_ref
         self.assertIsNone(npt.assert_allclose(S, spline.S(lam)))
         
-        # check to make sure raises error when asked for out of range data
-        with self.assertRaises(ValueError):
-            spline.S(2*lam_min)
-        with self.assertRaises(ValueError):
-            spline.S(2*lam_max)
+        # check to make sure does not calculate outside of range
+        self.assertIsNone(npt.assert_allclose(spline.S(lam_min),
+                                              spline.S(2*lam_min)))
+        self.assertIsNone(npt.assert_allclose(spline.S(lam_max),
+                                              spline.S(2*lam_max)))
         
         # test H function
         H=self.H_ref
         self.assertIsNone(npt.assert_allclose(H, spline.H(lam)))
         
-        # check to make sure raises error when asked for out of range data
-        with self.assertRaises(ValueError):
-            spline.H(2*lam_min)
-        with self.assertRaises(ValueError):
-            spline.H(2*lam_max)
+        # check to make sure does not calculate outside of range
+        self.assertIsNone(npt.assert_allclose(spline.H(lam_min),
+                                              spline.H(2*lam_min)))
+        self.assertIsNone(npt.assert_allclose(spline.H(lam_max),
+                                              spline.H(2*lam_max)))
         
         # test H' function
         # NOTE: cannot evaluate spline H outside of end points, so finite 
@@ -230,11 +226,11 @@ class TestCurveFits(unittest.TestCase):
         
         self.assertIsNone(npt.assert_allclose(Hp, spline.Hp(lam)))
         
-        # check to make sure raises error when asked for out of range data
-        with self.assertRaises(ValueError):
-            spline.Hp(2*lam_min)
-        with self.assertRaises(ValueError):
-            spline.Hp(2*lam_max)
+        # check to make sure does not calculate outside of range
+        self.assertIsNone(npt.assert_allclose(spline.Hp(lam_min),
+                                              spline.Hp(2*lam_min)))
+        self.assertIsNone(npt.assert_allclose(spline.Hp(lam_max),
+                                              spline.Hp(2*lam_max)))
     
     def test_custom_functions(self):
         pass
@@ -319,13 +315,14 @@ class TestLinearThwaites(unittest.TestCase):
         self.assertEqual(rtn.message, "Completed")
         self.assertEqual(rtn.x_end, x[-1])
         self.assertIsNone(npt.assert_allclose(tm.delta_d(x),
-                                              tm_ref.delta_d(x)))
+                                              tm_ref.delta_d(x), rtol=5e-5))
         self.assertIsNone(npt.assert_allclose(tm.delta_m(x),
-                                              tm_ref.delta_m(x)))
+                                              tm_ref.delta_m(x), rtol=5e-5))
         self.assertIsNone(npt.assert_allclose(tm.H_d(x), tm_ref.H_d(x)))
         self.assertIsNone(npt.assert_allclose(tm.tau_w(x, rho),
-                                              tm_ref.tau_w(x, rho)))
-        self.assertIsNone(npt.assert_allclose(tm.U_n(x), tm_ref.U_n(x)))
+                                              tm_ref.tau_w(x, rho), rtol=5e-5))
+        self.assertIsNone(npt.assert_allclose(tm.U_n(x), tm_ref.U_n(x),
+                                              rtol=1e-4))
         
         # test with White fits
         tm = ThwaitesMethodLinear(U_e = U_e_fun, dU_edx = dU_edx_fun,
@@ -339,13 +336,14 @@ class TestLinearThwaites(unittest.TestCase):
         self.assertEqual(rtn.message, "Completed")
         self.assertEqual(rtn.x_end, x[-1])
         self.assertIsNone(npt.assert_allclose(tm.delta_d(x),
-                                              tm_ref.delta_d(x)))
+                                              tm_ref.delta_d(x), rtol=5e-5))
         self.assertIsNone(npt.assert_allclose(tm.delta_m(x),
-                                              tm_ref.delta_m(x)))
+                                              tm_ref.delta_m(x), rtol=5e-5))
         self.assertIsNone(npt.assert_allclose(tm.H_d(x), tm_ref.H_d(x)))
         self.assertIsNone(npt.assert_allclose(tm.tau_w(x, rho),
-                                              tm_ref.tau_w(x, rho)))
-        self.assertIsNone(npt.assert_allclose(tm.U_n(x), tm_ref.U_n(x)))
+                                              tm_ref.tau_w(x, rho), rtol=5e-5))
+        self.assertIsNone(npt.assert_allclose(tm.U_n(x), tm_ref.U_n(x),
+                                              rtol=1e-4))
         
         # test with Cebeci and Bradshaw fits
         tm = ThwaitesMethodLinear(U_e = U_e_fun, dU_edx = dU_edx_fun,
@@ -360,13 +358,14 @@ class TestLinearThwaites(unittest.TestCase):
         self.assertEqual(rtn.message, "Completed")
         self.assertEqual(rtn.x_end, x[-1])
         self.assertIsNone(npt.assert_allclose(tm.delta_d(x),
-                                              tm_ref.delta_d(x)))
+                                              tm_ref.delta_d(x), rtol=5e-5))
         self.assertIsNone(npt.assert_allclose(tm.delta_m(x),
-                                              tm_ref.delta_m(x)))
+                                              tm_ref.delta_m(x), rtol=5e-5))
         self.assertIsNone(npt.assert_allclose(tm.H_d(x), tm_ref.H_d(x)))
         self.assertIsNone(npt.assert_allclose(tm.tau_w(x, rho),
-                                              tm_ref.tau_w(x, rho)))
-        self.assertIsNone(npt.assert_allclose(tm.U_n(x), tm_ref.U_n(x)))
+                                              tm_ref.tau_w(x, rho), rtol=5e-5))
+        self.assertIsNone(npt.assert_allclose(tm.U_n(x), tm_ref.U_n(x),
+                                              rtol=1e-4))
         
         # test creating with own functions for S, H, H'
         def S_fun(lam):
@@ -392,13 +391,14 @@ class TestLinearThwaites(unittest.TestCase):
         self.assertEqual(rtn.message, "Completed")
         self.assertEqual(rtn.x_end, x[-1])
         self.assertIsNone(npt.assert_allclose(tm.delta_d(x),
-                                              tm_ref.delta_d(x)))
+                                              tm_ref.delta_d(x), rtol=5e-5))
         self.assertIsNone(npt.assert_allclose(tm.delta_m(x),
-                                              tm_ref.delta_m(x)))
+                                              tm_ref.delta_m(x), rtol=5e-5))
         self.assertIsNone(npt.assert_allclose(tm.H_d(x), tm_ref.H_d(x)))
         self.assertIsNone(npt.assert_allclose(tm.tau_w(x, rho),
-                                              tm_ref.tau_w(x, rho)))
-        self.assertIsNone(npt.assert_allclose(tm.U_n(x), tm_ref.U_n(x)))
+                                              tm_ref.tau_w(x, rho), rtol=5e-5))
+        self.assertIsNone(npt.assert_allclose(tm.U_n(x), tm_ref.U_n(x),
+                                              rtol=1e-4))
         
         # test creating with own functions for S, H
         tm = ThwaitesMethodLinear(U_e = U_e_fun, dU_edx = dU_edx_fun,
@@ -413,13 +413,14 @@ class TestLinearThwaites(unittest.TestCase):
         self.assertEqual(rtn.message, "Completed")
         self.assertEqual(rtn.x_end, x[-1])
         self.assertIsNone(npt.assert_allclose(tm.delta_d(x),
-                                              tm_ref.delta_d(x)))
+                                              tm_ref.delta_d(x), rtol=5e-5))
         self.assertIsNone(npt.assert_allclose(tm.delta_m(x),
-                                              tm_ref.delta_m(x)))
+                                              tm_ref.delta_m(x), rtol=5e-5))
         self.assertIsNone(npt.assert_allclose(tm.H_d(x), tm_ref.H_d(x)))
         self.assertIsNone(npt.assert_allclose(tm.tau_w(x, rho),
-                                              tm_ref.tau_w(x, rho)))
-        self.assertIsNone(npt.assert_allclose(tm.U_n(x), tm_ref.U_n(x)))
+                                              tm_ref.tau_w(x, rho), rtol=5e-5))
+        self.assertIsNone(npt.assert_allclose(tm.U_n(x), tm_ref.U_n(x),
+                                              rtol=1e-4))
         
         # test creating with invalid name
         with self.assertRaises(ValueError):
@@ -463,13 +464,15 @@ class TestLinearThwaites(unittest.TestCase):
         self.assertEqual(rtn.message, "Completed")
         self.assertEqual(rtn.x_end, x[-1])
         self.assertIsNone(npt.assert_allclose(tm.delta_d(x),
-                                              tm_ref.delta_d(x)))
+                                              tm_ref.delta_d(x), rtol=2e-5))
         self.assertIsNone(npt.assert_allclose(tm.delta_m(x),
-                                              tm_ref.delta_m(x)))
-        self.assertIsNone(npt.assert_allclose(tm.H_d(x), tm_ref.H_d(x)))
+                                              tm_ref.delta_m(x), rtol=2e-5))
+        self.assertIsNone(npt.assert_allclose(tm.H_d(x), tm_ref.H_d(x),
+                                              rtol=3e-6))
         self.assertIsNone(npt.assert_allclose(tm.tau_w(x, rho),
-                                              tm_ref.tau_w(x, rho)))
-        self.assertIsNone(npt.assert_allclose(tm.U_n(x), tm_ref.U_n(x)))
+                                              tm_ref.tau_w(x, rho), rtol=1e-5))
+        self.assertIsNone(npt.assert_allclose(tm.U_n(x), tm_ref.U_n(x),
+                                              rtol=1e-4))
         
         # test with White fits
         tm = ThwaitesMethodLinear(U_e = U_e_fun, dU_edx = dU_edx_fun,
@@ -483,13 +486,15 @@ class TestLinearThwaites(unittest.TestCase):
         self.assertEqual(rtn.message, "Completed")
         self.assertEqual(rtn.x_end, x[-1])
         self.assertIsNone(npt.assert_allclose(tm.delta_d(x),
-                                              tm_ref.delta_d(x)))
+                                              tm_ref.delta_d(x), rtol=2e-5))
         self.assertIsNone(npt.assert_allclose(tm.delta_m(x),
-                                              tm_ref.delta_m(x)))
-        self.assertIsNone(npt.assert_allclose(tm.H_d(x), tm_ref.H_d(x)))
+                                              tm_ref.delta_m(x), rtol=2e-5))
+        self.assertIsNone(npt.assert_allclose(tm.H_d(x), tm_ref.H_d(x),
+                                              rtol=3e-6))
         self.assertIsNone(npt.assert_allclose(tm.tau_w(x, rho),
-                                              tm_ref.tau_w(x, rho)))
-        self.assertIsNone(npt.assert_allclose(tm.U_n(x), tm_ref.U_n(x)))
+                                              tm_ref.tau_w(x, rho), rtol=1e-5))
+        self.assertIsNone(npt.assert_allclose(tm.U_n(x), tm_ref.U_n(x),
+                                              rtol=1e-4))
         
         # test with Cebeci and Bradshaw fits
         tm = ThwaitesMethodLinear(U_e = U_e_fun, dU_edx = dU_edx_fun,
@@ -504,13 +509,15 @@ class TestLinearThwaites(unittest.TestCase):
         self.assertEqual(rtn.message, "Completed")
         self.assertEqual(rtn.x_end, x[-1])
         self.assertIsNone(npt.assert_allclose(tm.delta_d(x),
-                                              tm_ref.delta_d(x)))
+                                              tm_ref.delta_d(x), rtol=2e-5))
         self.assertIsNone(npt.assert_allclose(tm.delta_m(x),
-                                              tm_ref.delta_m(x)))
-        self.assertIsNone(npt.assert_allclose(tm.H_d(x), tm_ref.H_d(x)))
+                                              tm_ref.delta_m(x), rtol=2e-5))
+        self.assertIsNone(npt.assert_allclose(tm.H_d(x), tm_ref.H_d(x),
+                                              rtol=3e-6))
         self.assertIsNone(npt.assert_allclose(tm.tau_w(x, rho),
-                                              tm_ref.tau_w(x, rho)))
-        self.assertIsNone(npt.assert_allclose(tm.U_n(x), tm_ref.U_n(x)))
+                                              tm_ref.tau_w(x, rho), rtol=1e-5))
+        self.assertIsNone(npt.assert_allclose(tm.U_n(x), tm_ref.U_n(x),
+                                              rtol=1e-4))
     
     def testWedge072Case(self):
         # set parameters
@@ -549,13 +556,15 @@ class TestLinearThwaites(unittest.TestCase):
         self.assertEqual(rtn.message, "Completed")
         self.assertEqual(rtn.x_end, x[-1])
         self.assertIsNone(npt.assert_allclose(tm.delta_d(x),
-                                              tm_ref.delta_d(x)))
+                                              tm_ref.delta_d(x), rtol=1e-5))
         self.assertIsNone(npt.assert_allclose(tm.delta_m(x),
-                                              tm_ref.delta_m(x)))
-        self.assertIsNone(npt.assert_allclose(tm.H_d(x), tm_ref.H_d(x)))
+                                              tm_ref.delta_m(x), rtol=2e-5))
+        self.assertIsNone(npt.assert_allclose(tm.H_d(x), tm_ref.H_d(x),
+                                              rtol=3e-6))
         self.assertIsNone(npt.assert_allclose(tm.tau_w(x, rho),
-                                              tm_ref.tau_w(x, rho)))
-        self.assertIsNone(npt.assert_allclose(tm.U_n(x), tm_ref.U_n(x)))
+                                              tm_ref.tau_w(x, rho), rtol=6e-6))
+        self.assertIsNone(npt.assert_allclose(tm.U_n(x), tm_ref.U_n(x),
+                                              rtol=7e-5))
         
         # test with White fits
         tm = ThwaitesMethodLinear(U_e = U_e_fun, dU_edx = dU_edx_fun,
@@ -569,13 +578,15 @@ class TestLinearThwaites(unittest.TestCase):
         self.assertEqual(rtn.message, "Completed")
         self.assertEqual(rtn.x_end, x[-1])
         self.assertIsNone(npt.assert_allclose(tm.delta_d(x),
-                                              tm_ref.delta_d(x)))
+                                              tm_ref.delta_d(x), rtol=1e-5))
         self.assertIsNone(npt.assert_allclose(tm.delta_m(x),
-                                              tm_ref.delta_m(x)))
-        self.assertIsNone(npt.assert_allclose(tm.H_d(x), tm_ref.H_d(x)))
+                                              tm_ref.delta_m(x), rtol=2e-5))
+        self.assertIsNone(npt.assert_allclose(tm.H_d(x), tm_ref.H_d(x),
+                                              rtol=3e-6))
         self.assertIsNone(npt.assert_allclose(tm.tau_w(x, rho),
-                                              tm_ref.tau_w(x, rho)))
-        self.assertIsNone(npt.assert_allclose(tm.U_n(x), tm_ref.U_n(x)))
+                                              tm_ref.tau_w(x, rho), rtol=6e-6))
+        self.assertIsNone(npt.assert_allclose(tm.U_n(x), tm_ref.U_n(x),
+                                              rtol=7e-5))
         
         # test with Cebeci and Bradshaw fits
         tm = ThwaitesMethodLinear(U_e = U_e_fun, dU_edx = dU_edx_fun,
@@ -590,13 +601,15 @@ class TestLinearThwaites(unittest.TestCase):
         self.assertEqual(rtn.message, "Completed")
         self.assertEqual(rtn.x_end, x[-1])
         self.assertIsNone(npt.assert_allclose(tm.delta_d(x),
-                                              tm_ref.delta_d(x)))
+                                              tm_ref.delta_d(x), rtol=1e-5))
         self.assertIsNone(npt.assert_allclose(tm.delta_m(x),
-                                              tm_ref.delta_m(x)))
-        self.assertIsNone(npt.assert_allclose(tm.H_d(x), tm_ref.H_d(x)))
+                                              tm_ref.delta_m(x), rtol=2e-5))
+        self.assertIsNone(npt.assert_allclose(tm.H_d(x), tm_ref.H_d(x),
+                                              rtol=3e-6))
         self.assertIsNone(npt.assert_allclose(tm.tau_w(x, rho),
-                                              tm_ref.tau_w(x, rho)))
-        self.assertIsNone(npt.assert_allclose(tm.U_n(x), tm_ref.U_n(x)))
+                                              tm_ref.tau_w(x, rho), rtol=6e-6))
+        self.assertIsNone(npt.assert_allclose(tm.U_n(x), tm_ref.U_n(x),
+                                              rtol=8e-5))
     
     def testWedge100Case(self):
         # set parameters

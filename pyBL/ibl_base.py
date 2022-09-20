@@ -541,6 +541,25 @@ class IBLBase(ABC):
         """
         pass
     
+    @abstractmethod
+    def D(self, x, rho):
+        """
+        Calculate the dissipation integral.
+        
+        Parameters
+        ----------
+        x: array-like
+            Streamwise loations to calculate this property.
+        rho: float
+            Freestream density.
+        
+        Returns
+        -------
+        array-like same shape as `x`
+            Desired dissipation integral at the specified locations.
+        """
+        pass
+    
     def _add_kill_event(self, ke):
         """
         Add kill event to the ODE solver.

@@ -104,10 +104,19 @@ class IBLBaseTest(IBLBase):
     def delta_m(self, x):
         return np.zeros_like(x)
     
+    def delta_k(self, x):
+        return np.zeros_like(x)
+    
     def H_d(self, x):
         return np.zeros_like(x)
     
+    def H_k(self, x):
+        return np.zeros_like(x)
+    
     def tau_w(self, x, rho):
+        return np.zeros_like(x)
+    
+    def D(self, x, rho):
         return np.zeros_like(x)
 
 
