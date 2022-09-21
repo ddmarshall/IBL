@@ -16,7 +16,7 @@ from pyBL.blasius import BlasiusSolution
 
 class TestCurveFits(unittest.TestCase):
     """Class to test various functions and curve fits for Thwaites method"""
-    
+
     # Tabluated data from White (2011)
     # Note that there are errors in the LSD in:
     #    * f at eta = (4.0, 4.2, 4.6, 5.2)
@@ -55,119 +55,124 @@ class TestCurveFits(unittest.TestCase):
     eta_s_ref = 3.5
     eta_k_ref = 0
     V_e_term = 0.8604
-    
+
     def testBCSearch(self):
+        """Test the boundary condition search algorithm."""
         U_inf = 10
         nu = 1e-5
-        bs = BlasiusSolution(U_ref = U_inf, nu = nu, fpp0 = None)
+        bs = BlasiusSolution(U_ref=U_inf, nu=nu, fpp0=None)
         self.assertIsNone(npt.assert_allclose(bs.fpp(0), self.fpp_ref[0]))
-    
+
     def testBasicSolution(self):
+        """Test the calculation of the basic solution."""
         U_inf = 10
         nu = 1e-5
-        bs = BlasiusSolution(U_ref = U_inf, fpp0 = self.fpp_ref[0], nu = nu)
-        
-        ## Test the solution for f
+        bs = BlasiusSolution(U_ref=U_inf, fpp0=self.fpp_ref[0], nu=nu)
+
+        # Test the solution for f
         f = bs.f(self.eta_ref)
-        self.assertIsNone(npt.assert_allclose(f, self.f_ref, rtol = 0,
-                                              atol = 1e-5))
-        
-        ## Test the solution for f'
+        self.assertIsNone(npt.assert_allclose(f, self.f_ref, rtol=0,
+                                              atol=1e-5))
+
+        # Test the solution for f'
         fp = bs.fp(self.eta_ref)
-        self.assertIsNone(npt.assert_allclose(fp, self.fp_ref, rtol = 0,
-                                              atol= 1e-5))
-        
-        ## Test the solution for f''
+        self.assertIsNone(npt.assert_allclose(fp, self.fp_ref, rtol=0,
+                                              atol=1e-5))
+
+        # Test the solution for f''
         fpp = bs.fpp(self.eta_ref)
-        self.assertIsNone(npt.assert_allclose(fpp, self.fpp_ref, rtol = 0,
-                                              atol = 1e-5))
-    
+        self.assertIsNone(npt.assert_allclose(fpp, self.fpp_ref, rtol=0,
+                                              atol=1e-5))
+
     def testBoundaryLayerParameters(self):
+        """Test the reporting of the boundary layer parameters."""
+        # pylint: disable=too-many-locals
         U_inf = 10
         nu = 1e-5
         rho = 1
-        bs = BlasiusSolution(U_ref = U_inf, fpp0 = self.fpp_ref[0], nu = nu)
-        
-        ## Test the values in terms of eta
+        bs = BlasiusSolution(U_ref=U_inf, fpp0=self.fpp_ref[0], nu=nu)
+
+        # Test the values in terms of eta
+        #
         # displacement thickness
         eta_d = bs.eta_d()
-        self.assertIsNone(npt.assert_allclose(eta_d, self.eta_d_ref, rtol = 0,
-                                              atol = 1e-4))
+        self.assertIsNone(npt.assert_allclose(eta_d, self.eta_d_ref, rtol=0,
+                                              atol=1e-4))
         # momentum thickness
         eta_m = bs.eta_m()
-        self.assertIsNone(npt.assert_allclose(eta_m, self.eta_m_ref, rtol = 0,
-                                              atol = 1e-4))
-        
+        self.assertIsNone(npt.assert_allclose(eta_m, self.eta_m_ref, rtol=0,
+                                              atol=1e-4))
+
         # shear thickness
         eta_s = bs.eta_s()
-        self.assertIsNone(npt.assert_allclose(eta_s, self.eta_s_ref, rtol = 0,
-                                              atol = 1e-1))
-        
+        self.assertIsNone(npt.assert_allclose(eta_s, self.eta_s_ref, rtol=0,
+                                              atol=1e-1))
+
         # kinetic energy thickness
-        def fun(eta):
+        def ke_fun(eta):
             fp = bs.fp(eta)
             return fp*(1-fp**2)
-        eta_k_ref = quadrature(fun, 0, 10)[0]
-        
+        eta_k_ref = quadrature(ke_fun, 0, 10)[0]
+
         eta_k = bs.eta_k()
-        self.assertIsNone(npt.assert_allclose(eta_k, eta_k_ref, rtol = 1e-6,
-                          atol = 0))
-        
-        ## Test the values in terms of x
+        self.assertIsNone(npt.assert_allclose(eta_k, eta_k_ref, rtol=1e-6))
+
+        # Test the values in terms of x
+        #
         x = np.linspace(0.2, 2, 101)
         g = np.sqrt(0.5*U_inf/(nu*x))
-        
+
         # test the transpiration velocity
         V_e_ref = nu*g*np.sqrt(2)*self.V_e_term
-        self.assertIsNone(npt.assert_allclose(bs.V_e(x), V_e_ref, rtol = 1e-5,
-                                              atol = 0))
+        self.assertIsNone(npt.assert_allclose(bs.V_e(x), V_e_ref, rtol=1e-5))
 
         # test displacement thickness
         delta_d_ref = eta_d/g
         self.assertIsNone(npt.assert_allclose(bs.delta_d(x), delta_d_ref))
-        
+
         # test momentum thickness
         delta_m_ref = eta_m/g
         self.assertIsNone(npt.assert_allclose(bs.delta_m(x), delta_m_ref))
-        
+
         # test kinetic energy thickness
         delta_k_ref = eta_k/g
         self.assertIsNone(npt.assert_allclose(bs.delta_k(x), delta_k_ref))
-        
+
         # test shear thickness
         delta_s_ref = eta_s/g
         self.assertIsNone(npt.assert_allclose(bs.delta_s(x), delta_s_ref))
-        
+
         # test shape factors
         H_d_ref = delta_d_ref/delta_m_ref
         H_k_ref = delta_k_ref/delta_m_ref
         self.assertIsNone(npt.assert_allclose(bs.H_d(x), H_d_ref))
         self.assertIsNone(npt.assert_allclose(bs.H_k(x), H_k_ref))
-        
+
         # test wall shear stress
         tau_w_ref = rho*nu*U_inf*g*bs.fpp(0)
         self.assertIsNone(npt.assert_allclose(bs.tau_w(x, rho), tau_w_ref))
-        
+
         # test dissipation
-        def fun(eta):
+        def D_fun(eta):
             return bs.fpp(eta)**2
-        D_ref = rho*nu*U_inf**2*g*quadrature(fun, 0, 10)[0]
+        D_ref = rho*nu*U_inf**2*g*quadrature(D_fun, 0, 10)[0]
         self.assertIsNone(npt.assert_allclose(bs.D(x, rho), D_ref))
-    
+
     def testLocalProperties(self):
+        """Test the local property calculations."""
         U_inf = 10
         nu = 1e-5
-        bs = BlasiusSolution(U_ref = U_inf, fpp0 = self.fpp_ref[0], nu = nu)
-        
-        ## Test the values in terms of x,y
+        bs = BlasiusSolution(U_ref=U_inf, fpp0=self.fpp_ref[0], nu=nu)
+
+        # Test the values in terms of x,y
         x0 = 0.4
         y0 = 2e-3
-        
+
         # test eta transformation
         g = np.sqrt(0.5*U_inf/(nu*x0))
         eta_ref = y0*g
         self.assertIsNone(npt.assert_allclose(bs.eta(x0, y0), eta_ref))
-        
+
         # test sample in y
         x = x0
         y = np.linspace(1e-4, 5e-3, 11)
@@ -177,8 +182,7 @@ class TestCurveFits(unittest.TestCase):
         v_ref = np.sqrt(0.5*nu*U_inf/x)*(eta_ref*bs.fp(eta_ref)-bs.f(eta_ref))
         self.assertIsNone(npt.assert_allclose(bs.u(x, y), u_ref))
         self.assertIsNone(npt.assert_allclose(bs.v(x, y), v_ref))
-        
-        
+
         # test sample in x
         x = np.linspace(0.2, 0.5, 11)
         y = y0
@@ -190,5 +194,5 @@ class TestCurveFits(unittest.TestCase):
         self.assertIsNone(npt.assert_allclose(bs.v(x, y), v_ref))
 
 
-if (__name__ == "__main__"):
+if __name__ == "__main__":
     unittest.main(verbosity=1)
