@@ -1,0 +1,650 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>pyBL.stanford_olympics &#8212; pyBL 0.0.4-develop documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/alabaster.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for pyBL.stanford_olympics</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/env python3</span>
+<span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Classes needed to for the 1968 Stanford Turbulence Olympics data.</span>
+
+<span class="sd">The 1968 Stanford Turbulence Olympics is the informal name for the Computation</span>
+<span class="sd">of Turbulent Boundary Layers AFOSR-IFP-Stanford Conference that met in 1968.</span>
+<span class="sd">The proceedings are a two volume set with volume I dedicated to the numerical</span>
+<span class="sd">methods used to predict the turbulent boundary layer behavior. Volume II is</span>
+<span class="sd">a currated collection of high quality experimental data of a wide variety of</span>
+<span class="sd">turbulent boundary layer flows.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">pyBL</span>
+
+
+<span class="c1"># Unit conversions</span>
+<span class="n">_METER_TO_FOOT</span> <span class="o">=</span> <span class="mf">0.3048</span>
+<span class="n">_FOOT_TO_METER</span> <span class="o">=</span> <span class="mi">1</span><span class="o">/</span><span class="n">_METER_TO_FOOT</span>
+<span class="n">_METER_TO_INCH</span> <span class="o">=</span> <span class="n">_METER_TO_FOOT</span><span class="o">/</span><span class="mi">12</span>
+<span class="n">_INCH_TO_METER</span> <span class="o">=</span> <span class="mi">1</span><span class="o">/</span><span class="n">_METER_TO_INCH</span>
+
+
+<div class="viewcode-block" id="StanfordOlympics1968"><a class="viewcode-back" href="../../api/_autosummary/pyBL.stanford_olympics.StanfordOlympics1968.html#pyBL.stanford_olympics.StanfordOlympics1968">[docs]</a><span class="k">class</span> <span class="nc">StanfordOlympics1968</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Interface to 1958 Stanford Olympics data.</span>
+<span class="sd">    </span>
+<span class="sd">    This class is an interface to the data from the Proceedings of the</span>
+<span class="sd">    Computation of Turbulent Boundary Layers AFOSR-IFP-Stanford Conference in</span>
+<span class="sd">    1968, also referred to the 1968 Stanford Olympics. The data comes from</span>
+<span class="sd">    volume II and is a compilation of a variety of cases that were used as</span>
+<span class="sd">    reference data.</span>
+<span class="sd">    </span>
+<span class="sd">    The experimental data consists of a number of measurements from the</span>
+<span class="sd">    boundary layer at variety of streamwise stations along the flow. These</span>
+<span class="sd">    measurements are both surface properties, boundary layer edge properties,</span>
+<span class="sd">    and measurements throughout the boundary layer between the surface and</span>
+<span class="sd">    the boundary layer edge.</span>
+<span class="sd">    </span>
+<span class="sd">    While the original reference data is a mixture of English and SI units,</span>
+<span class="sd">    this class provides all data in SI units.</span>
+<span class="sd">    </span>
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    case: string</span>
+<span class="sd">        Four digit number corresponding to the case that the data come from.</span>
+<span class="sd">    nu: float</span>
+<span class="sd">        Kinematic viscosity in [m^2/s] for the case.</span>
+<span class="sd">    </span>
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    See page ix of proceedings for precise definition of each term.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="c1"># Attributes</span>
+    <span class="c1"># ----------</span>
+    <span class="c1">#_station: Data at each station</span>
+    <span class="c1">#_x_sm: Smoothed plot x-location</span>
+    <span class="c1">#_U_e_sm: Smoothed edge velocity</span>
+    <span class="c1">#_dU_edx: Smoothed change in edge velocity</span>
+<div class="viewcode-block" id="StanfordOlympics1968.StationData"><a class="viewcode-back" href="../../api/_autosummary/pyBL.stanford_olympics.StanfordOlympics1968.html#pyBL.stanford_olympics.StanfordOlympics1968.StationData">[docs]</a>    <span class="k">class</span> <span class="nc">StationData</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This class is the data that is reported for each station in flow.</span>
+<span class="sd">        </span>
+<span class="sd">        This class is initialized with the row data associated with the</span>
+<span class="sd">        summary table and a flag indicating whether the case is in SI units.</span>
+<span class="sd">        </span>
+<span class="sd">        Attributes</span>
+<span class="sd">        ----------</span>
+<span class="sd">        U_e: float</span>
+<span class="sd">            Edge velocity in [m/s] at this station.</span>
+<span class="sd">        dU_edx: float</span>
+<span class="sd">            Rate of change in edge velocity in [1/s] at this station.</span>
+<span class="sd">        delta_m: float</span>
+<span class="sd">            Momentum thickness in [m] at this station.</span>
+<span class="sd">        H_d: float</span>
+<span class="sd">            Displacement shape factor at this station.</span>
+<span class="sd">        H_k: float</span>
+<span class="sd">            Kinetic energy shape factor at this station.</span>
+<span class="sd">        G: float</span>
+<span class="sd">            Equilibrium shape factor at this station.</span>
+<span class="sd">        c_f: float</span>
+<span class="sd">            Skin friction coefficient at this station.</span>
+<span class="sd">        c_f_LT: float</span>
+<span class="sd">            Skin friction coefficient from Ludwieg-Tillman formula.</span>
+<span class="sd">        c_f_E: float</span>
+<span class="sd">            Skin friction coefficient reported by data originator.</span>
+<span class="sd">        beta: float</span>
+<span class="sd">            Equilibrium parameter at this station.</span>
+<span class="sd">        u_star: float</span>
+<span class="sd">            Wall shear velocity in [m/s] at this station.</span>
+<span class="sd">        delta_d: float</span>
+<span class="sd">            Displacement thickness in [m] at this station.</span>
+<span class="sd">        delta_k: float</span>
+<span class="sd">            Kinetic energy thickness in [m] at this station.</span>
+<span class="sd">        delta_c: float</span>
+<span class="sd">            Clauser thickness in [m] at this station.</span>
+<span class="sd">        Re_delta_m: float</span>
+<span class="sd">            Momentum thickness Reynolds number at this station.</span>
+<span class="sd">        Re_delta_d: float</span>
+<span class="sd">            Displacement thickness Reynolds number at this station.</span>
+<span class="sd">        y_plus: array-like</span>
+<span class="sd">            Non-dimensionalized turbulence distances from surface at this</span>
+<span class="sd">            station.</span>
+<span class="sd">        u_plus: array-like</span>
+<span class="sd">            Non-dimensionalized turbulence local velocities at this station.</span>
+<span class="sd">        y: array-like</span>
+<span class="sd">            Distances from surface in [m] at this station.</span>
+<span class="sd">        u_on_Ue: array-like</span>
+<span class="sd">            Non-dimensionalized relative local velocities at this station.</span>
+<span class="sd">        y_on_delta_c: array-like</span>
+<span class="sd">            Non-dimensionalized distances from surface at this station.</span>
+<span class="sd">        udef: array-like</span>
+<span class="sd">            Defect velocity at this station.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="n">si_unit</span><span class="p">):</span>
+            <span class="n">col</span> <span class="o">=</span> <span class="n">row</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">col</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">11</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Invalid number of columns in summary &quot;</span>
+                                <span class="s2">&quot;data: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">row</span><span class="p">))</span>
+            
+            <span class="n">temp0</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">col</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="n">temp1</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">col</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+            <span class="n">temp2</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">col</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+            <span class="n">temp3</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">col</span><span class="p">[</span><span class="mi">3</span><span class="p">])</span>
+            <span class="n">temp4</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">col</span><span class="p">[</span><span class="mi">4</span><span class="p">])</span>
+            <span class="n">temp5</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">col</span><span class="p">[</span><span class="mi">5</span><span class="p">])</span>
+            <span class="n">temp6</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">col</span><span class="p">[</span><span class="mi">6</span><span class="p">])</span>
+            <span class="n">temp7</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">col</span><span class="p">[</span><span class="mi">7</span><span class="p">])</span>
+            <span class="n">temp8</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">col</span><span class="p">[</span><span class="mi">8</span><span class="p">])</span>
+            <span class="n">temp9</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">col</span><span class="p">[</span><span class="mi">9</span><span class="p">])</span>
+            <span class="n">temp10</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">col</span><span class="p">[</span><span class="mi">10</span><span class="p">])</span>
+            <span class="k">if</span> <span class="n">si_unit</span><span class="p">:</span>
+                <span class="n">temp3</span> <span class="o">=</span> <span class="n">temp3</span><span class="o">*</span><span class="mf">1e-2</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">temp0</span> <span class="o">=</span> <span class="n">temp0</span><span class="o">*</span><span class="n">_FOOT_TO_METER</span>
+                <span class="n">temp1</span> <span class="o">=</span> <span class="n">temp1</span><span class="o">*</span><span class="n">_FOOT_TO_METER</span>
+                <span class="n">temp3</span> <span class="o">=</span> <span class="n">temp1</span><span class="o">*</span><span class="n">_INCH_TO_METER</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">x</span> <span class="o">=</span> <span class="n">temp0</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">U_e</span> <span class="o">=</span> <span class="n">temp1</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">dU_edx</span> <span class="o">=</span> <span class="n">temp2</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">delta_m</span> <span class="o">=</span> <span class="n">temp3</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">H_d</span> <span class="o">=</span> <span class="n">temp4</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">H_k</span> <span class="o">=</span> <span class="n">temp5</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">G</span> <span class="o">=</span> <span class="n">temp6</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">c_f</span> <span class="o">=</span> <span class="n">temp7</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">c_f_LT</span> <span class="o">=</span> <span class="n">temp8</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">c_f_E</span> <span class="o">=</span> <span class="n">temp9</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">beta</span> <span class="o">=</span> <span class="n">temp10</span>
+            
+            <span class="bp">self</span><span class="o">.</span><span class="n">u_star</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">delta_d</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">delta_k</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">delta_c</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">Re_delta_m</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">Re_delta_d</span> <span class="o">=</span> <span class="p">[]</span>
+            
+            <span class="bp">self</span><span class="o">.</span><span class="n">y_plus</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">u_plus</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">y</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">u_on_Ue</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">y_on_delta_c</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">udef</span> <span class="o">=</span> <span class="p">[]</span>
+        
+        <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Return a readable presentation of instance.</span>
+<span class="sd">            </span>
+<span class="sd">            Returns</span>
+<span class="sd">            -------</span>
+<span class="sd">            string</span>
+<span class="sd">                Readable string representation of instance.</span>
+<span class="sd">            &quot;&quot;&quot;</span>
+            <span class="n">strout</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">:</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span>
+            <span class="n">strout</span> <span class="o">+=</span> <span class="s2">&quot;    x: </span><span class="si">%f</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">)</span>
+            <span class="n">strout</span> <span class="o">+=</span> <span class="s2">&quot;    U_e: </span><span class="si">%f</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">U_e</span><span class="p">)</span>
+            <span class="n">strout</span> <span class="o">+=</span> <span class="s2">&quot;    dU_edx: </span><span class="si">%f</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dU_edx</span><span class="p">)</span>
+            <span class="n">strout</span> <span class="o">+=</span> <span class="s2">&quot;    delta_m: </span><span class="si">%f</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">delta_m</span><span class="p">)</span>
+            <span class="n">strout</span> <span class="o">+=</span> <span class="s2">&quot;    H_d: </span><span class="si">%f</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">H_d</span><span class="p">)</span>
+            <span class="n">strout</span> <span class="o">+=</span> <span class="s2">&quot;    H_k: </span><span class="si">%f</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">H_k</span><span class="p">)</span>
+            <span class="n">strout</span> <span class="o">+=</span> <span class="s2">&quot;    G: </span><span class="si">%f</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">G</span><span class="p">)</span>
+            <span class="n">strout</span> <span class="o">+=</span> <span class="s2">&quot;    c_f: </span><span class="si">%f</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">c_f</span><span class="p">)</span>
+            <span class="n">strout</span> <span class="o">+=</span> <span class="s2">&quot;    c_f (Ludwieg-Tillman): </span><span class="si">%f</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">c_f_LT</span><span class="p">)</span>
+            <span class="n">strout</span> <span class="o">+=</span> <span class="s2">&quot;    c_f (Reported): </span><span class="si">%f</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">c_f_E</span><span class="p">)</span>
+            <span class="n">strout</span> <span class="o">+=</span> <span class="s2">&quot;    beta: </span><span class="si">%f</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">beta</span><span class="p">)</span>
+            
+            <span class="k">return</span> <span class="n">strout</span></div>
+    
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">case</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize class.</span>
+<span class="sd">        </span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        case : string, optional</span>
+<span class="sd">            String representation of the four digit case number. The default</span>
+<span class="sd">            is None.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">change_case_data</span><span class="p">(</span><span class="n">case</span><span class="p">)</span>
+    
+<div class="viewcode-block" id="StanfordOlympics1968.change_case_data"><a class="viewcode-back" href="../../api/_autosummary/pyBL.stanford_olympics.StanfordOlympics1968.html#pyBL.stanford_olympics.StanfordOlympics1968.change_case_data">[docs]</a>    <span class="k">def</span> <span class="nf">change_case_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">case</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Changes the case data that this class stores.</span>
+<span class="sd">        </span>
+<span class="sd">        This method will either reset the case data to no data if the `case`</span>
+<span class="sd">        parameter is `None`, or it will load the specified case from the</span>
+<span class="sd">        collection of case files in the library.</span>
+<span class="sd">        </span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        case : string</span>
+<span class="sd">            String representation of the four digit case number.</span>
+<span class="sd">            </span>
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        Exception</span>
+<span class="sd">            When case file to be read contains invalid data.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1">## Reset everything</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">case</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nu</span> <span class="o">=</span> <span class="mi">0</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">_station</span> <span class="o">=</span> <span class="p">[]</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">_x_sm</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_U_e_sm</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_dU_edx_sm</span> <span class="o">=</span> <span class="p">[]</span>
+        
+        <span class="k">if</span> <span class="n">case</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span>
+        
+        <span class="c1">## define function to each comments and empty lines</span>
+        <span class="k">def</span> <span class="nf">next_chunk</span><span class="p">(</span><span class="n">f</span><span class="p">):</span>
+            <span class="n">line</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">line</span> <span class="o">==</span> <span class="s2">&quot;&quot;</span><span class="p">):</span>
+                <span class="k">return</span> <span class="s2">&quot;&quot;</span>
+            <span class="k">while</span> <span class="p">(</span><span class="n">line</span> <span class="o">==</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;#&quot;</span><span class="p">):</span>
+                <span class="n">line</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span>
+                <span class="k">if</span> <span class="n">line</span> <span class="o">==</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="s2">&quot;&quot;</span>
+            
+            <span class="n">chunk</span> <span class="o">=</span> <span class="p">[</span><span class="n">line</span><span class="p">]</span>
+            <span class="n">line</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">line</span> <span class="o">==</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
+                <span class="k">return</span> <span class="s2">&quot;&quot;</span>
+            <span class="k">while</span> <span class="p">(</span><span class="n">line</span> <span class="o">!=</span> <span class="s2">&quot;&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">line</span> <span class="o">!=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="s2">&quot;#&quot;</span><span class="p">):</span>
+                <span class="n">chunk</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+                <span class="n">line</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span>
+            <span class="k">return</span> <span class="n">chunk</span>
+        
+        <span class="n">case_filename</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2">/../stanford_olympics/&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">pyBL</span><span class="o">.</span><span class="n">__path__</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+                        <span class="o">+</span> <span class="s2">&quot;1968/case </span><span class="si">{}</span><span class="s2">.txt&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">case</span><span class="p">))</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">case_filename</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">case_file</span><span class="p">:</span>
+            <span class="c1"># read case information</span>
+            <span class="n">chunk</span> <span class="o">=</span> <span class="n">next_chunk</span><span class="p">(</span><span class="n">case_file</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">chunk</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;IDENT = &quot;</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">case</span> <span class="o">=</span> <span class="n">chunk</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">()[</span><span class="mi">2</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Expected IDENT line but have: &quot;</span>
+                                <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">chunk</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+            <span class="n">si_unit</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">case</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;1&#39;</span>
+            <span class="k">if</span> <span class="n">chunk</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;V = &quot;</span><span class="p">):</span>
+                <span class="n">temp0</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">chunk</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">()[</span><span class="mi">2</span><span class="p">])</span>
+                <span class="k">if</span> <span class="n">si_unit</span><span class="p">:</span>
+                    <span class="n">temp0</span> <span class="o">=</span> <span class="n">temp0</span><span class="o">*</span><span class="mf">1e-4</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">temp0</span> <span class="o">=</span> <span class="n">temp0</span><span class="o">*</span><span class="n">_FOOT_TO_METER</span><span class="o">**</span><span class="mi">2</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">nu</span> <span class="o">=</span> <span class="n">temp0</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Expected V line but have: &quot;</span>
+                                <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">chunk</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+            
+            <span class="c1"># read the summary data</span>
+            <span class="n">chunk</span> <span class="o">=</span> <span class="n">next_chunk</span><span class="p">(</span><span class="n">case_file</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">chunk</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_station</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">StationData</span><span class="p">(</span><span class="n">row</span><span class="p">,</span> <span class="n">si_unit</span><span class="p">))</span>
+            
+            <span class="c1"># read the edge velocity info</span>
+            <span class="n">chunk</span> <span class="o">=</span> <span class="n">next_chunk</span><span class="p">(</span><span class="n">case_file</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">chunk</span><span class="p">:</span>
+                <span class="n">col</span> <span class="o">=</span> <span class="n">row</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">col</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">3</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Invalid number of columns in summary &quot;</span>
+                                    <span class="s2">&quot;data: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">row</span><span class="p">))</span>
+                <span class="n">tmp0</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">col</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+                <span class="n">tmp1</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">col</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+                <span class="n">tmp2</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">col</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">si_unit</span><span class="p">:</span>
+                    <span class="n">tmp0</span> <span class="o">=</span> <span class="n">tmp0</span><span class="o">*</span><span class="n">_FOOT_TO_METER</span>
+                    <span class="n">tmp1</span> <span class="o">=</span> <span class="n">tmp1</span><span class="o">*</span><span class="n">_FOOT_TO_METER</span>
+                
+                <span class="bp">self</span><span class="o">.</span><span class="n">_x_sm</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">tmp0</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_U_e_sm</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">tmp1</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_dU_edx_sm</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">tmp2</span><span class="p">)</span>
+            
+            <span class="c1"># read the x-station data</span>
+            <span class="n">chunk</span> <span class="o">=</span> <span class="n">next_chunk</span><span class="p">(</span><span class="n">case_file</span><span class="p">)</span></div>
+            
+            <span class="c1"># Note: Use unit conversion flag</span>
+    
+<div class="viewcode-block" id="StanfordOlympics1968.num_stations"><a class="viewcode-back" href="../../api/_autosummary/pyBL.stanford_olympics.StanfordOlympics1968.html#pyBL.stanford_olympics.StanfordOlympics1968.num_stations">[docs]</a>    <span class="k">def</span> <span class="nf">num_stations</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the number of stations for this case.</span>
+<span class="sd">        </span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        int</span>
+<span class="sd">            Number of stations for this case.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_station</span><span class="p">)</span></div>
+    
+<div class="viewcode-block" id="StanfordOlympics1968.station"><a class="viewcode-back" href="../../api/_autosummary/pyBL.stanford_olympics.StanfordOlympics1968.html#pyBL.stanford_olympics.StanfordOlympics1968.station">[docs]</a>    <span class="k">def</span> <span class="nf">station</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">i</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the station class for the specified station.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        i : int</span>
+<span class="sd">            Particular station that the information is wanted.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        StationData</span>
+<span class="sd">            The entire data for this desired station.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_station</span><span class="p">[</span><span class="n">i</span><span class="p">]</span></div>
+    
+<div class="viewcode-block" id="StanfordOlympics1968.velocity"><a class="viewcode-back" href="../../api/_autosummary/pyBL.stanford_olympics.StanfordOlympics1968.html#pyBL.stanford_olympics.StanfordOlympics1968.velocity">[docs]</a>    <span class="k">def</span> <span class="nf">velocity</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return 3-tuple with x positions, edge velocities, and rates of change</span>
+<span class="sd">        of the edge velocity.</span>
+<span class="sd">        </span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        x: array-like</span>
+<span class="sd">            Streamwise coordinate of edge velocities.</span>
+<span class="sd">        U_e: array-like</span>
+<span class="sd">            Edge velocities.</span>
+<span class="sd">        dU_edx: array-like</span>
+<span class="sd">            Rates of change of the edge velocity.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">U_e</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">dU_edx</span><span class="p">()</span></div>
+    
+<div class="viewcode-block" id="StanfordOlympics1968.velocity_smooth"><a class="viewcode-back" href="../../api/_autosummary/pyBL.stanford_olympics.StanfordOlympics1968.html#pyBL.stanford_olympics.StanfordOlympics1968.velocity_smooth">[docs]</a>    <span class="k">def</span> <span class="nf">velocity_smooth</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return 3-tuple with x positions, smoothed edge velocities, and smoothed</span>
+<span class="sd">        rates of change of the edge velocity.</span>
+<span class="sd">        </span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        x: array-like</span>
+<span class="sd">            Streamwise coordinate of smoothed edge velocities.</span>
+<span class="sd">        U_e: array-like</span>
+<span class="sd">            Smoothed edge velocities.</span>
+<span class="sd">        dU_edx: array-like</span>
+<span class="sd">            Smoothed rates of change of the edge velocity.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_x_sm</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_U_e_sm</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dU_edx_sm</span></div>
+    
+<div class="viewcode-block" id="StanfordOlympics1968.x"><a class="viewcode-back" href="../../api/_autosummary/pyBL.stanford_olympics.StanfordOlympics1968.html#pyBL.stanford_olympics.StanfordOlympics1968.x">[docs]</a>    <span class="k">def</span> <span class="nf">x</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Streamwise locations of each station.</span>
+<span class="sd">        </span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        x : array-like</span>
+<span class="sd">            Streamwise locations of each station.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_station</span><span class="p">:</span>
+            <span class="n">x</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">x</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">x</span></div>
+    
+<div class="viewcode-block" id="StanfordOlympics1968.U_e"><a class="viewcode-back" href="../../api/_autosummary/pyBL.stanford_olympics.StanfordOlympics1968.html#pyBL.stanford_olympics.StanfordOlympics1968.U_e">[docs]</a>    <span class="k">def</span> <span class="nf">U_e</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Edge velocity at each station.</span>
+<span class="sd">        </span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        U_e : array-like</span>
+<span class="sd">            Edge velocity at each station.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">U_e</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_station</span><span class="p">:</span>
+            <span class="n">U_e</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">U_e</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">U_e</span></div>
+        
+<div class="viewcode-block" id="StanfordOlympics1968.dU_edx"><a class="viewcode-back" href="../../api/_autosummary/pyBL.stanford_olympics.StanfordOlympics1968.html#pyBL.stanford_olympics.StanfordOlympics1968.dU_edx">[docs]</a>    <span class="k">def</span> <span class="nf">dU_edx</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Rates of change of the edge velocity at each station.</span>
+<span class="sd">        </span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        dU_edx : array-like</span>
+<span class="sd">            Rates of change of the edge velocity at each station.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">dU_edx</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_station</span><span class="p">:</span>
+            <span class="n">dU_edx</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">dU_edx</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">dU_edx</span></div>
+        
+<div class="viewcode-block" id="StanfordOlympics1968.delta_d"><a class="viewcode-back" href="../../api/_autosummary/pyBL.stanford_olympics.StanfordOlympics1968.html#pyBL.stanford_olympics.StanfordOlympics1968.delta_d">[docs]</a>    <span class="k">def</span> <span class="nf">delta_d</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Displacement thickness at each station.</span>
+<span class="sd">        </span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        delta_d : array-like</span>
+<span class="sd">            Displacement thickness at each station.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">delta_d</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_station</span><span class="p">:</span>
+            <span class="n">delta_d</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">H_d</span><span class="o">*</span><span class="n">s</span><span class="o">.</span><span class="n">delta_m</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">delta_d</span></div>
+    
+<div class="viewcode-block" id="StanfordOlympics1968.delta_m"><a class="viewcode-back" href="../../api/_autosummary/pyBL.stanford_olympics.StanfordOlympics1968.html#pyBL.stanford_olympics.StanfordOlympics1968.delta_m">[docs]</a>    <span class="k">def</span> <span class="nf">delta_m</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Momentum thickness at each station.</span>
+<span class="sd">        </span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        delta_m : array-like</span>
+<span class="sd">            Momentum thickness at each station.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">delta_m</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_station</span><span class="p">:</span>
+            <span class="n">delta_m</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">delta_m</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">delta_m</span></div>
+    
+<div class="viewcode-block" id="StanfordOlympics1968.delta_k"><a class="viewcode-back" href="../../api/_autosummary/pyBL.stanford_olympics.StanfordOlympics1968.html#pyBL.stanford_olympics.StanfordOlympics1968.delta_k">[docs]</a>    <span class="k">def</span> <span class="nf">delta_k</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Kinetic energy thickness at each station.</span>
+<span class="sd">        </span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        delta_k : array-like</span>
+<span class="sd">            Kinetic energy thickness at each station.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">delta_k</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_station</span><span class="p">:</span>
+            <span class="n">delta_k</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">H_k</span><span class="o">*</span><span class="n">s</span><span class="o">.</span><span class="n">delta_m</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">delta_k</span></div>
+    
+<div class="viewcode-block" id="StanfordOlympics1968.H_d"><a class="viewcode-back" href="../../api/_autosummary/pyBL.stanford_olympics.StanfordOlympics1968.html#pyBL.stanford_olympics.StanfordOlympics1968.H_d">[docs]</a>    <span class="k">def</span> <span class="nf">H_d</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Displacement shape factor at each station.</span>
+<span class="sd">        </span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        H_d : array-like</span>
+<span class="sd">            Displacement shape factor at each station.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">H_d</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_station</span><span class="p">:</span>
+            <span class="n">H_d</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">H_d</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">H_d</span></div>
+    
+<div class="viewcode-block" id="StanfordOlympics1968.H_k"><a class="viewcode-back" href="../../api/_autosummary/pyBL.stanford_olympics.StanfordOlympics1968.html#pyBL.stanford_olympics.StanfordOlympics1968.H_k">[docs]</a>    <span class="k">def</span> <span class="nf">H_k</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Kinetic energy shape factor at each station.</span>
+<span class="sd">        </span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        H_d : array-like</span>
+<span class="sd">            Kinetic energy shape factor at each station.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">H_k</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_station</span><span class="p">:</span>
+            <span class="n">H_k</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">H_k</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">H_k</span></div>
+    
+<div class="viewcode-block" id="StanfordOlympics1968.G"><a class="viewcode-back" href="../../api/_autosummary/pyBL.stanford_olympics.StanfordOlympics1968.html#pyBL.stanford_olympics.StanfordOlympics1968.G">[docs]</a>    <span class="k">def</span> <span class="nf">G</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Equilibrium shape factor at each station.</span>
+<span class="sd">        </span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        H_d : array-like</span>
+<span class="sd">            Equilibrium shape factor at each station.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">G</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_station</span><span class="p">:</span>
+            <span class="n">G</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">G</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">G</span></div>
+    
+<div class="viewcode-block" id="StanfordOlympics1968.c_f"><a class="viewcode-back" href="../../api/_autosummary/pyBL.stanford_olympics.StanfordOlympics1968.html#pyBL.stanford_olympics.StanfordOlympics1968.c_f">[docs]</a>    <span class="k">def</span> <span class="nf">c_f</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Calculated skin friction coefficient at each station.</span>
+<span class="sd">        </span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        c_f : array-like</span>
+<span class="sd">            Calculated skin friction coefficient at each station.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">c_f</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_station</span><span class="p">:</span>
+            <span class="n">c_f</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">c_f</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">c_f</span></div>
+    
+<div class="viewcode-block" id="StanfordOlympics1968.c_f_LT"><a class="viewcode-back" href="../../api/_autosummary/pyBL.stanford_olympics.StanfordOlympics1968.html#pyBL.stanford_olympics.StanfordOlympics1968.c_f_LT">[docs]</a>    <span class="k">def</span> <span class="nf">c_f_LT</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Skin friction coefficient obtained from the Ludwieg-Tillman formula at</span>
+<span class="sd">        each station.</span>
+<span class="sd">        </span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        c_f_LT : array-like</span>
+<span class="sd">            Skin friction coefficient obtained from the Ludwieg-Tillman</span>
+<span class="sd">            formula at each station.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">c_f_LT</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_station</span><span class="p">:</span>
+            <span class="n">c_f_LT</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">c_f_LT</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">c_f_LT</span></div>
+    
+<div class="viewcode-block" id="StanfordOlympics1968.c_f_E"><a class="viewcode-back" href="../../api/_autosummary/pyBL.stanford_olympics.StanfordOlympics1968.html#pyBL.stanford_olympics.StanfordOlympics1968.c_f_E">[docs]</a>    <span class="k">def</span> <span class="nf">c_f_E</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Original reported skin friction coefficient at each station.</span>
+<span class="sd">        </span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        c_f_E : array-like</span>
+<span class="sd">            Original reported skin friction coefficient at each station.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">c_f_E</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_station</span><span class="p">:</span>
+            <span class="n">c_f_E</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">c_f_E</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">c_f_E</span></div>
+    
+<div class="viewcode-block" id="StanfordOlympics1968.beta"><a class="viewcode-back" href="../../api/_autosummary/pyBL.stanford_olympics.StanfordOlympics1968.html#pyBL.stanford_olympics.StanfordOlympics1968.beta">[docs]</a>    <span class="k">def</span> <span class="nf">beta</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Equilibrium parameter at each station.</span>
+<span class="sd">        </span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        beta : array-like</span>
+<span class="sd">            Equilibrium parameter at each station.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">beta</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_station</span><span class="p">:</span>
+            <span class="n">beta</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">beta</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">beta</span></div></div>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../index.html">pyBL</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../index.html">Home</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../examples/index.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/modules.html">API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../developers/index.html">Developer Resources</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/ddmarshall/IBL">Project</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../license/index.html">License</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2022, David D. Marshall.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 5.1.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

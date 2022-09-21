@@ -1,0 +1,553 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+    <title>pyBL.stanford_olympics.StanfordOlympics1968 &#8212; pyBL 0.0.4-develop documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/alabaster.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="pyBL.thwaites_method" href="pyBL.thwaites_method.html" />
+    <link rel="prev" title="pyBL.stanford_olympics" href="pyBL.stanford_olympics.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="pybl-stanford-olympics-stanfordolympics1968">
+<h1>pyBL.stanford_olympics.StanfordOlympics1968<a class="headerlink" href="#pybl-stanford-olympics-stanfordolympics1968" title="Permalink to this heading">¶</a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="pyBL.stanford_olympics.StanfordOlympics1968">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">StanfordOlympics1968</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">case</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pyBL/stanford_olympics.html#StanfordOlympics1968"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyBL.stanford_olympics.StanfordOlympics1968" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Interface to 1958 Stanford Olympics data.</p>
+<p>This class is an interface to the data from the Proceedings of the
+Computation of Turbulent Boundary Layers AFOSR-IFP-Stanford Conference in
+1968, also referred to the 1968 Stanford Olympics. The data comes from
+volume II and is a compilation of a variety of cases that were used as
+reference data.</p>
+<p>The experimental data consists of a number of measurements from the
+boundary layer at variety of streamwise stations along the flow. These
+measurements are both surface properties, boundary layer edge properties,
+and measurements throughout the boundary layer between the surface and
+the boundary layer edge.</p>
+<p>While the original reference data is a mixture of English and SI units,
+this class provides all data in SI units.</p>
+<p class="rubric">Notes</p>
+<p>See page ix of proceedings for precise definition of each term.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Attributes<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>case: string</strong></dt><dd><p>Four digit number corresponding to the case that the data come from.</p>
+</dd>
+<dt><strong>nu: float</strong></dt><dd><p>Kinematic viscosity in [m^2/s] for the case.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Methods</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pyBL.stanford_olympics.StanfordOlympics1968.G" title="pyBL.stanford_olympics.StanfordOlympics1968.G"><code class="xref py py-obj docutils literal notranslate"><span class="pre">G</span></code></a>()</p></td>
+<td><p>Equilibrium shape factor at each station.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pyBL.stanford_olympics.StanfordOlympics1968.H_d" title="pyBL.stanford_olympics.StanfordOlympics1968.H_d"><code class="xref py py-obj docutils literal notranslate"><span class="pre">H_d</span></code></a>()</p></td>
+<td><p>Displacement shape factor at each station.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pyBL.stanford_olympics.StanfordOlympics1968.H_k" title="pyBL.stanford_olympics.StanfordOlympics1968.H_k"><code class="xref py py-obj docutils literal notranslate"><span class="pre">H_k</span></code></a>()</p></td>
+<td><p>Kinetic energy shape factor at each station.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pyBL.stanford_olympics.StanfordOlympics1968.StationData" title="pyBL.stanford_olympics.StanfordOlympics1968.StationData"><code class="xref py py-obj docutils literal notranslate"><span class="pre">StationData</span></code></a>(row, si_unit)</p></td>
+<td><p>This class is the data that is reported for each station in flow.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pyBL.stanford_olympics.StanfordOlympics1968.U_e" title="pyBL.stanford_olympics.StanfordOlympics1968.U_e"><code class="xref py py-obj docutils literal notranslate"><span class="pre">U_e</span></code></a>()</p></td>
+<td><p>Edge velocity at each station.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pyBL.stanford_olympics.StanfordOlympics1968.beta" title="pyBL.stanford_olympics.StanfordOlympics1968.beta"><code class="xref py py-obj docutils literal notranslate"><span class="pre">beta</span></code></a>()</p></td>
+<td><p>Equilibrium parameter at each station.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pyBL.stanford_olympics.StanfordOlympics1968.c_f" title="pyBL.stanford_olympics.StanfordOlympics1968.c_f"><code class="xref py py-obj docutils literal notranslate"><span class="pre">c_f</span></code></a>()</p></td>
+<td><p>Calculated skin friction coefficient at each station.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pyBL.stanford_olympics.StanfordOlympics1968.c_f_E" title="pyBL.stanford_olympics.StanfordOlympics1968.c_f_E"><code class="xref py py-obj docutils literal notranslate"><span class="pre">c_f_E</span></code></a>()</p></td>
+<td><p>Original reported skin friction coefficient at each station.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pyBL.stanford_olympics.StanfordOlympics1968.c_f_LT" title="pyBL.stanford_olympics.StanfordOlympics1968.c_f_LT"><code class="xref py py-obj docutils literal notranslate"><span class="pre">c_f_LT</span></code></a>()</p></td>
+<td><p>Skin friction coefficient obtained from the Ludwieg-Tillman formula at each station.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pyBL.stanford_olympics.StanfordOlympics1968.change_case_data" title="pyBL.stanford_olympics.StanfordOlympics1968.change_case_data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">change_case_data</span></code></a>(case)</p></td>
+<td><p>Changes the case data that this class stores.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pyBL.stanford_olympics.StanfordOlympics1968.dU_edx" title="pyBL.stanford_olympics.StanfordOlympics1968.dU_edx"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dU_edx</span></code></a>()</p></td>
+<td><p>Rates of change of the edge velocity at each station.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pyBL.stanford_olympics.StanfordOlympics1968.delta_d" title="pyBL.stanford_olympics.StanfordOlympics1968.delta_d"><code class="xref py py-obj docutils literal notranslate"><span class="pre">delta_d</span></code></a>()</p></td>
+<td><p>Displacement thickness at each station.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pyBL.stanford_olympics.StanfordOlympics1968.delta_k" title="pyBL.stanford_olympics.StanfordOlympics1968.delta_k"><code class="xref py py-obj docutils literal notranslate"><span class="pre">delta_k</span></code></a>()</p></td>
+<td><p>Kinetic energy thickness at each station.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pyBL.stanford_olympics.StanfordOlympics1968.delta_m" title="pyBL.stanford_olympics.StanfordOlympics1968.delta_m"><code class="xref py py-obj docutils literal notranslate"><span class="pre">delta_m</span></code></a>()</p></td>
+<td><p>Momentum thickness at each station.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pyBL.stanford_olympics.StanfordOlympics1968.num_stations" title="pyBL.stanford_olympics.StanfordOlympics1968.num_stations"><code class="xref py py-obj docutils literal notranslate"><span class="pre">num_stations</span></code></a>()</p></td>
+<td><p>Returns the number of stations for this case.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pyBL.stanford_olympics.StanfordOlympics1968.station" title="pyBL.stanford_olympics.StanfordOlympics1968.station"><code class="xref py py-obj docutils literal notranslate"><span class="pre">station</span></code></a>(i)</p></td>
+<td><p>Returns the station class for the specified station.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pyBL.stanford_olympics.StanfordOlympics1968.velocity" title="pyBL.stanford_olympics.StanfordOlympics1968.velocity"><code class="xref py py-obj docutils literal notranslate"><span class="pre">velocity</span></code></a>()</p></td>
+<td><p>Return 3-tuple with x positions, edge velocities, and rates of change of the edge velocity.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pyBL.stanford_olympics.StanfordOlympics1968.velocity_smooth" title="pyBL.stanford_olympics.StanfordOlympics1968.velocity_smooth"><code class="xref py py-obj docutils literal notranslate"><span class="pre">velocity_smooth</span></code></a>()</p></td>
+<td><p>Return 3-tuple with x positions, smoothed edge velocities, and smoothed rates of change of the edge velocity.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pyBL.stanford_olympics.StanfordOlympics1968.x" title="pyBL.stanford_olympics.StanfordOlympics1968.x"><code class="xref py py-obj docutils literal notranslate"><span class="pre">x</span></code></a>()</p></td>
+<td><p>Streamwise locations of each station.</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py method">
+<dt class="sig sig-object py" id="pyBL.stanford_olympics.StanfordOlympics1968.G">
+<span class="sig-name descname"><span class="pre">G</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pyBL/stanford_olympics.html#StanfordOlympics1968.G"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyBL.stanford_olympics.StanfordOlympics1968.G" title="Permalink to this definition">¶</a></dt>
+<dd><p>Equilibrium shape factor at each station.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>H_d</strong><span class="classifier">array-like</span></dt><dd><p>Equilibrium shape factor at each station.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyBL.stanford_olympics.StanfordOlympics1968.H_d">
+<span class="sig-name descname"><span class="pre">H_d</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pyBL/stanford_olympics.html#StanfordOlympics1968.H_d"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyBL.stanford_olympics.StanfordOlympics1968.H_d" title="Permalink to this definition">¶</a></dt>
+<dd><p>Displacement shape factor at each station.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>H_d</strong><span class="classifier">array-like</span></dt><dd><p>Displacement shape factor at each station.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyBL.stanford_olympics.StanfordOlympics1968.H_k">
+<span class="sig-name descname"><span class="pre">H_k</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pyBL/stanford_olympics.html#StanfordOlympics1968.H_k"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyBL.stanford_olympics.StanfordOlympics1968.H_k" title="Permalink to this definition">¶</a></dt>
+<dd><p>Kinetic energy shape factor at each station.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>H_d</strong><span class="classifier">array-like</span></dt><dd><p>Kinetic energy shape factor at each station.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="pyBL.stanford_olympics.StanfordOlympics1968.StationData">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">StationData</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">row</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">si_unit</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pyBL/stanford_olympics.html#StanfordOlympics1968.StationData"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyBL.stanford_olympics.StanfordOlympics1968.StationData" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>This class is the data that is reported for each station in flow.</p>
+<p>This class is initialized with the row data associated with the
+summary table and a flag indicating whether the case is in SI units.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Attributes<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>U_e: float</strong></dt><dd><p>Edge velocity in [m/s] at this station.</p>
+</dd>
+<dt><strong>dU_edx: float</strong></dt><dd><p>Rate of change in edge velocity in [1/s] at this station.</p>
+</dd>
+<dt><strong>delta_m: float</strong></dt><dd><p>Momentum thickness in [m] at this station.</p>
+</dd>
+<dt><strong>H_d: float</strong></dt><dd><p>Displacement shape factor at this station.</p>
+</dd>
+<dt><strong>H_k: float</strong></dt><dd><p>Kinetic energy shape factor at this station.</p>
+</dd>
+<dt><strong>G: float</strong></dt><dd><p>Equilibrium shape factor at this station.</p>
+</dd>
+<dt><strong>c_f: float</strong></dt><dd><p>Skin friction coefficient at this station.</p>
+</dd>
+<dt><strong>c_f_LT: float</strong></dt><dd><p>Skin friction coefficient from Ludwieg-Tillman formula.</p>
+</dd>
+<dt><strong>c_f_E: float</strong></dt><dd><p>Skin friction coefficient reported by data originator.</p>
+</dd>
+<dt><strong>beta: float</strong></dt><dd><p>Equilibrium parameter at this station.</p>
+</dd>
+<dt><strong>u_star: float</strong></dt><dd><p>Wall shear velocity in [m/s] at this station.</p>
+</dd>
+<dt><strong>delta_d: float</strong></dt><dd><p>Displacement thickness in [m] at this station.</p>
+</dd>
+<dt><strong>delta_k: float</strong></dt><dd><p>Kinetic energy thickness in [m] at this station.</p>
+</dd>
+<dt><strong>delta_c: float</strong></dt><dd><p>Clauser thickness in [m] at this station.</p>
+</dd>
+<dt><strong>Re_delta_m: float</strong></dt><dd><p>Momentum thickness Reynolds number at this station.</p>
+</dd>
+<dt><strong>Re_delta_d: float</strong></dt><dd><p>Displacement thickness Reynolds number at this station.</p>
+</dd>
+<dt><strong>y_plus: array-like</strong></dt><dd><p>Non-dimensionalized turbulence distances from surface at this
+station.</p>
+</dd>
+<dt><strong>u_plus: array-like</strong></dt><dd><p>Non-dimensionalized turbulence local velocities at this station.</p>
+</dd>
+<dt><strong>y: array-like</strong></dt><dd><p>Distances from surface in [m] at this station.</p>
+</dd>
+<dt><strong>u_on_Ue: array-like</strong></dt><dd><p>Non-dimensionalized relative local velocities at this station.</p>
+</dd>
+<dt><strong>y_on_delta_c: array-like</strong></dt><dd><p>Non-dimensionalized distances from surface at this station.</p>
+</dd>
+<dt><strong>udef: array-like</strong></dt><dd><p>Defect velocity at this station.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyBL.stanford_olympics.StanfordOlympics1968.U_e">
+<span class="sig-name descname"><span class="pre">U_e</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pyBL/stanford_olympics.html#StanfordOlympics1968.U_e"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyBL.stanford_olympics.StanfordOlympics1968.U_e" title="Permalink to this definition">¶</a></dt>
+<dd><p>Edge velocity at each station.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>U_e</strong><span class="classifier">array-like</span></dt><dd><p>Edge velocity at each station.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyBL.stanford_olympics.StanfordOlympics1968.beta">
+<span class="sig-name descname"><span class="pre">beta</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pyBL/stanford_olympics.html#StanfordOlympics1968.beta"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyBL.stanford_olympics.StanfordOlympics1968.beta" title="Permalink to this definition">¶</a></dt>
+<dd><p>Equilibrium parameter at each station.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>beta</strong><span class="classifier">array-like</span></dt><dd><p>Equilibrium parameter at each station.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyBL.stanford_olympics.StanfordOlympics1968.c_f">
+<span class="sig-name descname"><span class="pre">c_f</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pyBL/stanford_olympics.html#StanfordOlympics1968.c_f"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyBL.stanford_olympics.StanfordOlympics1968.c_f" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculated skin friction coefficient at each station.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>c_f</strong><span class="classifier">array-like</span></dt><dd><p>Calculated skin friction coefficient at each station.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyBL.stanford_olympics.StanfordOlympics1968.c_f_E">
+<span class="sig-name descname"><span class="pre">c_f_E</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pyBL/stanford_olympics.html#StanfordOlympics1968.c_f_E"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyBL.stanford_olympics.StanfordOlympics1968.c_f_E" title="Permalink to this definition">¶</a></dt>
+<dd><p>Original reported skin friction coefficient at each station.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>c_f_E</strong><span class="classifier">array-like</span></dt><dd><p>Original reported skin friction coefficient at each station.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyBL.stanford_olympics.StanfordOlympics1968.c_f_LT">
+<span class="sig-name descname"><span class="pre">c_f_LT</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pyBL/stanford_olympics.html#StanfordOlympics1968.c_f_LT"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyBL.stanford_olympics.StanfordOlympics1968.c_f_LT" title="Permalink to this definition">¶</a></dt>
+<dd><p>Skin friction coefficient obtained from the Ludwieg-Tillman formula at
+each station.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>c_f_LT</strong><span class="classifier">array-like</span></dt><dd><p>Skin friction coefficient obtained from the Ludwieg-Tillman
+formula at each station.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyBL.stanford_olympics.StanfordOlympics1968.change_case_data">
+<span class="sig-name descname"><span class="pre">change_case_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">case</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pyBL/stanford_olympics.html#StanfordOlympics1968.change_case_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyBL.stanford_olympics.StanfordOlympics1968.change_case_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Changes the case data that this class stores.</p>
+<p>This method will either reset the case data to no data if the <cite>case</cite>
+parameter is <cite>None</cite>, or it will load the specified case from the
+collection of case files in the library.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>case</strong><span class="classifier">string</span></dt><dd><p>String representation of the four digit case number.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt>Exception</dt><dd><p>When case file to be read contains invalid data.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyBL.stanford_olympics.StanfordOlympics1968.dU_edx">
+<span class="sig-name descname"><span class="pre">dU_edx</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pyBL/stanford_olympics.html#StanfordOlympics1968.dU_edx"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyBL.stanford_olympics.StanfordOlympics1968.dU_edx" title="Permalink to this definition">¶</a></dt>
+<dd><p>Rates of change of the edge velocity at each station.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>dU_edx</strong><span class="classifier">array-like</span></dt><dd><p>Rates of change of the edge velocity at each station.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyBL.stanford_olympics.StanfordOlympics1968.delta_d">
+<span class="sig-name descname"><span class="pre">delta_d</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pyBL/stanford_olympics.html#StanfordOlympics1968.delta_d"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyBL.stanford_olympics.StanfordOlympics1968.delta_d" title="Permalink to this definition">¶</a></dt>
+<dd><p>Displacement thickness at each station.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>delta_d</strong><span class="classifier">array-like</span></dt><dd><p>Displacement thickness at each station.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyBL.stanford_olympics.StanfordOlympics1968.delta_k">
+<span class="sig-name descname"><span class="pre">delta_k</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pyBL/stanford_olympics.html#StanfordOlympics1968.delta_k"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyBL.stanford_olympics.StanfordOlympics1968.delta_k" title="Permalink to this definition">¶</a></dt>
+<dd><p>Kinetic energy thickness at each station.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>delta_k</strong><span class="classifier">array-like</span></dt><dd><p>Kinetic energy thickness at each station.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyBL.stanford_olympics.StanfordOlympics1968.delta_m">
+<span class="sig-name descname"><span class="pre">delta_m</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pyBL/stanford_olympics.html#StanfordOlympics1968.delta_m"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyBL.stanford_olympics.StanfordOlympics1968.delta_m" title="Permalink to this definition">¶</a></dt>
+<dd><p>Momentum thickness at each station.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>delta_m</strong><span class="classifier">array-like</span></dt><dd><p>Momentum thickness at each station.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyBL.stanford_olympics.StanfordOlympics1968.num_stations">
+<span class="sig-name descname"><span class="pre">num_stations</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pyBL/stanford_olympics.html#StanfordOlympics1968.num_stations"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyBL.stanford_olympics.StanfordOlympics1968.num_stations" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the number of stations for this case.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt>int</dt><dd><p>Number of stations for this case.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyBL.stanford_olympics.StanfordOlympics1968.station">
+<span class="sig-name descname"><span class="pre">station</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">i</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pyBL/stanford_olympics.html#StanfordOlympics1968.station"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyBL.stanford_olympics.StanfordOlympics1968.station" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the station class for the specified station.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>i</strong><span class="classifier">int</span></dt><dd><p>Particular station that the information is wanted.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt>StationData</dt><dd><p>The entire data for this desired station.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyBL.stanford_olympics.StanfordOlympics1968.velocity">
+<span class="sig-name descname"><span class="pre">velocity</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pyBL/stanford_olympics.html#StanfordOlympics1968.velocity"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyBL.stanford_olympics.StanfordOlympics1968.velocity" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return 3-tuple with x positions, edge velocities, and rates of change
+of the edge velocity.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt>x: array-like</dt><dd><p>Streamwise coordinate of edge velocities.</p>
+</dd>
+<dt>U_e: array-like</dt><dd><p>Edge velocities.</p>
+</dd>
+<dt>dU_edx: array-like</dt><dd><p>Rates of change of the edge velocity.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyBL.stanford_olympics.StanfordOlympics1968.velocity_smooth">
+<span class="sig-name descname"><span class="pre">velocity_smooth</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pyBL/stanford_olympics.html#StanfordOlympics1968.velocity_smooth"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyBL.stanford_olympics.StanfordOlympics1968.velocity_smooth" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return 3-tuple with x positions, smoothed edge velocities, and smoothed
+rates of change of the edge velocity.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt>x: array-like</dt><dd><p>Streamwise coordinate of smoothed edge velocities.</p>
+</dd>
+<dt>U_e: array-like</dt><dd><p>Smoothed edge velocities.</p>
+</dd>
+<dt>dU_edx: array-like</dt><dd><p>Smoothed rates of change of the edge velocity.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyBL.stanford_olympics.StanfordOlympics1968.x">
+<span class="sig-name descname"><span class="pre">x</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pyBL/stanford_olympics.html#StanfordOlympics1968.x"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyBL.stanford_olympics.StanfordOlympics1968.x" title="Permalink to this definition">¶</a></dt>
+<dd><p>Streamwise locations of each station.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>x</strong><span class="classifier">array-like</span></dt><dd><p>Streamwise locations of each station.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../index.html">pyBL</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../index.html">Home</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../examples/index.html">Examples</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../modules.html">API</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="pyBL.html">pyBL</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../developers/index.html">Developer Resources</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/ddmarshall/IBL">Project</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../license/index.html">License</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../modules.html">API</a><ul>
+  <li><a href="pyBL.html">pyBL</a><ul>
+  <li><a href="pyBL.stanford_olympics.html">pyBL.stanford_olympics</a><ul>
+      <li>Previous: <a href="pyBL.stanford_olympics.html" title="previous chapter">pyBL.stanford_olympics</a></li>
+      <li>Next: <a href="pyBL.thwaites_method.html" title="next chapter">pyBL.thwaites_method</a></li>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2022, David D. Marshall.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 5.1.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

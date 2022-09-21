@@ -1,0 +1,32 @@
+pyBL.stanford\_olympics
+=======================
+
+.. automodule:: pyBL.stanford_olympics
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+      :toctree:
+      :template: custom-class-template.rst
+      :nosignatures:
+   
+      StanfordOlympics1968
+   
+   
+
+   
+   
+   
+
+
+

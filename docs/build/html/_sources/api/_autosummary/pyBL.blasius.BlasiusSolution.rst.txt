@@ -1,0 +1,40 @@
+pyBL.blasius.BlasiusSolution
+============================
+
+.. currentmodule:: pyBL.blasius
+
+.. autoclass:: BlasiusSolution
+   :members:
+   :show-inheritance:
+   :inherited-members:
+
+   
+   
+   
+      ~BlasiusSolution.D
+      ~BlasiusSolution.H_d
+      ~BlasiusSolution.H_k
+      ~BlasiusSolution.U_e
+      ~BlasiusSolution.V_e
+      ~BlasiusSolution.__init__
+      ~BlasiusSolution.delta_d
+      ~BlasiusSolution.delta_k
+      ~BlasiusSolution.delta_m
+      ~BlasiusSolution.delta_s
+      ~BlasiusSolution.eta
+      ~BlasiusSolution.eta_d
+      ~BlasiusSolution.eta_k
+      ~BlasiusSolution.eta_m
+      ~BlasiusSolution.eta_s
+      ~BlasiusSolution.f
+      ~BlasiusSolution.fp
+      ~BlasiusSolution.fpp
+      ~BlasiusSolution.tau_w
+      ~BlasiusSolution.u
+      ~BlasiusSolution.v
+   
+   
+
+   
+   
+   

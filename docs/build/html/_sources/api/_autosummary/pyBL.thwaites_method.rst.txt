@@ -1,0 +1,34 @@
+pyBL.thwaites\_method
+=====================
+
+.. automodule:: pyBL.thwaites_method
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+      :toctree:
+      :template: custom-class-template.rst
+      :nosignatures:
+   
+      ThwaitesMethodBase
+      ThwaitesMethodLinear
+      ThwaitesMethodNonlinear
+   
+   
+
+   
+   
+   
+
+
+

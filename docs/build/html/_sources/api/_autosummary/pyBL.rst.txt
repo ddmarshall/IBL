@@ -1,0 +1,41 @@
+﻿pyBL
+====
+
+.. automodule:: pyBL
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+
+
+.. rubric:: Modules
+
+.. autosummary::
+   :toctree:
+   :template: custom-module-template.rst
+   :recursive:
+
+   pyBL.blasius
+   pyBL.dense_output_ppoly
+   pyBL.falkner_skan
+   pyBL.head_method
+   pyBL.ibl_base
+   pyBL.pyBL
+   pyBL.skin_friction
+   pyBL.stanford_olympics
+   pyBL.thwaites_method
+   pyBL.xfoil_reader
+
