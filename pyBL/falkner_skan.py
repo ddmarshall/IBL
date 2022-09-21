@@ -1,9 +1,14 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Created on Sat Aug 20 01:00:26 2022
+Numerical solution to Falkner-Skan equation.
 
-@author: ddmarshall
+This module calculates the solution to the laminar, incompressible flow over
+a wedge. These solutions depend on the edge veocity profile parameter, `m`,
+which can be related to the wedge angle for the inviscid flow. These solutions
+are known as the Falkner-Skan solutions. After the differential equation is
+solved, a number of properties can be obtained about the flow in similarity
+coordinates as well as in Cartesian coordinates.
 """
 
 
@@ -73,32 +78,153 @@ class FalknerSkanSolution:
         return self._U_ref*x**self._m*np.ones_like(x)
     
     def V_e(self, x):
+        """
+        Calculate the transpiration velocity.
+        
+        Parameters
+        ----------
+        x: array-like
+            Streamwise loations to calculate this property.
+        
+        Returns
+        -------
+        array-like same shape as `x`
+            Desired transpiration velocity at the specified locations.
+        """
         return self._nu*self._g(x)*self.eta_d()
     
     def delta_d(self, x):
+        """
+        Calculate the displacement thickness.
+        
+        Parameters
+        ----------
+        x: array-like
+            Streamwise loations to calculate this property.
+        
+        Returns
+        -------
+        array-like same shape as `x`
+            Desired displacement thickness at the specified locations.
+        """
         return self.eta_d()/self._g(x)
     
     def delta_m(self, x):
+        """
+        Calculate the momentum thickness.
+        
+        Parameters
+        ----------
+        x: array-like
+            Streamwise loations to calculate this property.
+        
+        Returns
+        -------
+        array-like same shape as `x`
+            Desired momentum thickness at the specified locations.
+        """
         return self.eta_m()/self._g(x)
     
     def delta_k(self, x):
+        """
+        Calculate the kinetic energy thickness.
+        
+        Parameters
+        ----------
+        x: array-like
+            Streamwise loations to calculate this property.
+        
+        Returns
+        -------
+        array-like same shape as `x`
+            Desired kinetic energy thickness at the specified locations.
+        """
         return self.eta_k()/self._g(x)
     
     def delta_s(self, x):
+        """
+        Calculate the shear thickness.
+        
+        Parameters
+        ----------
+        x: array-like
+            Streamwise loations to calculate this property.
+        
+        Returns
+        -------
+        array-like same shape as `x`
+            Desired shear thickness at the specified locations.
+        """
         return self.eta_s()/self._g(x)
     
     def H_d(self, x):
+        """
+        Calculate the displacement shape factor.
+        
+        Parameters
+        ----------
+        x: array-like
+            Streamwise loations to calculate this property.
+        
+        Returns
+        -------
+        array-like same shape as `x`
+            Desired displacement shape factor at the specified locations.
+        """
         x = np.asarray(x)
         return (self.eta_d()/self.eta_m())*np.ones_like(x)
     
     def H_k(self, x):
+        """
+        Calculate the kinetic energy shape factor.
+        
+        Parameters
+        ----------
+        x: array-like
+            Streamwise loations to calculate this property.
+        
+        Returns
+        -------
+        array-like same shape as `x`
+            Desired kinetic energy shape factor at the specified locations.
+        """
         x = np.asarray(x)
         return (self.eta_k()/self.eta_m())*np.ones_like(x)
     
     def tau_w(self, x, rho):
+        """
+        Calculate the wall shear stress.
+        
+        Parameters
+        ----------
+        x: array-like
+            Streamwise loations to calculate this property.
+        rho: float
+            Freestream density.
+        
+        Returns
+        -------
+        array-like same shape as `x`
+            Desired wall shear stress at the specified locations.
+        """
         return rho*self._nu*self.U_e(x)*self._g(x)*self.fpp(0)
     
     def D(self, x, rho):
+        """
+        Calculate the dissipation integral.
+        
+        Parameters
+        ----------
+        x: array-like
+            Streamwise loations to calculate this property.
+        rho: float
+            Freestream density.
+        
+        Returns
+        -------
+        array-like same shape as `x`
+            Desired dissipation integral at the specified locations.
+        """
         D_term = 0.5*(1+2*self._beta())*self.eta_k()
         return rho*self._nu*self._g(x)*self.U_e(x)**2*D_term
     
