@@ -115,7 +115,7 @@ class HeadMethod(IBLBase):
         return self._solve_impl([self._delta_m0, self._H_d0],
                                 term_event = term_event)
     
-    def U_n(self, x):
+    def V_e(self, x):
         """
         Calculate the transpiration velocity.
         

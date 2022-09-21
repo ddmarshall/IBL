@@ -63,17 +63,17 @@ def compare_case1200():
     delta_m_head_reg = hm_reg.delta_m(x)
     H_d_head_reg = hm_reg.H_d(x)
     c_f_head_reg = 2*hm_sm.tau_w(x, rho)/(rho*hm_reg.U_e(x)**2)
-    U_n_head_reg = hm_reg.U_n(x)
+    V_e_head_reg = hm_reg.V_e(x)
     delta_d_head_sm = hm_sm.delta_d(x)
     delta_m_head_sm = hm_sm.delta_m(x)
     H_d_head_sm = hm_sm.H_d(x)
     c_f_head_sm = 2*hm_sm.tau_w(x, rho)/(rho*hm_sm.U_e(x)**2)
-    U_n_head_sm = hm_sm.U_n(x)
+    V_e_head_sm = hm_sm.V_e(x)
     delta_d_head_sm2 = hm_sm2.delta_d(x)
     delta_m_head_sm2 = hm_sm2.delta_m(x)
     H_d_head_sm2 = hm_sm2.H_d(x)
     c_f_head_sm2 = 2*hm_sm2.tau_w(x, rho)/(rho*hm_sm2.U_e(x)**2)
-    U_n_head_sm2 = hm_sm2.U_n(x)
+    V_e_head_sm2 = hm_sm2.V_e(x)
     
     ## Plot results
     fig = plt.figure()
@@ -91,7 +91,7 @@ def compare_case1200():
     axis_U_e = fig.add_subplot(gs[4, 0])
     axis_U_e_diff = fig.add_subplot(gs[4, 1])
     axis_dU_edx = fig.add_subplot(gs[5, 0])
-    axis_U_n = fig.add_subplot(gs[5, 1])
+    axis_V_e = fig.add_subplot(gs[5, 1])
     
     ref_color = "black"
     ref_label = "Ludwieg & Tillman"
@@ -222,13 +222,13 @@ def compare_case1200():
     ax.set_ylabel(r"d$U_e/$d$x$ (1/s)")
     ax.grid(True)
     
-    ax = axis_U_n
-    ax.plot(x, U_n_head_reg, color = head_reg_color)
-    ax.plot(x, U_n_head_sm, color = head_sm_color)
-    ax.plot(x, U_n_head_sm2, color = head_sm2_color)
+    ax = axis_V_e
+    ax.plot(x, V_e_head_reg, color = head_reg_color)
+    ax.plot(x, V_e_head_sm, color = head_sm_color)
+    ax.plot(x, V_e_head_sm2, color = head_sm2_color)
     ax.set_ylim(-0.1, 0.4)
     ax.set_xlabel(r"$x$ (m)")
-    ax.set_ylabel(r"$U_n$ (m/s)")
+    ax.set_ylabel(r"$V_e$ (m/s)")
     ax.grid(True)
     
     fig.subplots_adjust(bottom=0.075, wspace=0.5)

@@ -191,7 +191,7 @@ class ThwaitesMethodBase(IBLBase):
         return self._solve_impl(self._delta_m0**2/self._nu,
                                 term_event = term_event)
     
-    def U_n(self, x):
+    def V_e(self, x):
         """
         Calculate the transpiration velocity.
         

@@ -95,7 +95,7 @@ class IBLBaseTest(IBLBase):
         """
         return x
     
-    def U_n(self, x):
+    def V_e(self, x):
         return np.zeros_like(x)
     
     def delta_d(self, x):

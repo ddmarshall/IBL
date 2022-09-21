@@ -80,9 +80,9 @@ def compare_stagnation_solution():
     H_d_exact = fs.H_d(x)
     H_d_standard = tml.H_d(x)
     H_d_nonlinear = tmn.H_d(x)
-    U_n_exact = fs.V_e(x)
-    U_n_standard = tml.U_n(x)
-    U_n_nonlinear = tmn.U_n(x)
+    V_e_exact = fs.V_e(x)
+    V_e_standard = tml.V_e(x)
+    V_e_nonlinear = tmn.V_e(x)
     
     ## plot functions
     fig = plt.figure()
@@ -97,8 +97,8 @@ def compare_stagnation_solution():
     axis_H_d_error = fig.add_subplot(gs[2, 1])
     axis_c_f = fig.add_subplot(gs[3, 0])
     axis_c_f_error = fig.add_subplot(gs[3, 1])
-    axis_U_n = fig.add_subplot(gs[4, 0])
-    axis_U_n_error = fig.add_subplot(gs[4, 1])
+    axis_V_e = fig.add_subplot(gs[4, 0])
+    axis_V_e_error = fig.add_subplot(gs[4, 1])
     
     exact_color = "black"
     exact_label = "Blasius"
@@ -187,19 +187,19 @@ def compare_stagnation_solution():
     ax.grid(True)
     
     # Transpiration velocity in 4,:
-    ax = axis_U_n
-    ax.plot(x/c, U_n_exact/U_inf, color = exact_color)
-    ax.plot(x/c, U_n_standard/U_inf, color = standard_color)
-    ax.plot(x/c, U_n_nonlinear/U_inf, color = nonlinear_color)
+    ax = axis_V_e
+    ax.plot(x/c, V_e_exact/U_inf, color = exact_color)
+    ax.plot(x/c, V_e_standard/U_inf, color = standard_color)
+    ax.plot(x/c, V_e_nonlinear/U_inf, color = nonlinear_color)
     ax.set_ylim(0, 0.01)
     ax.set_xlabel(r"$x/c$")
-    ax.set_ylabel(r"$U_n/U_\infty$")
+    ax.set_ylabel(r"$V_e/U_\infty$")
     ax.grid(True)
     
-    ax = axis_U_n_error
-    ax.plot(x/c, np.abs(1-U_n_standard/U_n_exact),
+    ax = axis_V_e_error
+    ax.plot(x/c, np.abs(1-V_e_standard/V_e_exact),
             color = standard_color)
-    ax.plot(x/c, np.abs(1-U_n_nonlinear/U_n_exact),
+    ax.plot(x/c, np.abs(1-V_e_nonlinear/V_e_exact),
             color = nonlinear_color)
     ax.set_xlabel(r"$x/c$")
     ax.set_ylabel("Relative Error")

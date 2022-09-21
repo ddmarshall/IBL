@@ -421,7 +421,7 @@ class IBLBase(ABC):
             return None
     
     @abstractmethod
-    def U_n(self, x):
+    def V_e(self, x):
         """
         Calculate the transpiration velocity.
         

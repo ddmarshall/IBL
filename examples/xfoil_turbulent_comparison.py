@@ -97,7 +97,7 @@ def compare_xfoil_turbulent():
     delta_m_visc = hm_visc.delta_m(s_visc)
     H_d_visc = hm_visc.H_d(s_visc)
     c_f_visc = 2*hm_visc.tau_w(s_visc, rho_inf)/(rho_inf*U_inf**2)
-    U_n_visc = hm_visc.U_n(s_visc)
+    V_e_visc = hm_visc.V_e(s_visc)
     dU_edx_visc = hm_visc.dU_edx(s_visc)
     d2U_edx2_visc = hm_visc.d2U_edx2(s_visc)
     
@@ -106,7 +106,7 @@ def compare_xfoil_turbulent():
     delta_m_inv = hm_inv.delta_m(s_inv)
     H_d_inv = hm_inv.H_d(s_inv)
     c_f_inv = 2*hm_inv.tau_w(s_inv, rho_inf)/(rho_inf*U_inf**2)
-    U_n_inv = hm_inv.U_n(s_inv)
+    V_e_inv = hm_inv.V_e(s_inv)
     dU_edx_inv = hm_inv.dU_edx(s_inv)
     d2U_edx2_inv = hm_inv.d2U_edx2(s_inv)
 
@@ -126,7 +126,7 @@ def compare_xfoil_turbulent():
     axis_U_e = fig.add_subplot(gs[4, 0])
     axis_dU_edx = fig.add_subplot(gs[4, 1])
     axis_d2U_edx2 = fig.add_subplot(gs[5, 0])
-    axis_U_n = fig.add_subplot(gs[5, 1])
+    axis_V_e = fig.add_subplot(gs[5, 1])
     
     ref_color = "black"
     ref_label = "XFoil"
@@ -247,12 +247,12 @@ def compare_xfoil_turbulent():
     ax.set_ylabel(r"d$^2U_e/$d$x^2$ (1/(m$\cdot$s)")
     ax.grid(True)
     
-    ax = axis_U_n
-    ax.plot(s_visc/c, U_n_visc/U_inf, color = thwaites_visc_color)
-    ax.plot(s_inv/c, U_n_inv/U_inf, color = thwaites_inv_color)
+    ax = axis_V_e
+    ax.plot(s_visc/c, V_e_visc/U_inf, color = thwaites_visc_color)
+    ax.plot(s_inv/c, V_e_inv/U_inf, color = thwaites_inv_color)
     ax.set_ylim(0, 0.01)
     ax.set_xlabel(r"$x/c$")
-    ax.set_ylabel(r"$U_n/U_e$")
+    ax.set_ylabel(r"$V_e/U_e$")
     ax.grid(True)
     
     fig.subplots_adjust(bottom=0.075, wspace=0.5)

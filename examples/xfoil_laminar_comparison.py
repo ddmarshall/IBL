@@ -93,7 +93,7 @@ def compare_xfoil_laminar():
     delta_m_visc = tm_visc.delta_m(s_visc)
     H_d_visc = tm_visc.H_d(s_visc)
     c_f_visc = 2*tm_visc.tau_w(s_visc, rho_inf)/(rho_inf*U_inf**2)
-    U_n_visc = tm_visc.U_n(s_visc)
+    V_e_visc = tm_visc.V_e(s_visc)
     dU_edx_visc = tm_visc.dU_edx(s_visc)
     d2U_edx2_visc = tm_visc.d2U_edx2(s_visc)
     
@@ -102,7 +102,7 @@ def compare_xfoil_laminar():
     delta_m_inv = tm_inv.delta_m(s_inv)
     H_d_inv = tm_inv.H_d(s_inv)
     c_f_inv = 2*tm_inv.tau_w(s_inv, rho_inf)/(rho_inf*U_inf**2)
-    U_n_inv = tm_inv.U_n(s_inv)
+    V_e_inv = tm_inv.V_e(s_inv)
     dU_edx_inv = tm_inv.dU_edx(s_inv)
     d2U_edx2_inv = tm_inv.d2U_edx2(s_inv)
 
@@ -122,7 +122,7 @@ def compare_xfoil_laminar():
     axis_U_e = fig.add_subplot(gs[4, 0])
     axis_dU_edx = fig.add_subplot(gs[4, 1])
     axis_d2U_edx2 = fig.add_subplot(gs[5, 0])
-    axis_U_n = fig.add_subplot(gs[5, 1])
+    axis_V_e = fig.add_subplot(gs[5, 1])
     
     ref_color = "black"
     ref_label = "XFoil"
@@ -242,12 +242,12 @@ def compare_xfoil_laminar():
     ax.set_ylabel(r"d$^2U_e/$d$x^2$ (1/(m$\cdot$s)")
     ax.grid(True)
     
-    ax = axis_U_n
-    ax.plot(s_visc/c, U_n_visc/U_inf, color = thwaites_visc_color)
-    ax.plot(s_inv/c, U_n_inv/U_inf, color = thwaites_inv_color)
+    ax = axis_V_e
+    ax.plot(s_visc/c, V_e_visc/U_inf, color = thwaites_visc_color)
+    ax.plot(s_inv/c, V_e_inv/U_inf, color = thwaites_inv_color)
     ax.set_ylim(0, 0.1)
     ax.set_xlabel(r"$x/c$")
-    ax.set_ylabel(r"$U_n/U_e$")
+    ax.set_ylabel(r"$V_e/U_e$")
     ax.grid(True)
     
     fig.subplots_adjust(bottom=0.075, wspace=0.5)

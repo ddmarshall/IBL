@@ -244,7 +244,7 @@ class ThwaitesLinearAnalytic:
         self.H_fun = H_fun
         self.S_fun = S_fun
     
-    def U_n(self, x):
+    def V_e(self, x):
         ddelta_ddx = fd(self.delta_d, x, 1e-5, n=1, order=3)
         return self.U_ref*x**self.m*(self.m*self.delta_d(x)/x+ddelta_ddx)
     
@@ -321,7 +321,7 @@ class TestLinearThwaites(unittest.TestCase):
         self.assertIsNone(npt.assert_allclose(tm.H_d(x), tm_ref.H_d(x)))
         self.assertIsNone(npt.assert_allclose(tm.tau_w(x, rho),
                                               tm_ref.tau_w(x, rho), rtol=5e-5))
-        self.assertIsNone(npt.assert_allclose(tm.U_n(x), tm_ref.U_n(x),
+        self.assertIsNone(npt.assert_allclose(tm.V_e(x), tm_ref.V_e(x),
                                               rtol=1e-4))
         
         # test with White fits
@@ -342,7 +342,7 @@ class TestLinearThwaites(unittest.TestCase):
         self.assertIsNone(npt.assert_allclose(tm.H_d(x), tm_ref.H_d(x)))
         self.assertIsNone(npt.assert_allclose(tm.tau_w(x, rho),
                                               tm_ref.tau_w(x, rho), rtol=5e-5))
-        self.assertIsNone(npt.assert_allclose(tm.U_n(x), tm_ref.U_n(x),
+        self.assertIsNone(npt.assert_allclose(tm.V_e(x), tm_ref.V_e(x),
                                               rtol=1e-4))
         
         # test with Cebeci and Bradshaw fits
@@ -364,7 +364,7 @@ class TestLinearThwaites(unittest.TestCase):
         self.assertIsNone(npt.assert_allclose(tm.H_d(x), tm_ref.H_d(x)))
         self.assertIsNone(npt.assert_allclose(tm.tau_w(x, rho),
                                               tm_ref.tau_w(x, rho), rtol=5e-5))
-        self.assertIsNone(npt.assert_allclose(tm.U_n(x), tm_ref.U_n(x),
+        self.assertIsNone(npt.assert_allclose(tm.V_e(x), tm_ref.V_e(x),
                                               rtol=1e-4))
         
         # test creating with own functions for S, H, H'
@@ -397,7 +397,7 @@ class TestLinearThwaites(unittest.TestCase):
         self.assertIsNone(npt.assert_allclose(tm.H_d(x), tm_ref.H_d(x)))
         self.assertIsNone(npt.assert_allclose(tm.tau_w(x, rho),
                                               tm_ref.tau_w(x, rho), rtol=5e-5))
-        self.assertIsNone(npt.assert_allclose(tm.U_n(x), tm_ref.U_n(x),
+        self.assertIsNone(npt.assert_allclose(tm.V_e(x), tm_ref.V_e(x),
                                               rtol=1e-4))
         
         # test creating with own functions for S, H
@@ -419,7 +419,7 @@ class TestLinearThwaites(unittest.TestCase):
         self.assertIsNone(npt.assert_allclose(tm.H_d(x), tm_ref.H_d(x)))
         self.assertIsNone(npt.assert_allclose(tm.tau_w(x, rho),
                                               tm_ref.tau_w(x, rho), rtol=5e-5))
-        self.assertIsNone(npt.assert_allclose(tm.U_n(x), tm_ref.U_n(x),
+        self.assertIsNone(npt.assert_allclose(tm.V_e(x), tm_ref.V_e(x),
                                               rtol=1e-4))
         
         # test creating with invalid name
@@ -471,7 +471,7 @@ class TestLinearThwaites(unittest.TestCase):
                                               rtol=3e-6))
         self.assertIsNone(npt.assert_allclose(tm.tau_w(x, rho),
                                               tm_ref.tau_w(x, rho), rtol=1e-5))
-        self.assertIsNone(npt.assert_allclose(tm.U_n(x), tm_ref.U_n(x),
+        self.assertIsNone(npt.assert_allclose(tm.V_e(x), tm_ref.V_e(x),
                                               rtol=1e-4))
         
         # test with White fits
@@ -493,7 +493,7 @@ class TestLinearThwaites(unittest.TestCase):
                                               rtol=3e-6))
         self.assertIsNone(npt.assert_allclose(tm.tau_w(x, rho),
                                               tm_ref.tau_w(x, rho), rtol=1e-5))
-        self.assertIsNone(npt.assert_allclose(tm.U_n(x), tm_ref.U_n(x),
+        self.assertIsNone(npt.assert_allclose(tm.V_e(x), tm_ref.V_e(x),
                                               rtol=1e-4))
         
         # test with Cebeci and Bradshaw fits
@@ -516,7 +516,7 @@ class TestLinearThwaites(unittest.TestCase):
                                               rtol=3e-6))
         self.assertIsNone(npt.assert_allclose(tm.tau_w(x, rho),
                                               tm_ref.tau_w(x, rho), rtol=1e-5))
-        self.assertIsNone(npt.assert_allclose(tm.U_n(x), tm_ref.U_n(x),
+        self.assertIsNone(npt.assert_allclose(tm.V_e(x), tm_ref.V_e(x),
                                               rtol=1e-4))
     
     def testWedge072Case(self):
@@ -563,7 +563,7 @@ class TestLinearThwaites(unittest.TestCase):
                                               rtol=3e-6))
         self.assertIsNone(npt.assert_allclose(tm.tau_w(x, rho),
                                               tm_ref.tau_w(x, rho), rtol=6e-6))
-        self.assertIsNone(npt.assert_allclose(tm.U_n(x), tm_ref.U_n(x),
+        self.assertIsNone(npt.assert_allclose(tm.V_e(x), tm_ref.V_e(x),
                                               rtol=7e-5))
         
         # test with White fits
@@ -585,7 +585,7 @@ class TestLinearThwaites(unittest.TestCase):
                                               rtol=3e-6))
         self.assertIsNone(npt.assert_allclose(tm.tau_w(x, rho),
                                               tm_ref.tau_w(x, rho), rtol=6e-6))
-        self.assertIsNone(npt.assert_allclose(tm.U_n(x), tm_ref.U_n(x),
+        self.assertIsNone(npt.assert_allclose(tm.V_e(x), tm_ref.V_e(x),
                                               rtol=7e-5))
         
         # test with Cebeci and Bradshaw fits
@@ -608,7 +608,7 @@ class TestLinearThwaites(unittest.TestCase):
                                               rtol=3e-6))
         self.assertIsNone(npt.assert_allclose(tm.tau_w(x, rho),
                                               tm_ref.tau_w(x, rho), rtol=6e-6))
-        self.assertIsNone(npt.assert_allclose(tm.U_n(x), tm_ref.U_n(x),
+        self.assertIsNone(npt.assert_allclose(tm.V_e(x), tm_ref.V_e(x),
                                               rtol=8e-5))
     
     def testWedge100Case(self):
@@ -654,7 +654,7 @@ class TestLinearThwaites(unittest.TestCase):
         self.assertIsNone(npt.assert_allclose(tm.H_d(x), tm_ref.H_d(x)))
         self.assertIsNone(npt.assert_allclose(tm.tau_w(x, rho),
                                               tm_ref.tau_w(x, rho)))
-        self.assertIsNone(npt.assert_allclose(tm.U_n(x), tm_ref.U_n(x)))
+        self.assertIsNone(npt.assert_allclose(tm.V_e(x), tm_ref.V_e(x)))
         
         # test with White fits
         tm = ThwaitesMethodLinear(U_e = U_e_fun, dU_edx = dU_edx_fun,
@@ -674,7 +674,7 @@ class TestLinearThwaites(unittest.TestCase):
         self.assertIsNone(npt.assert_allclose(tm.H_d(x), tm_ref.H_d(x)))
         self.assertIsNone(npt.assert_allclose(tm.tau_w(x, rho),
                                               tm_ref.tau_w(x, rho)))
-        self.assertIsNone(npt.assert_allclose(tm.U_n(x), tm_ref.U_n(x)))
+        self.assertIsNone(npt.assert_allclose(tm.V_e(x), tm_ref.V_e(x)))
         
         # test with Cebeci and Bradshaw fits
         tm = ThwaitesMethodLinear(U_e = U_e_fun, dU_edx = dU_edx_fun,
@@ -695,7 +695,7 @@ class TestLinearThwaites(unittest.TestCase):
         self.assertIsNone(npt.assert_allclose(tm.H_d(x), tm_ref.H_d(x)))
         self.assertIsNone(npt.assert_allclose(tm.tau_w(x, rho),
                                               tm_ref.tau_w(x, rho)))
-        self.assertIsNone(npt.assert_allclose(tm.U_n(x), tm_ref.U_n(x)))
+        self.assertIsNone(npt.assert_allclose(tm.V_e(x), tm_ref.V_e(x)))
 
 
 class TestNonlinearThwaites(unittest.TestCase):
@@ -745,7 +745,7 @@ class TestNonlinearThwaites(unittest.TestCase):
         self.assertIsNone(npt.assert_allclose(tm.tau_w(x, rho),
                                               tm_ref.tau_w(x, rho),
                                               atol = 0, rtol = 2e-2))
-        self.assertIsNone(npt.assert_allclose(tm.U_n(x), tm_ref.U_n(x),
+        self.assertIsNone(npt.assert_allclose(tm.V_e(x), tm_ref.V_e(x),
                                               atol = 0, rtol = 3e-2))
         
         # test with White fits
@@ -768,7 +768,7 @@ class TestNonlinearThwaites(unittest.TestCase):
         self.assertIsNone(npt.assert_allclose(tm.tau_w(x, rho),
                                               tm_ref.tau_w(x, rho),
                                               atol = 0, rtol = 1e-3))
-        self.assertIsNone(npt.assert_allclose(tm.U_n(x), tm_ref.U_n(x),
+        self.assertIsNone(npt.assert_allclose(tm.V_e(x), tm_ref.V_e(x),
                                               atol = 0, rtol = 2e-3))
         
         # test with Cebeci and Bradshaw fits
@@ -791,7 +791,7 @@ class TestNonlinearThwaites(unittest.TestCase):
         self.assertIsNone(npt.assert_allclose(tm.tau_w(x, rho),
                                               tm_ref.tau_w(x, rho),
                                               atol = 0, rtol = 2e-2))
-        self.assertIsNone(npt.assert_allclose(tm.U_n(x), tm_ref.U_n(x),
+        self.assertIsNone(npt.assert_allclose(tm.V_e(x), tm_ref.V_e(x),
                                               atol = 0, rtol = 3e-2))
         
         # test creating with own functions for S, H, H'
@@ -825,7 +825,7 @@ class TestNonlinearThwaites(unittest.TestCase):
         self.assertIsNone(npt.assert_allclose(tm.tau_w(x, rho),
                                               tm_ref.tau_w(x, rho),
                                               atol = 0, rtol = 1e-3))
-        self.assertIsNone(npt.assert_allclose(tm.U_n(x), tm_ref.U_n(x),
+        self.assertIsNone(npt.assert_allclose(tm.V_e(x), tm_ref.V_e(x),
                                               atol = 0, rtol = 2e-3))
         
         # test creating with own functions for S, H
@@ -848,7 +848,7 @@ class TestNonlinearThwaites(unittest.TestCase):
         self.assertIsNone(npt.assert_allclose(tm.tau_w(x, rho),
                                               tm_ref.tau_w(x, rho),
                                               atol = 0, rtol = 1e-3))
-        self.assertIsNone(npt.assert_allclose(tm.U_n(x), tm_ref.U_n(x),
+        self.assertIsNone(npt.assert_allclose(tm.V_e(x), tm_ref.V_e(x),
                                               atol = 0, rtol = 2e-3))
         
         # test creating with invalid name
@@ -902,7 +902,7 @@ class TestNonlinearThwaites(unittest.TestCase):
         self.assertIsNone(npt.assert_allclose(tm.tau_w(x, rho),
                                               tm_ref.tau_w(x, rho),
                                               atol = 0, rtol = 2e-3))
-        self.assertIsNone(npt.assert_allclose(tm.U_n(x), tm_ref.U_n(x),
+        self.assertIsNone(npt.assert_allclose(tm.V_e(x), tm_ref.V_e(x),
                                               atol = 0, rtol = 1e-2))
         
         # test with White fits
@@ -926,7 +926,7 @@ class TestNonlinearThwaites(unittest.TestCase):
         self.assertIsNone(npt.assert_allclose(tm.tau_w(x, rho),
                                               tm_ref.tau_w(x, rho),
                                               atol = 0, rtol = 2e-3))
-        self.assertIsNone(npt.assert_allclose(tm.U_n(x), tm_ref.U_n(x),
+        self.assertIsNone(npt.assert_allclose(tm.V_e(x), tm_ref.V_e(x),
                                               atol = 0, rtol = 1e-2))
         
         # test with Cebeci and Bradshaw fits
@@ -950,7 +950,7 @@ class TestNonlinearThwaites(unittest.TestCase):
         self.assertIsNone(npt.assert_allclose(tm.tau_w(x, rho),
                                               tm_ref.tau_w(x, rho),
                                               atol = 0, rtol = 1e-3))
-        self.assertIsNone(npt.assert_allclose(tm.U_n(x), tm_ref.U_n(x),
+        self.assertIsNone(npt.assert_allclose(tm.V_e(x), tm_ref.V_e(x),
                                               atol = 0, rtol = 1e-2))
     
     def testWedge072Case(self):
@@ -998,7 +998,7 @@ class TestNonlinearThwaites(unittest.TestCase):
         self.assertIsNone(npt.assert_allclose(tm.tau_w(x, rho),
                                               tm_ref.tau_w(x, rho),
                                               atol = 0, rtol = 1e-3))
-        self.assertIsNone(npt.assert_allclose(tm.U_n(x), tm_ref.U_n(x),
+        self.assertIsNone(npt.assert_allclose(tm.V_e(x), tm_ref.V_e(x),
                                               atol = 0, rtol = 1e-2))
         
         # test with White fits
@@ -1022,7 +1022,7 @@ class TestNonlinearThwaites(unittest.TestCase):
         self.assertIsNone(npt.assert_allclose(tm.tau_w(x, rho),
                                               tm_ref.tau_w(x, rho),
                                               atol = 0, rtol = 1e-3))
-        self.assertIsNone(npt.assert_allclose(tm.U_n(x), tm_ref.U_n(x),
+        self.assertIsNone(npt.assert_allclose(tm.V_e(x), tm_ref.V_e(x),
                                               atol = 0, rtol = 1e-2))
         
         # test with Cebeci and Bradshaw fits
@@ -1046,7 +1046,7 @@ class TestNonlinearThwaites(unittest.TestCase):
         self.assertIsNone(npt.assert_allclose(tm.tau_w(x, rho),
                                               tm_ref.tau_w(x, rho),
                                               atol = 0, rtol = 3e-5))
-        self.assertIsNone(npt.assert_allclose(tm.U_n(x), tm_ref.U_n(x),
+        self.assertIsNone(npt.assert_allclose(tm.V_e(x), tm_ref.V_e(x),
                                               atol = 0, rtol = 3e-4))
     
     def testWedge100Case(self):
@@ -1094,7 +1094,7 @@ class TestNonlinearThwaites(unittest.TestCase):
         self.assertIsNone(npt.assert_allclose(tm.tau_w(x, rho),
                                               tm_ref.tau_w(x, rho),
                                               atol = 0, rtol = 1e-4))
-        self.assertIsNone(npt.assert_allclose(tm.U_n(x), tm_ref.U_n(x),
+        self.assertIsNone(npt.assert_allclose(tm.V_e(x), tm_ref.V_e(x),
                                               atol = 0, rtol = 1e-3))
         
         # test with White fits
@@ -1118,7 +1118,7 @@ class TestNonlinearThwaites(unittest.TestCase):
         self.assertIsNone(npt.assert_allclose(tm.tau_w(x, rho),
                                               tm_ref.tau_w(x, rho),
                                               atol = 0, rtol = 2e-4))
-        self.assertIsNone(npt.assert_allclose(tm.U_n(x), tm_ref.U_n(x),
+        self.assertIsNone(npt.assert_allclose(tm.V_e(x), tm_ref.V_e(x),
                                               atol = 0, rtol = 3e-3))
         
         # test with Cebeci and Bradshaw fits
@@ -1142,7 +1142,7 @@ class TestNonlinearThwaites(unittest.TestCase):
         self.assertIsNone(npt.assert_allclose(tm.tau_w(x, rho),
                                               tm_ref.tau_w(x, rho),
                                               atol = 0, rtol = 1e-3))
-        self.assertIsNone(npt.assert_allclose(tm.U_n(x), tm_ref.U_n(x),
+        self.assertIsNone(npt.assert_allclose(tm.V_e(x), tm_ref.V_e(x),
                                               atol = 0, rtol = 1e-2))
 
 
