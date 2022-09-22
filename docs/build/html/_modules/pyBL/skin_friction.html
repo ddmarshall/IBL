@@ -35,8 +35,7 @@
 <span></span><span class="ch">#!/usr/bin/env python3</span>
 <span class="c1"># -*- coding: utf-8 -*-</span>
 <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">Functions to calculate the skin friction coefficient for turbulent boundary</span>
-<span class="sd">layers.</span>
+<span class="sd">Functions to calculate skin friction coefficient for turbulent boundary layers.</span>
 
 <span class="sd">This module provides functions to calculate the skin friction coefficient for</span>
 <span class="sd">turbulent boundary layers  from the momentum thickness Reynolds number and</span>
@@ -45,24 +44,24 @@
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
+
 <div class="viewcode-block" id="c_f_LudwiegTillman"><a class="viewcode-back" href="../../api/_autosummary/pyBL.skin_friction.c_f_LudwiegTillman.html#pyBL.skin_friction.c_f_LudwiegTillman">[docs]</a><span class="k">def</span> <span class="nf">c_f_LudwiegTillman</span><span class="p">(</span><span class="n">Re_delta_m</span><span class="p">,</span> <span class="n">H_d</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Calculate the skin friction coefficient using the Ludwieg-Tillman (1950)</span>
-<span class="sd">    relation.</span>
-<span class="sd">    </span>
+<span class="sd">    Calculate skin friction coefficient using Ludwieg-Tillman (1950) relation.</span>
+
 <span class="sd">    This function calculate the skin friction given the momentum thickness</span>
 <span class="sd">    Reynolds number and displacement shape factor and is based on experimental</span>
 <span class="sd">    data on turbulent boundary layers from Ludwieg and Tillman.</span>
-<span class="sd">    </span>
+
 <span class="sd">    If both parameters are array-like, they have to be the same shape.</span>
-<span class="sd">    </span>
+
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    Re_delta_m: float or array-like</span>
 <span class="sd">        Reynolds number based on the momentum thickness</span>
 <span class="sd">    H_d: float or array-like</span>
 <span class="sd">        Displacement shape factor</span>
-<span class="sd">    </span>
+
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    array-like same shape as array-like input</span>
@@ -70,48 +69,51 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="mf">0.246</span><span class="o">/</span><span class="p">(</span><span class="n">Re_delta_m</span><span class="o">**</span><span class="mf">0.268</span><span class="o">*</span><span class="mi">10</span><span class="o">**</span><span class="p">(</span><span class="mf">0.678</span><span class="o">*</span><span class="n">H_d</span><span class="p">))</span></div>
 
+
 <div class="viewcode-block" id="c_f_Felsch"><a class="viewcode-back" href="../../api/_autosummary/pyBL.skin_friction.c_f_Felsch.html#pyBL.skin_friction.c_f_Felsch">[docs]</a><span class="k">def</span> <span class="nf">c_f_Felsch</span><span class="p">(</span><span class="n">Re_delta_m</span><span class="p">,</span> <span class="n">H_d</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Calculate the skin friction coefficient using the Felsch (1968) relation.</span>
-<span class="sd">    </span>
+<span class="sd">    Calculate skin friction coefficient using Felsch (1968) relation.</span>
+
 <span class="sd">    This function calculate the skin friction given the momentum thickness</span>
 <span class="sd">    Reynolds number and displacement shape factor and is based on experimental</span>
 <span class="sd">    data on turbulent boundary layers from Felsch.</span>
-<span class="sd">    </span>
+
 <span class="sd">    If both parameters are array-like, they have to be the same shape.</span>
-<span class="sd">    </span>
+
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    Re_delta_m: float or array-like</span>
 <span class="sd">        Reynolds number based on the momentum thickness</span>
 <span class="sd">    H_d: float or array-like</span>
 <span class="sd">        Displacement shape factor</span>
-<span class="sd">    </span>
+
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    array-like same shape as array-like input</span>
 <span class="sd">        Corresponding skin friction coefficient</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">H_d_sep</span> <span class="o">=</span> <span class="mf">2.9986313485</span>
-    <span class="k">return</span> <span class="mf">0.058</span><span class="o">*</span><span class="p">(</span><span class="mf">0.93</span> <span class="o">-</span> <span class="mf">1.95</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">H_d</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">H_d_sep</span><span class="p">)))</span><span class="o">**</span><span class="mf">1.705</span><span class="o">/</span><span class="p">(</span><span class="n">Re_delta_m</span><span class="o">**</span><span class="mf">0.268</span><span class="p">)</span></div>
+    <span class="n">term1</span> <span class="o">=</span> <span class="mf">1.95</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">H_d</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">H_d_sep</span><span class="p">))</span>
+    <span class="k">return</span> <span class="mf">0.058</span><span class="o">*</span><span class="p">(</span><span class="mf">0.93</span> <span class="o">-</span> <span class="n">term1</span><span class="p">)</span><span class="o">**</span><span class="mf">1.705</span><span class="o">/</span><span class="p">(</span><span class="n">Re_delta_m</span><span class="o">**</span><span class="mf">0.268</span><span class="p">)</span></div>
+
 
 <div class="viewcode-block" id="c_f_White"><a class="viewcode-back" href="../../api/_autosummary/pyBL.skin_friction.c_f_White.html#pyBL.skin_friction.c_f_White">[docs]</a><span class="k">def</span> <span class="nf">c_f_White</span><span class="p">(</span><span class="n">Re_delta_m</span><span class="p">,</span> <span class="n">H_d</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Calculate the skin friction coefficient using the White (2011) relation.</span>
-<span class="sd">    </span>
+<span class="sd">    Calculate skin friction coefficient using White (2011) relation.</span>
+
 <span class="sd">    This function calculate the skin friction given the momentum thickness</span>
 <span class="sd">    Reynolds number and displacement shape factor and is based on experimental</span>
 <span class="sd">    data on turbulent boundary layers from White.</span>
-<span class="sd">    </span>
+
 <span class="sd">    If both parameters are array-like, they have to be the same shape.</span>
-<span class="sd">    </span>
+
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    Re_delta_m: float or array-like</span>
 <span class="sd">        Reynolds number based on the momentum thickness</span>
 <span class="sd">    H_d: float or array-like</span>
 <span class="sd">        Displacement shape factor</span>
-<span class="sd">    </span>
+
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    array-like same shape as array-like input</span>

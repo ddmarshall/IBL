@@ -51,30 +51,33 @@
 <div class="viewcode-block" id="HeadMethod"><a class="viewcode-back" href="../../api/_autosummary/pyBL.head_method.HeadMethod.html#pyBL.head_method.HeadMethod">[docs]</a><span class="k">class</span> <span class="nc">HeadMethod</span><span class="p">(</span><span class="n">IBLBase</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Models a turbulent bondary layer using Head&#39;s Method (1958).</span>
-<span class="sd">    </span>
+
 <span class="sd">    Solves the system of ODEs from Head&#39;s method when provided the edge</span>
 <span class="sd">    velocity profile and other configuration information.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    
+
     <span class="c1"># Attributes</span>
     <span class="c1"># ----------</span>
     <span class="c1">#    _delta_m0: Momentum thickness at start location</span>
     <span class="c1">#    _H_d0: Displacement shape factor at start location</span>
     <span class="c1">#    _nu: Kinematic viscosity</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">U_e</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">dU_edx</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">d2U_edx2</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-                 <span class="n">H_d_crit</span> <span class="o">=</span> <span class="mf">2.4</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">U_e</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dU_edx</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">d2U_edx2</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">H_d_crit</span><span class="o">=</span><span class="mf">2.4</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">U_e</span><span class="p">,</span> <span class="n">dU_edx</span><span class="p">,</span> <span class="n">d2U_edx2</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_nu</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_H_d0</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_delta_m0</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">set_H_d_critical</span><span class="p">(</span><span class="n">H_d_crit</span><span class="p">)</span>
-    
+
 <div class="viewcode-block" id="HeadMethod.set_H_d_critical"><a class="viewcode-back" href="../../api/_autosummary/pyBL.head_method.HeadMethod.html#pyBL.head_method.HeadMethod.set_H_d_critical">[docs]</a>    <span class="k">def</span> <span class="nf">set_H_d_critical</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">H_d_crit</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Set the critical displacement shape factor for separation.</span>
-<span class="sd">        </span>
+
 <span class="sd">        Since Head&#39;s method does not predict when the skin friction will be</span>
 <span class="sd">        zero, another mechanism needs to be employed to determine if/when</span>
 <span class="sd">        separation will occur. This value is used as the threshold for the</span>
 <span class="sd">        displacement shape factor to indicate separation has occurred.</span>
-<span class="sd">        </span>
+
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        H_d_crit : float</span>
@@ -82,11 +85,11 @@
 <span class="sd">            that the boundary layer has separated.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_set_kill_event</span><span class="p">(</span><span class="n">_HeadSeparationEvent</span><span class="p">(</span><span class="n">H_d_crit</span><span class="p">))</span></div>
-    
+
 <div class="viewcode-block" id="HeadMethod.set_solution_parameters"><a class="viewcode-back" href="../../api/_autosummary/pyBL.head_method.HeadMethod.html#pyBL.head_method.HeadMethod.set_solution_parameters">[docs]</a>    <span class="k">def</span> <span class="nf">set_solution_parameters</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x0</span><span class="p">,</span> <span class="n">x_end</span><span class="p">,</span> <span class="n">delta_m0</span><span class="p">,</span> <span class="n">H_d0</span><span class="p">,</span> <span class="n">nu</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Set the parameters needed for the solver to propagate</span>
-<span class="sd">        </span>
+<span class="sd">        Set the parameters needed for the solver to propagate.</span>
+
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        x0: float</span>
@@ -99,65 +102,66 @@
 <span class="sd">            Displacement shape factor at start location.</span>
 <span class="sd">        nu: float</span>
 <span class="sd">            Kinematic viscosity.</span>
-<span class="sd">        </span>
+
 <span class="sd">        Raises</span>
 <span class="sd">        ------</span>
 <span class="sd">        ValueError</span>
 <span class="sd">            When negative viscosity provided, or invalid initial conditions</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># pylint: disable=too-many-arguments</span>
         <span class="k">if</span> <span class="n">nu</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Viscosity must be positive&quot;</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_nu</span> <span class="o">=</span> <span class="n">nu</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_nu</span> <span class="o">=</span> <span class="n">nu</span>
         <span class="k">if</span> <span class="n">delta_m0</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Initial momentum thickness must be positive&quot;</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_delta_m0</span> <span class="o">=</span> <span class="n">delta_m0</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_delta_m0</span> <span class="o">=</span> <span class="n">delta_m0</span>
         <span class="k">if</span> <span class="n">H_d0</span> <span class="o">&lt;=</span> <span class="mi">1</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Initial displacement shape factor must be &quot;</span>
                              <span class="s2">&quot;greater than one&quot;</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_H_d0</span> <span class="o">=</span> <span class="n">H_d0</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_H_d0</span> <span class="o">=</span> <span class="n">H_d0</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_set_x_range</span><span class="p">(</span><span class="n">x0</span><span class="p">,</span> <span class="n">x_end</span><span class="p">)</span></div>
-    
+
 <div class="viewcode-block" id="HeadMethod.nu"><a class="viewcode-back" href="../../api/_autosummary/pyBL.head_method.HeadMethod.html#pyBL.head_method.HeadMethod.nu">[docs]</a>    <span class="k">def</span> <span class="nf">nu</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return kinematic viscosity used for the solution.</span>
-<span class="sd">        </span>
+
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        float</span>
 <span class="sd">            Kinematic viscosity.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_nu</span></div>
-    
-<div class="viewcode-block" id="HeadMethod.solve"><a class="viewcode-back" href="../../api/_autosummary/pyBL.head_method.HeadMethod.html#pyBL.head_method.HeadMethod.solve">[docs]</a>    <span class="k">def</span> <span class="nf">solve</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">term_event</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+
+<div class="viewcode-block" id="HeadMethod.solve"><a class="viewcode-back" href="../../api/_autosummary/pyBL.head_method.HeadMethod.html#pyBL.head_method.HeadMethod.solve">[docs]</a>    <span class="k">def</span> <span class="nf">solve</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">term_event</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Solve the ODEs associated with Head&#39;s method.</span>
-<span class="sd">        </span>
+
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        term_event : List of classes based on :class:`IBLTermEventBase`, optional</span>
+<span class="sd">        term_event : List based on :class:`IBLTermEventBase`, optional</span>
 <span class="sd">            User events that can terminate the integration process before the</span>
 <span class="sd">            end location of the integration is reached. The default is `None`.</span>
-<span class="sd">            </span>
+
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        :class:`IBLResult`</span>
 <span class="sd">            Information associated with the integration process.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_solve_impl</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">_delta_m0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_H_d0</span><span class="p">],</span>
-                                <span class="n">term_event</span> <span class="o">=</span> <span class="n">term_event</span><span class="p">)</span></div>
-    
+                                <span class="n">term_event</span><span class="o">=</span><span class="n">term_event</span><span class="p">)</span></div>
+
 <div class="viewcode-block" id="HeadMethod.V_e"><a class="viewcode-back" href="../../api/_autosummary/pyBL.head_method.HeadMethod.html#pyBL.head_method.HeadMethod.V_e">[docs]</a>    <span class="k">def</span> <span class="nf">V_e</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Calculate the transpiration velocity.</span>
-<span class="sd">        </span>
+
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        x: array-like</span>
 <span class="sd">            Streamwise loations to calculate this property.</span>
-<span class="sd">        </span>
+
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        array-like same shape as `x`</span>
@@ -168,99 +172,99 @@
         <span class="n">U_e</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">U_e</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
         <span class="n">dU_edx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dU_edx</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
         <span class="n">delta_m</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">delta_m</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
-        <span class="k">return</span> <span class="p">(</span><span class="n">dU_edx</span><span class="o">*</span><span class="n">H_d</span><span class="o">*</span><span class="n">delta_m</span> <span class="o">+</span> <span class="n">U_e</span><span class="o">*</span><span class="n">yp</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="n">delta_m</span> <span class="o">+</span> <span class="n">U_e</span><span class="o">*</span><span class="n">H_d</span><span class="o">*</span><span class="n">yp</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span></div>
-    
+        <span class="k">return</span> <span class="n">dU_edx</span><span class="o">*</span><span class="n">H_d</span><span class="o">*</span><span class="n">delta_m</span> <span class="o">+</span> <span class="n">U_e</span><span class="o">*</span><span class="n">yp</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="n">delta_m</span> <span class="o">+</span> <span class="n">U_e</span><span class="o">*</span><span class="n">H_d</span><span class="o">*</span><span class="n">yp</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span></div>
+
 <div class="viewcode-block" id="HeadMethod.delta_d"><a class="viewcode-back" href="../../api/_autosummary/pyBL.head_method.HeadMethod.html#pyBL.head_method.HeadMethod.delta_d">[docs]</a>    <span class="k">def</span> <span class="nf">delta_d</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Calculate the displacement thickness.</span>
-<span class="sd">        </span>
+
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        x: array-like</span>
 <span class="sd">            Streamwise loations to calculate this property.</span>
-<span class="sd">        </span>
+
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        array-like same shape as `x`</span>
 <span class="sd">            Desired displacement thickness at the specified locations.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">delta_m</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">H_d</span><span class="p">(</span><span class="n">x</span><span class="p">)</span></div>
-    
+
 <div class="viewcode-block" id="HeadMethod.delta_m"><a class="viewcode-back" href="../../api/_autosummary/pyBL.head_method.HeadMethod.html#pyBL.head_method.HeadMethod.delta_m">[docs]</a>    <span class="k">def</span> <span class="nf">delta_m</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Calculate the momentum thickness.</span>
-<span class="sd">        </span>
+
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        x: array-like</span>
 <span class="sd">            Streamwise loations to calculate this property.</span>
-<span class="sd">        </span>
+
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        array-like same shape as `x`</span>
 <span class="sd">            Desired momentum thickness at the specified locations.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_solution</span><span class="p">(</span><span class="n">x</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span></div>
-    
+
 <div class="viewcode-block" id="HeadMethod.delta_k"><a class="viewcode-back" href="../../api/_autosummary/pyBL.head_method.HeadMethod.html#pyBL.head_method.HeadMethod.delta_k">[docs]</a>    <span class="k">def</span> <span class="nf">delta_k</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Calculate the kinetic energy thickness.</span>
-<span class="sd">        </span>
+
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        x: array-like</span>
 <span class="sd">            Streamwise loations to calculate this property.</span>
-<span class="sd">        </span>
+
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        array-like same shape as `x`</span>
 <span class="sd">            Desired kinetic energy thickness at the specified locations.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">x</span><span class="p">)</span></div>
-    
+
 <div class="viewcode-block" id="HeadMethod.H_d"><a class="viewcode-back" href="../../api/_autosummary/pyBL.head_method.HeadMethod.html#pyBL.head_method.HeadMethod.H_d">[docs]</a>    <span class="k">def</span> <span class="nf">H_d</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Calculate the displacement shape factor.</span>
-<span class="sd">        </span>
+
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        x: array-like</span>
 <span class="sd">            Streamwise loations to calculate this property.</span>
-<span class="sd">        </span>
+
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        array-like same shape as `x`</span>
 <span class="sd">            Desired displacement shape factor at the specified locations.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_solution</span><span class="p">(</span><span class="n">x</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span></div>
-    
+
 <div class="viewcode-block" id="HeadMethod.H_k"><a class="viewcode-back" href="../../api/_autosummary/pyBL.head_method.HeadMethod.html#pyBL.head_method.HeadMethod.H_k">[docs]</a>    <span class="k">def</span> <span class="nf">H_k</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Calculate the kinetic energy shape factor.</span>
-<span class="sd">        </span>
+
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        x: array-like</span>
 <span class="sd">            Streamwise loations to calculate this property.</span>
-<span class="sd">        </span>
+
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        array-like same shape as `x`</span>
 <span class="sd">            Desired kinetic energy shape factor at the specified locations.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">delta_k</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">/</span><span class="bp">self</span><span class="o">.</span><span class="n">delta_m</span><span class="p">(</span><span class="n">x</span><span class="p">)</span></div>
-    
+
 <div class="viewcode-block" id="HeadMethod.tau_w"><a class="viewcode-back" href="../../api/_autosummary/pyBL.head_method.HeadMethod.html#pyBL.head_method.HeadMethod.tau_w">[docs]</a>    <span class="k">def</span> <span class="nf">tau_w</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">rho</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Calculate the wall shear stress.</span>
-<span class="sd">        </span>
+
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        x: array-like</span>
 <span class="sd">            Streamwise loations to calculate this property.</span>
 <span class="sd">        rho: float</span>
 <span class="sd">            Freestream density.</span>
-<span class="sd">        </span>
+
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        array-like same shape as `x`</span>
@@ -269,128 +273,138 @@
         <span class="n">delta_m</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_solution</span><span class="p">(</span><span class="n">x</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
         <span class="n">H_d</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_solution</span><span class="p">(</span><span class="n">x</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
         <span class="n">U_e</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">U_e</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
-        <span class="n">U_e</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">U_e</span><span class="p">)</span><span class="o">&lt;</span><span class="mf">0.001</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.001</span>
+        <span class="n">U_e</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">U_e</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mf">0.001</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.001</span>
         <span class="n">Re_delta_m</span> <span class="o">=</span> <span class="n">U_e</span><span class="o">*</span><span class="n">delta_m</span><span class="o">/</span><span class="bp">self</span><span class="o">.</span><span class="n">_nu</span>
         <span class="n">c_f</span> <span class="o">=</span> <span class="n">c_f_fun</span><span class="p">(</span><span class="n">Re_delta_m</span><span class="p">,</span> <span class="n">H_d</span><span class="p">)</span>
         <span class="k">return</span> <span class="mf">0.5</span><span class="o">*</span><span class="n">rho</span><span class="o">*</span><span class="n">U_e</span><span class="o">**</span><span class="mi">2</span><span class="o">*</span><span class="n">c_f</span></div>
-    
+
 <div class="viewcode-block" id="HeadMethod.D"><a class="viewcode-back" href="../../api/_autosummary/pyBL.head_method.HeadMethod.html#pyBL.head_method.HeadMethod.D">[docs]</a>    <span class="k">def</span> <span class="nf">D</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">rho</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Calculate the dissipation integral.</span>
-<span class="sd">        </span>
+
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        x: array-like</span>
 <span class="sd">            Streamwise loations to calculate this property.</span>
 <span class="sd">        rho: float</span>
 <span class="sd">            Freestream density.</span>
-<span class="sd">        </span>
+
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        array-like same shape as `x`</span>
 <span class="sd">            Desired dissipation integral at the specified locations.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># To Do: This needs to be implemented</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;This method needs to be implemented.&quot;</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">x</span><span class="p">)</span></div>
-    
-    <span class="k">def</span> <span class="nf">_ode_impl</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;This method needs to be implemented.&quot;</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">_ode_impl</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">F</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        This is the right-hand-side of the ODE representing Head&#39;s method.</span>
-<span class="sd">        </span>
+<span class="sd">        Right-hand-side of the ODE representing Thwaites method.</span>
+
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        x: array-like</span>
 <span class="sd">            Streamwise location of current step.</span>
-<span class="sd">        y: array-like</span>
+<span class="sd">        F: array-like</span>
 <span class="sd">            Current step&#39;s solution vector of momentum thickness and</span>
 <span class="sd">            displacement shape factor.</span>
-<span class="sd">        </span>
+
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
-<span class="sd">        array-like same shape as `delta_m2_on_nu`</span>
+<span class="sd">        array-like same shape as `F`</span>
 <span class="sd">            The right-hand side of the ODE at the given state.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">yp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
-        <span class="n">delta_m</span> <span class="o">=</span> <span class="n">y</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-        <span class="n">H_d</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">y</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+        <span class="n">Fp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">F</span><span class="p">)</span>
+        <span class="n">delta_m</span> <span class="o">=</span> <span class="n">F</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">H_d</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">F</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
         <span class="k">if</span> <span class="p">(</span><span class="n">H_d</span> <span class="o">&lt;</span> <span class="mf">1.11</span><span class="p">)</span><span class="o">.</span><span class="n">any</span><span class="p">():</span>
             <span class="n">H_d</span><span class="p">[</span><span class="n">H_d</span> <span class="o">&lt;</span> <span class="mf">1.11</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.11</span>
         <span class="n">U_e</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">U_e</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
-        <span class="n">U_e</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">U_e</span><span class="p">)</span><span class="o">&lt;</span><span class="mf">0.001</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.001</span>
+        <span class="n">U_e</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">U_e</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mf">0.001</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.001</span>
         <span class="n">dU_edx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dU_edx</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
         <span class="n">Re_delta_m</span> <span class="o">=</span> <span class="n">U_e</span><span class="o">*</span><span class="n">delta_m</span><span class="o">/</span><span class="bp">self</span><span class="o">.</span><span class="n">_nu</span>
         <span class="n">c_f</span> <span class="o">=</span> <span class="n">c_f_fun</span><span class="p">(</span><span class="n">Re_delta_m</span><span class="p">,</span> <span class="n">H_d</span><span class="p">)</span>
         <span class="n">H1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_H1</span><span class="p">(</span><span class="n">H_d</span><span class="p">)</span>
         <span class="n">H1p</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_H1p</span><span class="p">(</span><span class="n">H_d</span><span class="p">)</span>
-        <span class="n">yp</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.5</span><span class="o">*</span><span class="n">c_f</span><span class="o">-</span><span class="n">delta_m</span><span class="o">*</span><span class="p">(</span><span class="mi">2</span><span class="o">+</span><span class="n">H_d</span><span class="p">)</span><span class="o">*</span><span class="n">dU_edx</span><span class="o">/</span><span class="n">U_e</span>
-        <span class="n">yp</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">U_e</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">_S</span><span class="p">(</span><span class="n">H1</span><span class="p">)</span> <span class="o">-</span> <span class="n">U_e</span><span class="o">*</span><span class="n">yp</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="n">H1</span> <span class="o">-</span> <span class="n">dU_edx</span><span class="o">*</span><span class="n">delta_m</span><span class="o">*</span><span class="n">H1</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">H1p</span><span class="o">*</span><span class="n">U_e</span><span class="o">*</span><span class="n">delta_m</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">yp</span>
-    
+        <span class="n">Fp</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.5</span><span class="o">*</span><span class="n">c_f</span><span class="o">-</span><span class="n">delta_m</span><span class="o">*</span><span class="p">(</span><span class="mi">2</span><span class="o">+</span><span class="n">H_d</span><span class="p">)</span><span class="o">*</span><span class="n">dU_edx</span><span class="o">/</span><span class="n">U_e</span>
+        <span class="n">Fp</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">U_e</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">_S</span><span class="p">(</span><span class="n">H1</span><span class="p">)</span> <span class="o">-</span> <span class="n">U_e</span><span class="o">*</span><span class="n">Fp</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="n">H1</span>
+                 <span class="o">-</span> <span class="n">dU_edx</span><span class="o">*</span><span class="n">delta_m</span><span class="o">*</span><span class="n">H1</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">H1p</span><span class="o">*</span><span class="n">U_e</span><span class="o">*</span><span class="n">delta_m</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">Fp</span>
+
     <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">_H1</span><span class="p">(</span><span class="n">H_d</span><span class="p">):</span>
         <span class="n">H_d</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">H_d</span><span class="p">)</span>
         <span class="k">if</span> <span class="p">(</span><span class="n">H_d</span> <span class="o">&lt;=</span> <span class="mf">1.1</span><span class="p">)</span><span class="o">.</span><span class="n">any</span><span class="p">():</span>
             <span class="n">H_d</span><span class="p">[</span><span class="n">H_d</span> <span class="o">&lt;=</span> <span class="mf">1.1</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.1001</span>
-<span class="c1">#            raise ValueError(&quot;Cannot pass displacement shape factor less than &quot;</span>
-<span class="c1">#                             &quot;1.1: {}&quot;.format(np.amin(H_d)))</span>
+<span class="c1">#            raise ValueError(&quot;Cannot pass displacement shape factor less &quot;</span>
+<span class="c1">#                             &quot;than 1.1: {}&quot;.format(np.amin(H_d)))</span>
+
         <span class="k">def</span> <span class="nf">H1_low</span><span class="p">(</span><span class="n">H_d</span><span class="p">):</span>
             <span class="n">a</span> <span class="o">=</span> <span class="mf">0.8234</span>
             <span class="n">b</span> <span class="o">=</span> <span class="mf">1.1</span>
             <span class="n">c</span> <span class="o">=</span> <span class="mf">1.287</span>
             <span class="n">d</span> <span class="o">=</span> <span class="mf">3.3</span>
             <span class="k">return</span> <span class="n">d</span> <span class="o">+</span> <span class="n">a</span><span class="o">/</span><span class="p">(</span><span class="n">H_d</span> <span class="o">-</span> <span class="n">b</span><span class="p">)</span><span class="o">**</span><span class="n">c</span>
+
         <span class="k">def</span> <span class="nf">H1_high</span><span class="p">(</span><span class="n">H_d</span><span class="p">):</span>
             <span class="n">a</span> <span class="o">=</span> <span class="mf">1.5501</span>
             <span class="n">b</span> <span class="o">=</span> <span class="mf">0.6778</span>
             <span class="n">c</span> <span class="o">=</span> <span class="mf">3.064</span>
             <span class="n">d</span> <span class="o">=</span> <span class="mf">3.32254659218600974</span>
             <span class="k">return</span> <span class="n">d</span> <span class="o">+</span> <span class="n">a</span><span class="o">/</span><span class="p">(</span><span class="n">H_d</span> <span class="o">-</span> <span class="n">b</span><span class="p">)</span><span class="o">**</span><span class="n">c</span>
-        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">piecewise</span><span class="p">(</span><span class="n">H_d</span><span class="p">,</span> <span class="p">[</span><span class="n">H_d</span><span class="o">&lt;=</span><span class="mf">1.6</span><span class="p">,</span> <span class="n">H_d</span><span class="o">&gt;</span><span class="mf">1.6</span><span class="p">],</span> <span class="p">[</span><span class="n">H1_low</span><span class="p">,</span> <span class="n">H1_high</span><span class="p">])</span>
-    
+
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">piecewise</span><span class="p">(</span><span class="n">H_d</span><span class="p">,</span> <span class="p">[</span><span class="n">H_d</span> <span class="o">&lt;=</span> <span class="mf">1.6</span><span class="p">,</span> <span class="n">H_d</span> <span class="o">&gt;</span> <span class="mf">1.6</span><span class="p">],</span> <span class="p">[</span><span class="n">H1_low</span><span class="p">,</span> <span class="n">H1_high</span><span class="p">])</span>
+
     <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">_H1p</span><span class="p">(</span><span class="n">H_d</span><span class="p">):</span>
         <span class="n">H_d_local</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">H_d</span><span class="p">)</span>
         <span class="k">if</span> <span class="p">(</span><span class="n">H_d_local</span> <span class="o">&lt;=</span> <span class="mf">1.1</span><span class="p">)</span><span class="o">.</span><span class="n">any</span><span class="p">():</span>
             <span class="n">H_d_local</span><span class="p">[</span><span class="n">H_d_local</span> <span class="o">&lt;=</span> <span class="mf">1.1</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.1001</span>
-<span class="c1">#            raise ValueError(&quot;Cannot pass displacement shape factor less than &quot;</span>
-<span class="c1">#                             &quot;1.1: {}&quot;.format(np.amin(H_d)))</span>
+<span class="c1">#            raise ValueError(&quot;Cannot pass displacement shape factor less &quot;</span>
+<span class="c1">#                             &quot;than 1.1: {}&quot;.format(np.amin(H_d)))</span>
+
         <span class="k">def</span> <span class="nf">H1_low</span><span class="p">(</span><span class="n">H_d</span><span class="p">):</span>
             <span class="n">a</span> <span class="o">=</span> <span class="mf">0.8234</span>
             <span class="n">b</span> <span class="o">=</span> <span class="mf">1.1</span>
             <span class="n">c</span> <span class="o">=</span> <span class="mf">1.287</span>
             <span class="k">return</span> <span class="o">-</span><span class="n">a</span><span class="o">*</span><span class="n">c</span><span class="o">/</span><span class="p">(</span><span class="n">H_d</span> <span class="o">-</span> <span class="n">b</span><span class="p">)</span><span class="o">**</span><span class="p">(</span><span class="n">c</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+
         <span class="k">def</span> <span class="nf">H1_high</span><span class="p">(</span><span class="n">H_d</span><span class="p">):</span>
             <span class="n">a</span> <span class="o">=</span> <span class="mf">1.5501</span>
             <span class="n">b</span> <span class="o">=</span> <span class="mf">0.6778</span>
             <span class="n">c</span> <span class="o">=</span> <span class="mf">3.064</span>
             <span class="k">return</span> <span class="o">-</span><span class="n">a</span><span class="o">*</span><span class="n">c</span><span class="o">/</span><span class="p">(</span><span class="n">H_d</span> <span class="o">-</span> <span class="n">b</span><span class="p">)</span><span class="o">**</span><span class="p">(</span><span class="n">c</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">piecewise</span><span class="p">(</span><span class="n">H_d_local</span><span class="p">,</span> <span class="p">[</span><span class="n">H_d_local</span><span class="o">&lt;=</span><span class="mf">1.6</span><span class="p">,</span> <span class="n">H_d_local</span><span class="o">&gt;</span><span class="mf">1.6</span><span class="p">],</span>
+
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">piecewise</span><span class="p">(</span><span class="n">H_d_local</span><span class="p">,</span> <span class="p">[</span><span class="n">H_d_local</span> <span class="o">&lt;=</span> <span class="mf">1.6</span><span class="p">,</span> <span class="n">H_d_local</span> <span class="o">&gt;</span> <span class="mf">1.6</span><span class="p">],</span>
                             <span class="p">[</span><span class="n">H1_low</span><span class="p">,</span> <span class="n">H1_high</span><span class="p">])</span>
-    
+
     <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">_H_d</span><span class="p">(</span><span class="n">H1</span><span class="p">):</span>
         <span class="n">H1_local</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">H1</span><span class="p">)</span>
         <span class="k">if</span> <span class="p">(</span><span class="n">H1_local</span> <span class="o">&lt;=</span> <span class="mf">3.32254659218600974</span><span class="p">)</span><span class="o">.</span><span class="n">any</span><span class="p">():</span>
             <span class="n">H1_local</span><span class="p">[</span><span class="n">H1_local</span> <span class="o">&lt;=</span> <span class="mf">3.32254659218600974</span><span class="p">]</span> <span class="o">=</span> <span class="mf">3.323</span>
-<span class="c1">#            raise ValueError(&quot;Cannot pass entrainment shape factor less than &quot;</span>
-<span class="c1">#                             &quot;3.323: {}&quot;.format(np.amin(H1)))</span>
+<span class="c1">#            raise ValueError(&quot;Cannot pass entrainment shape factor less &quot;</span>
+<span class="c1">#                             &quot;than 3.323: {}&quot;.format(np.amin(H1)))</span>
+
         <span class="k">def</span> <span class="nf">H_d_low</span><span class="p">(</span><span class="n">H1</span><span class="p">):</span>
             <span class="n">a</span> <span class="o">=</span> <span class="mf">1.5501</span>
             <span class="n">b</span> <span class="o">=</span> <span class="mf">0.6778</span>
             <span class="n">c</span> <span class="o">=</span> <span class="mf">3.064</span>
             <span class="n">d</span> <span class="o">=</span> <span class="mf">3.32254659218600974</span>
             <span class="k">return</span> <span class="n">b</span> <span class="o">+</span> <span class="p">(</span><span class="n">a</span><span class="o">/</span><span class="p">(</span><span class="n">H1</span> <span class="o">-</span> <span class="n">d</span><span class="p">))</span><span class="o">**</span><span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="n">c</span><span class="p">)</span>
+
         <span class="k">def</span> <span class="nf">H_d_high</span><span class="p">(</span><span class="n">H1</span><span class="p">):</span>
             <span class="n">a</span> <span class="o">=</span> <span class="mf">0.8234</span>
             <span class="n">b</span> <span class="o">=</span> <span class="mf">1.1</span>
             <span class="n">c</span> <span class="o">=</span> <span class="mf">1.287</span>
             <span class="n">d</span> <span class="o">=</span> <span class="mf">3.3</span>
             <span class="k">return</span> <span class="n">b</span> <span class="o">+</span> <span class="p">(</span><span class="n">a</span><span class="o">/</span><span class="p">(</span><span class="n">H1</span> <span class="o">-</span> <span class="n">d</span><span class="p">))</span><span class="o">**</span><span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="n">c</span><span class="p">)</span>
+
         <span class="n">H1_break</span> <span class="o">=</span> <span class="n">HeadMethod</span><span class="o">.</span><span class="n">_H1</span><span class="p">(</span><span class="mf">1.6</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">piecewise</span><span class="p">(</span><span class="n">H1_local</span><span class="p">,</span> <span class="p">[</span><span class="n">H1_local</span><span class="o">&lt;=</span><span class="n">H1_break</span><span class="p">,</span> <span class="n">H1_local</span><span class="o">&gt;</span><span class="n">H1_break</span><span class="p">],</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">piecewise</span><span class="p">(</span><span class="n">H1_local</span><span class="p">,</span> <span class="p">[</span><span class="n">H1_local</span> <span class="o">&lt;=</span> <span class="n">H1_break</span><span class="p">,</span>
+                                       <span class="n">H1_local</span> <span class="o">&gt;</span> <span class="n">H1_break</span><span class="p">],</span>
                             <span class="p">[</span><span class="n">H_d_low</span><span class="p">,</span> <span class="n">H_d_high</span><span class="p">])</span>
-    
+
     <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">_S</span><span class="p">(</span><span class="n">H1</span><span class="p">):</span>
         <span class="n">H1_local</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">H1</span><span class="p">,</span> <span class="nb">float</span><span class="p">)</span>
@@ -403,44 +417,44 @@
 
 <span class="k">class</span> <span class="nc">_HeadSeparationEvent</span><span class="p">(</span><span class="n">IBLTermEventBase</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    This class detects separation and will terminate integration when it</span>
-<span class="sd">    occurs.</span>
-<span class="sd">    </span>
+<span class="sd">    Detects separation and will terminate integration when it occurs.</span>
+
 <span class="sd">    This is a callable object that the ODE integrator will use to determine if</span>
 <span class="sd">    the integration should terminate before the end location.</span>
-<span class="sd">    </span>
+
 <span class="sd">    Attributes</span>
 <span class="sd">    ----------</span>
 <span class="sd">        H_d_crit: Displacement shape factor value that indicates separation</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># pylint: disable=too-few-public-methods</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">H_d_crit</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_H_d_crit</span> <span class="o">=</span> <span class="n">H_d_crit</span>
-    
-    <span class="k">def</span> <span class="nf">_call_impl</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">_call_impl</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">F</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Information used to determine if Head method integrator should </span>
-<span class="sd">        terminate.</span>
-<span class="sd">        </span>
+<span class="sd">        Determine if Head method integrator should terminate.</span>
+
 <span class="sd">        This will terminate once the displacement shape factor becomes greater</span>
 <span class="sd">        than critical H_d.</span>
-<span class="sd">        </span>
+
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        x: array-like</span>
 <span class="sd">            Streamwise location of current step.</span>
-<span class="sd">        y: array-like</span>
+<span class="sd">        F: array-like</span>
 <span class="sd">            Current step&#39;s solution vector of momentum thickness and</span>
 <span class="sd">            displacement shape factor.</span>
-<span class="sd">        </span>
+
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        float</span>
 <span class="sd">            Current value of the difference between the critical displacement</span>
 <span class="sd">            shape factor and the current displacement shape factor.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_H_d_crit</span> <span class="o">-</span> <span class="n">y</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
-    
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_H_d_crit</span> <span class="o">-</span> <span class="n">F</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
     <span class="k">def</span> <span class="nf">event_info</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;&quot;</span>
 </pre></div>

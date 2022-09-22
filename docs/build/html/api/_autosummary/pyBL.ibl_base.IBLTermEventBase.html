@@ -54,19 +54,19 @@ for details.</p>
 <table class="autosummary longtable docutils align-default">
 <tbody>
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">__call__</span></code>(x, F)</p></td>
-<td><p>ODE solver is going to call this method to determine if the integration should terminate.</p></td>
+<td><p>Determine if integration should terminate.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#pyBL.ibl_base.IBLTermEventBase.event_info" title="pyBL.ibl_base.IBLTermEventBase.event_info"><code class="xref py py-obj docutils literal notranslate"><span class="pre">event_info</span></code></a>()</p></td>
-<td><p>Method returns information about the purpose of this event.</p></td>
+<td><p>Return information about the purpose of this event.</p></td>
 </tr>
 </tbody>
 </table>
 <dl class="py method">
 <dt class="sig sig-object py" id="pyBL.ibl_base.IBLTermEventBase.event_info">
 <em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">event_info</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pyBL/ibl_base.html#IBLTermEventBase.event_info"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyBL.ibl_base.IBLTermEventBase.event_info" title="Permalink to this definition">¶</a></dt>
-<dd><p>Method returns information about the purpose of this event. This is
-used to provide feedback as to what caused the integration to terminate
-and any other helpful information.</p>
+<dd><p>Return information about the purpose of this event.</p>
+<p>This is used to provide feedback as to what caused the integration to
+terminate and any other helpful information.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><dl class="simple">

@@ -43,19 +43,19 @@
 <span class="sd">generated the dump file and stores the information for analysis/comparison.</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">copy</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
 
 <div class="viewcode-block" id="XFoilReader"><a class="viewcode-back" href="../../api/_autosummary/pyBL.xfoil_reader.XFoilReader.html#pyBL.xfoil_reader.XFoilReader">[docs]</a><span class="k">class</span> <span class="nc">XFoilReader</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    XFoil dump file reader.</span>
-<span class="sd">    </span>
-<span class="sd">    This class is an interface to the dump file from XFoil. The data for the </span>
+
+<span class="sd">    This class is an interface to the dump file from XFoil. The data for the</span>
 <span class="sd">    airfoil and wake are read in and processed into upper flow and lower flow</span>
 <span class="sd">    at the stagnation point (not leading edge) and the wake. Each portion is</span>
 <span class="sd">    stored separately and the parameters are obtained separately.</span>
-<span class="sd">    </span>
+
 <span class="sd">    Attributes</span>
 <span class="sd">    ----------</span>
 <span class="sd">    airfoil: string</span>
@@ -71,7 +71,9 @@
 <span class="sd">    Re: float</span>
 <span class="sd">        Freestream Reynolds number based on the airfoil chord length.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-        
+
+    <span class="c1"># pylint: disable=too-many-instance-attributes</span>
+    <span class="c1"># pylint: disable=too-many-public-methods</span>
     <span class="c1"># Attributes</span>
     <span class="c1"># ----------</span>
     <span class="c1"># _filename: File name of dump</span>
@@ -80,8 +82,8 @@
     <span class="c1"># _wake: Data at each wake station</span>
 <div class="viewcode-block" id="XFoilReader.AirfoilData"><a class="viewcode-back" href="../../api/_autosummary/pyBL.xfoil_reader.XFoilReader.html#pyBL.xfoil_reader.XFoilReader.AirfoilData">[docs]</a>    <span class="k">class</span> <span class="nc">AirfoilData</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        This class is the data that is reported for each station on airfoil.</span>
-<span class="sd">        </span>
+<span class="sd">        Data reported for each station on airfoil.</span>
+
 <span class="sd">        Attributes</span>
 <span class="sd">        ----------</span>
 <span class="sd">        s: float</span>
@@ -109,6 +111,8 @@
 <span class="sd">        K: float</span>
 <span class="sd">            Kinetic energy defect at point.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># pylint: disable=too-few-public-methods</span>
         <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">row</span><span class="p">):</span>
             <span class="k">if</span> <span class="n">row</span> <span class="o">==</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">s</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span>
@@ -127,7 +131,7 @@
                 <span class="n">col</span> <span class="o">=</span> <span class="n">row</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
                 <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">col</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">12</span><span class="p">:</span>
                     <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Invalid number of columns in airfoil &quot;</span>
-                                    <span class="s2">&quot;data: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">row</span><span class="p">))</span>
+                                    <span class="sa">f</span><span class="s2">&quot;data: </span><span class="si">{</span><span class="n">row</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">s</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">col</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">x</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">col</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">y</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">col</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
@@ -140,37 +144,36 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">P</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">col</span><span class="p">[</span><span class="mi">9</span><span class="p">])</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">m</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">col</span><span class="p">[</span><span class="mi">10</span><span class="p">])</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">K</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">col</span><span class="p">[</span><span class="mi">11</span><span class="p">])</span>
-        
+
         <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
             <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Return a readable presentation of instance.</span>
-<span class="sd">            </span>
+
 <span class="sd">            Returns</span>
 <span class="sd">            -------</span>
 <span class="sd">            string</span>
 <span class="sd">                Readable string representation of instance.</span>
 <span class="sd">            &quot;&quot;&quot;</span>
-            <span class="n">strout</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">:</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span>
-            <span class="n">strout</span> <span class="o">+=</span> <span class="s2">&quot;    s: </span><span class="si">%f</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">s</span><span class="p">)</span>
-            <span class="n">strout</span> <span class="o">+=</span> <span class="s2">&quot;    x: </span><span class="si">%f</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">)</span>
-            <span class="n">strout</span> <span class="o">+=</span> <span class="s2">&quot;    y: </span><span class="si">%f</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">)</span>
-            <span class="n">strout</span> <span class="o">+=</span> <span class="s2">&quot;    U_e: </span><span class="si">%f</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">U_e</span><span class="p">)</span>
-            <span class="n">strout</span> <span class="o">+=</span> <span class="s2">&quot;    delta_d: </span><span class="si">%f</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">delta_d</span><span class="p">)</span>
-            <span class="n">strout</span> <span class="o">+=</span> <span class="s2">&quot;    delta_m: </span><span class="si">%f</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">delta_m</span><span class="p">)</span>
-            <span class="n">strout</span> <span class="o">+=</span> <span class="s2">&quot;    c_f: </span><span class="si">%f</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">c_f</span><span class="p">)</span>
-            <span class="n">strout</span> <span class="o">+=</span> <span class="s2">&quot;    H_d: </span><span class="si">%f</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">H_d</span><span class="p">)</span>
-            <span class="n">strout</span> <span class="o">+=</span> <span class="s2">&quot;    H_k: </span><span class="si">%f</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">H_k</span><span class="p">)</span>
-            <span class="n">strout</span> <span class="o">+=</span> <span class="s2">&quot;    P: </span><span class="si">%f</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">P</span><span class="p">)</span>
-            <span class="n">strout</span> <span class="o">+=</span> <span class="s2">&quot;    m: </span><span class="si">%f</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">m</span><span class="p">)</span>
-            <span class="n">strout</span> <span class="o">+=</span> <span class="s2">&quot;    K: </span><span class="si">%f</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">K</span><span class="p">)</span>
-            
+            <span class="n">strout</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">:</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="n">strout</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;    s: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">s</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="n">strout</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;    x: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="n">strout</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;    y: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="n">strout</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;    U_e: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">U_e</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="n">strout</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;    delta_d: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">delta_d</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="n">strout</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;    delta_m: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">delta_m</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="n">strout</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;    c_f: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">c_f</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="n">strout</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;    H_d: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">H_d</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="n">strout</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;    H_k: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">H_k</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="n">strout</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;    P: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">P</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="n">strout</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;    m: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">m</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="n">strout</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;    K: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">K</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
+
             <span class="k">return</span> <span class="n">strout</span></div>
-    
-    
+
 <div class="viewcode-block" id="XFoilReader.WakeData"><a class="viewcode-back" href="../../api/_autosummary/pyBL.xfoil_reader.XFoilReader.html#pyBL.xfoil_reader.XFoilReader.WakeData">[docs]</a>    <span class="k">class</span> <span class="nc">WakeData</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        This class is the data that is reported for each station in wake.</span>
-<span class="sd">        </span>
+<span class="sd">        Data reported for each station in wake.</span>
+
 <span class="sd">        Attributes</span>
 <span class="sd">        ----------</span>
 <span class="sd">        s: float</span>
@@ -188,6 +191,8 @@
 <span class="sd">        H_d: float</span>
 <span class="sd">            Displacement shape factor at point.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># pylint: disable=too-few-public-methods</span>
         <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">row</span><span class="p">):</span>
             <span class="k">if</span> <span class="n">row</span> <span class="o">==</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">s</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span>
@@ -201,7 +206,7 @@
                 <span class="n">col</span> <span class="o">=</span> <span class="n">row</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
                 <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">col</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">8</span><span class="p">:</span>
                     <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Invalid number of columns in wake &quot;</span>
-                                    <span class="s2">&quot;data: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">row</span><span class="p">))</span>
+                                    <span class="sa">f</span><span class="s2">&quot;data: </span><span class="si">{</span><span class="n">row</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">s</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">col</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">x</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">col</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">y</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">col</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
@@ -209,38 +214,38 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">delta_d</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">col</span><span class="p">[</span><span class="mi">4</span><span class="p">])</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">delta_m</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">col</span><span class="p">[</span><span class="mi">5</span><span class="p">])</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">H_d</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">col</span><span class="p">[</span><span class="mi">7</span><span class="p">])</span>
-        
+
         <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
             <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Return a readable presentation of instance.</span>
-<span class="sd">            </span>
+
 <span class="sd">            Returns</span>
 <span class="sd">            -------</span>
 <span class="sd">            string</span>
 <span class="sd">                Readable string representation of instance.</span>
 <span class="sd">            &quot;&quot;&quot;</span>
-            <span class="n">strout</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">:</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span>
-            <span class="n">strout</span> <span class="o">+=</span> <span class="s2">&quot;    s: </span><span class="si">%f</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">s</span><span class="p">)</span>
-            <span class="n">strout</span> <span class="o">+=</span> <span class="s2">&quot;    x: </span><span class="si">%f</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">)</span>
-            <span class="n">strout</span> <span class="o">+=</span> <span class="s2">&quot;    y: </span><span class="si">%f</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">)</span>
-            <span class="n">strout</span> <span class="o">+=</span> <span class="s2">&quot;    U_e: </span><span class="si">%f</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">U_e</span><span class="p">)</span>
-            <span class="n">strout</span> <span class="o">+=</span> <span class="s2">&quot;    delta_d: </span><span class="si">%f</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">delta_d</span><span class="p">)</span>
-            <span class="n">strout</span> <span class="o">+=</span> <span class="s2">&quot;    delta_m: </span><span class="si">%f</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">delta_m</span><span class="p">)</span>
-            <span class="n">strout</span> <span class="o">+=</span> <span class="s2">&quot;    H_d: </span><span class="si">%f</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">H_d</span><span class="p">)</span>
-            
+            <span class="n">strout</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">:</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="n">strout</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;    s: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">s</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="n">strout</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;    x: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="n">strout</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;    y: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="n">strout</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;    U_e: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">U_e</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="n">strout</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;    delta_d: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">delta_d</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="n">strout</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;    delta_m: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">delta_m</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="n">strout</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;    H_d: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">H_d</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
+
             <span class="k">return</span> <span class="n">strout</span></div>
-    
-    
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">airfoil</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">alpha</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">,</span> <span class="n">c</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
-                 <span class="n">Re</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">x_trans</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">n_trans</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">change_case_data</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">airfoil</span><span class="p">,</span> <span class="n">alpha</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">Re</span><span class="p">,</span>
-                              <span class="n">x_trans</span><span class="p">,</span> <span class="n">n_trans</span><span class="p">)</span>
-    
-<div class="viewcode-block" id="XFoilReader.change_case_data"><a class="viewcode-back" href="../../api/_autosummary/pyBL.xfoil_reader.XFoilReader.html#pyBL.xfoil_reader.XFoilReader.change_case_data">[docs]</a>    <span class="k">def</span> <span class="nf">change_case_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">airfoil</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">alpha</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">,</span> <span class="n">c</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
-                         <span class="n">Re</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">x_trans</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">n_trans</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">airfoil</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">Re</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">x_trans</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">n_trans</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="c1"># pylint: disable=too-many-arguments</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">change_case_data</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">airfoil</span><span class="p">,</span> <span class="n">alpha</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">Re</span><span class="p">,</span> <span class="n">x_trans</span><span class="p">,</span>
+                              <span class="n">n_trans</span><span class="p">)</span>
+
+<div class="viewcode-block" id="XFoilReader.change_case_data"><a class="viewcode-back" href="../../api/_autosummary/pyBL.xfoil_reader.XFoilReader.html#pyBL.xfoil_reader.XFoilReader.change_case_data">[docs]</a>    <span class="k">def</span> <span class="nf">change_case_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">airfoil</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                         <span class="n">Re</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">x_trans</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">n_trans</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Reset the case data to new case.</span>
-<span class="sd">        </span>
+
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        filename : string</span>
@@ -260,13 +265,17 @@
 <span class="sd">        n_trans : float, optional</span>
 <span class="sd">            Amplification factor used for the transition model. The default</span>
 <span class="sd">            is `None`.</span>
-<span class="sd">            </span>
+
 <span class="sd">        Raises</span>
 <span class="sd">        ------</span>
 <span class="sd">        Exception</span>
 <span class="sd">            When dump file is not correctly formatted.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="c1">## Reset everything</span>
+        <span class="c1"># pylint: disable=too-many-locals</span>
+        <span class="c1"># pylint: disable=too-many-branches</span>
+        <span class="c1"># pylint: disable=too-many-statements</span>
+        <span class="c1"># pylint: disable=too-many-arguments</span>
+        <span class="c1"># Reset everything</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_filename</span> <span class="o">=</span> <span class="n">filename</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">aifoil</span> <span class="o">=</span> <span class="n">airfoil</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">alpha</span> <span class="o">=</span> <span class="n">alpha</span>
@@ -277,24 +286,24 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">n_trans</span> <span class="o">=</span> <span class="n">n_trans</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">c</span> <span class="o">=</span> <span class="n">c</span>
         <span class="bp">self</span><span class="o">.</span> <span class="n">Re</span> <span class="o">=</span> <span class="n">Re</span>
-        
+
         <span class="bp">self</span><span class="o">.</span><span class="n">_upper</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_lower</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_wake</span> <span class="o">=</span> <span class="p">[]</span>
-        
+
         <span class="k">if</span> <span class="n">filename</span> <span class="o">==</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
             <span class="k">return</span>
-        
-        <span class="c1">## define function to each comments and empty lines</span>
+
+        <span class="c1"># define function to each comments and empty lines</span>
         <span class="k">def</span> <span class="nf">next_chunk</span><span class="p">(</span><span class="n">f</span><span class="p">):</span>
             <span class="n">line</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span>
-            <span class="k">if</span> <span class="p">(</span><span class="n">line</span> <span class="o">==</span> <span class="s2">&quot;&quot;</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">line</span> <span class="o">==</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
                 <span class="k">return</span> <span class="s2">&quot;&quot;</span>
             <span class="k">while</span> <span class="p">(</span><span class="n">line</span> <span class="o">==</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;#&quot;</span><span class="p">):</span>
                 <span class="n">line</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span>
                 <span class="k">if</span> <span class="n">line</span> <span class="o">==</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
                     <span class="k">return</span> <span class="s2">&quot;&quot;</span>
-            
+
             <span class="n">chunk</span> <span class="o">=</span> <span class="p">[</span><span class="n">line</span><span class="p">]</span>
             <span class="n">line</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span>
             <span class="k">if</span> <span class="n">line</span> <span class="o">==</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
@@ -303,11 +312,11 @@
                 <span class="n">chunk</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
                 <span class="n">line</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span>
             <span class="k">return</span> <span class="n">chunk</span>
-        
-        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">dump_file</span><span class="p">:</span>
+
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">dump_file</span><span class="p">:</span>
             <span class="c1"># read case information</span>
             <span class="n">chunk</span> <span class="o">=</span> <span class="n">next_chunk</span><span class="p">(</span><span class="n">dump_file</span><span class="p">)</span>
-            
+
             <span class="c1"># collect raw airfoil and wake info</span>
             <span class="n">found_stag_pt</span> <span class="o">=</span> <span class="kc">False</span>
             <span class="n">found_wake</span> <span class="o">=</span> <span class="kc">False</span>
@@ -334,13 +343,13 @@
                             <span class="n">info</span><span class="o">.</span><span class="n">U_e</span> <span class="o">=</span> <span class="o">-</span><span class="n">info</span><span class="o">.</span><span class="n">U_e</span>
                             <span class="n">info</span><span class="o">.</span><span class="n">m</span> <span class="o">=</span> <span class="o">-</span><span class="n">info</span><span class="o">.</span><span class="n">m</span>
                             <span class="n">info</span><span class="o">.</span><span class="n">K</span> <span class="o">=</span> <span class="o">-</span><span class="n">info</span><span class="o">.</span><span class="n">K</span>
-                            
+
                             <span class="c1"># interpolate actual stagnation point</span>
                             <span class="n">stag_info</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">AirfoilData</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
                             <span class="n">u</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_upper</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
                             <span class="n">dU</span> <span class="o">=</span> <span class="n">info</span><span class="o">.</span><span class="n">U_e</span> <span class="o">+</span> <span class="n">u</span><span class="o">.</span><span class="n">U_e</span>
                             <span class="n">frac</span> <span class="o">=</span> <span class="n">info</span><span class="o">.</span><span class="n">U_e</span><span class="o">/</span><span class="n">dU</span>
-                            
+
                             <span class="c1"># standard interpolation for sign changes</span>
                             <span class="n">stag_info</span><span class="o">.</span><span class="n">U_e</span> <span class="o">=</span> <span class="mf">0.0</span>
                             <span class="n">stag_info</span><span class="o">.</span><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="o">-</span><span class="n">frac</span><span class="o">*</span><span class="n">u</span><span class="o">.</span><span class="n">x</span> <span class="o">+</span> <span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">frac</span><span class="p">)</span><span class="o">*</span><span class="n">info</span><span class="o">.</span><span class="n">x</span><span class="p">)</span>
@@ -357,21 +366,21 @@
                             <span class="n">stag_info</span><span class="o">.</span><span class="n">P</span> <span class="o">=</span> <span class="n">frac</span><span class="o">*</span><span class="n">u</span><span class="o">.</span><span class="n">P</span> <span class="o">+</span> <span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">frac</span><span class="p">)</span><span class="o">*</span><span class="n">info</span><span class="o">.</span><span class="n">P</span>
                             <span class="n">stag_info</span><span class="o">.</span><span class="n">m</span> <span class="o">=</span> <span class="n">frac</span><span class="o">*</span><span class="n">u</span><span class="o">.</span><span class="n">m</span> <span class="o">+</span> <span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">frac</span><span class="p">)</span><span class="o">*</span><span class="n">info</span><span class="o">.</span><span class="n">m</span>
                             <span class="n">stag_info</span><span class="o">.</span><span class="n">K</span> <span class="o">=</span> <span class="n">frac</span><span class="o">*</span><span class="n">u</span><span class="o">.</span><span class="n">K</span> <span class="o">+</span> <span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">frac</span><span class="p">)</span><span class="o">*</span><span class="n">info</span><span class="o">.</span><span class="n">K</span>
-                            
+
                             <span class="c1"># append stag_info to upper</span>
                             <span class="n">stag_s</span> <span class="o">=</span> <span class="n">stag_info</span><span class="o">.</span><span class="n">s</span>
                             <span class="bp">self</span><span class="o">.</span><span class="n">_upper</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">copy</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">stag_info</span><span class="p">))</span>
-                            
+
                             <span class="c1"># correct arc lengths for two lower terms then add</span>
                             <span class="n">stag_info</span><span class="o">.</span><span class="n">s</span> <span class="o">=</span> <span class="mi">0</span>
                             <span class="n">info</span><span class="o">.</span><span class="n">s</span> <span class="o">=</span> <span class="n">info</span><span class="o">.</span><span class="n">s</span> <span class="o">-</span> <span class="n">stag_s</span>
                             <span class="bp">self</span><span class="o">.</span><span class="n">_lower</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">stag_info</span><span class="p">)</span>
                             <span class="bp">self</span><span class="o">.</span><span class="n">_lower</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">info</span><span class="p">)</span>
-                            
+
                             <span class="c1"># correct upper with the stag_info.s</span>
                             <span class="k">for</span> <span class="n">af</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_upper</span><span class="p">:</span>
                                 <span class="n">af</span><span class="o">.</span><span class="n">s</span> <span class="o">=</span> <span class="n">stag_s</span> <span class="o">-</span> <span class="n">af</span><span class="o">.</span><span class="n">s</span>
-                            
+
                             <span class="c1"># Reverse upper surface so that it goes from</span>
                             <span class="c1"># stagnation point to trailing edge</span>
                             <span class="bp">self</span><span class="o">.</span><span class="n">_upper</span><span class="o">.</span><span class="n">reverse</span><span class="p">()</span>
@@ -391,94 +400,93 @@
                     <span class="bp">self</span><span class="o">.</span><span class="n">_wake</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">info</span><span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Invalid data in XFoil dump file: &quot;</span>
-                                    <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">col</span><span class="p">))</span></div>
-    
+                                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">col</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
 <div class="viewcode-block" id="XFoilReader.num_points_upper"><a class="viewcode-back" href="../../api/_autosummary/pyBL.xfoil_reader.XFoilReader.html#pyBL.xfoil_reader.XFoilReader.num_points_upper">[docs]</a>    <span class="k">def</span> <span class="nf">num_points_upper</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return number of points on the upper surface of airofil.</span>
-<span class="sd">        </span>
+
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        int</span>
 <span class="sd">            Number of points on the upper surface of airfoil.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_upper</span><span class="p">)</span></div>
-    
+
 <div class="viewcode-block" id="XFoilReader.num_points_lower"><a class="viewcode-back" href="../../api/_autosummary/pyBL.xfoil_reader.XFoilReader.html#pyBL.xfoil_reader.XFoilReader.num_points_lower">[docs]</a>    <span class="k">def</span> <span class="nf">num_points_lower</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return number of points on the lower surface of airofil.</span>
-<span class="sd">        </span>
+
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        int</span>
 <span class="sd">            Number of points on the lower surface of airfoil.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_lower</span><span class="p">)</span></div>
-    
+
 <div class="viewcode-block" id="XFoilReader.num_points_wake"><a class="viewcode-back" href="../../api/_autosummary/pyBL.xfoil_reader.XFoilReader.html#pyBL.xfoil_reader.XFoilReader.num_points_wake">[docs]</a>    <span class="k">def</span> <span class="nf">num_points_wake</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return number of points in the airofil wake.</span>
-<span class="sd">        </span>
+
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        int</span>
 <span class="sd">            Number of points in the airfoil wake.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_wake</span><span class="p">)</span></div>
-    
+
 <div class="viewcode-block" id="XFoilReader.point_upper"><a class="viewcode-back" href="../../api/_autosummary/pyBL.xfoil_reader.XFoilReader.html#pyBL.xfoil_reader.XFoilReader.point_upper">[docs]</a>    <span class="k">def</span> <span class="nf">point_upper</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">i</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the specified data on the upper surface of airfoil.</span>
-<span class="sd">        </span>
+
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        i : int</span>
 <span class="sd">            Index of point.</span>
-<span class="sd">            </span>
+
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        AirfoilData</span>
 <span class="sd">            Upper airfoil surface data.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_upper</span><span class="p">[</span><span class="n">i</span><span class="p">]</span></div>
-    
+
 <div class="viewcode-block" id="XFoilReader.point_lower"><a class="viewcode-back" href="../../api/_autosummary/pyBL.xfoil_reader.XFoilReader.html#pyBL.xfoil_reader.XFoilReader.point_lower">[docs]</a>    <span class="k">def</span> <span class="nf">point_lower</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">i</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the specified data on the lower surface of airfoil.</span>
-<span class="sd">        </span>
+
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        i : int</span>
 <span class="sd">            Index of point.</span>
-<span class="sd">            </span>
+
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        AirfoilData</span>
 <span class="sd">            Lower airfoil surface data.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lower</span><span class="p">[</span><span class="n">i</span><span class="p">]</span></div>
-    
+
 <div class="viewcode-block" id="XFoilReader.point_wake"><a class="viewcode-back" href="../../api/_autosummary/pyBL.xfoil_reader.XFoilReader.html#pyBL.xfoil_reader.XFoilReader.point_wake">[docs]</a>    <span class="k">def</span> <span class="nf">point_wake</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">i</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the specified airfoil wake data.</span>
-<span class="sd">        </span>
+
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        i : int</span>
 <span class="sd">            Index of point.</span>
-<span class="sd">            </span>
+
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        AirfoilData</span>
 <span class="sd">            Airfoil wake data.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_wake</span><span class="p">[</span><span class="n">i</span><span class="p">]</span></div>
-    
+
 <div class="viewcode-block" id="XFoilReader.s_upper"><a class="viewcode-back" href="../../api/_autosummary/pyBL.xfoil_reader.XFoilReader.html#pyBL.xfoil_reader.XFoilReader.s_upper">[docs]</a>    <span class="k">def</span> <span class="nf">s_upper</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Return the arc-length distances from the stagnation point for the</span>
-<span class="sd">        upper surface.</span>
-<span class="sd">        </span>
+<span class="sd">        Return arc-length distances from stagnation point for upper surface.</span>
+
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        array-like</span>
@@ -489,12 +497,11 @@
         <span class="k">for</span> <span class="n">sd</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_upper</span><span class="p">:</span>
             <span class="n">s</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sd</span><span class="o">.</span><span class="n">s</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">s</span></div>
-    
+
 <div class="viewcode-block" id="XFoilReader.s_lower"><a class="viewcode-back" href="../../api/_autosummary/pyBL.xfoil_reader.XFoilReader.html#pyBL.xfoil_reader.XFoilReader.s_lower">[docs]</a>    <span class="k">def</span> <span class="nf">s_lower</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Return the arc-length distances from the stagnation point for the</span>
-<span class="sd">        lower surface.</span>
-<span class="sd">        </span>
+<span class="sd">        Return arc-length distances from stagnation point for lower surface.</span>
+
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        array-like</span>
@@ -505,11 +512,11 @@
         <span class="k">for</span> <span class="n">sd</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lower</span><span class="p">:</span>
             <span class="n">s</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sd</span><span class="o">.</span><span class="n">s</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">s</span></div>
-    
+
 <div class="viewcode-block" id="XFoilReader.s_wake"><a class="viewcode-back" href="../../api/_autosummary/pyBL.xfoil_reader.XFoilReader.html#pyBL.xfoil_reader.XFoilReader.s_wake">[docs]</a>    <span class="k">def</span> <span class="nf">s_wake</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Return the arc-length distances from the airfoil trailing edge.</span>
-<span class="sd">        </span>
+<span class="sd">        Return arc-length distances from airfoil trailing edge.</span>
+
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        array-like</span>
@@ -519,11 +526,11 @@
         <span class="k">for</span> <span class="n">sd</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_wake</span><span class="p">:</span>
             <span class="n">s</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sd</span><span class="o">.</span><span class="n">s</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">s</span></div>
-    
+
 <div class="viewcode-block" id="XFoilReader.x_upper"><a class="viewcode-back" href="../../api/_autosummary/pyBL.xfoil_reader.XFoilReader.html#pyBL.xfoil_reader.XFoilReader.x_upper">[docs]</a>    <span class="k">def</span> <span class="nf">x_upper</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the chord locations for upper surface of airfoil.</span>
-<span class="sd">        </span>
+
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        array-like</span>
@@ -533,11 +540,11 @@
         <span class="k">for</span> <span class="n">sd</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_upper</span><span class="p">:</span>
             <span class="n">x</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sd</span><span class="o">.</span><span class="n">x</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">x</span></div>
-    
+
 <div class="viewcode-block" id="XFoilReader.x_lower"><a class="viewcode-back" href="../../api/_autosummary/pyBL.xfoil_reader.XFoilReader.html#pyBL.xfoil_reader.XFoilReader.x_lower">[docs]</a>    <span class="k">def</span> <span class="nf">x_lower</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the chord locations for lower surface of airfoil.</span>
-<span class="sd">        </span>
+
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        array-like</span>
@@ -547,11 +554,11 @@
         <span class="k">for</span> <span class="n">sd</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lower</span><span class="p">:</span>
             <span class="n">x</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sd</span><span class="o">.</span><span class="n">x</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">x</span></div>
-    
+
 <div class="viewcode-block" id="XFoilReader.x_wake"><a class="viewcode-back" href="../../api/_autosummary/pyBL.xfoil_reader.XFoilReader.html#pyBL.xfoil_reader.XFoilReader.x_wake">[docs]</a>    <span class="k">def</span> <span class="nf">x_wake</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the chord locations for airfoil wake.</span>
-<span class="sd">        </span>
+
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        array-like</span>
@@ -561,11 +568,11 @@
         <span class="k">for</span> <span class="n">sd</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_wake</span><span class="p">:</span>
             <span class="n">x</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sd</span><span class="o">.</span><span class="n">x</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">x</span></div>
-    
+
 <div class="viewcode-block" id="XFoilReader.y_upper"><a class="viewcode-back" href="../../api/_autosummary/pyBL.xfoil_reader.XFoilReader.html#pyBL.xfoil_reader.XFoilReader.y_upper">[docs]</a>    <span class="k">def</span> <span class="nf">y_upper</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the normal locations for upper surface of airfoil.</span>
-<span class="sd">        </span>
+
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        array-like</span>
@@ -575,11 +582,11 @@
         <span class="k">for</span> <span class="n">sd</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_upper</span><span class="p">:</span>
             <span class="n">y</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sd</span><span class="o">.</span><span class="n">y</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">y</span></div>
-    
+
 <div class="viewcode-block" id="XFoilReader.y_lower"><a class="viewcode-back" href="../../api/_autosummary/pyBL.xfoil_reader.XFoilReader.html#pyBL.xfoil_reader.XFoilReader.y_lower">[docs]</a>    <span class="k">def</span> <span class="nf">y_lower</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the normal locations for lower surface of airfoil.</span>
-<span class="sd">        </span>
+
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        array-like</span>
@@ -589,11 +596,11 @@
         <span class="k">for</span> <span class="n">sd</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lower</span><span class="p">:</span>
             <span class="n">y</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sd</span><span class="o">.</span><span class="n">y</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">y</span></div>
-    
+
 <div class="viewcode-block" id="XFoilReader.y_wake"><a class="viewcode-back" href="../../api/_autosummary/pyBL.xfoil_reader.XFoilReader.html#pyBL.xfoil_reader.XFoilReader.y_wake">[docs]</a>    <span class="k">def</span> <span class="nf">y_wake</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the normal locations for airfoil wake.</span>
-<span class="sd">        </span>
+
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        array-like</span>
@@ -603,11 +610,11 @@
         <span class="k">for</span> <span class="n">sd</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_wake</span><span class="p">:</span>
             <span class="n">y</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sd</span><span class="o">.</span><span class="n">y</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">y</span></div>
-    
+
 <div class="viewcode-block" id="XFoilReader.U_e_upper"><a class="viewcode-back" href="../../api/_autosummary/pyBL.xfoil_reader.XFoilReader.html#pyBL.xfoil_reader.XFoilReader.U_e_upper">[docs]</a>    <span class="k">def</span> <span class="nf">U_e_upper</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the nondimensionalized velocities for upper surface of airfoil.</span>
-<span class="sd">        </span>
+
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        array-like</span>
@@ -617,11 +624,11 @@
         <span class="k">for</span> <span class="n">sd</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_upper</span><span class="p">:</span>
             <span class="n">U_e</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sd</span><span class="o">.</span><span class="n">U_e</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">U_e</span></div>
-    
+
 <div class="viewcode-block" id="XFoilReader.U_e_lower"><a class="viewcode-back" href="../../api/_autosummary/pyBL.xfoil_reader.XFoilReader.html#pyBL.xfoil_reader.XFoilReader.U_e_lower">[docs]</a>    <span class="k">def</span> <span class="nf">U_e_lower</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the nondimensionalized velocities for lower surface of airfoil.</span>
-<span class="sd">        </span>
+
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        array-like</span>
@@ -631,11 +638,11 @@
         <span class="k">for</span> <span class="n">sd</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lower</span><span class="p">:</span>
             <span class="n">U_e</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sd</span><span class="o">.</span><span class="n">U_e</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">U_e</span></div>
-    
+
 <div class="viewcode-block" id="XFoilReader.U_e_wake"><a class="viewcode-back" href="../../api/_autosummary/pyBL.xfoil_reader.XFoilReader.html#pyBL.xfoil_reader.XFoilReader.U_e_wake">[docs]</a>    <span class="k">def</span> <span class="nf">U_e_wake</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the nondimensionalized velocities for airfoil wake.</span>
-<span class="sd">        </span>
+
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        array-like</span>
@@ -645,11 +652,11 @@
         <span class="k">for</span> <span class="n">sd</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_wake</span><span class="p">:</span>
             <span class="n">U_e</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sd</span><span class="o">.</span><span class="n">U_e</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">U_e</span></div>
-    
+
 <div class="viewcode-block" id="XFoilReader.delta_d_upper"><a class="viewcode-back" href="../../api/_autosummary/pyBL.xfoil_reader.XFoilReader.html#pyBL.xfoil_reader.XFoilReader.delta_d_upper">[docs]</a>    <span class="k">def</span> <span class="nf">delta_d_upper</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the displacement thicknesses for upper surface of airfoil.</span>
-<span class="sd">        </span>
+
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        array-like</span>
@@ -659,11 +666,11 @@
         <span class="k">for</span> <span class="n">sd</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_upper</span><span class="p">:</span>
             <span class="n">delta_d</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sd</span><span class="o">.</span><span class="n">delta_d</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">delta_d</span></div>
-    
+
 <div class="viewcode-block" id="XFoilReader.delta_d_lower"><a class="viewcode-back" href="../../api/_autosummary/pyBL.xfoil_reader.XFoilReader.html#pyBL.xfoil_reader.XFoilReader.delta_d_lower">[docs]</a>    <span class="k">def</span> <span class="nf">delta_d_lower</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the displacement thicknesses for lower surface of airfoil.</span>
-<span class="sd">        </span>
+
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        array-like</span>
@@ -673,11 +680,11 @@
         <span class="k">for</span> <span class="n">sd</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lower</span><span class="p">:</span>
             <span class="n">delta_d</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sd</span><span class="o">.</span><span class="n">delta_d</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">delta_d</span></div>
-    
+
 <div class="viewcode-block" id="XFoilReader.delta_d_wake"><a class="viewcode-back" href="../../api/_autosummary/pyBL.xfoil_reader.XFoilReader.html#pyBL.xfoil_reader.XFoilReader.delta_d_wake">[docs]</a>    <span class="k">def</span> <span class="nf">delta_d_wake</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the displacement thicknesses for airfoil wake.</span>
-<span class="sd">        </span>
+
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        array-like</span>
@@ -687,11 +694,11 @@
         <span class="k">for</span> <span class="n">sd</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_wake</span><span class="p">:</span>
             <span class="n">delta_d</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sd</span><span class="o">.</span><span class="n">delta_d</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">delta_d</span></div>
-    
+
 <div class="viewcode-block" id="XFoilReader.delta_m_upper"><a class="viewcode-back" href="../../api/_autosummary/pyBL.xfoil_reader.XFoilReader.html#pyBL.xfoil_reader.XFoilReader.delta_m_upper">[docs]</a>    <span class="k">def</span> <span class="nf">delta_m_upper</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the momentum thicknesses for upper surface of airfoil.</span>
-<span class="sd">        </span>
+
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        array-like</span>
@@ -701,11 +708,11 @@
         <span class="k">for</span> <span class="n">sd</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_upper</span><span class="p">:</span>
             <span class="n">delta_m</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sd</span><span class="o">.</span><span class="n">delta_m</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">delta_m</span></div>
-    
+
 <div class="viewcode-block" id="XFoilReader.delta_m_lower"><a class="viewcode-back" href="../../api/_autosummary/pyBL.xfoil_reader.XFoilReader.html#pyBL.xfoil_reader.XFoilReader.delta_m_lower">[docs]</a>    <span class="k">def</span> <span class="nf">delta_m_lower</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the momentum thicknesses for lower surface of airfoil.</span>
-<span class="sd">        </span>
+
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        rray-like</span>
@@ -715,11 +722,11 @@
         <span class="k">for</span> <span class="n">sd</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lower</span><span class="p">:</span>
             <span class="n">delta_m</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sd</span><span class="o">.</span><span class="n">delta_m</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">delta_m</span></div>
-    
+
 <div class="viewcode-block" id="XFoilReader.delta_m_wake"><a class="viewcode-back" href="../../api/_autosummary/pyBL.xfoil_reader.XFoilReader.html#pyBL.xfoil_reader.XFoilReader.delta_m_wake">[docs]</a>    <span class="k">def</span> <span class="nf">delta_m_wake</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the momentum thicknesses for airfoil wake.</span>
-<span class="sd">        </span>
+
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        array-like</span>
@@ -729,11 +736,11 @@
         <span class="k">for</span> <span class="n">sd</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_wake</span><span class="p">:</span>
             <span class="n">delta_m</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sd</span><span class="o">.</span><span class="n">delta_m</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">delta_m</span></div>
-    
+
 <div class="viewcode-block" id="XFoilReader.delta_k_upper"><a class="viewcode-back" href="../../api/_autosummary/pyBL.xfoil_reader.XFoilReader.html#pyBL.xfoil_reader.XFoilReader.delta_k_upper">[docs]</a>    <span class="k">def</span> <span class="nf">delta_k_upper</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the kinetic energy thicknesses for upper surface of airfoil.</span>
-<span class="sd">        </span>
+
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        array-like</span>
@@ -743,11 +750,11 @@
         <span class="k">for</span> <span class="n">sd</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_upper</span><span class="p">:</span>
             <span class="n">delta_k</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sd</span><span class="o">.</span><span class="n">H_k</span><span class="o">*</span><span class="n">sd</span><span class="o">.</span><span class="n">delta_m</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">delta_k</span></div>
-    
+
 <div class="viewcode-block" id="XFoilReader.delta_k_lower"><a class="viewcode-back" href="../../api/_autosummary/pyBL.xfoil_reader.XFoilReader.html#pyBL.xfoil_reader.XFoilReader.delta_k_lower">[docs]</a>    <span class="k">def</span> <span class="nf">delta_k_lower</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the kinetic energy thicknesses for lower surface of airfoil.</span>
-<span class="sd">        </span>
+
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        array-like</span>
@@ -757,11 +764,11 @@
         <span class="k">for</span> <span class="n">sd</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lower</span><span class="p">:</span>
             <span class="n">delta_k</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sd</span><span class="o">.</span><span class="n">H_k</span><span class="o">*</span><span class="n">sd</span><span class="o">.</span><span class="n">delta_m</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">delta_k</span></div>
-    
+
 <div class="viewcode-block" id="XFoilReader.H_d_upper"><a class="viewcode-back" href="../../api/_autosummary/pyBL.xfoil_reader.XFoilReader.html#pyBL.xfoil_reader.XFoilReader.H_d_upper">[docs]</a>    <span class="k">def</span> <span class="nf">H_d_upper</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the displacement shape factor for upper surface of airfoil.</span>
-<span class="sd">        </span>
+
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        array-like</span>
@@ -771,11 +778,11 @@
         <span class="k">for</span> <span class="n">sd</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_upper</span><span class="p">:</span>
             <span class="n">H_d</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sd</span><span class="o">.</span><span class="n">H_d</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">H_d</span></div>
-    
+
 <div class="viewcode-block" id="XFoilReader.H_d_lower"><a class="viewcode-back" href="../../api/_autosummary/pyBL.xfoil_reader.XFoilReader.html#pyBL.xfoil_reader.XFoilReader.H_d_lower">[docs]</a>    <span class="k">def</span> <span class="nf">H_d_lower</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the displacement shape factor for lower surface of airfoil.</span>
-<span class="sd">        </span>
+
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        array-like</span>
@@ -785,11 +792,11 @@
         <span class="k">for</span> <span class="n">sd</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lower</span><span class="p">:</span>
             <span class="n">H_d</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sd</span><span class="o">.</span><span class="n">H_d</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">H_d</span></div>
-    
+
 <div class="viewcode-block" id="XFoilReader.H_d_wake"><a class="viewcode-back" href="../../api/_autosummary/pyBL.xfoil_reader.XFoilReader.html#pyBL.xfoil_reader.XFoilReader.H_d_wake">[docs]</a>    <span class="k">def</span> <span class="nf">H_d_wake</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the displacement shape factor for airfoil wake.</span>
-<span class="sd">        </span>
+
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        array-like</span>
@@ -799,11 +806,11 @@
         <span class="k">for</span> <span class="n">sd</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_wake</span><span class="p">:</span>
             <span class="n">H_d</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sd</span><span class="o">.</span><span class="n">H_d</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">H_d</span></div>
-    
+
 <div class="viewcode-block" id="XFoilReader.H_k_upper"><a class="viewcode-back" href="../../api/_autosummary/pyBL.xfoil_reader.XFoilReader.html#pyBL.xfoil_reader.XFoilReader.H_k_upper">[docs]</a>    <span class="k">def</span> <span class="nf">H_k_upper</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the kinetic energy shape factor for upper surface of airfoil.</span>
-<span class="sd">        </span>
+
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        array-like</span>
@@ -813,11 +820,11 @@
         <span class="k">for</span> <span class="n">sd</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_upper</span><span class="p">:</span>
             <span class="n">H_k</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sd</span><span class="o">.</span><span class="n">H_k</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">H_k</span></div>
-    
+
 <div class="viewcode-block" id="XFoilReader.H_k_lower"><a class="viewcode-back" href="../../api/_autosummary/pyBL.xfoil_reader.XFoilReader.html#pyBL.xfoil_reader.XFoilReader.H_k_lower">[docs]</a>    <span class="k">def</span> <span class="nf">H_k_lower</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the kinetic energy shape factor for lower surface of airfoil.</span>
-<span class="sd">        </span>
+
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        array-like</span>
@@ -827,11 +834,11 @@
         <span class="k">for</span> <span class="n">sd</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lower</span><span class="p">:</span>
             <span class="n">H_k</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sd</span><span class="o">.</span><span class="n">H_k</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">H_k</span></div>
-    
+
 <div class="viewcode-block" id="XFoilReader.c_f_upper"><a class="viewcode-back" href="../../api/_autosummary/pyBL.xfoil_reader.XFoilReader.html#pyBL.xfoil_reader.XFoilReader.c_f_upper">[docs]</a>    <span class="k">def</span> <span class="nf">c_f_upper</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the skin friction coefficient for upper surface of airfoil.</span>
-<span class="sd">        </span>
+
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        array-like</span>
@@ -841,11 +848,11 @@
         <span class="k">for</span> <span class="n">sd</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_upper</span><span class="p">:</span>
             <span class="n">c_f</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sd</span><span class="o">.</span><span class="n">c_f</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">c_f</span></div>
-    
+
 <div class="viewcode-block" id="XFoilReader.c_f_lower"><a class="viewcode-back" href="../../api/_autosummary/pyBL.xfoil_reader.XFoilReader.html#pyBL.xfoil_reader.XFoilReader.c_f_lower">[docs]</a>    <span class="k">def</span> <span class="nf">c_f_lower</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the skin friction coefficient for lower surface of airfoil.</span>
-<span class="sd">        </span>
+
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        array-like</span>
@@ -855,11 +862,11 @@
         <span class="k">for</span> <span class="n">sd</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lower</span><span class="p">:</span>
             <span class="n">c_f</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sd</span><span class="o">.</span><span class="n">c_f</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">c_f</span></div>
-    
+
 <div class="viewcode-block" id="XFoilReader.m_upper"><a class="viewcode-back" href="../../api/_autosummary/pyBL.xfoil_reader.XFoilReader.html#pyBL.xfoil_reader.XFoilReader.m_upper">[docs]</a>    <span class="k">def</span> <span class="nf">m_upper</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the mass defect for upper surface of airfoil.</span>
-<span class="sd">        </span>
+
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        array-like</span>
@@ -869,11 +876,11 @@
         <span class="k">for</span> <span class="n">sd</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_upper</span><span class="p">:</span>
             <span class="n">m</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sd</span><span class="o">.</span><span class="n">m</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">m</span></div>
-    
+
 <div class="viewcode-block" id="XFoilReader.m_lower"><a class="viewcode-back" href="../../api/_autosummary/pyBL.xfoil_reader.XFoilReader.html#pyBL.xfoil_reader.XFoilReader.m_lower">[docs]</a>    <span class="k">def</span> <span class="nf">m_lower</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the mass defect for lower surface of airfoil.</span>
-<span class="sd">        </span>
+
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        array-like</span>
@@ -883,11 +890,11 @@
         <span class="k">for</span> <span class="n">sd</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lower</span><span class="p">:</span>
             <span class="n">m</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sd</span><span class="o">.</span><span class="n">m</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">m</span></div>
-    
+
 <div class="viewcode-block" id="XFoilReader.P_upper"><a class="viewcode-back" href="../../api/_autosummary/pyBL.xfoil_reader.XFoilReader.html#pyBL.xfoil_reader.XFoilReader.P_upper">[docs]</a>    <span class="k">def</span> <span class="nf">P_upper</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the momentum defect for upper surface of airfoil.</span>
-<span class="sd">        </span>
+
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        array-like</span>
@@ -897,11 +904,11 @@
         <span class="k">for</span> <span class="n">sd</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_upper</span><span class="p">:</span>
             <span class="n">P</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sd</span><span class="o">.</span><span class="n">P</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">P</span></div>
-    
+
 <div class="viewcode-block" id="XFoilReader.P_lower"><a class="viewcode-back" href="../../api/_autosummary/pyBL.xfoil_reader.XFoilReader.html#pyBL.xfoil_reader.XFoilReader.P_lower">[docs]</a>    <span class="k">def</span> <span class="nf">P_lower</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the momentum defect for lower surface of airfoil.</span>
-<span class="sd">        </span>
+
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        array-like</span>
@@ -911,11 +918,11 @@
         <span class="k">for</span> <span class="n">sd</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lower</span><span class="p">:</span>
             <span class="n">P</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sd</span><span class="o">.</span><span class="n">P</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">P</span></div>
-    
+
 <div class="viewcode-block" id="XFoilReader.K_upper"><a class="viewcode-back" href="../../api/_autosummary/pyBL.xfoil_reader.XFoilReader.html#pyBL.xfoil_reader.XFoilReader.K_upper">[docs]</a>    <span class="k">def</span> <span class="nf">K_upper</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the kinetic energy defect for upper surface of airfoil.</span>
-<span class="sd">        </span>
+
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        array-like</span>
@@ -925,11 +932,11 @@
         <span class="k">for</span> <span class="n">sd</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_upper</span><span class="p">:</span>
             <span class="n">K</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sd</span><span class="o">.</span><span class="n">K</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">K</span></div>
-    
+
 <div class="viewcode-block" id="XFoilReader.K_lower"><a class="viewcode-back" href="../../api/_autosummary/pyBL.xfoil_reader.XFoilReader.html#pyBL.xfoil_reader.XFoilReader.K_lower">[docs]</a>    <span class="k">def</span> <span class="nf">K_lower</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the kinetic energy defect for lower surface of airfoil.</span>
-<span class="sd">        </span>
+
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        array-like</span>

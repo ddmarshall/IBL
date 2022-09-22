@@ -67,7 +67,7 @@ stored separately and the parameters are obtained separately.</p>
 <table class="autosummary longtable docutils align-default">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="#pyBL.xfoil_reader.XFoilReader.AirfoilData" title="pyBL.xfoil_reader.XFoilReader.AirfoilData"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AirfoilData</span></code></a>(row)</p></td>
-<td><p>This class is the data that is reported for each station on airfoil.</p></td>
+<td><p>Data reported for each station on airfoil.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#pyBL.xfoil_reader.XFoilReader.H_d_lower" title="pyBL.xfoil_reader.XFoilReader.H_d_lower"><code class="xref py py-obj docutils literal notranslate"><span class="pre">H_d_lower</span></code></a>()</p></td>
 <td><p>Return the displacement shape factor for lower surface of airfoil.</p></td>
@@ -106,7 +106,7 @@ stored separately and the parameters are obtained separately.</p>
 <td><p>Return the nondimensionalized velocities for airfoil wake.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#pyBL.xfoil_reader.XFoilReader.WakeData" title="pyBL.xfoil_reader.XFoilReader.WakeData"><code class="xref py py-obj docutils literal notranslate"><span class="pre">WakeData</span></code></a>(row)</p></td>
-<td><p>This class is the data that is reported for each station in wake.</p></td>
+<td><p>Data reported for each station in wake.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#pyBL.xfoil_reader.XFoilReader.c_f_lower" title="pyBL.xfoil_reader.XFoilReader.c_f_lower"><code class="xref py py-obj docutils literal notranslate"><span class="pre">c_f_lower</span></code></a>()</p></td>
 <td><p>Return the skin friction coefficient for lower surface of airfoil.</p></td>
@@ -166,13 +166,13 @@ stored separately and the parameters are obtained separately.</p>
 <td><p>Return the specified airfoil wake data.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#pyBL.xfoil_reader.XFoilReader.s_lower" title="pyBL.xfoil_reader.XFoilReader.s_lower"><code class="xref py py-obj docutils literal notranslate"><span class="pre">s_lower</span></code></a>()</p></td>
-<td><p>Return the arc-length distances from the stagnation point for the lower surface.</p></td>
+<td><p>Return arc-length distances from stagnation point for lower surface.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#pyBL.xfoil_reader.XFoilReader.s_upper" title="pyBL.xfoil_reader.XFoilReader.s_upper"><code class="xref py py-obj docutils literal notranslate"><span class="pre">s_upper</span></code></a>()</p></td>
-<td><p>Return the arc-length distances from the stagnation point for the upper surface.</p></td>
+<td><p>Return arc-length distances from stagnation point for upper surface.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#pyBL.xfoil_reader.XFoilReader.s_wake" title="pyBL.xfoil_reader.XFoilReader.s_wake"><code class="xref py py-obj docutils literal notranslate"><span class="pre">s_wake</span></code></a>()</p></td>
-<td><p>Return the arc-length distances from the airfoil trailing edge.</p></td>
+<td><p>Return arc-length distances from airfoil trailing edge.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#pyBL.xfoil_reader.XFoilReader.x_lower" title="pyBL.xfoil_reader.XFoilReader.x_lower"><code class="xref py py-obj docutils literal notranslate"><span class="pre">x_lower</span></code></a>()</p></td>
 <td><p>Return the chord locations for lower surface of airfoil.</p></td>
@@ -198,7 +198,7 @@ stored separately and the parameters are obtained separately.</p>
 <dt class="sig sig-object py" id="pyBL.xfoil_reader.XFoilReader.AirfoilData">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">AirfoilData</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">row</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pyBL/xfoil_reader.html#XFoilReader.AirfoilData"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyBL.xfoil_reader.XFoilReader.AirfoilData" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>This class is the data that is reported for each station on airfoil.</p>
+<p>Data reported for each station on airfoil.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Attributes<span class="colon">:</span></dt>
 <dd class="field-odd"><dl class="simple">
@@ -403,7 +403,7 @@ stored separately and the parameters are obtained separately.</p>
 <dt class="sig sig-object py" id="pyBL.xfoil_reader.XFoilReader.WakeData">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">WakeData</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">row</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pyBL/xfoil_reader.html#XFoilReader.WakeData"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyBL.xfoil_reader.XFoilReader.WakeData" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>This class is the data that is reported for each station in wake.</p>
+<p>Data reported for each station in wake.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Attributes<span class="colon">:</span></dt>
 <dd class="field-odd"><dl class="simple">
@@ -734,8 +734,7 @@ is <cite>None</cite>.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="pyBL.xfoil_reader.XFoilReader.s_lower">
 <span class="sig-name descname"><span class="pre">s_lower</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pyBL/xfoil_reader.html#XFoilReader.s_lower"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyBL.xfoil_reader.XFoilReader.s_lower" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return the arc-length distances from the stagnation point for the
-lower surface.</p>
+<dd><p>Return arc-length distances from stagnation point for lower surface.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><dl class="simple">
@@ -750,8 +749,7 @@ surface.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="pyBL.xfoil_reader.XFoilReader.s_upper">
 <span class="sig-name descname"><span class="pre">s_upper</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pyBL/xfoil_reader.html#XFoilReader.s_upper"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyBL.xfoil_reader.XFoilReader.s_upper" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return the arc-length distances from the stagnation point for the
-upper surface.</p>
+<dd><p>Return arc-length distances from stagnation point for upper surface.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><dl class="simple">
@@ -766,7 +764,7 @@ surface.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="pyBL.xfoil_reader.XFoilReader.s_wake">
 <span class="sig-name descname"><span class="pre">s_wake</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pyBL/xfoil_reader.html#XFoilReader.s_wake"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyBL.xfoil_reader.XFoilReader.s_wake" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return the arc-length distances from the airfoil trailing edge.</p>
+<dd><p>Return arc-length distances from airfoil trailing edge.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><dl class="simple">

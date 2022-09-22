@@ -70,7 +70,8 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_U_ref</span> <span class="o">=</span> <span class="n">U_ref</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_nu</span> <span class="o">=</span> <span class="n">nu</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_eta_inf</span> <span class="o">=</span> <span class="n">eta_inf</span>
-    
+        <span class="bp">self</span><span class="o">.</span><span class="n">_F</span> <span class="o">=</span> <span class="kc">None</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">_set_boundary_condition</span><span class="p">(</span><span class="n">m</span><span class="p">)</span>
 
 <div class="viewcode-block" id="FalknerSkanSolution.f"><a class="viewcode-back" href="../../api/_autosummary/pyBL.falkner_skan.FalknerSkanSolution.html#pyBL.falkner_skan.FalknerSkanSolution.f">[docs]</a>    <span class="k">def</span> <span class="nf">f</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">eta</span><span class="p">):</span>
@@ -172,11 +173,10 @@
             <span class="k">return</span> <span class="mf">0.99</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">fp</span><span class="p">(</span><span class="n">eta</span><span class="p">)</span>
 
         <span class="n">sol</span> <span class="o">=</span> <span class="n">root_scalar</span><span class="p">(</span><span class="n">fun</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;bisect&quot;</span><span class="p">,</span> <span class="n">bracket</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">])</span>
-        <span class="k">if</span> <span class="n">sol</span><span class="o">.</span><span class="n">converged</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">sol</span><span class="o">.</span><span class="n">root</span>
-        <span class="k">else</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">sol</span><span class="o">.</span><span class="n">converged</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Could not find shear thickness with error: &quot;</span>
-                             <span class="o">+</span> <span class="n">sol</span><span class="o">.</span><span class="n">flag</span><span class="p">)</span></div>
+                             <span class="o">+</span> <span class="n">sol</span><span class="o">.</span><span class="n">flag</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">sol</span><span class="o">.</span><span class="n">root</span></div>
 
 <div class="viewcode-block" id="FalknerSkanSolution.eta"><a class="viewcode-back" href="../../api/_autosummary/pyBL.falkner_skan.FalknerSkanSolution.html#pyBL.falkner_skan.FalknerSkanSolution.eta">[docs]</a>    <span class="k">def</span> <span class="nf">eta</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -226,7 +226,7 @@
 <span class="sd">        Both `x` and `y` must be the same shape.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">eta</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">eta</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">U_e</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">fp</span><span class="p">(</span><span class="n">eta</span><span class="p">);</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">U_e</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">fp</span><span class="p">(</span><span class="n">eta</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="FalknerSkanSolution.v"><a class="viewcode-back" href="../../api/_autosummary/pyBL.falkner_skan.FalknerSkanSolution.html#pyBL.falkner_skan.FalknerSkanSolution.v">[docs]</a>    <span class="k">def</span> <span class="nf">v</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -432,14 +432,20 @@
         <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mf">0.5</span><span class="o">*</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_m</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">U_e</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_nu</span><span class="o">*</span><span class="n">x</span><span class="p">))</span>
 
     <span class="k">def</span> <span class="nf">_set_boundary_condition</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">m</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+        <span class="c1"># pylint: disable=too-many-branches</span>
+        <span class="c1"># pylint: disable=too-many-statements</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_m</span> <span class="o">=</span> <span class="n">m</span>
 
         <span class="k">def</span> <span class="nf">fun</span><span class="p">(</span><span class="n">fpp0</span><span class="p">):</span>
             <span class="k">class</span> <span class="nc">bc_event</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">terminal</span> <span class="o">=</span> <span class="kc">True</span>
+                <span class="sd">&quot;&quot;&quot;Bounday condition event to terminate ODE solver.&quot;&quot;&quot;</span>
+
+                <span class="c1"># pylint: disable=too-few-public-methods</span>
+                <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">terminal</span> <span class="o">=</span> <span class="kc">True</span>
 
                 <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">F</span><span class="p">):</span>
-                    <span class="k">return</span> <span class="n">F</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span>
+                    <span class="k">return</span> <span class="n">F</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="mf">1.1</span>
 
             <span class="n">F0</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">fpp0</span><span class="p">]</span>
             <span class="n">rtn</span> <span class="o">=</span> <span class="n">solve_ivp</span><span class="p">(</span><span class="n">fun</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_ode_fun</span><span class="p">,</span>
@@ -451,7 +457,7 @@
 
             <span class="c1"># hack to get beta at separation to work</span>
             <span class="n">val</span> <span class="o">=</span> <span class="mi">1</span><span class="o">-</span><span class="n">rtn</span><span class="o">.</span><span class="n">y</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">]</span>
-            <span class="k">if</span> <span class="p">(</span><span class="n">m</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">val</span> <span class="o">&gt;</span> <span class="o">-</span><span class="mf">2e-6</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">val</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">):</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">m</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="o">-</span><span class="mf">2e-6</span> <span class="o">&lt;</span> <span class="n">val</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">):</span>
                 <span class="n">val</span> <span class="o">=</span> <span class="mi">0</span>
             <span class="k">return</span> <span class="n">val</span>
 
@@ -459,7 +465,7 @@
         <span class="c1"># way of finding a suitable initial range?</span>
         <span class="k">if</span> <span class="n">m</span> <span class="o">&lt;=</span> <span class="o">-</span><span class="mf">0.905</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Value of m is below separation value&quot;</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="n">m</span> <span class="o">&lt;=</span> <span class="o">-</span><span class="mf">0.09</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">m</span> <span class="o">&lt;=</span> <span class="o">-</span><span class="mf">0.09</span><span class="p">:</span>
             <span class="n">rng</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">]</span>
         <span class="k">elif</span> <span class="n">m</span> <span class="o">&lt;=</span> <span class="o">-</span><span class="mf">0.08</span><span class="p">:</span>
             <span class="n">rng</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">]</span>
@@ -518,11 +524,12 @@
         <span class="k">if</span> <span class="n">rtn</span><span class="o">.</span><span class="n">success</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_F</span> <span class="o">=</span> <span class="n">rtn</span><span class="o">.</span><span class="n">sol</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Initial condition for solver, f</span><span class="se">\&#39;\&#39;</span><span class="s2">(0)=</span><span class="si">{0:.6f}</span><span class="s2">, &quot;</span>
-                             <span class="s2">&quot;did not produce converged solution.&quot;</span>
-                             <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_fpp0</span><span class="p">))</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Initial condition for solver, &quot;</span>
+                             <span class="sa">f</span><span class="s2">&quot;f</span><span class="se">\&#39;\&#39;</span><span class="s2">(0)=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_fpp0</span><span class="si">:</span><span class="s2">.6f</span><span class="si">}</span><span class="s2">, did not produce &quot;</span>
+                             <span class="s2">&quot;converged solution.&quot;</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_ode_fun</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">eta</span><span class="p">,</span> <span class="n">F</span><span class="p">):</span>
+        <span class="n">_</span> <span class="o">=</span> <span class="n">eta</span>  <span class="c1"># To avoid pylint unused-argument message</span>
         <span class="n">Fp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">F</span><span class="p">)</span>
 
         <span class="n">Fp</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">F</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
