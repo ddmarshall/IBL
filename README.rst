@@ -14,18 +14,19 @@ For example:
 .. code-block:: python
 
     from pyBL.thwaites_method import ThwaitesMethodNonlinear
-    
+
     # Configure edge information
     U_e = ...
     s = ...
     rho_inf = ...
     nu_inf = ...
-    
+
     # Set the initial coditions
     delta_m0 = ...
-    
-    tm = ThwaitesMethodNonlinear(U_e = U_e)
-    tm.set_solution_parameters(x0 = s[0], x_end = s[-1], delta_m0 = delta_m0, nu = nu_inf)
+
+    tm = ThwaitesMethodNonlinear(U_e=U_e)
+    tm.set_solution_parameters(x0=s[0], x_end=s[-1], delta_m0=delta_m0,
+                               nu=nu_inf)
     rtn = tm.solve()
     if not rtn.success:
         print("Could not get solution for Thwaites method: " + rtn.message)
@@ -39,19 +40,20 @@ Otherwise, the interface is the same as for Thwaites' method:
 .. code-block:: python
 
     from pyBL.head_method import HeadMethod
-    
+
     # Configure edge information
     U_e = ...
     s = ...
     rho_inf = ...
     nu_inf = ...
-    
+
     # Set the initial coditions
     delta_m0 = ...
     H_d0 = ...
-    
-    hm = ThwaitesMethodNonlinear(U_e = U_e)
-    hm.set_solution_parameters(x0 = s[0], x_end = s[-1], delta_m0 = delta_m0, H_d0 = H_d0, nu = nu_inf)
+
+    hm = ThwaitesMethodNonlinear(U_e=U_e)
+    hm.set_solution_parameters(x0=s[0], x_end=s[-1], delta_m0=delta_m0,
+                               H_d0=H_d0, nu=nu_inf)
     rtn = hm.solve()
     if not rtn.success:
         print("Could not get solution for Thwaites method: " + rtn.message)
