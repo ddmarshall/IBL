@@ -1,14 +1,15 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
+Comparing Thwaites' method solution against XFoil case.
+
 This example shows a comparison between Thwaites' method and XFoil laminar
-results for a NACA 0003 airfoil using the XFoil edge velocity profile.
-
-Created on Sat Aug 27 22:43:39 2022
-
-@author: ddmarshall
+results for a NACA 0003 airfoil using the XFoil edge velocity profile. It shows
+similar results to Figures 3.17 to 3.19 in Edland thesis.
 """
 
+# pylint: disable=too-many-locals
+# pylint: disable=too-many-statements
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.gridspec import GridSpec
@@ -18,37 +19,37 @@ from pyBL.xfoil_reader import XFoilReader
 
 
 def compare_xfoil_laminar():
-
-    ## Read in XFoil data
+    """Compare the Thwaites' method results to XFoil results."""
+    # Read in XFoil data
     inv_filename = "../data/xfoil_0003_inviscid_dump.txt"
     visc_filename = "../data/xfoil_0003_laminar_dump.txt"
     airfoil_name = "NACA 0003"
     alpha = 0
-    c = 1 # (m)
-    U_inf = 20 # (m/s)
+    c = 1  # (m)
+    U_inf = 20  # (m/s)
     Re = 1000
     rho_inf = 1.2
     nu_inf = U_inf*c/Re
     x_trans = 1
     n_trans = 9
-    xfoil_inv = XFoilReader(inv_filename, airfoil = airfoil_name,
-                            alpha = alpha, c = c)
-    xfoil_visc = XFoilReader(visc_filename, airfoil = airfoil_name,
-                             alpha = alpha, c = c, Re = Re, x_trans = x_trans,
-                             n_trans = n_trans)
+    xfoil_inv = XFoilReader(inv_filename, airfoil=airfoil_name,
+                            alpha=alpha, c=c)
+    xfoil_visc = XFoilReader(visc_filename, airfoil=airfoil_name,
+                             alpha=alpha, c=c, Re=Re, x_trans=x_trans,
+                             n_trans=n_trans)
 
     s_ref = np.array(xfoil_inv.s_upper())
     U_e_inv = U_inf*np.array(xfoil_inv.U_e_upper())
     U_e_visc = U_inf*np.array(xfoil_visc.U_e_upper())
     s = np.linspace(s_ref[0], s_ref[-1], 101)
 
-    ## Setup Thwaites methods
+    # Setup Thwaites methods
     ivisc = 0
     delta_m0 = xfoil_visc.delta_m_upper()[ivisc]
-    tm_visc = ThwaitesMethodNonlinear(U_e = [s_ref, U_e_visc],
-                                      data_fits = "Spline")
-    tm_visc.set_solution_parameters(x0 = s[ivisc], x_end = s[-1],
-                                    delta_m0 = delta_m0, nu = nu_inf)
+    tm_visc = ThwaitesMethodNonlinear(U_e=[s_ref, U_e_visc],
+                                      data_fits="Spline")
+    tm_visc.set_solution_parameters(x0=s[ivisc], x_end=s[-1],
+                                    delta_m0=delta_m0, nu=nu_inf)
     rtn = tm_visc.solve()
     if not rtn.success:
         print("Could not get solution for Thwaites method: " + rtn.message)
@@ -58,10 +59,10 @@ def compare_xfoil_laminar():
         s_sep_visc = rtn.x_end
 
     iinv = 0
-    tm_inv = ThwaitesMethodNonlinear(U_e = [s_ref, U_e_inv], data_fits = "Spline")
+    tm_inv = ThwaitesMethodNonlinear(U_e=[s_ref, U_e_inv], data_fits="Spline")
     delta_m0 = np.sqrt(0.075*nu_inf/tm_inv.dU_edx(s[iinv]))
-    tm_inv.set_solution_parameters(x0 = s[iinv], x_end = s[-1],
-                                   delta_m0 = delta_m0, nu = nu_inf)
+    tm_inv.set_solution_parameters(x0=s[iinv], x_end=s[-1],
+                                   delta_m0=delta_m0, nu=nu_inf)
     rtn = tm_inv.solve()
     if not rtn.success:
         print("Could not get solution for Thwaites method: " + rtn.message)
@@ -70,23 +71,23 @@ def compare_xfoil_laminar():
     if rtn.status == -1:
         s_sep_inv = rtn.x_end
 
-    ## Calculate the boundary layer parameters
+    # Calculate the boundary layer parameters
     delta_d_ref = np.array(xfoil_visc.delta_d_upper())
     delta_m_ref = np.array(xfoil_visc.delta_m_upper())
     H_d_ref = np.array(xfoil_visc.H_d_upper())
     c_f_ref = np.array(xfoil_visc.c_f_upper())
 
-    s_ref_visc = s_ref[s_ref<s_sep_visc]
-    delta_d_ref_visc = delta_d_ref[s_ref<s_sep_visc]
-    delta_m_ref_visc = delta_m_ref[s_ref<s_sep_visc]
-    H_d_ref_visc = H_d_ref[s_ref<s_sep_visc]
-    c_f_ref_visc = c_f_ref[s_ref<s_sep_visc]
+    s_ref_visc = s_ref[s_ref < s_sep_visc]
+    delta_d_ref_visc = delta_d_ref[s_ref < s_sep_visc]
+    delta_m_ref_visc = delta_m_ref[s_ref < s_sep_visc]
+    H_d_ref_visc = H_d_ref[s_ref < s_sep_visc]
+    c_f_ref_visc = c_f_ref[s_ref < s_sep_visc]
 
-    s_ref_inv = s_ref[s_ref<s_sep_inv]
-    delta_d_ref_inv = delta_d_ref[s_ref<s_sep_inv]
-    delta_m_ref_inv = delta_m_ref[s_ref<s_sep_inv]
-    H_d_ref_inv = H_d_ref[s_ref<s_sep_inv]
-    c_f_ref_inv = c_f_ref[s_ref<s_sep_inv]
+    s_ref_inv = s_ref[s_ref < s_sep_inv]
+    delta_d_ref_inv = delta_d_ref[s_ref < s_sep_inv]
+    delta_m_ref_inv = delta_m_ref[s_ref < s_sep_inv]
+    H_d_ref_inv = H_d_ref[s_ref < s_sep_inv]
+    c_f_ref_inv = c_f_ref[s_ref < s_sep_inv]
 
     s_visc = np.linspace(s_ref[ivisc], min(s_ref[-1], s_sep_visc), 101)
     delta_d_visc = tm_visc.delta_d(s_visc)
@@ -106,11 +107,11 @@ def compare_xfoil_laminar():
     dU_edx_inv = tm_inv.dU_edx(s_inv)
     d2U_edx2_inv = tm_inv.d2U_edx2(s_inv)
 
-    ## Plot results
+    # Plot results
     fig = plt.figure()
     fig.set_figwidth(10)
     fig.set_figheight(15)
-    gs = GridSpec(6, 2, figure = fig)
+    gs = GridSpec(6, 2, figure=fig)
     axis_delta_d = fig.add_subplot(gs[0, 0])
     axis_delta_d_diff = fig.add_subplot(gs[0, 1])
     axis_delta_m = fig.add_subplot(gs[1, 0])
@@ -133,14 +134,14 @@ def compare_xfoil_laminar():
 
     # Displacement thickness in 0,:
     ax = axis_delta_d
-    ref_curve = ax.plot(s_ref/c, delta_d_ref/c, color = ref_color,
-                        label = ref_label)
+    ref_curve = ax.plot(s_ref/c, delta_d_ref/c, color=ref_color,
+                        label=ref_label)
     thwaites_visc_curve = ax.plot(s_visc/c, delta_d_visc/c,
-                                  color = thwaites_visc_color,
-                                  label = thwaites_visc_label)
+                                  color=thwaites_visc_color,
+                                  label=thwaites_visc_label)
     thwaites_inv_curve = ax.plot(s_inv/c, delta_d_inv/c,
-                                 color = thwaites_inv_color,
-                                 label = thwaites_inv_label)
+                                 color=thwaites_inv_color,
+                                 label=thwaites_inv_label)
     ax.set_ylim(0, 0.06)
     ax.set_ylabel(r"$\delta_d/c$")
     ax.grid(True)
@@ -148,9 +149,9 @@ def compare_xfoil_laminar():
     ax = axis_delta_d_diff
     ax.plot(s_ref_visc/c,
             np.abs(1-tm_visc.delta_d(s_ref_visc)/delta_d_ref_visc),
-            color = thwaites_visc_color)
+            color=thwaites_visc_color)
     ax.plot(s_ref_inv/c, np.abs(1-tm_inv.delta_d(s_ref_inv)/delta_d_ref_inv),
-            color = thwaites_inv_color)
+            color=thwaites_inv_color)
     ax.set_ylabel("Relative Difference")
     ax.set_ylim([1e-3,1])
     ax.set_yscale('log')
@@ -158,9 +159,9 @@ def compare_xfoil_laminar():
 
     # Momentum thickness in 1,:
     ax = axis_delta_m
-    ax.plot(s_ref/c, delta_m_ref/c, color = ref_color)
-    ax.plot(s_visc/c, delta_m_visc/c, color = thwaites_visc_color)
-    ax.plot(s_inv/c, delta_m_inv/c, color = thwaites_inv_color)
+    ax.plot(s_ref/c, delta_m_ref/c, color=ref_color)
+    ax.plot(s_visc/c, delta_m_visc/c, color=thwaites_visc_color)
+    ax.plot(s_inv/c, delta_m_inv/c, color=thwaites_inv_color)
     ax.set_ylim(0, 0.025)
     ax.set_ylabel(r"$\delta_m/c$")
     ax.grid(True)
@@ -168,9 +169,9 @@ def compare_xfoil_laminar():
     ax = axis_delta_m_diff
     ax.plot(s_ref_visc/c,
             np.abs(1-tm_visc.delta_m(s_ref_visc)/delta_m_ref_visc),
-            color = thwaites_visc_color)
+            color=thwaites_visc_color)
     ax.plot(s_ref_inv/c, np.abs(1-tm_inv.delta_m(s_ref_inv)/delta_m_ref_inv),
-            color = thwaites_inv_color)
+            color=thwaites_inv_color)
     ax.set_ylabel("Relative Difference")
     ax.set_ylim([1e-5,1])
     ax.set_yscale('log')
@@ -178,18 +179,18 @@ def compare_xfoil_laminar():
 
     # Displacement shape factor in 2,:
     ax = axis_H_d
-    ax.plot(s_ref/c, H_d_ref, color = ref_color)
-    ax.plot(s_visc/c, H_d_visc, color = thwaites_visc_color)
-    ax.plot(s_inv/c, H_d_inv, color = thwaites_inv_color)
+    ax.plot(s_ref/c, H_d_ref, color=ref_color)
+    ax.plot(s_visc/c, H_d_visc, color=thwaites_visc_color)
+    ax.plot(s_inv/c, H_d_inv, color=thwaites_inv_color)
     ax.set_ylim(2.2, 3)
     ax.set_ylabel(r"$H_d$")
     ax.grid(True)
 
     ax = axis_H_d_diff
     ax.plot(s_ref_visc/c, np.abs(1-tm_visc.H_d(s_ref_visc)/H_d_ref_visc),
-            color = thwaites_visc_color)
+            color=thwaites_visc_color)
     ax.plot(s_ref_inv/c, np.abs(1-tm_inv.H_d(s_ref_inv)/H_d_ref_inv),
-            color = thwaites_inv_color)
+            color=thwaites_inv_color)
     ax.set_ylabel("Relative Difference")
     ax.set_ylim([1e-3,1])
     ax.set_yscale('log')
@@ -197,9 +198,9 @@ def compare_xfoil_laminar():
 
     # Skin friction coefficient in 3,:
     ax = axis_c_f
-    ax.plot(s_ref/c, c_f_ref, color = ref_color)
-    ax.plot(s_visc/c, c_f_visc, color = thwaites_visc_color)
-    ax.plot(s_inv/c, c_f_inv, color = thwaites_inv_color)
+    ax.plot(s_ref/c, c_f_ref, color=ref_color)
+    ax.plot(s_visc/c, c_f_visc, color=thwaites_visc_color)
+    ax.plot(s_inv/c, c_f_inv, color=thwaites_inv_color)
     ax.set_ylabel(r"$c_f$")
     ax.grid(True)
 
@@ -207,11 +208,11 @@ def compare_xfoil_laminar():
     ax.plot(s_ref_visc/c,
             np.abs(1-2*tm_visc.tau_w(s_ref_visc,
                                      rho_inf)/(rho_inf*U_inf**2)/c_f_ref_visc),
-            color = thwaites_visc_color)
+            color=thwaites_visc_color)
     ax.plot(s_ref_inv/c,
             np.abs(1-2*tm_inv.tau_w(s_ref_inv,
                                     rho_inf)/(rho_inf*U_inf**2)/c_f_ref_inv),
-            color = thwaites_inv_color)
+            color=thwaites_inv_color)
     ax.set_ylabel("Relative Difference")
     ax.set_ylim([1e-4,1])
     ax.set_yscale('log')
@@ -219,15 +220,15 @@ def compare_xfoil_laminar():
 
     # Edge velocity in 4,:
     ax = axis_U_e
-    ax.plot(s_ref/c, U_e_visc/U_inf, color = thwaites_visc_color)
-    ax.plot(s_ref/c, U_e_inv/U_inf, color = thwaites_inv_color)
+    ax.plot(s_ref/c, U_e_visc/U_inf, color=thwaites_visc_color)
+    ax.plot(s_ref/c, U_e_inv/U_inf, color=thwaites_inv_color)
     ax.set_ylim(0, 1.1)
     ax.set_ylabel(r"$U_e/U_\infty$")
     ax.grid(True)
 
     ax = axis_dU_edx
-    ax.plot(s_visc/c, dU_edx_visc, color = thwaites_visc_color)
-    ax.plot(s_inv/c, dU_edx_inv, color = thwaites_inv_color)
+    ax.plot(s_visc/c, dU_edx_visc, color=thwaites_visc_color)
+    ax.plot(s_inv/c, dU_edx_inv, color=thwaites_inv_color)
     ax.set_ylim(-2, 0.5)
     ax.set_xlabel(r"$x/c$")
     ax.set_ylabel(r"d$U_e/$d$x$ (1/s)")
@@ -235,28 +236,28 @@ def compare_xfoil_laminar():
 
     # Transpiration velocity in 5,:
     ax = axis_d2U_edx2
-    ax.plot(s_visc/c, d2U_edx2_visc, color = thwaites_visc_color)
-    ax.plot(s_inv/c, d2U_edx2_inv, color = thwaites_inv_color)
+    ax.plot(s_visc/c, d2U_edx2_visc, color=thwaites_visc_color)
+    ax.plot(s_inv/c, d2U_edx2_inv, color=thwaites_inv_color)
     ax.set_ylim(-5, 5)
     ax.set_xlabel(r"$x/c$")
     ax.set_ylabel(r"d$^2U_e/$d$x^2$ (1/(m$\cdot$s)")
     ax.grid(True)
 
     ax = axis_V_e
-    ax.plot(s_visc/c, V_e_visc/U_inf, color = thwaites_visc_color)
-    ax.plot(s_inv/c, V_e_inv/U_inf, color = thwaites_inv_color)
+    ax.plot(s_visc/c, V_e_visc/U_inf, color=thwaites_visc_color)
+    ax.plot(s_inv/c, V_e_inv/U_inf, color=thwaites_inv_color)
     ax.set_ylim(0, 0.1)
     ax.set_xlabel(r"$x/c$")
     ax.set_ylabel(r"$V_e/U_e$")
     ax.grid(True)
 
     fig.subplots_adjust(bottom=0.075, wspace=0.5)
-    fig.legend(handles = [ref_curve[0], thwaites_visc_curve[0],
-                          thwaites_inv_curve[0]],
-               labels = [ref_label, thwaites_visc_label, thwaites_inv_label],
-               loc = "upper center", bbox_to_anchor = (0.45, 0.03),
-               ncol = 4, borderaxespad = 0.1)
+    fig.legend(handles=[ref_curve[0], thwaites_visc_curve[0],
+                        thwaites_inv_curve[0]],
+               labels=[ref_label, thwaites_visc_label, thwaites_inv_label],
+               loc="upper center", bbox_to_anchor=(0.45, 0.03), ncol=4,
+               borderaxespad=0.1)
 
 
-if (__name__ == "__main__"):
+if __name__ == "__main__":
     compare_xfoil_laminar()
