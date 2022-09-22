@@ -16,7 +16,7 @@ from pyBL.falkner_skan import FalknerSkanSolution
 
 class TestCurveFits(unittest.TestCase):
     """Class to test various functions and curve fits for Thwaites method"""
-    
+
     # Tabluated data from White (2011)
     # Note that there are errors in the data:
     #    * beta = -0.18 @ eta = 5.0
@@ -56,48 +56,54 @@ class TestCurveFits(unittest.TestCase):
                         0.99999, 1.00000, 1.00000, 1.00000]])
     beta_ref = np.array([-0.19884, -0.18, 0, 0.3, 1.0, 2.0])
     fpp0_ref = np.array([0, 0.12864, 0.46960, 0.77476, 1.23259, 1.68722])
-    eta_d_ref = np.array([2.35885, 1.87157, 1.21678, 0.91099, 0.64790, 0.49743])
-    eta_m_ref = np.array([0.58544, 0.56771, 0.46960, 0.38574, 0.29235, 0.23079])
+    eta_d_ref = np.array([2.35885, 1.87157, 1.21678, 0.91099, 0.64790,
+                          0.49743])
+    eta_m_ref = np.array([0.58544, 0.56771, 0.46960, 0.38574, 0.29235,
+                          0.23079])
     eta_s_ref = np.array([4.79, 4.28, 3.47, 2.965, 2.379, 1.9])
-    
+
     def testBeta0Solution(self):
+        """Test the first case from White table."""
+        # pylint: disable=too-many-locals
         idx = 0
         U_inf = 10
         nu = 1e-5
         rho = 1
-        beta = self.beta_ref[idx] + 1e-6 # hack to get this case to work
+        beta = self.beta_ref[idx] + 1e-6  # hack to get this case to work
         m = beta/(2-beta)
-        fs = FalknerSkanSolution(U_ref = U_inf, m=beta/(2-beta), nu = nu)
-        
-        ## Test the solution for f'
+        fs = FalknerSkanSolution(U_ref=U_inf, m=beta/(2-beta), nu=nu)
+
+        # Test the solution for f'
         fp = fs.fp(self.eta_ref)
-        self.assertIsNone(npt.assert_allclose(fp, self.fp_ref[idx,:], rtol = 0,
-                                              atol = 1e-5))
-        
-        ## Test the solved boundary condition
+        self.assertIsNone(npt.assert_allclose(fp, self.fp_ref[idx,:], rtol=0,
+                                              atol=1e-5))
+
+        # Test the solved boundary condition
         fpp0 = fs.fpp(0)
         self.assertIsNone(npt.assert_allclose(fpp0, self.fpp0_ref[idx],
-                                              rtol = 0, atol = 1e-5))
-        
-        ## Test the boundary layer values
+                                              rtol=0, atol=1e-5))
+
+        # Test the boundary layer values
+        #
         # similarity terms
         eta_d = fs.eta_d()
         self.assertIsNone(npt.assert_allclose(eta_d, self.eta_d_ref[idx],
-                                              rtol = 0, atol = 1e-4))
+                                              rtol=0, atol=1e-4))
         eta_m = fs.eta_m()
         self.assertIsNone(npt.assert_allclose(eta_m, self.eta_m_ref[idx],
-                                              rtol = 0, atol = 1e-5))
+                                              rtol=0, atol=1e-5))
         eta_s = fs.eta_s()
         self.assertIsNone(npt.assert_allclose(eta_s, self.eta_s_ref[idx],
-                                              rtol = 0, atol = 1e-2))
-        def fun(eta):
+                                              rtol=0, atol=1e-2))
+
+        def ke_fun(eta):
             fp = fs.fp(eta)
             return fp*(1-fp**2)
-        eta_k_ref = quadrature(fun, 0, 10)[0]
+        eta_k_ref = quadrature(ke_fun, 0, 10)[0]
         eta_k = fs.eta_k()
-        self.assertIsNone(npt.assert_allclose(eta_k, eta_k_ref, rtol = 1e-4,
-                          atol = 0))
-        
+        self.assertIsNone(npt.assert_allclose(eta_k, eta_k_ref, rtol=1e-4,
+                          atol=0))
+
         # dimensional terms
         x = np.linspace(0.2, 2, 101)
         g = np.sqrt(0.5*(m+1)*U_inf*x**m/(nu*x))
@@ -114,56 +120,60 @@ class TestCurveFits(unittest.TestCase):
         H_k_ref = delta_k_ref/delta_m_ref
         self.assertIsNone(npt.assert_allclose(fs.H_d(x), H_d_ref))
         self.assertIsNone(npt.assert_allclose(fs.H_k(x), H_k_ref))
-        
+
         # test wall shear stress
         tau_w_ref = rho*nu*U_e*g*fs.fpp(0)
         self.assertIsNone(npt.assert_allclose(fs.tau_w(x, rho), tau_w_ref))
-        
+
         # test dissipation
-        def fun(eta):
+        def D_fun(eta):
             return fs.fpp(eta)**2
-        D_ref = rho*nu*U_e**2*g*quadrature(fun, 0, 10)[0]
-        self.assertIsNone(npt.assert_allclose(fs.D(x, rho), D_ref, rtol = 2e-5,
-                          atol = 0))
-    
+        D_ref = rho*nu*U_e**2*g*quadrature(D_fun, 0, 10)[0]
+        self.assertIsNone(npt.assert_allclose(fs.D(x, rho), D_ref, rtol=2e-5,
+                          atol=0))
+
     def testBeta1Solution(self):
+        """Test the second case from White table."""
+        # pylint: disable=too-many-locals
         idx = 1
         U_inf = 10
         nu = 1e-5
         rho = 1
         beta = self.beta_ref[idx]
         m = beta/(2-beta)
-        fs = FalknerSkanSolution(U_ref = U_inf, m=beta/(2-beta), nu = nu)
-        
-        ## Test the solution for f'
+        fs = FalknerSkanSolution(U_ref=U_inf, m=beta/(2-beta), nu=nu)
+
+        # Test the solution for f'
         fp = fs.fp(self.eta_ref)
-        self.assertIsNone(npt.assert_allclose(fp, self.fp_ref[idx,:], rtol = 0,
-                                              atol = 1e-5))
-        
-        ## Test the solved boundary condition
+        self.assertIsNone(npt.assert_allclose(fp, self.fp_ref[idx,:], rtol=0,
+                                              atol=1e-5))
+
+        # Test the solved boundary condition
         fpp0 = fs.fpp(0)
         self.assertIsNone(npt.assert_allclose(fpp0, self.fpp0_ref[idx],
-                                              rtol = 0, atol = 1e-5))
-        
-        ## Test the boundary layer values
+                                              rtol=0, atol=1e-5))
+
+        # Test the boundary layer values
+        #
         # similarity terms
         eta_d = fs.eta_d()
         self.assertIsNone(npt.assert_allclose(eta_d, self.eta_d_ref[idx],
-                                              rtol = 0, atol = 1e-5))
+                                              rtol=0, atol=1e-5))
         eta_m = fs.eta_m()
         self.assertIsNone(npt.assert_allclose(eta_m, self.eta_m_ref[idx],
-                                              rtol = 0, atol = 1e-5))
+                                              rtol=0, atol=1e-5))
         eta_s = fs.eta_s()
         self.assertIsNone(npt.assert_allclose(eta_s, self.eta_s_ref[idx],
-                                              rtol = 0, atol = 1e-2))
-        def fun(eta):
+                                              rtol=0, atol=1e-2))
+
+        def ke_fun(eta):
             fp = fs.fp(eta)
             return fp*(1-fp**2)
-        eta_k_ref = quadrature(fun, 0, 10)[0]
+        eta_k_ref = quadrature(ke_fun, 0, 10)[0]
         eta_k = fs.eta_k()
-        self.assertIsNone(npt.assert_allclose(eta_k, eta_k_ref, rtol = 1e-5,
-                          atol = 0))
-        
+        self.assertIsNone(npt.assert_allclose(eta_k, eta_k_ref, rtol=1e-5,
+                          atol=0))
+
         # dimensional terms
         x = np.linspace(0.2, 2, 101)
         g = np.sqrt(0.5*(m+1)*U_inf*x**m/(nu*x))
@@ -180,56 +190,60 @@ class TestCurveFits(unittest.TestCase):
         H_k_ref = delta_k_ref/delta_m_ref
         self.assertIsNone(npt.assert_allclose(fs.H_d(x), H_d_ref))
         self.assertIsNone(npt.assert_allclose(fs.H_k(x), H_k_ref))
-        
+
         # test wall shear stress
         tau_w_ref = rho*nu*U_e*g*fs.fpp(0)
         self.assertIsNone(npt.assert_allclose(fs.tau_w(x, rho), tau_w_ref))
-        
+
         # test dissipation
-        def fun(eta):
+        def D_fun(eta):
             return fs.fpp(eta)**2
-        D_ref = rho*nu*U_e**2*g*quadrature(fun, 0, 10)[0]
-        self.assertIsNone(npt.assert_allclose(fs.D(x, rho), D_ref, atol = 1e-5,
-                          rtol = 0))
-    
+        D_ref = rho*nu*U_e**2*g*quadrature(D_fun, 0, 10)[0]
+        self.assertIsNone(npt.assert_allclose(fs.D(x, rho), D_ref, atol=1e-5,
+                          rtol=0))
+
     def testBeta2Solution(self):
+        """Test the third case from White table."""
+        # pylint: disable=too-many-locals
         idx = 2
         U_inf = 10
         nu = 1e-5
         rho = 1
         beta = self.beta_ref[idx]
         m = beta/(2-beta)
-        fs = FalknerSkanSolution(U_ref = U_inf, m=beta/(2-beta), nu = nu)
-        
-        ## Test the solution for f'
+        fs = FalknerSkanSolution(U_ref=U_inf, m=beta/(2-beta), nu=nu)
+
+        # Test the solution for f'
         fp = fs.fp(self.eta_ref)
-        self.assertIsNone(npt.assert_allclose(fp, self.fp_ref[idx,:], rtol = 0,
-                                              atol = 1e-5))
-        
-        ## Test the solved boundary condition
+        self.assertIsNone(npt.assert_allclose(fp, self.fp_ref[idx,:], rtol=0,
+                                              atol=1e-5))
+
+        # Test the solved boundary condition
         fpp0 = fs.fpp(0)
         self.assertIsNone(npt.assert_allclose(fpp0, self.fpp0_ref[idx],
-                                              rtol = 0, atol = 1e-5))
-        
-        ## Test the boundary layer values
+                                              rtol=0, atol=1e-5))
+
+        # Test the boundary layer values
+        #
         # similarity terms
         eta_d = fs.eta_d()
         self.assertIsNone(npt.assert_allclose(eta_d, self.eta_d_ref[idx],
-                                              rtol = 0, atol = 1e-5))
+                                              rtol=0, atol=1e-5))
         eta_m = fs.eta_m()
         self.assertIsNone(npt.assert_allclose(eta_m, self.eta_m_ref[idx],
-                                              rtol = 0, atol = 1e-5))
+                                              rtol=0, atol=1e-5))
         eta_s = fs.eta_s()
         self.assertIsNone(npt.assert_allclose(eta_s, self.eta_s_ref[idx],
-                                              rtol = 0, atol = 1e-2))
-        def fun(eta):
+                                              rtol=0, atol=1e-2))
+
+        def ke_fun(eta):
             fp = fs.fp(eta)
             return fp*(1-fp**2)
-        eta_k_ref = quadrature(fun, 0, 10)[0]
+        eta_k_ref = quadrature(ke_fun, 0, 10)[0]
         eta_k = fs.eta_k()
-        self.assertIsNone(npt.assert_allclose(eta_k, eta_k_ref, rtol = 1e-5,
-                          atol = 0))
-        
+        self.assertIsNone(npt.assert_allclose(eta_k, eta_k_ref, rtol=1e-5,
+                          atol=0))
+
         # dimensional terms
         x = np.linspace(0.2, 2, 101)
         g = np.sqrt(0.5*(m+1)*U_inf*x**m/(nu*x))
@@ -246,55 +260,59 @@ class TestCurveFits(unittest.TestCase):
         H_k_ref = delta_k_ref/delta_m_ref
         self.assertIsNone(npt.assert_allclose(fs.H_d(x), H_d_ref))
         self.assertIsNone(npt.assert_allclose(fs.H_k(x), H_k_ref))
-        
+
         # test wall shear stress
         tau_w_ref = rho*nu*U_e*g*fs.fpp(0)
         self.assertIsNone(npt.assert_allclose(fs.tau_w(x, rho), tau_w_ref))
-        
+
         # test dissipation
-        def fun(eta):
+        def D_fun(eta):
             return fs.fpp(eta)**2
-        D_ref = rho*nu*U_e**2*g*quadrature(fun, 0, 10)[0]
+        D_ref = rho*nu*U_e**2*g*quadrature(D_fun, 0, 10)[0]
         self.assertIsNone(npt.assert_allclose(fs.D(x, rho), D_ref))
-    
+
     def testBeta3Solution(self):
+        """Test the fourth case from White table."""
+        # pylint: disable=too-many-locals
         idx = 3
         U_inf = 10
         nu = 1e-5
         rho = 1
         beta = self.beta_ref[idx]
         m = beta/(2-beta)
-        fs = FalknerSkanSolution(U_ref = U_inf, m=beta/(2-beta), nu = nu)
-        
-        ## Test the solution for f'
+        fs = FalknerSkanSolution(U_ref=U_inf, m=beta/(2-beta), nu=nu)
+
+        # Test the solution for f'
         fp = fs.fp(self.eta_ref)
-        self.assertIsNone(npt.assert_allclose(fp, self.fp_ref[idx,:], rtol = 0,
-                                              atol = 1e-5))
-        
-        ## Test the solved boundary condition
+        self.assertIsNone(npt.assert_allclose(fp, self.fp_ref[idx,:], rtol=0,
+                                              atol=1e-5))
+
+        # Test the solved boundary condition
         fpp0 = fs.fpp(0)
         self.assertIsNone(npt.assert_allclose(fpp0, self.fpp0_ref[idx],
-                                              rtol = 0, atol = 1e-5))
-        
-        ## Test the boundary layer values
+                                              rtol=0, atol=1e-5))
+
+        # Test the boundary layer values
+        #
         # similarity terms
         eta_d = fs.eta_d()
         self.assertIsNone(npt.assert_allclose(eta_d, self.eta_d_ref[idx],
-                                              rtol = 0, atol = 1e-5))
+                                              rtol=0, atol=1e-5))
         eta_m = fs.eta_m()
         self.assertIsNone(npt.assert_allclose(eta_m, self.eta_m_ref[idx],
-                                              rtol = 0, atol = 1e-5))
+                                              rtol=0, atol=1e-5))
         eta_s = fs.eta_s()
         self.assertIsNone(npt.assert_allclose(eta_s, self.eta_s_ref[idx],
-                                              rtol = 0, atol = 1e-4))
-        def fun(eta):
+                                              rtol=0, atol=1e-4))
+
+        def ke_fun(eta):
             fp = fs.fp(eta)
             return fp*(1-fp**2)
-        eta_k_ref = quadrature(fun, 0, 10)[0]
+        eta_k_ref = quadrature(ke_fun, 0, 10)[0]
         eta_k = fs.eta_k()
-        self.assertIsNone(npt.assert_allclose(eta_k, eta_k_ref, rtol = 1e-5,
-                          atol = 0))
-        
+        self.assertIsNone(npt.assert_allclose(eta_k, eta_k_ref, rtol=1e-5,
+                          atol=0))
+
         # dimensional terms
         x = np.linspace(0.2, 2, 101)
         g = np.sqrt(0.5*(m+1)*U_inf*x**m/(nu*x))
@@ -311,55 +329,59 @@ class TestCurveFits(unittest.TestCase):
         H_k_ref = delta_k_ref/delta_m_ref
         self.assertIsNone(npt.assert_allclose(fs.H_d(x), H_d_ref))
         self.assertIsNone(npt.assert_allclose(fs.H_k(x), H_k_ref))
-        
+
         # test wall shear stress
         tau_w_ref = rho*nu*U_e*g*fs.fpp(0)
         self.assertIsNone(npt.assert_allclose(fs.tau_w(x, rho), tau_w_ref))
-        
+
         # test dissipation
-        def fun(eta):
+        def D_fun(eta):
             return fs.fpp(eta)**2
-        D_ref = rho*nu*U_e**2*g*quadrature(fun, 0, 10)[0]
+        D_ref = rho*nu*U_e**2*g*quadrature(D_fun, 0, 10)[0]
         self.assertIsNone(npt.assert_allclose(fs.D(x, rho), D_ref))
-    
+
     def testBeta4Solution(self):
+        """Test the fifth case from White table."""
+        # pylint: disable=too-many-locals
         idx = 4
         U_inf = 10
         nu = 1e-5
         rho = 1
         beta = self.beta_ref[idx]
         m = beta/(2-beta)
-        fs = FalknerSkanSolution(U_ref = U_inf, m=beta/(2-beta), nu = nu)
-        
-        ## Test the solution for f'
+        fs = FalknerSkanSolution(U_ref=U_inf, m=beta/(2-beta), nu=nu)
+
+        # Test the solution for f'
         fp = fs.fp(self.eta_ref)
-        self.assertIsNone(npt.assert_allclose(fp, self.fp_ref[idx,:], rtol = 0,
-                                              atol = 1e-5))
-        
-        ## Test the solved boundary condition
+        self.assertIsNone(npt.assert_allclose(fp, self.fp_ref[idx,:], rtol=0,
+                                              atol=1e-5))
+
+        # Test the solved boundary condition
         fpp0 = fs.fpp(0)
         self.assertIsNone(npt.assert_allclose(fpp0, self.fpp0_ref[idx],
-                                              rtol = 0, atol = 1e-5))
-        
-        ## Test the boundary layer values
+                                              rtol=0, atol=1e-5))
+
+        # Test the boundary layer values
+        #
         # similarity terms
         eta_d = fs.eta_d()
         self.assertIsNone(npt.assert_allclose(eta_d, self.eta_d_ref[idx],
-                                              rtol = 0, atol = 1e-5))
+                                              rtol=0, atol=1e-5))
         eta_m = fs.eta_m()
         self.assertIsNone(npt.assert_allclose(eta_m, self.eta_m_ref[idx],
-                                              rtol = 0, atol = 1e-5))
+                                              rtol=0, atol=1e-5))
         eta_s = fs.eta_s()
         self.assertIsNone(npt.assert_allclose(eta_s, self.eta_s_ref[idx],
-                                              rtol = 0, atol = 1e-3))
-        def fun(eta):
+                                              rtol=0, atol=1e-3))
+
+        def ke_fun(eta):
             fp = fs.fp(eta)
             return fp*(1-fp**2)
-        eta_k_ref = quadrature(fun, 0, 10)[0]
+        eta_k_ref = quadrature(ke_fun, 0, 10)[0]
         eta_k = fs.eta_k()
-        self.assertIsNone(npt.assert_allclose(eta_k, eta_k_ref, rtol = 1e-5,
-                          atol = 0))
-        
+        self.assertIsNone(npt.assert_allclose(eta_k, eta_k_ref, rtol=1e-5,
+                          atol=0))
+
         # dimensional terms
         x = np.linspace(0.2, 2, 101)
         g = np.sqrt(0.5*(m+1)*U_inf*x**m/(nu*x))
@@ -376,17 +398,17 @@ class TestCurveFits(unittest.TestCase):
         H_k_ref = delta_k_ref/delta_m_ref
         self.assertIsNone(npt.assert_allclose(fs.H_d(x), H_d_ref))
         self.assertIsNone(npt.assert_allclose(fs.H_k(x), H_k_ref))
-        
+
         # test wall shear stress
         tau_w_ref = rho*nu*U_e*g*fs.fpp(0)
         self.assertIsNone(npt.assert_allclose(fs.tau_w(x, rho), tau_w_ref))
-        
+
         # test dissipation
-        def fun(eta):
+        def D_fun(eta):
             return fs.fpp(eta)**2
-        D_ref = rho*nu*U_e**2*g*quadrature(fun, 0, 10)[0]
+        D_ref = rho*nu*U_e**2*g*quadrature(D_fun, 0, 10)[0]
         self.assertIsNone(npt.assert_allclose(fs.D(x, rho), D_ref))
 
 
-if (__name__ == "__main__"):
+if __name__ == "__main__":
     unittest.main(verbosity=1)

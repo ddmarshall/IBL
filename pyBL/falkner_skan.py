@@ -32,11 +32,12 @@ class FalknerSkanSolution:
     the similarity coordinate or from the corresponding Cartesian coordinates.
     """
 
-    def __init__(self, U_ref, nu, m = 0, eta_inf = 10):
+    def __init__(self, U_ref, nu, m=0, eta_inf=10):
         self._U_ref = U_ref
         self._nu = nu
         self._eta_inf = eta_inf
-        
+        self._F = None
+
         self._set_boundary_condition(m)
 
     def f(self, eta):
@@ -137,13 +138,12 @@ class FalknerSkanSolution:
         def fun(eta):
             return 0.99-self.fp(eta)
 
-        sol = root_scalar(fun, method = "bisect", bracket = [0, 10])
-        if sol.converged:
-            return sol.root
-        else:
+        sol = root_scalar(fun, method="bisect", bracket=[0, 10])
+        if not sol.converged:
             raise ValueError("Could not find shear thickness with error: "
                              + sol.flag)
-    
+        return sol.root
+
     def eta(self, x, y):
         """
         Return the similarity coordinate corresponding to coordinates.
@@ -192,7 +192,7 @@ class FalknerSkanSolution:
         Both `x` and `y` must be the same shape.
         """
         eta = self.eta(x, y)
-        return self.U_e(x)*self.fp(eta);
+        return self.U_e(x)*self.fp(eta)
 
     def v(self, x, y):
         """
@@ -397,28 +397,33 @@ class FalknerSkanSolution:
     def _g(self, x):
         return np.sqrt(0.5*(self._m+1)*self.U_e(x)/(self._nu*x))
 
-    def _set_boundary_condition(self, m = 0):
+    def _set_boundary_condition(self, m=0):
         # pylint: disable=too-many-branches
         # pylint: disable=too-many-statements
         self._m = m
 
         def fun(fpp0):
             class bc_event:
-                self.terminal = True
+                """Bounday condition event to terminate ODE solver."""
+
+                # pylint: disable=too-few-public-methods
+                def __init__(self):
+                    self.terminal = True
+
                 def __call__(self, x, F):
-                    return F[1] - 1
+                    return F[1] - 1.1
 
             F0 = [0, 0, fpp0]
-            rtn = solve_ivp(fun = self._ode_fun,
-                            t_span = [0, self._eta_inf], y0 = F0,
-                            method = 'RK45', dense_output = False,
-                            events = bc_event(), rtol = 1e-8, atol = 1e-11)
+            rtn = solve_ivp(fun=self._ode_fun,
+                            t_span=[0, self._eta_inf], y0=F0,
+                            method="RK45", dense_output=False,
+                            events=bc_event(), rtol=1e-8, atol=1e-11)
             if not rtn.success:
                 raise ValueError("Could not find boundary condition")
 
             # hack to get beta at separation to work
             val = 1-rtn.y[1, -1]
-            if (m < 0) and (val > -2e-6) and (val < 0):
+            if (m < 0) and (-2e-6 < val < 0):
                 val = 0
             return val
 
@@ -426,7 +431,7 @@ class FalknerSkanSolution:
         # way of finding a suitable initial range?
         if m <= -0.905:
             raise ValueError("Value of m is below separation value")
-        elif m <= -0.09:
+        if m <= -0.09:
             rng = [0, 0.1]
         elif m <= -0.08:
             rng = [0.1, 0.2]
@@ -466,7 +471,7 @@ class FalknerSkanSolution:
             rng = [1.48, 1.525]
         else:
             raise ValueError("Value of m is out of range for this solver")
-        sol = root_scalar(fun, method = "bisect", bracket = rng)
+        sol = root_scalar(fun, method="bisect", bracket=rng)
         if sol.converged:
             self._fpp0 = sol.root
         else:
@@ -477,9 +482,9 @@ class FalknerSkanSolution:
     def _set_solution(self):
         F0 = [0, 0, self._fpp0]
 
-        rtn = solve_ivp(fun = self._ode_fun, t_span = [0, self._eta_inf],
-                        y0 = F0, method = 'RK45', dense_output = True,
-                        events = None, rtol = 1e-8, atol = 1e-11)
+        rtn = solve_ivp(fun=self._ode_fun, t_span=[0, self._eta_inf],
+                        y0=F0, method="RK45", dense_output=True,
+                        events=None, rtol=1e-8, atol=1e-11)
 
         self._F = None
         if rtn.success:

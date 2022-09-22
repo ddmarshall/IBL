@@ -337,9 +337,8 @@ class ThwaitesMethodBase(IBLBase):
         """
         # To Do: This needs to be implemented
         raise NotImplementedError("This method needs to be implemented.")
-#        return np.zeros_like(x)
 
-    def _ode_impl(self, x, delta_m2_on_nu):
+    def _ode_impl(self, x, F):
         """
         Right-hand-side of the ODE representing Thwaites method.
 
@@ -347,16 +346,16 @@ class ThwaitesMethodBase(IBLBase):
         ----------
         x: array-like
             Streamwise location of current step.
-        delta_m2_on_nu: array-like
+        F: array-like
             Current step's square of momentum thickness divided by the
             kinematic viscosity.
 
         Returns
         -------
-        array-like same shape as `delta_m2_on_nu`
+        array-like same shape as `F`
             The right-hand side of the ODE at the given state.
         """
-        return self._calc_F(x, delta_m2_on_nu)/(1e-3 + self.U_e(x))
+        return self._calc_F(x, F)/(1e-3 + self.U_e(x))
 
     @abstractmethod
     def _calc_F(self, x, delta_m2_on_nu):

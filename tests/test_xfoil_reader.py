@@ -5,6 +5,8 @@ Created on Tue Aug 30 06:21:08 2022
 
 @author: ddmarshall
 """
+# pylint: disable=too-many-locals
+# pylint: disable=too-many-statements
 
 
 import unittest
@@ -15,19 +17,19 @@ from pyBL.xfoil_reader import XFoilReader
 
 class TestXFoilDumpReader(unittest.TestCase):
     """Class to test importing data from XFoil dump file"""
-    
+
     def test_case_inviscid(self):
-        
-        ## Common XFoil case settings
+        """Test importing an inviscid case."""
+        # Common XFoil case settings
         airfoil_name = "NACA 0003"
-        alpha = 0
-        c = 1 # (m)
-        
-        ## Read a dump file from inviscid solution
+        alpha = 0  # (deg)
+        c = 1  # (m)
+
+        # Read a dump file from inviscid solution
         inv_filename = "data/xfoil_inviscid_dump.txt"
-        xfoil_inv = XFoilReader(inv_filename, airfoil = airfoil_name,
-                                alpha = alpha, c = c)
-        
+        xfoil_inv = XFoilReader(inv_filename, airfoil=airfoil_name,
+                                alpha=alpha, c=c)
+
         # test case info
         self.assertEqual(xfoil_inv.aifoil, airfoil_name)
         self.assertEqual(xfoil_inv.alpha, alpha)
@@ -38,7 +40,7 @@ class TestXFoilDumpReader(unittest.TestCase):
         self.assertEqual(xfoil_inv.num_points_upper(), 12)
         self.assertEqual(xfoil_inv.num_points_lower(), 12)
         self.assertEqual(xfoil_inv.num_points_wake(), 0)
-        
+
         # test point info
         s_upper_ref = [0.0, 0.000695, 0.092695, 0.196925, 0.301285, 0.392635,
                        0.497055, 0.601495, 0.692885, 0.797335, 0.901785,
@@ -161,23 +163,23 @@ class TestXFoilDumpReader(unittest.TestCase):
                                               xfoil_inv.K_upper()))
         self.assertIsNone(npt.assert_allclose(K_lower_ref,
                                               xfoil_inv.K_lower()))
-    
+
     def test_case_viscous(self):
-        
-        ## Common XFoil case settings
+        """Test importing a viscous case."""
+        # Common XFoil case settings
         airfoil_name = "NACA 0003"
-        alpha = 0
-        c = 1 # (m)
+        alpha = 0  # (deg)
+        c = 1  # (m)
         Re = 1000
         x_trans = 1
         n_trans = 9
-        
-        ## Read a dump file from viscous solution
+
+        # Read a dump file from viscous solution
         visc_filename = "data/xfoil_viscous_dump.txt"
-        xfoil_visc = XFoilReader(visc_filename, airfoil = airfoil_name,
-                                 alpha = alpha, c = c, Re = Re,
-                                 x_trans = x_trans, n_trans = n_trans)
-        
+        xfoil_visc = XFoilReader(visc_filename, airfoil=airfoil_name,
+                                 alpha=alpha, c=c, Re=Re,
+                                 x_trans=x_trans, n_trans=n_trans)
+
         # test case info
         self.assertEqual(xfoil_visc.aifoil, airfoil_name)
         self.assertEqual(xfoil_visc.alpha, alpha)
@@ -189,7 +191,7 @@ class TestXFoilDumpReader(unittest.TestCase):
         self.assertEqual(xfoil_visc.num_points_upper(), 12)
         self.assertEqual(xfoil_visc.num_points_lower(), 12)
         self.assertEqual(xfoil_visc.num_points_wake(), 8)
-        
+
         # test point info
         s_upper_ref = [0.0, 0.000695, 0.092695, 0.196925, 0.301285, 0.392635,
                        0.497055, 0.601495, 0.692885, 0.797335, 0.901785,
@@ -243,12 +245,12 @@ class TestXFoilDumpReader(unittest.TestCase):
                              0.0303038736, 0.032118441, 0.0339346189]
         H_d_upper_ref = [2.2295, 2.2295, 2.5668, 2.585, 2.5984, 2.6089, 2.6194,
                          2.6284, 2.6352, 2.6423, 2.6493, 2.6548]
-        H_d_lower_ref = [2.2295, 2.2295, 2.5699, 2.5868, 2.5984, 2.6103, 2.6206,
-                         2.6284, 2.6361, 2.6431, 2.6493, 2.6548]
+        H_d_lower_ref = [2.2295, 2.2295, 2.5699, 2.5868, 2.5984, 2.6103,
+                         2.6206, 2.6284, 2.6361, 2.6431, 2.6493, 2.6548]
         H_d_wake_ref = [2.6693, 2.535, 2.4452, 2.3284, 2.2403, 2.1969, 2.1231,
                         2.5373]
-        H_k_upper_ref = [1.6211, 1.6211, 1.5779, 1.5761, 1.5748, 1.5739, 1.5729,
-                         1.5721, 1.5715, 1.5708, 1.5702, 1.5659]
+        H_k_upper_ref = [1.6211, 1.6211, 1.5779, 1.5761, 1.5748, 1.5739,
+                         1.5729, 1.5721, 1.5715, 1.5708, 1.5702, 1.5659]
         H_k_lower_ref = [1.6211, 1.6211, 1.5776, 1.576, 1.5748, 1.5737, 1.5728,
                          1.5721, 1.5714, 1.5708, 1.5702, 1.5659]
         c_f_upper_ref = [0.8771445, 0.877145, 0.078378, 0.050783, 0.039477,
@@ -337,5 +339,5 @@ class TestXFoilDumpReader(unittest.TestCase):
                                               xfoil_visc.K_lower()))
 
 
-if (__name__ == "__main__"):
+if __name__ == "__main__":
     unittest.main(verbosity=1)

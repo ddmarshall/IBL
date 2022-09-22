@@ -14,15 +14,16 @@ from pyBL.stanford_olympics import StanfordOlympics1968
 
 class TestStanfordOlympics1968(unittest.TestCase):
     """Class to test importing data from the 1968 Stanford Olympics"""
-    
+
     def test_case_1100(self):
+        """Test reading Case 1100."""
         so1100 = StanfordOlympics1968("1100")
-        
-        ## test the case info
+
+        # test the case info
         self.assertEqual(so1100.case, "1100")
         self.assertIsNone(npt.assert_allclose(so1100.nu, 1.55e-5))
-        
-        ## test some station data
+
+        # test some station data
         station = so1100.station(0)
         self.assertIsNone(npt.assert_allclose(station.x, 0.782))
         self.assertIsNone(npt.assert_allclose(station.U_e, 33.90))
@@ -47,8 +48,8 @@ class TestStanfordOlympics1968(unittest.TestCase):
         self.assertIsNone(npt.assert_allclose(station.c_f_LT, 0.00124))
         self.assertIsNone(npt.assert_allclose(station.c_f_E, 0.00126))
         self.assertIsNone(npt.assert_allclose(station.beta, 5.499))
-        
-        ## test some smooth data
+
+        # test some smooth data
         x, U_e, dU_edx = so1100.velocity_smooth()
         self.assertIsNone(npt.assert_allclose(x[0], 0.75))
         self.assertIsNone(npt.assert_allclose(U_e[0], 33.98))
@@ -61,5 +62,5 @@ class TestStanfordOlympics1968(unittest.TestCase):
         self.assertIsNone(npt.assert_allclose(dU_edx[13], -2.29))
 
 
-if (__name__ == "__main__"):
+if __name__ == "__main__":
     unittest.main(verbosity=1)
