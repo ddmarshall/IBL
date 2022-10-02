@@ -757,7 +757,6 @@ class InitialCondition(ABC):
         float
             Displacement shape factor.
         """
-        pass
 
     @abstractmethod
     def H_k(self) -> float:
@@ -769,7 +768,6 @@ class InitialCondition(ABC):
         float
             Kinetic energy shape factor.
         """
-        pass
 
     @abstractmethod
     def delta_d(self) -> float:
@@ -781,7 +779,6 @@ class InitialCondition(ABC):
         float
             Displacement thickness.
         """
-        pass
 
     @abstractmethod
     def delta_m(self) -> float:
@@ -793,7 +790,6 @@ class InitialCondition(ABC):
         float
             Momentum thickness.
         """
-        pass
 
     @abstractmethod
     def delta_k(self) -> float:
@@ -805,7 +801,6 @@ class InitialCondition(ABC):
         float
             Kinetic energy thickness.
         """
-        pass
 
 
 class FalknerSkanStagnationCondition(InitialCondition):
