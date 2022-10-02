@@ -335,8 +335,7 @@ class ThwaitesMethodBase(IBLBase):
         array-like same shape as `x`
             Desired dissipation integral at the specified locations.
         """
-        # To Do: This needs to be implemented
-        raise NotImplementedError("This method needs to be implemented.")
+        return np.zeros_like(x)
 
     def _ode_impl(self, x, F):
         """
