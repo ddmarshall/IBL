@@ -21,11 +21,6 @@ from scipy.integrate import solve_ivp
 from scipy.misc import derivative as fd
 
 
-# def _stagnation_y0(iblsimdata,x0):
-#     #From Moran
-#       return .075*iblsimdata.nu/iblsimdata.du_edx(x0)
-
-
 class IBLMethod(ABC):
     """
     Base class for integral boundary layer classes.
