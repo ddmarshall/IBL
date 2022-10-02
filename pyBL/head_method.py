@@ -9,12 +9,12 @@ Head's two equation integral boundary layer method.
 
 import numpy as np
 
-from pyBL.ibl_base import IBLBase
-from pyBL.ibl_base import IBLTermEventBase
+from pyBL.ibl_method import IBLMethod
+from pyBL.ibl_method import IBLTermEventBase
 from pyBL.skin_friction import c_f_LudwiegTillman as c_f_fun
 
 
-class HeadMethod(IBLBase):
+class HeadMethod(IBLMethod):
     """
     Models a turbulent bondary layer using Head's Method (1958).
 

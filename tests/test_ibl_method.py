@@ -12,9 +12,9 @@ import numpy as np
 import numpy.testing as npt
 from scipy.interpolate import PchipInterpolator
 
-from pyBL.ibl_base import IBLBase
-from pyBL.ibl_base import IBLTermEventBase
-from pyBL.ibl_base import IBLResult
+from pyBL.ibl_method import IBLMethod
+from pyBL.ibl_method import IBLTermEventBase
+from pyBL.ibl_method import IBLResult
 
 
 class TestIBLResult(unittest.TestCase):
@@ -33,7 +33,7 @@ class TestIBLResult(unittest.TestCase):
         self.assertEqual(str_ref, str(iblr))
 
 
-class _IBLBaseTestTermEvent(IBLTermEventBase):
+class _IBLMethodTestTermEvent(IBLTermEventBase):
     """
     Sample class to test the termination capabilities of the base class.
 
@@ -74,8 +74,8 @@ class _IBLBaseTestTermEvent(IBLTermEventBase):
         return -1, ""
 
 
-class IBLBaseTest(IBLBase):
-    """Generic class to test the concrete methods in IBLBase"""
+class IBLMethodTest(IBLMethod):
+    """Generic class to test the concrete methods in IBLMethod"""
 
     def __init__(self, U_e=None, dU_edx=None, d2U_edx2=None, x_kill=None):
         # setup base class
@@ -83,7 +83,7 @@ class IBLBaseTest(IBLBase):
 
         # set up this class
         if x_kill is not None:
-            self._set_kill_event(_IBLBaseTestTermEvent(x_kill))
+            self._set_kill_event(_IBLMethodTestTermEvent(x_kill))
 
     def solve(self, x_start, x_end, y0, term_event=None):
         """Solve the ODE."""
@@ -127,7 +127,7 @@ class IBLBaseTest(IBLBase):
         return np.zeros_like(x)
 
 
-class IBLBaseTestTransition(IBLTermEventBase):
+class IBLMethodTestTransition(IBLTermEventBase):
     """Generic class to pass termination events during the solve method."""
 
     # pylint: disable=too-few-public-methods
@@ -189,9 +189,9 @@ class TestEdgeVelocity(unittest.TestCase):
         # create test class with all three functions
         U_inf = 10
         m = 0.75
-        iblb = IBLBaseTest(U_e=lambda x: self.U_e_fun(x, U_inf, m),
-                           dU_edx=lambda x: self.dU_edx_fun(x, U_inf, m),
-                           d2U_edx2=lambda x: self.d2U_edx2_fun(x, U_inf, m))
+        iblb = IBLMethodTest(U_e=lambda x: self.U_e_fun(x, U_inf, m),
+                             dU_edx=lambda x: self.dU_edx_fun(x, U_inf, m),
+                             d2U_edx2=lambda x: self.d2U_edx2_fun(x, U_inf, m))
 
         x = np.linspace(0.1, 5, 21)
         U_e_ref = self.U_e_fun(x, U_inf, m)
@@ -204,8 +204,8 @@ class TestEdgeVelocity(unittest.TestCase):
         # create test class with two functions
         U_inf = 10
         m = 0.75
-        iblb = IBLBaseTest(U_e=lambda x: self.U_e_fun(x, U_inf, m),
-                           dU_edx=lambda x: self.dU_edx_fun(x, U_inf, m))
+        iblb = IBLMethodTest(U_e=lambda x: self.U_e_fun(x, U_inf, m),
+                             dU_edx=lambda x: self.dU_edx_fun(x, U_inf, m))
 
         x = np.linspace(0.1, 5, 21)
         U_e_ref = self.U_e_fun(x, U_inf, m)
@@ -218,7 +218,7 @@ class TestEdgeVelocity(unittest.TestCase):
         # create test class with one function
         U_inf = 10
         m = 0.75
-        iblb = IBLBaseTest(U_e=lambda x: self.U_e_fun(x, U_inf, m))
+        iblb = IBLMethodTest(U_e=lambda x: self.U_e_fun(x, U_inf, m))
 
         x = np.linspace(0.1, 5, 21)
         U_e_ref = self.U_e_fun(x, U_inf, m)
@@ -239,7 +239,7 @@ class TestEdgeVelocity(unittest.TestCase):
         U_e = PchipInterpolator(x_sample, self.U_e_fun(x_sample, U_inf, m))
         dU_edx = U_e.derivative()
         d2U_edx2 = dU_edx.derivative()
-        iblb = IBLBaseTest(U_e=U_e)
+        iblb = IBLMethodTest(U_e=U_e)
 
         x = np.linspace(0.1, 5, 21)
         U_e_ref = U_e(x)
@@ -258,7 +258,7 @@ class TestEdgeVelocity(unittest.TestCase):
         U_e = dU_edx.antiderivative()
         U_e.c[-1,:] = U_e.c[-1,:]+self.U_e_fun(x_sample[0], U_inf, m)
         d2U_edx2 = dU_edx.derivative()
-        iblb = IBLBaseTest(U_e=U_e, dU_edx=dU_edx)
+        iblb = IBLMethodTest(U_e=U_e, dU_edx=dU_edx)
 
         x = np.linspace(0.1, 5, 21)
         U_e_ref = U_e(x)
@@ -278,7 +278,7 @@ class TestEdgeVelocity(unittest.TestCase):
         dU_edx.c[-1,:] = dU_edx.c[-1,:]+self.dU_edx_fun(x_sample[0], U_inf, m)
         U_e = dU_edx.antiderivative()
         U_e.c[-1,:] = U_e.c[-1,:]+self.U_e_fun(x_sample[0], U_inf, m)
-        iblb = IBLBaseTest(U_e=U_e, dU_edx=dU_edx, d2U_edx2=d2U_edx2)
+        iblb = IBLMethodTest(U_e=U_e, dU_edx=dU_edx, d2U_edx2=d2U_edx2)
 
         x = np.linspace(0.1, 5, 21)
         U_e_ref = U_e(x)
@@ -299,7 +299,7 @@ class TestEdgeVelocity(unittest.TestCase):
                                                               U_inf, m))
         dU_edx_spline = U_e_spline.derivative()
         d2U_edx2_spline = dU_edx_spline.derivative()
-        iblb = IBLBaseTest(U_e=U_e)
+        iblb = IBLMethodTest(U_e=U_e)
 
         x = np.linspace(0.1, 5, 21)
         U_e_ref = U_e_spline(x)
@@ -321,7 +321,7 @@ class TestEdgeVelocity(unittest.TestCase):
         U_e_spline.c[-1,:] = (U_e_spline.c[-1,:]
                               + self.U_e_fun(x_sample[0], U_inf, m))
         d2U_edx2_spline = dU_edx_spline.derivative()
-        iblb = IBLBaseTest(U_e=U_e, dU_edx=dU_edx)
+        iblb = IBLMethodTest(U_e=U_e, dU_edx=dU_edx)
 
         x = np.linspace(0.1, 5, 21)
         U_e_ref = U_e_spline(x)
@@ -336,7 +336,7 @@ class TestEdgeVelocity(unittest.TestCase):
         # create test class with all three functions
         U_inf = 10
         m = 0.75
-        iblb = IBLBaseTest()
+        iblb = IBLMethodTest()
         x = np.linspace(0.1, 5, 21)
         U_e_ref = self.U_e_fun(x, U_inf, m)
         dU_edx_ref = self.dU_edx_fun(x, U_inf, m)
@@ -359,7 +359,7 @@ class TestEdgeVelocity(unittest.TestCase):
     def test_terminating_solver(self):
         """Test early termination of solver."""
         x_kill = 3
-        iblb = IBLBaseTest(x_kill=x_kill)
+        iblb = IBLMethodTest(x_kill=x_kill)
 
         # go through the entire xrange
         #
@@ -397,7 +397,7 @@ class TestEdgeVelocity(unittest.TestCase):
         y_trans = 0.5*(y_start+ref_fun(x_kill))
         x_trans = np.sqrt(2*(y_trans-1))
         rtn = iblb.solve(x_start, x_end, y_start,
-                         term_event=IBLBaseTestTransition(y_trans))
+                         term_event=IBLMethodTestTransition(y_trans))
         self.assertTrue(rtn.success)
         self.assertEqual(rtn.status, 1)
         self.assertEqual(rtn.message, "Transition")

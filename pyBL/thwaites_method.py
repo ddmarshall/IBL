@@ -16,11 +16,11 @@ import numpy as np
 from scipy.interpolate import CubicSpline
 from scipy.misc import derivative as fd
 
-from pyBL.ibl_base import IBLBase
-from pyBL.ibl_base import IBLTermEventBase
+from pyBL.ibl_method import IBLMethod
+from pyBL.ibl_method import IBLTermEventBase
 
 
-class ThwaitesMethodBase(IBLBase):
+class ThwaitesMethodBase(IBLMethod):
     """
     Base class for Thwaites' Method.
 
@@ -30,7 +30,7 @@ class ThwaitesMethodBase(IBLBase):
     linear (:class:`ThwaitesMethodLinear`)and nonlinear
     (:class:`ThwaitesMethodNonlinear`) versions of Thwaites method.
 
-    In addition to the :class:`IBLBase` configuration information, the
+    In addition to the :class:`IBLMethod` configuration information, the
     initial momentum thickness is needed along with the kinematic viscosity.
     Thwaites' original algorithm relied upon tabulated data for the analysis,
     and there are few different ways of modeling that data in this class.
@@ -413,7 +413,7 @@ class ThwaitesMethodLinear(ThwaitesMethodBase):
         \frac{d}{dx}\left(\frac{\delta_m^2}{\nu}\right)
             =\frac{1}{U_e}\left(0.45-6\lambda\right)
 
-    using the :class:`IBLBase` ODE solver.
+    using the :class:`IBLMethod` ODE solver.
     """
 
     def _calc_F(self, x, delta_m2_on_nu):
@@ -461,7 +461,7 @@ class ThwaitesMethodNonlinear(ThwaitesMethodBase):
         \frac{d}{dx}\left(\frac{\delta_m^2}{\nu}\right)
             =\frac{2}{U_e}\left[S-\lambda\left(H+2\right)\right]
 
-    using the :class:`IBLBase` ODE solver.
+    using the :class:`IBLMethod` ODE solver.
     """
 
     def _calc_F(self, x, delta_m2_on_nu):

@@ -8,7 +8,7 @@ boundary layer methods. This module provides as much of that common code as
 possible.
 
 All integral boundary layer method classes should inherit from
-:class:`IBLBase`.
+:class:`IBLMethod`.
 
 All integral boundary layer method classes return an instance of
 :class:`IBLResult` when the solver has completed.
@@ -26,7 +26,7 @@ from scipy.misc import derivative as fd
 #       return .075*iblsimdata.nu/iblsimdata.du_edx(x0)
 
 
-class IBLBase(ABC):
+class IBLMethod(ABC):
     """
     Base class for integral boundary layer classes.
 
@@ -601,7 +601,7 @@ class IBLResult:
     """
     Bunch object representing the results of the IBL integration.
 
-    The integrator within the :class:`IBLBase` is `solve_ivp` from the
+    The integrator within the :class:`IBLMethod` is `solve_ivp` from the
     integrate package from SciPy. To provide as much information as possible
     after the integration has completed this class is returned to provide
     detailed information about the integration process. The most important
@@ -662,7 +662,7 @@ class IBLTermEventBase(ABC):
     Base class for a termination event for IBL solver.
 
     The two abstract methods that have to be implemented are `event_info` and
-    `_call_impl` for a valid termination event for use in an :class:`IBLBase`
+    `_call_impl` for a valid termination event for use in an :class:`IBLMethod`
     derived class. Classes derived from this class can either be used within
     an IBL implementation (i.e., an implementation specific reason why the
     integration should terminate) or as a parameter into the solve method
