@@ -136,7 +136,7 @@ class IBLMethodTestTransition(IBLTermEvent):
         super().__init__()
 
     def _call_impl(self, x, F):
-        return F - self._F_kill
+        return F[0] - self._F_kill
 
     def event_info(self):
         return 1, ""
@@ -394,7 +394,7 @@ class TestEdgeVelocity(unittest.TestCase):
         x_start = 1
         x_end = x_kill + 1
         y_start = ref_fun(x_start)
-        y_trans = 0.5*(y_start+ref_fun(x_kill))
+        y_trans = 0.5*(y_start+ref_fun(x_kill))[0]
         x_trans = np.sqrt(2*(y_trans-1))
         rtn = iblb.solve(x_start, x_end, y_start,
                          term_event=IBLMethodTestTransition(y_trans))
