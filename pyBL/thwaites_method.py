@@ -20,7 +20,7 @@ from pyBL.ibl_method import IBLMethod
 from pyBL.ibl_method import IBLTermEvent
 
 
-class ThwaitesMethodBase(IBLMethod):
+class ThwaitesMethod(IBLMethod):
     """
     Base class for Thwaites' Method.
 
@@ -139,11 +139,11 @@ class ThwaitesMethodBase(IBLMethod):
                 if len(data_fits) == 3:
                     if callable(data_fits[0]) and callable(data_fits[1]) \
                             and callable(data_fits[2]):
-                        self._model = _ThwaitesFunctionsBase("Custom",
-                                                             data_fits[0],
-                                                             data_fits[1],
-                                                             data_fits[2],
-                                                             -np.inf, np.inf)
+                        self._model = _ThwaitesFunctions("Custom",
+                                                         data_fits[0],
+                                                         data_fits[1],
+                                                         data_fits[2],
+                                                         -np.inf, np.inf)
                     else:
                         raise ValueError("Need to pass callable objects for "
                                          "fit functions")
@@ -151,11 +151,11 @@ class ThwaitesMethodBase(IBLMethod):
                     if callable(data_fits[0]) and callable(data_fits[1]):
                         def Hp_fun(lam):
                             return fd(self._model.H, lam, 1e-5, n=1, order=3)
-                        self._model = _ThwaitesFunctionsBase("Custom",
-                                                             data_fits[0],
-                                                             data_fits[1],
-                                                             Hp_fun,
-                                                             -np.inf, np.inf)
+                        self._model = _ThwaitesFunctions("Custom",
+                                                         data_fits[0],
+                                                         data_fits[1],
+                                                         Hp_fun,
+                                                         -np.inf, np.inf)
                     else:
                         raise ValueError("Need to pass callable objects for "
                                          "fit functions")
@@ -398,7 +398,7 @@ class ThwaitesMethodBase(IBLMethod):
         return delta_m2_on_nu*self.dU_edx(x)
 
 
-class ThwaitesMethodLinear(ThwaitesMethodBase):
+class ThwaitesMethodLinear(ThwaitesMethod):
     r"""
     Laminar boundary layer model using Thwaites Method linear approximation.
 
@@ -444,7 +444,7 @@ class ThwaitesMethodLinear(ThwaitesMethodBase):
         return a - b*lam
 
 
-class ThwaitesMethodNonlinear(ThwaitesMethodBase):
+class ThwaitesMethodNonlinear(ThwaitesMethod):
     r"""
     Laminar boundary layer model using Thwaites' Method using exact ODE.
 
@@ -490,7 +490,7 @@ class ThwaitesMethodNonlinear(ThwaitesMethodBase):
         return self._model.F(lam)
 
 
-class _ThwaitesFunctionsBase:
+class _ThwaitesFunctions:
     """Base class for curve fits for Thwaites data."""
 
     def __init__(self, name, S_fun, H_fun, Hp_fun, lambda_min, lambda_max):
@@ -540,7 +540,7 @@ class _ThwaitesFunctionsBase:
         return lam_local
 
 
-class _ThwaitesFunctionsWhite(_ThwaitesFunctionsBase):
+class _ThwaitesFunctionsWhite(_ThwaitesFunctions):
     """Returns White's calculation of Thwaites functions."""
 
     def __init__(self):
@@ -558,7 +558,7 @@ class _ThwaitesFunctionsWhite(_ThwaitesFunctionsBase):
         super().__init__("White", S, H, Hp, -0.09, np.inf)
 
 
-class _ThwaitesFunctionsCebeciBradshaw(_ThwaitesFunctionsBase):
+class _ThwaitesFunctionsCebeciBradshaw(_ThwaitesFunctions):
     """Returns Cebeci and Bradshaw's calculation of Thwaites functions."""
 
     def __init__(self):
@@ -585,7 +585,7 @@ class _ThwaitesFunctionsCebeciBradshaw(_ThwaitesFunctionsBase):
         super().__init__("Cebeci and Bradshaw", S, H, Hp, -0.1, 0.1)
 
 
-class _ThwaitesFunctionsSpline(_ThwaitesFunctionsBase):
+class _ThwaitesFunctionsSpline(_ThwaitesFunctions):
     """Returns cubic splines of Thwaites tables based on Edland 2021."""
 
     def __init__(self):
