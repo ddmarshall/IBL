@@ -17,7 +17,7 @@ from scipy.interpolate import CubicSpline
 from scipy.misc import derivative as fd
 
 from pyBL.ibl_method import IBLMethod
-from pyBL.ibl_method import IBLTermEventBase
+from pyBL.ibl_method import IBLTermEvent
 
 
 class ThwaitesMethodBase(IBLMethod):
@@ -181,7 +181,7 @@ class ThwaitesMethodBase(IBLMethod):
 
         Parameters
         ----------
-        term_event : List based on :class:`IBLTermEventBase`, optional
+        term_event : List based on :class:`IBLTermEvent`, optional
             User events that can terminate the integration process before the
             end location of the integration is reached. The default is `None`.
 
@@ -620,7 +620,7 @@ class _ThwaitesFunctionsSpline(_ThwaitesFunctionsBase):
                             +0.10,  0.12,   0.14,   0.20,   0.25])
 
 
-class _ThwaitesSeparationEvent(IBLTermEventBase):
+class _ThwaitesSeparationEvent(IBLTermEvent):
     """
     Detects separation and will terminate integration when it occurs.
 

@@ -13,7 +13,7 @@ import numpy.testing as npt
 from scipy.interpolate import PchipInterpolator
 
 from pyBL.ibl_method import IBLMethod
-from pyBL.ibl_method import IBLTermEventBase
+from pyBL.ibl_method import IBLTermEvent
 from pyBL.ibl_method import IBLResult
 
 
@@ -33,7 +33,7 @@ class TestIBLResult(unittest.TestCase):
         self.assertEqual(str_ref, str(iblr))
 
 
-class _IBLMethodTestTermEvent(IBLTermEventBase):
+class _IBLMethodTestTermEvent(IBLTermEvent):
     """
     Sample class to test the termination capabilities of the base class.
 
@@ -127,7 +127,7 @@ class IBLMethodTest(IBLMethod):
         return np.zeros_like(x)
 
 
-class IBLMethodTestTransition(IBLTermEventBase):
+class IBLMethodTestTransition(IBLTermEvent):
     """Generic class to pass termination events during the solve method."""
 
     # pylint: disable=too-few-public-methods

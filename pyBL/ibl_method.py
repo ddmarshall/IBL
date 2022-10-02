@@ -104,7 +104,7 @@ class IBLMethod(ABC):
     #     velocity.
     # _x_range: 2-tuple
     #     Start and end location for integration.
-    # _kill_events: List of classes based on :class:`IBLTermEventBase`
+    # _kill_events: List of classes based on :class:`IBLTermEvent`
     #     Events that should be passed into ODE solver that might cause the
     #     integration to terminate early.
     # _solution: vector of callables
@@ -251,7 +251,7 @@ class IBLMethod(ABC):
             Relative tolerance for integration scheme. The default is 1e-8.
         atol: float, optional
             Absolute tolerance for integration scheme. The default is 1e-11.
-        term_event: List based on :class:`IBLTermEventBase`, optional
+        term_event: List based on :class:`IBLTermEvent`, optional
             Additional termination events. The default is `None`.
 
         Notes
@@ -550,7 +550,7 @@ class IBLMethod(ABC):
 
         Parameters
         ----------
-        ke: List of classes based on :class:`IBLTermEventBase`
+        ke: List of classes based on :class:`IBLTermEvent`
             Way of child classes to automatically add kill events to the ODE
             solver.
         """
@@ -565,7 +565,7 @@ class IBLMethod(ABC):
 
         Parameters
         ----------
-        ke: List of classes based on :class:`IBLTermEventBase`
+        ke: List of classes based on :class:`IBLTermEvent`
             Way of setting the kill events to the ODE solver and removing all
             existing events.
         """
@@ -657,7 +657,7 @@ class IBLResult:
         return strout
 
 
-class IBLTermEventBase(ABC):
+class IBLTermEvent(ABC):
     """
     Base class for a termination event for IBL solver.
 

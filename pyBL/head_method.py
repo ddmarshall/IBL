@@ -10,7 +10,7 @@ Head's two equation integral boundary layer method.
 import numpy as np
 
 from pyBL.ibl_method import IBLMethod
-from pyBL.ibl_method import IBLTermEventBase
+from pyBL.ibl_method import IBLTermEvent
 from pyBL.skin_friction import c_f_LudwiegTillman as c_f_fun
 
 
@@ -107,7 +107,7 @@ class HeadMethod(IBLMethod):
 
         Parameters
         ----------
-        term_event : List based on :class:`IBLTermEventBase`, optional
+        term_event : List based on :class:`IBLTermEvent`, optional
             User events that can terminate the integration process before the
             end location of the integration is reached. The default is `None`.
 
@@ -380,7 +380,7 @@ class HeadMethod(IBLMethod):
         return 0.0306/(H1_local-3)**0.6169
 
 
-class _HeadSeparationEvent(IBLTermEventBase):
+class _HeadSeparationEvent(IBLTermEvent):
     """
     Detects separation and will terminate integration when it occurs.
 
