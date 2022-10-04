@@ -10,12 +10,12 @@ Created on Sat Oct  1 22:22:24 2022
 import unittest
 import numpy as np
 
-from pyBL.ibl_base import FalknerSkanStagnationCondition
-from pyBL.ibl_base import ManualCondition
+from pyBL.initial_condition import FalknerSkanStagnationCondition
+from pyBL.initial_condition import ManualCondition
 
 
-class TestXFoilDumpReader(unittest.TestCase):
-    """Class to test importing data from XFoil dump file"""
+class TestInitialConditions(unittest.TestCase):
+    """Class to test setting initial conditions for IBL solvers"""
 
     def test_falkner_skan_stagnation_condition(self):
         """Test the Falkner-Skan stagnation point condition."""
