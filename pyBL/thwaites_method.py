@@ -40,14 +40,13 @@ class ThwaitesMethod(IBLMethod):
     #    _delta_m0: Momentum thickness at start location
     #    _nu: Kinematic viscosity
     #    _model: Collection of functions for S, H, and H'
-    def __init__(self, U_e=None, dU_edx=None, d2U_edx2=None,
+    def __init__(self, nu: float = 1.0, U_e=None, dU_edx=None, d2U_edx2=None,
                  data_fits="Spline"):
-        super().__init__(U_e, dU_edx, d2U_edx2)
+        super().__init__(nu, U_e, dU_edx, d2U_edx2)
         self.set_data_fits(data_fits)
-        self._nu = None
         self._delta_m0 = None
 
-    def set_solution_parameters(self, x0, x_end, delta_m0, nu):
+    def set_solution_parameters(self, x0, x_end, delta_m0):
         """
         Set the parameters needed for the solver to propagate.
 
@@ -59,35 +58,17 @@ class ThwaitesMethod(IBLMethod):
             Location to end integration.
         delta_m0: float
             Momentum thickness at start location.
-        nu: float
-            Kinematic viscosity.
 
         Raises
         ------
         ValueError
             When negative viscosity provided, or invalid initial conditions
         """
-        if nu < 0:
-            raise ValueError("Viscosity must be positive")
-
         if delta_m0 < 0:
             raise ValueError("Initial momentum thickness must be positive")
 
-        self._nu = nu
-
         self._delta_m0 = delta_m0
         self._set_x_range(x0, x_end)
-
-    def nu(self):
-        """
-        Return kinematic viscosity used for the solution.
-
-        Returns
-        -------
-        float
-            Kinematic viscosity.
-        """
-        return self._nu
 
     def set_data_fits(self, data_fits):
         """

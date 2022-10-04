@@ -46,10 +46,10 @@ def compare_xfoil_laminar():
     # Setup Thwaites methods
     ivisc = 0
     delta_m0 = xfoil_visc.delta_m_upper()[ivisc]
-    tm_visc = ThwaitesMethodNonlinear(U_e=[s_ref, U_e_visc],
+    tm_visc = ThwaitesMethodNonlinear(nu=nu_inf, U_e=[s_ref, U_e_visc],
                                       data_fits="Spline")
     tm_visc.set_solution_parameters(x0=s[ivisc], x_end=s[-1],
-                                    delta_m0=delta_m0, nu=nu_inf)
+                                    delta_m0=delta_m0)
     rtn = tm_visc.solve()
     if not rtn.success:
         print("Could not get solution for Thwaites method: " + rtn.message)
@@ -59,10 +59,12 @@ def compare_xfoil_laminar():
         s_sep_visc = rtn.x_end
 
     iinv = 0
-    tm_inv = ThwaitesMethodNonlinear(U_e=[s_ref, U_e_inv], data_fits="Spline")
-    delta_m0 = np.sqrt(0.075*nu_inf/tm_inv.dU_edx(s[iinv]))
+    tm_inv = ThwaitesMethodNonlinear(nu=nu_inf, U_e=[s_ref, U_e_inv],
+                                     data_fits="Spline")
+    delta_m0 = np.sqrt(0.075*nu_inf/tm_inv.dU_edx(s[iinv]))  # Moran's method
+
     tm_inv.set_solution_parameters(x0=s[iinv], x_end=s[-1],
-                                   delta_m0=delta_m0, nu=nu_inf)
+                                   delta_m0=delta_m0)
     rtn = tm_inv.solve()
     if not rtn.success:
         print("Could not get solution for Thwaites method: " + rtn.message)

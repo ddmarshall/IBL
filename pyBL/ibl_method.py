@@ -102,6 +102,7 @@ class IBLMethod(ABC):
     # _d2U_edx2: Callable
     #     Function representing the streamwise second derivative of the edge
     #     velocity.
+    # _nu: Kinematic viscosity
     # _x_range: 2-tuple
     #     Start and end location for integration.
     # _kill_events: List of classes based on :class:`IBLTermEvent`
@@ -110,7 +111,7 @@ class IBLMethod(ABC):
     # _solution: vector of callables
     #     Piecewise polynomials representing the state variables from the ODE
     #     solution.
-    def __init__(self, U_e=None, dU_edx=None, d2U_edx2=None):
+    def __init__(self, nu: float, U_e=None, dU_edx=None, d2U_edx2=None):
         # set the velocity terms
         if U_e is None:
             if dU_edx is not None:
@@ -124,9 +125,25 @@ class IBLMethod(ABC):
             self.set_velocity(U_e, dU_edx, d2U_edx2)
 
         # initialize other parameters
+        # check viscosity
+        if nu < 0:
+            raise ValueError("Viscosity must be positive")
+        self._nu = nu
+
         self._x_range = None
         self._kill_events = None
         self._solution = None
+
+    def nu(self):
+        """
+        Return kinematic viscosity used for the solution.
+
+        Returns
+        -------
+        float
+            Kinematic viscosity.
+        """
+        return self._nu
 
     def set_velocity(self, U_e, dU_edx=None, d2U_edx2=None):
         """

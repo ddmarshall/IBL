@@ -313,12 +313,12 @@ class TestLinearThwaites(unittest.TestCase):
             return m*(m-1)*U_ref*x**(m-2)
 
         # test with spline of tabular data
-        tm = ThwaitesMethodLinear(U_e=U_e_fun, dU_edx=dU_edx_fun,
+        tm = ThwaitesMethodLinear(nu=nu, U_e=U_e_fun, dU_edx=dU_edx_fun,
                                   d2U_edx2=d2U_edx2_fun,
                                   data_fits="Spline")
         tm_ref = ThwaitesLinearAnalytic(U_ref, m, nu, tm._model.H, tm._model.S)
         tm.set_solution_parameters(x0=x[0], x_end=x[-1],
-                                   delta_m0=tm_ref.delta_m(x[0]), nu=nu)
+                                   delta_m0=tm_ref.delta_m(x[0]))
         rtn = tm.solve()
         self.assertTrue(rtn.success)
         self.assertEqual(rtn.status, 0)
@@ -335,11 +335,11 @@ class TestLinearThwaites(unittest.TestCase):
                                               rtol=1e-4))
 
         # test with White fits
-        tm = ThwaitesMethodLinear(U_e=U_e_fun, dU_edx=dU_edx_fun,
+        tm = ThwaitesMethodLinear(nu=nu, U_e=U_e_fun, dU_edx=dU_edx_fun,
                                   d2U_edx2=d2U_edx2_fun, data_fits="White")
         tm_ref = ThwaitesLinearAnalytic(U_ref, m, nu, tm._model.H, tm._model.S)
         tm.set_solution_parameters(x0=x[0], x_end=x[-1],
-                                   delta_m0=tm_ref.delta_m(x[0]), nu=nu)
+                                   delta_m0=tm_ref.delta_m(x[0]))
         rtn = tm.solve()
         self.assertTrue(rtn.success)
         self.assertEqual(rtn.status, 0)
@@ -356,12 +356,12 @@ class TestLinearThwaites(unittest.TestCase):
                                               rtol=1e-4))
 
         # test with Cebeci and Bradshaw fits
-        tm = ThwaitesMethodLinear(U_e=U_e_fun, dU_edx=dU_edx_fun,
+        tm = ThwaitesMethodLinear(nu=nu, U_e=U_e_fun, dU_edx=dU_edx_fun,
                                   d2U_edx2=d2U_edx2_fun,
                                   data_fits="Cebeci-Bradshaw")
         tm_ref = ThwaitesLinearAnalytic(U_ref, m, nu, tm._model.H, tm._model.S)
         tm.set_solution_parameters(x0=x[0], x_end=x[-1],
-                                   delta_m0=tm_ref.delta_m(x[0]), nu=nu)
+                                   delta_m0=tm_ref.delta_m(x[0]))
         rtn = tm.solve()
         self.assertTrue(rtn.success)
         self.assertEqual(rtn.status, 0)
@@ -389,12 +389,12 @@ class TestLinearThwaites(unittest.TestCase):
             z = 0.25-lam
             return -(4.14 + z*(-2*83.5 + z*(3*854 + z*(-4*3337 + z*5*4576))))
 
-        tm = ThwaitesMethodLinear(U_e=U_e_fun, dU_edx=dU_edx_fun,
+        tm = ThwaitesMethodLinear(nu=nu, U_e=U_e_fun, dU_edx=dU_edx_fun,
                                   d2U_edx2=d2U_edx2_fun,
                                   data_fits=(S_fun, H_fun, Hp_fun))
         tm_ref = ThwaitesLinearAnalytic(U_ref, m, nu, H_fun, S_fun)
         tm.set_solution_parameters(x0=x[0], x_end=x[-1],
-                                   delta_m0=tm_ref.delta_m(x[0]), nu=nu)
+                                   delta_m0=tm_ref.delta_m(x[0]))
         rtn = tm.solve()
         self.assertTrue(rtn.success)
         self.assertEqual(rtn.status, 0)
@@ -411,12 +411,12 @@ class TestLinearThwaites(unittest.TestCase):
                                               rtol=1e-4))
 
         # test creating with own functions for S, H
-        tm = ThwaitesMethodLinear(U_e=U_e_fun, dU_edx=dU_edx_fun,
+        tm = ThwaitesMethodLinear(nu=nu, U_e=U_e_fun, dU_edx=dU_edx_fun,
                                   d2U_edx2=d2U_edx2_fun,
                                   data_fits=(S_fun, H_fun))
         tm_ref = ThwaitesLinearAnalytic(U_ref, m, nu, H_fun, S_fun)
         tm.set_solution_parameters(x0=x[0], x_end=x[-1],
-                                   delta_m0=tm_ref.delta_m(x[0]), nu=nu)
+                                   delta_m0=tm_ref.delta_m(x[0]))
         rtn = tm.solve()
         self.assertTrue(rtn.success)
         self.assertEqual(rtn.status, 0)
@@ -434,7 +434,7 @@ class TestLinearThwaites(unittest.TestCase):
 
         # test creating with invalid name
         with self.assertRaises(ValueError):
-            ThwaitesMethodLinear(U_e=U_e_fun, dU_edx=dU_edx_fun,
+            ThwaitesMethodLinear(nu=nu, U_e=U_e_fun, dU_edx=dU_edx_fun,
                                  d2U_edx2=d2U_edx2_fun, data_fits="My Own")
 
     def testWedge050Case(self):
@@ -461,12 +461,12 @@ class TestLinearThwaites(unittest.TestCase):
             return m*(m-1)*U_ref*x**(m-2)
 
         # test with spline of tabular data
-        tm = ThwaitesMethodLinear(U_e=U_e_fun, dU_edx=dU_edx_fun,
+        tm = ThwaitesMethodLinear(nu=nu, U_e=U_e_fun, dU_edx=dU_edx_fun,
                                   d2U_edx2=d2U_edx2_fun,
                                   data_fits="Spline")
         tm_ref = ThwaitesLinearAnalytic(U_ref, m, nu, tm._model.H, tm._model.S)
         tm.set_solution_parameters(x0=x[0], x_end=x[-1],
-                                   delta_m0=tm_ref.delta_m(x[0]), nu=nu)
+                                   delta_m0=tm_ref.delta_m(x[0]))
         rtn = tm.solve()
         self.assertTrue(rtn.success)
         self.assertEqual(rtn.status, 0)
@@ -484,11 +484,11 @@ class TestLinearThwaites(unittest.TestCase):
                                               rtol=1e-4))
 
         # test with White fits
-        tm = ThwaitesMethodLinear(U_e=U_e_fun, dU_edx=dU_edx_fun,
+        tm = ThwaitesMethodLinear(nu=nu, U_e=U_e_fun, dU_edx=dU_edx_fun,
                                   d2U_edx2=d2U_edx2_fun, data_fits="White")
         tm_ref = ThwaitesLinearAnalytic(U_ref, m, nu, tm._model.H, tm._model.S)
         tm.set_solution_parameters(x0=x[0], x_end=x[-1],
-                                   delta_m0=tm_ref.delta_m(x[0]), nu=nu)
+                                   delta_m0=tm_ref.delta_m(x[0]))
         rtn = tm.solve()
         self.assertTrue(rtn.success)
         self.assertEqual(rtn.status, 0)
@@ -506,12 +506,12 @@ class TestLinearThwaites(unittest.TestCase):
                                               rtol=1e-4))
 
         # test with Cebeci and Bradshaw fits
-        tm = ThwaitesMethodLinear(U_e=U_e_fun, dU_edx=dU_edx_fun,
+        tm = ThwaitesMethodLinear(nu=nu, U_e=U_e_fun, dU_edx=dU_edx_fun,
                                   d2U_edx2=d2U_edx2_fun,
                                   data_fits="Cebeci-Bradshaw")
         tm_ref = ThwaitesLinearAnalytic(U_ref, m, nu, tm._model.H, tm._model.S)
         tm.set_solution_parameters(x0=x[0], x_end=x[-1],
-                                   delta_m0=tm_ref.delta_m(x[0]), nu=nu)
+                                   delta_m0=tm_ref.delta_m(x[0]))
         rtn = tm.solve()
         self.assertTrue(rtn.success)
         self.assertEqual(rtn.status, 0)
@@ -552,12 +552,12 @@ class TestLinearThwaites(unittest.TestCase):
             return m*(m-1)*U_ref*x**(m-2)
 
         # test with spline of tabular data
-        tm = ThwaitesMethodLinear(U_e=U_e_fun, dU_edx=dU_edx_fun,
+        tm = ThwaitesMethodLinear(nu=nu, U_e=U_e_fun, dU_edx=dU_edx_fun,
                                   d2U_edx2=d2U_edx2_fun,
                                   data_fits="Spline")
         tm_ref = ThwaitesLinearAnalytic(U_ref, m, nu, tm._model.H, tm._model.S)
         tm.set_solution_parameters(x0=x[0], x_end=x[-1],
-                                   delta_m0=tm_ref.delta_m(x[0]), nu=nu)
+                                   delta_m0=tm_ref.delta_m(x[0]))
         rtn = tm.solve()
         self.assertTrue(rtn.success)
         self.assertEqual(rtn.status, 0)
@@ -575,11 +575,11 @@ class TestLinearThwaites(unittest.TestCase):
                                               rtol=7e-5))
 
         # test with White fits
-        tm = ThwaitesMethodLinear(U_e=U_e_fun, dU_edx=dU_edx_fun,
+        tm = ThwaitesMethodLinear(nu=nu, U_e=U_e_fun, dU_edx=dU_edx_fun,
                                   d2U_edx2=d2U_edx2_fun, data_fits="White")
         tm_ref = ThwaitesLinearAnalytic(U_ref, m, nu, tm._model.H, tm._model.S)
         tm.set_solution_parameters(x0=x[0], x_end=x[-1],
-                                   delta_m0=tm_ref.delta_m(x[0]), nu=nu)
+                                   delta_m0=tm_ref.delta_m(x[0]))
         rtn = tm.solve()
         self.assertTrue(rtn.success)
         self.assertEqual(rtn.status, 0)
@@ -597,12 +597,12 @@ class TestLinearThwaites(unittest.TestCase):
                                               rtol=7e-5))
 
         # test with Cebeci and Bradshaw fits
-        tm = ThwaitesMethodLinear(U_e=U_e_fun, dU_edx=dU_edx_fun,
+        tm = ThwaitesMethodLinear(nu=nu, U_e=U_e_fun, dU_edx=dU_edx_fun,
                                   d2U_edx2=d2U_edx2_fun,
                                   data_fits="Cebeci-Bradshaw")
         tm_ref = ThwaitesLinearAnalytic(U_ref, m, nu, tm._model.H, tm._model.S)
         tm.set_solution_parameters(x0=x[0], x_end=x[-1],
-                                   delta_m0=tm_ref.delta_m(x[0]), nu=nu)
+                                   delta_m0=tm_ref.delta_m(x[0]))
         rtn = tm.solve()
         self.assertTrue(rtn.success)
         self.assertEqual(rtn.status, 0)
@@ -643,12 +643,12 @@ class TestLinearThwaites(unittest.TestCase):
             return m*(m-1)*U_ref*x**(m-2)
 
         # test with spline of tabular data
-        tm = ThwaitesMethodLinear(U_e=U_e_fun, dU_edx=dU_edx_fun,
+        tm = ThwaitesMethodLinear(nu=nu, U_e=U_e_fun, dU_edx=dU_edx_fun,
                                   d2U_edx2=d2U_edx2_fun,
                                   data_fits="Spline")
         tm_ref = ThwaitesLinearAnalytic(U_ref, m, nu, tm._model.H, tm._model.S)
         tm.set_solution_parameters(x0=x[0], x_end=x[-1],
-                                   delta_m0=tm_ref.delta_m(x[0]), nu=nu)
+                                   delta_m0=tm_ref.delta_m(x[0]))
         rtn = tm.solve()
         self.assertTrue(rtn.success)
         self.assertEqual(rtn.status, 0)
@@ -664,11 +664,11 @@ class TestLinearThwaites(unittest.TestCase):
         self.assertIsNone(npt.assert_allclose(tm.V_e(x), tm_ref.V_e(x)))
 
         # test with White fits
-        tm = ThwaitesMethodLinear(U_e=U_e_fun, dU_edx=dU_edx_fun,
+        tm = ThwaitesMethodLinear(nu=nu, U_e=U_e_fun, dU_edx=dU_edx_fun,
                                   d2U_edx2=d2U_edx2_fun, data_fits="White")
         tm_ref = ThwaitesLinearAnalytic(U_ref, m, nu, tm._model.H, tm._model.S)
         tm.set_solution_parameters(x0=x[0], x_end=x[-1],
-                                   delta_m0=tm_ref.delta_m(x[0]), nu=nu)
+                                   delta_m0=tm_ref.delta_m(x[0]))
         rtn = tm.solve()
         self.assertTrue(rtn.success)
         self.assertEqual(rtn.status, 0)
@@ -684,12 +684,12 @@ class TestLinearThwaites(unittest.TestCase):
         self.assertIsNone(npt.assert_allclose(tm.V_e(x), tm_ref.V_e(x)))
 
         # test with Cebeci and Bradshaw fits
-        tm = ThwaitesMethodLinear(U_e=U_e_fun, dU_edx=dU_edx_fun,
+        tm = ThwaitesMethodLinear(nu=nu, U_e=U_e_fun, dU_edx=dU_edx_fun,
                                   d2U_edx2=d2U_edx2_fun,
                                   data_fits="Cebeci-Bradshaw")
         tm_ref = ThwaitesLinearAnalytic(U_ref, m, nu, tm._model.H, tm._model.S)
         tm.set_solution_parameters(x0=x[0], x_end=x[-1],
-                                   delta_m0=tm_ref.delta_m(x[0]), nu=nu)
+                                   delta_m0=tm_ref.delta_m(x[0]))
         rtn = tm.solve()
         self.assertTrue(rtn.success)
         self.assertEqual(rtn.status, 0)
@@ -733,12 +733,12 @@ class TestNonlinearThwaites(unittest.TestCase):
             return m*(m-1)*U_ref*x**(m-2)
 
         # test with spline of tabular data
-        tm = ThwaitesMethodNonlinear(U_e=U_e_fun, dU_edx=dU_edx_fun,
+        tm = ThwaitesMethodNonlinear(nu=nu, U_e=U_e_fun, dU_edx=dU_edx_fun,
                                      d2U_edx2=d2U_edx2_fun,
                                      data_fits="Spline")
         tm_ref = ThwaitesLinearAnalytic(U_ref, m, nu, tm._model.H, tm._model.S)
         tm.set_solution_parameters(x0=x[0], x_end=x[-1],
-                                   delta_m0=tm_ref.delta_m(x[0]), nu=nu)
+                                   delta_m0=tm_ref.delta_m(x[0]))
         rtn = tm.solve()
         self.assertTrue(rtn.success)
         self.assertEqual(rtn.status, 0)
@@ -756,12 +756,12 @@ class TestNonlinearThwaites(unittest.TestCase):
                                               atol=0, rtol=3e-2))
 
         # test with White fits
-        tm = ThwaitesMethodNonlinear(U_e=U_e_fun, dU_edx=dU_edx_fun,
+        tm = ThwaitesMethodNonlinear(nu=nu, U_e=U_e_fun, dU_edx=dU_edx_fun,
                                      d2U_edx2=d2U_edx2_fun,
                                      data_fits="White")
         tm_ref = ThwaitesLinearAnalytic(U_ref, m, nu, tm._model.H, tm._model.S)
         tm.set_solution_parameters(x0=x[0], x_end=x[-1],
-                                   delta_m0=tm_ref.delta_m(x[0]), nu=nu)
+                                   delta_m0=tm_ref.delta_m(x[0]))
         rtn = tm.solve()
         self.assertTrue(rtn.success)
         self.assertEqual(rtn.status, 0)
@@ -779,12 +779,12 @@ class TestNonlinearThwaites(unittest.TestCase):
                                               atol=0, rtol=2e-3))
 
         # test with Cebeci and Bradshaw fits
-        tm = ThwaitesMethodNonlinear(U_e=U_e_fun, dU_edx=dU_edx_fun,
+        tm = ThwaitesMethodNonlinear(nu=nu, U_e=U_e_fun, dU_edx=dU_edx_fun,
                                      d2U_edx2=d2U_edx2_fun,
                                      data_fits="Cebeci-Bradshaw")
         tm_ref = ThwaitesLinearAnalytic(U_ref, m, nu, tm._model.H, tm._model.S)
         tm.set_solution_parameters(x0=x[0], x_end=x[-1],
-                                   delta_m0=tm_ref.delta_m(x[0]), nu=nu)
+                                   delta_m0=tm_ref.delta_m(x[0]))
         rtn = tm.solve()
         self.assertTrue(rtn.success)
         self.assertEqual(rtn.status, 0)
@@ -813,12 +813,12 @@ class TestNonlinearThwaites(unittest.TestCase):
             z = 0.25-lam
             return -(4.14 + z*(-2*83.5 + z*(3*854 + z*(-4*3337 + z*5*4576))))
 
-        tm = ThwaitesMethodNonlinear(U_e=U_e_fun, dU_edx=dU_edx_fun,
+        tm = ThwaitesMethodNonlinear(nu=nu, U_e=U_e_fun, dU_edx=dU_edx_fun,
                                      d2U_edx2=d2U_edx2_fun,
                                      data_fits=(S_fun, H_fun, Hp_fun))
         tm_ref = ThwaitesLinearAnalytic(U_ref, m, nu, H_fun, S_fun)
         tm.set_solution_parameters(x0=x[0], x_end=x[-1],
-                                   delta_m0=tm_ref.delta_m(x[0]), nu=nu)
+                                   delta_m0=tm_ref.delta_m(x[0]))
         rtn = tm.solve()
         self.assertTrue(rtn.success)
         self.assertEqual(rtn.status, 0)
@@ -836,12 +836,12 @@ class TestNonlinearThwaites(unittest.TestCase):
                                               atol=0, rtol=2e-3))
 
         # test creating with own functions for S, H
-        tm = ThwaitesMethodNonlinear(U_e=U_e_fun, dU_edx=dU_edx_fun,
+        tm = ThwaitesMethodNonlinear(nu=nu, U_e=U_e_fun, dU_edx=dU_edx_fun,
                                      d2U_edx2=d2U_edx2_fun,
                                      data_fits=(S_fun, H_fun))
         tm_ref = ThwaitesLinearAnalytic(U_ref, m, nu, H_fun, S_fun)
         tm.set_solution_parameters(x0=x[0], x_end=x[-1],
-                                   delta_m0=tm_ref.delta_m(x[0]), nu=nu)
+                                   delta_m0=tm_ref.delta_m(x[0]))
         rtn = tm.solve()
         self.assertTrue(rtn.success)
         self.assertEqual(rtn.status, 0)
@@ -860,7 +860,7 @@ class TestNonlinearThwaites(unittest.TestCase):
 
         # test creating with invalid name
         with self.assertRaises(ValueError):
-            ThwaitesMethodNonlinear(U_e=U_e_fun, dU_edx=dU_edx_fun,
+            ThwaitesMethodNonlinear(nu=nu, U_e=U_e_fun, dU_edx=dU_edx_fun,
                                     d2U_edx2=d2U_edx2_fun,
                                     data_fits="My Own")
 
@@ -888,12 +888,12 @@ class TestNonlinearThwaites(unittest.TestCase):
             return m*(m-1)*U_ref*x**(m-2)
 
         # test with spline of tabular data
-        tm = ThwaitesMethodNonlinear(U_e=U_e_fun, dU_edx=dU_edx_fun,
+        tm = ThwaitesMethodNonlinear(nu=nu, U_e=U_e_fun, dU_edx=dU_edx_fun,
                                      d2U_edx2=d2U_edx2_fun,
                                      data_fits="Spline")
         tm_ref = ThwaitesLinearAnalytic(U_ref, m, nu, tm._model.H, tm._model.S)
         tm.set_solution_parameters(x0=x[0], x_end=x[-1],
-                                   delta_m0=tm_ref.delta_m(x[0]), nu=nu)
+                                   delta_m0=tm_ref.delta_m(x[0]))
         rtn = tm.solve()
         self.assertTrue(rtn.success)
         self.assertEqual(rtn.status, 0)
@@ -912,12 +912,12 @@ class TestNonlinearThwaites(unittest.TestCase):
                                               atol=0, rtol=1e-2))
 
         # test with White fits
-        tm = ThwaitesMethodNonlinear(U_e=U_e_fun, dU_edx=dU_edx_fun,
+        tm = ThwaitesMethodNonlinear(nu=nu, U_e=U_e_fun, dU_edx=dU_edx_fun,
                                      d2U_edx2=d2U_edx2_fun,
                                      data_fits="White")
         tm_ref = ThwaitesLinearAnalytic(U_ref, m, nu, tm._model.H, tm._model.S)
         tm.set_solution_parameters(x0=x[0], x_end=x[-1],
-                                   delta_m0=tm_ref.delta_m(x[0]), nu=nu)
+                                   delta_m0=tm_ref.delta_m(x[0]))
         rtn = tm.solve()
         self.assertTrue(rtn.success)
         self.assertEqual(rtn.status, 0)
@@ -936,12 +936,12 @@ class TestNonlinearThwaites(unittest.TestCase):
                                               atol=0, rtol=1e-2))
 
         # test with Cebeci and Bradshaw fits
-        tm = ThwaitesMethodNonlinear(U_e=U_e_fun, dU_edx=dU_edx_fun,
+        tm = ThwaitesMethodNonlinear(nu=nu, U_e=U_e_fun, dU_edx=dU_edx_fun,
                                      d2U_edx2=d2U_edx2_fun,
                                      data_fits="Cebeci-Bradshaw")
         tm_ref = ThwaitesLinearAnalytic(U_ref, m, nu, tm._model.H, tm._model.S)
         tm.set_solution_parameters(x0=x[0], x_end=x[-1],
-                                   delta_m0=tm_ref.delta_m(x[0]), nu=nu)
+                                   delta_m0=tm_ref.delta_m(x[0]))
         rtn = tm.solve()
         self.assertTrue(rtn.success)
         self.assertEqual(rtn.status, 0)
@@ -983,12 +983,12 @@ class TestNonlinearThwaites(unittest.TestCase):
             return m*(m-1)*U_ref*x**(m-2)
 
         # test with spline of tabular data
-        tm = ThwaitesMethodNonlinear(U_e=U_e_fun, dU_edx=dU_edx_fun,
+        tm = ThwaitesMethodNonlinear(nu=nu, U_e=U_e_fun, dU_edx=dU_edx_fun,
                                      d2U_edx2=d2U_edx2_fun,
                                      data_fits="Spline")
         tm_ref = ThwaitesLinearAnalytic(U_ref, m, nu, tm._model.H, tm._model.S)
         tm.set_solution_parameters(x0=x[0], x_end=x[-1],
-                                   delta_m0=tm_ref.delta_m(x[0]), nu=nu)
+                                   delta_m0=tm_ref.delta_m(x[0]))
         rtn = tm.solve()
         self.assertTrue(rtn.success)
         self.assertEqual(rtn.status, 0)
@@ -1007,12 +1007,12 @@ class TestNonlinearThwaites(unittest.TestCase):
                                               atol=0, rtol=1e-2))
 
         # test with White fits
-        tm = ThwaitesMethodNonlinear(U_e=U_e_fun, dU_edx=dU_edx_fun,
+        tm = ThwaitesMethodNonlinear(nu=nu, U_e=U_e_fun, dU_edx=dU_edx_fun,
                                      d2U_edx2=d2U_edx2_fun,
                                      data_fits="White")
         tm_ref = ThwaitesLinearAnalytic(U_ref, m, nu, tm._model.H, tm._model.S)
         tm.set_solution_parameters(x0=x[0], x_end=x[-1],
-                                   delta_m0=tm_ref.delta_m(x[0]), nu=nu)
+                                   delta_m0=tm_ref.delta_m(x[0]))
         rtn = tm.solve()
         self.assertTrue(rtn.success)
         self.assertEqual(rtn.status, 0)
@@ -1031,12 +1031,12 @@ class TestNonlinearThwaites(unittest.TestCase):
                                               atol=0, rtol=1e-2))
 
         # test with Cebeci and Bradshaw fits
-        tm = ThwaitesMethodNonlinear(U_e=U_e_fun, dU_edx=dU_edx_fun,
+        tm = ThwaitesMethodNonlinear(nu=nu, U_e=U_e_fun, dU_edx=dU_edx_fun,
                                      d2U_edx2=d2U_edx2_fun,
                                      data_fits="Cebeci-Bradshaw")
         tm_ref = ThwaitesLinearAnalytic(U_ref, m, nu, tm._model.H, tm._model.S)
         tm.set_solution_parameters(x0=x[0], x_end=x[-1],
-                                   delta_m0=tm_ref.delta_m(x[0]), nu=nu)
+                                   delta_m0=tm_ref.delta_m(x[0]))
         rtn = tm.solve()
         self.assertTrue(rtn.success)
         self.assertEqual(rtn.status, 0)
@@ -1078,12 +1078,12 @@ class TestNonlinearThwaites(unittest.TestCase):
             return m*(m-1)*U_ref*x**(m-2)
 
         # test with spline of tabular data
-        tm = ThwaitesMethodNonlinear(U_e=U_e_fun, dU_edx=dU_edx_fun,
+        tm = ThwaitesMethodNonlinear(nu=nu, U_e=U_e_fun, dU_edx=dU_edx_fun,
                                      d2U_edx2=d2U_edx2_fun,
                                      data_fits="Spline")
         tm_ref = ThwaitesLinearAnalytic(U_ref, m, nu, tm._model.H, tm._model.S)
         tm.set_solution_parameters(x0=x[0], x_end=x[-1],
-                                   delta_m0=tm_ref.delta_m(x[0]), nu=nu)
+                                   delta_m0=tm_ref.delta_m(x[0]))
         rtn = tm.solve()
         self.assertTrue(rtn.success)
         self.assertEqual(rtn.status, 0)
@@ -1102,12 +1102,12 @@ class TestNonlinearThwaites(unittest.TestCase):
                                               atol=0, rtol=1e-3))
 
         # test with White fits
-        tm = ThwaitesMethodNonlinear(U_e=U_e_fun, dU_edx=dU_edx_fun,
+        tm = ThwaitesMethodNonlinear(nu=nu, U_e=U_e_fun, dU_edx=dU_edx_fun,
                                      d2U_edx2=d2U_edx2_fun,
                                      data_fits="White")
         tm_ref = ThwaitesLinearAnalytic(U_ref, m, nu, tm._model.H, tm._model.S)
         tm.set_solution_parameters(x0=x[0], x_end=x[-1],
-                                   delta_m0=tm_ref.delta_m(x[0]), nu=nu)
+                                   delta_m0=tm_ref.delta_m(x[0]))
         rtn = tm.solve()
         self.assertTrue(rtn.success)
         self.assertEqual(rtn.status, 0)
@@ -1126,12 +1126,12 @@ class TestNonlinearThwaites(unittest.TestCase):
                                               atol=0, rtol=3e-3))
 
         # test with Cebeci and Bradshaw fits
-        tm = ThwaitesMethodNonlinear(U_e=U_e_fun, dU_edx=dU_edx_fun,
+        tm = ThwaitesMethodNonlinear(nu=nu, U_e=U_e_fun, dU_edx=dU_edx_fun,
                                      d2U_edx2=d2U_edx2_fun,
                                      data_fits="Cebeci-Bradshaw")
         tm_ref = ThwaitesLinearAnalytic(U_ref, m, nu, tm._model.H, tm._model.S)
         tm.set_solution_parameters(x0=x[0], x_end=x[-1],
-                                   delta_m0=tm_ref.delta_m(x[0]), nu=nu)
+                                   delta_m0=tm_ref.delta_m(x[0]))
         rtn = tm.solve()
         self.assertTrue(rtn.success)
         self.assertEqual(rtn.status, 0)
