@@ -23,7 +23,17 @@ class InitialCondition(ABC):
     This class provides the interface for the initial conditions of the
     integral boundary layer solutions. This class is intended to provide
 
+    Attributes
+    ----------
+    dUe_dx : float
+        Slope of edge velocity profile at initial condition.
+    nu : float
+        Kinematic viscosity at initial condition.
     """
+
+    def __init__(self, dU_edx: float, nu: float) -> None:
+        self.dU_edx = dU_edx
+        self.nu = nu
 
     @abstractmethod
     def H_d(self) -> float:
@@ -92,13 +102,13 @@ class FalknerSkanStagnationCondition(InitialCondition):
     ----------
     dU_edx: float
         Rate of change of the inviscid edge velocity at stagnation point.
+        Default value is 1.0.
     nu: float
-        Kinematic viscosity.
+        Kinematic viscosity. Default value is 1.0.
     """
 
-    def __init__(self, dU_edx: float, nu: float):
-        self.dU_edx = dU_edx
-        self.nu = nu
+    def __init__(self, dU_edx: float = 1.0, nu: float = 1.0):
+        super().__init__(dU_edx, nu)
         self._fpp0 = 1.23259
         self._H_d = 2.2162
         self._H_k = 1.6257
@@ -179,6 +189,7 @@ class ManualCondition(InitialCondition):
     """
 
     def __init__(self, delta_d: float, delta_m: float, delta_k: float):
+        super().__init__(0.0, 0.0)
         self.del_d = delta_d
         self.del_m = delta_m
         self.del_k = delta_k
