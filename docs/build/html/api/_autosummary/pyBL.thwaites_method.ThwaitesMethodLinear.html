@@ -1,0 +1,592 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+    <title>pyBL.thwaites_method.ThwaitesMethodLinear &#8212; pyBL 0.0.4-develop documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/alabaster.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="pyBL.thwaites_method.ThwaitesMethodNonlinear" href="pyBL.thwaites_method.ThwaitesMethodNonlinear.html" />
+    <link rel="prev" title="pyBL.thwaites_method.ThwaitesMethod" href="pyBL.thwaites_method.ThwaitesMethod.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="pybl-thwaites-method-thwaitesmethodlinear">
+<h1>pyBL.thwaites_method.ThwaitesMethodLinear<a class="headerlink" href="#pybl-thwaites-method-thwaitesmethodlinear" title="Permalink to this heading">¶</a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="pyBL.thwaites_method.ThwaitesMethodLinear">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ThwaitesMethodLinear</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nu</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">U_e</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dU_edx</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">d2U_edx2</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_fits</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Spline'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pyBL/thwaites_method.html#ThwaitesMethodLinear"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyBL.thwaites_method.ThwaitesMethodLinear" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="pyBL.thwaites_method.ThwaitesMethod.html#pyBL.thwaites_method.ThwaitesMethod" title="pyBL.thwaites_method.ThwaitesMethod"><code class="xref py py-class docutils literal notranslate"><span class="pre">ThwaitesMethod</span></code></a></p>
+<p>Laminar boundary layer model using Thwaites Method linear approximation.</p>
+<p>Solves the original approximate ODE from Thwaites’ method when provided
+the edge velocity profile. There are a few different ways of modeling the
+tabular data from Thwaites original work that can be set.</p>
+<p>This class solves the following differential equation using the linear
+approximation from Thwaites’ original paper</p>
+<div class="math">
+<p><img src="../../_images/math/548059d948b4f3a822acf31318c2e21df57172fb.svg" alt="\frac{d}{dx}\left(\frac{\delta_m^2}{\nu}\right)
+    =\frac{1}{U_e}\left(0.45-6\lambda\right)"/></p>
+</div><p>using the <code class="xref py py-class docutils literal notranslate"><span class="pre">IBLMethod</span></code> ODE solver.</p>
+<p class="rubric">Methods</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pyBL.thwaites_method.ThwaitesMethodLinear.D" title="pyBL.thwaites_method.ThwaitesMethodLinear.D"><code class="xref py py-obj docutils literal notranslate"><span class="pre">D</span></code></a>(x, rho)</p></td>
+<td><p>Calculate the dissipation integral.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pyBL.thwaites_method.ThwaitesMethodLinear.H_d" title="pyBL.thwaites_method.ThwaitesMethodLinear.H_d"><code class="xref py py-obj docutils literal notranslate"><span class="pre">H_d</span></code></a>(x)</p></td>
+<td><p>Calculate the displacement shape factor.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pyBL.thwaites_method.ThwaitesMethodLinear.H_k" title="pyBL.thwaites_method.ThwaitesMethodLinear.H_k"><code class="xref py py-obj docutils literal notranslate"><span class="pre">H_k</span></code></a>(x)</p></td>
+<td><p>Calculate the kinetic energy shape factor.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pyBL.thwaites_method.ThwaitesMethodLinear.U_e" title="pyBL.thwaites_method.ThwaitesMethodLinear.U_e"><code class="xref py py-obj docutils literal notranslate"><span class="pre">U_e</span></code></a>(x)</p></td>
+<td><p>Return the inviscid edge velocity at specified location(s).</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pyBL.thwaites_method.ThwaitesMethodLinear.V_e" title="pyBL.thwaites_method.ThwaitesMethodLinear.V_e"><code class="xref py py-obj docutils literal notranslate"><span class="pre">V_e</span></code></a>(x)</p></td>
+<td><p>Calculate the transpiration velocity.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pyBL.thwaites_method.ThwaitesMethodLinear.d2U_edx2" title="pyBL.thwaites_method.ThwaitesMethodLinear.d2U_edx2"><code class="xref py py-obj docutils literal notranslate"><span class="pre">d2U_edx2</span></code></a>(x)</p></td>
+<td><p>Streamwise second derivative of inviscid edge velocity at location(s).</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pyBL.thwaites_method.ThwaitesMethodLinear.dU_edx" title="pyBL.thwaites_method.ThwaitesMethodLinear.dU_edx"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dU_edx</span></code></a>(x)</p></td>
+<td><p>Streamwise derivative of inviscid edge velocity at location(s).</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pyBL.thwaites_method.ThwaitesMethodLinear.delta_d" title="pyBL.thwaites_method.ThwaitesMethodLinear.delta_d"><code class="xref py py-obj docutils literal notranslate"><span class="pre">delta_d</span></code></a>(x)</p></td>
+<td><p>Calculate the displacement thickness.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pyBL.thwaites_method.ThwaitesMethodLinear.delta_k" title="pyBL.thwaites_method.ThwaitesMethodLinear.delta_k"><code class="xref py py-obj docutils literal notranslate"><span class="pre">delta_k</span></code></a>(x)</p></td>
+<td><p>Calculate the kinetic energy thickness.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pyBL.thwaites_method.ThwaitesMethodLinear.delta_m" title="pyBL.thwaites_method.ThwaitesMethodLinear.delta_m"><code class="xref py py-obj docutils literal notranslate"><span class="pre">delta_m</span></code></a>(x)</p></td>
+<td><p>Calculate the momentum thickness.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pyBL.thwaites_method.ThwaitesMethodLinear.nu" title="pyBL.thwaites_method.ThwaitesMethodLinear.nu"><code class="xref py py-obj docutils literal notranslate"><span class="pre">nu</span></code></a>()</p></td>
+<td><p>Return kinematic viscosity used for the solution.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pyBL.thwaites_method.ThwaitesMethodLinear.set_data_fits" title="pyBL.thwaites_method.ThwaitesMethodLinear.set_data_fits"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_data_fits</span></code></a>(data_fits)</p></td>
+<td><p>Set the data fit functions.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pyBL.thwaites_method.ThwaitesMethodLinear.set_initial_condition" title="pyBL.thwaites_method.ThwaitesMethodLinear.set_initial_condition"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_initial_condition</span></code></a>(ic)</p></td>
+<td><p>Set the initial conditions for solver.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pyBL.thwaites_method.ThwaitesMethodLinear.set_initial_parameters" title="pyBL.thwaites_method.ThwaitesMethodLinear.set_initial_parameters"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_initial_parameters</span></code></a>(delta_m0)</p></td>
+<td><p>Set the initial conditions for the solver.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pyBL.thwaites_method.ThwaitesMethodLinear.set_velocity" title="pyBL.thwaites_method.ThwaitesMethodLinear.set_velocity"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_velocity</span></code></a>(U_e[, dU_edx, d2U_edx2])</p></td>
+<td><p>Set the edge velocity relations.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pyBL.thwaites_method.ThwaitesMethodLinear.solve" title="pyBL.thwaites_method.ThwaitesMethodLinear.solve"><code class="xref py py-obj docutils literal notranslate"><span class="pre">solve</span></code></a>(x0, x_end[, term_event])</p></td>
+<td><p>Solve the ODE associated with Thwaites' method.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pyBL.thwaites_method.ThwaitesMethodLinear.tau_w" title="pyBL.thwaites_method.ThwaitesMethodLinear.tau_w"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tau_w</span></code></a>(x, rho)</p></td>
+<td><p>Calculate the wall shear stress.</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py method">
+<dt class="sig sig-object py" id="pyBL.thwaites_method.ThwaitesMethodLinear.D">
+<span class="sig-name descname"><span class="pre">D</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rho</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyBL.thwaites_method.ThwaitesMethodLinear.D" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the dissipation integral.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>x: array-like</strong></dt><dd><p>Streamwise loations to calculate this property.</p>
+</dd>
+<dt><strong>rho: float</strong></dt><dd><p>Freestream density.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt>array-like same shape as <cite>x</cite></dt><dd><p>Desired dissipation integral at the specified locations.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyBL.thwaites_method.ThwaitesMethodLinear.H_d">
+<span class="sig-name descname"><span class="pre">H_d</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyBL.thwaites_method.ThwaitesMethodLinear.H_d" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the displacement shape factor.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>x: array-like</strong></dt><dd><p>Streamwise loations to calculate this property.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt>array-like same shape as <cite>x</cite></dt><dd><p>Desired displacement shape factor at the specified locations.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyBL.thwaites_method.ThwaitesMethodLinear.H_k">
+<span class="sig-name descname"><span class="pre">H_k</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyBL.thwaites_method.ThwaitesMethodLinear.H_k" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the kinetic energy shape factor.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>x: array-like</strong></dt><dd><p>Streamwise loations to calculate this property.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt>array-like same shape as <cite>x</cite></dt><dd><p>Desired kinetic energy shape factor at the specified locations.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyBL.thwaites_method.ThwaitesMethodLinear.U_e">
+<span class="sig-name descname"><span class="pre">U_e</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyBL.thwaites_method.ThwaitesMethodLinear.U_e" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the inviscid edge velocity at specified location(s).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>x: array-like</strong></dt><dd><p>Streamwise loations to calculate this property.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt>array-like same shape as <cite>x</cite></dt><dd><p>Inviscid edge velocity.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt>TypeError</dt><dd><p>When velocity parameters have not been set.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyBL.thwaites_method.ThwaitesMethodLinear.V_e">
+<span class="sig-name descname"><span class="pre">V_e</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyBL.thwaites_method.ThwaitesMethodLinear.V_e" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the transpiration velocity.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>x: array-like</strong></dt><dd><p>Streamwise loations to calculate this property.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt>array-like same shape as <cite>x</cite></dt><dd><p>Desired transpiration velocity at the specified locations.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyBL.thwaites_method.ThwaitesMethodLinear.d2U_edx2">
+<span class="sig-name descname"><span class="pre">d2U_edx2</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyBL.thwaites_method.ThwaitesMethodLinear.d2U_edx2" title="Permalink to this definition">¶</a></dt>
+<dd><p>Streamwise second derivative of inviscid edge velocity at location(s).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>x: array-like</strong></dt><dd><p>Streamwise loations to calculate this property.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt>array-like same shape as <cite>x</cite></dt><dd><p>Second derivative of inviscid edge velocity.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt>TypeError</dt><dd><p>When velocity parameters have not been set.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyBL.thwaites_method.ThwaitesMethodLinear.dU_edx">
+<span class="sig-name descname"><span class="pre">dU_edx</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyBL.thwaites_method.ThwaitesMethodLinear.dU_edx" title="Permalink to this definition">¶</a></dt>
+<dd><p>Streamwise derivative of inviscid edge velocity at location(s).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>x: array-like</strong></dt><dd><p>Streamwise loations to calculate this property.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt>array-like same shape as <cite>x</cite></dt><dd><p>Derivative of inviscid edge velocity.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt>TypeError</dt><dd><p>When velocity parameters have not been set.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyBL.thwaites_method.ThwaitesMethodLinear.delta_d">
+<span class="sig-name descname"><span class="pre">delta_d</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyBL.thwaites_method.ThwaitesMethodLinear.delta_d" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the displacement thickness.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>x: array-like</strong></dt><dd><p>Streamwise loations to calculate this property.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt>array-like same shape as <cite>x</cite></dt><dd><p>Desired displacement thickness at the specified locations.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyBL.thwaites_method.ThwaitesMethodLinear.delta_k">
+<span class="sig-name descname"><span class="pre">delta_k</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyBL.thwaites_method.ThwaitesMethodLinear.delta_k" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the kinetic energy thickness.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>x: array-like</strong></dt><dd><p>Streamwise loations to calculate this property.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt>array-like same shape as <cite>x</cite></dt><dd><p>Desired kinetic energy thickness at the specified locations.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyBL.thwaites_method.ThwaitesMethodLinear.delta_m">
+<span class="sig-name descname"><span class="pre">delta_m</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyBL.thwaites_method.ThwaitesMethodLinear.delta_m" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the momentum thickness.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>x: array-like</strong></dt><dd><p>Streamwise loations to calculate this property.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt>array-like same shape as <cite>x</cite></dt><dd><p>Desired momentum thickness at the specified locations.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyBL.thwaites_method.ThwaitesMethodLinear.nu">
+<span class="sig-name descname"><span class="pre">nu</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyBL.thwaites_method.ThwaitesMethodLinear.nu" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return kinematic viscosity used for the solution.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt>float</dt><dd><p>Kinematic viscosity.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyBL.thwaites_method.ThwaitesMethodLinear.set_data_fits">
+<span class="sig-name descname"><span class="pre">set_data_fits</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_fits</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyBL.thwaites_method.ThwaitesMethodLinear.set_data_fits" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the data fit functions.</p>
+<p>This method sets the functions used for the data fits of the shear
+function, shape function, and the slope of the shape function.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>data_fits: 2-tuple, 3-tuple, or string</strong></dt><dd><dl>
+<dt>The data fits can be set via one of the following methods:</dt><dd><ul>
+<li><p>3-tuple of callable objects taking one parameter that
+represent the shear function, the shape function, and
+the derivative of the shape function;</p></li>
+<li><p>2-tuple of callable objects taking one parameter that
+represent the shear function and the shape function.
+The derivative of the shear function is then
+approximated using finite differences; or</p></li>
+<li><p>String for representing one of the three internal
+implementations:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>“Spline” for spline fits of Thwaites original
+data (Edland 2022)</p></li>
+<li><p>“White” for the curve fits from White (2011)</p></li>
+<li><p>“Cebeci-Bradshaw” for curve fits from
+Cebeci-Bradshaw (1977)</p></li>
+</ul>
+</div></blockquote>
+</li>
+</ul>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt>ValueError</dt><dd><p>When an invalid fit name or unusable 2-tuple or 3-tuple provided</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyBL.thwaites_method.ThwaitesMethodLinear.set_initial_condition">
+<span class="sig-name descname"><span class="pre">set_initial_condition</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ic</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pyBL.initial_condition.InitialCondition.html#pyBL.initial_condition.InitialCondition" title="pyBL.initial_condition.InitialCondition"><span class="pre">InitialCondition</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pyBL.thwaites_method.ThwaitesMethodLinear.set_initial_condition" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the initial conditions for solver.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>ic</strong><span class="classifier">InitialCondition</span></dt><dd><p>Desired initial condition.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyBL.thwaites_method.ThwaitesMethodLinear.set_initial_parameters">
+<span class="sig-name descname"><span class="pre">set_initial_parameters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">delta_m0</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pyBL.thwaites_method.ThwaitesMethodLinear.set_initial_parameters" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the initial conditions for the solver.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>delta_m0: float</strong></dt><dd><p>Momentum thickness at start location.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt>ValueError</dt><dd><p>When negative invalid initial conditions</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyBL.thwaites_method.ThwaitesMethodLinear.set_velocity">
+<span class="sig-name descname"><span class="pre">set_velocity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">U_e</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dU_edx</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">d2U_edx2</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyBL.thwaites_method.ThwaitesMethodLinear.set_velocity" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the edge velocity relations.</p>
+<p>There are a number of different ways to set the velocity relation and
+its derivatives. See class definition for details.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>U_e</strong><span class="classifier">2-tuple of array-like, scalar, or function-like</span></dt><dd><p>Representation of the edge velocity to be used in analysis</p>
+</dd>
+<dt><strong>dU_edx</strong><span class="classifier">None, 2-tuple of array-like, or function-like, optional</span></dt><dd><p>Representation of the first derivative of the edge velocity to be
+used in analysis. The default is <cite>None</cite>.</p>
+</dd>
+<dt><strong>d2U_edx2</strong><span class="classifier">None or function-like, optional</span></dt><dd><p>Representationa of the second derivative of the edge velocity to
+be used in analysis. The default is <cite>None</cite>.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt>ValueError</dt><dd><p>When configuration parameter is invalid (see message).</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyBL.thwaites_method.ThwaitesMethodLinear.solve">
+<span class="sig-name descname"><span class="pre">solve</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x0</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x_end</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">term_event</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="pyBL.ibl_method.IBLResult.html#pyBL.ibl_method.IBLResult" title="pyBL.ibl_method.IBLResult"><span class="pre">IBLResult</span></a></span></span><a class="headerlink" href="#pyBL.thwaites_method.ThwaitesMethodLinear.solve" title="Permalink to this definition">¶</a></dt>
+<dd><p>Solve the ODE associated with Thwaites’ method.</p>
+<p>This actually solves the following differential equation</p>
+<div class="math">
+<p><img src="../../_images/math/81d4aa23bc6054cf0a594a44f5612281d4cdd8fa.svg" alt="\frac{d}{dx}\left(\frac{\delta_m^2}{\nu}\right)=\frac{F}{U_e}"/></p>
+</div><p>where <img class="math" src="../../_images/math/554c67f29d2a5a152bb7848d418ebd4ade9d0f10.svg" alt="F"/> is either the linear approximation or the actual term
+from Thwaites’ original paper.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>x0: float</strong></dt><dd><p>Location to start integration.</p>
+</dd>
+<dt><strong>x_end: float</strong></dt><dd><p>Location to end integration.</p>
+</dd>
+<dt><strong>term_event</strong><span class="classifier">List based on <code class="xref py py-class docutils literal notranslate"><span class="pre">IBLTermEvent</span></code>, optional</span></dt><dd><p>User events that can terminate the integration process before the
+end location of the integration is reached. The default is <cite>None</cite>.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><code class="xref py py-class docutils literal notranslate"><span class="pre">IBLResult</span></code></dt><dd><p>Information associated with the integration process.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt>TypeError</dt><dd><p>When solution parameters have not been set.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyBL.thwaites_method.ThwaitesMethodLinear.tau_w">
+<span class="sig-name descname"><span class="pre">tau_w</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rho</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyBL.thwaites_method.ThwaitesMethodLinear.tau_w" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the wall shear stress.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>x: array-like</strong></dt><dd><p>Streamwise loations to calculate this property.</p>
+</dd>
+<dt><strong>rho: float</strong></dt><dd><p>Freestream density.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt>array-like same shape as <cite>x</cite></dt><dd><p>Desired wall shear stress at the specified locations.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../index.html">pyBL</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../index.html">Home</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../examples/index.html">Examples</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../modules.html">API</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="pyBL.html">pyBL</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../developers/index.html">Developer Resources</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/ddmarshall/IBL">Project</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../license/index.html">License</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../modules.html">API</a><ul>
+  <li><a href="pyBL.html">pyBL</a><ul>
+  <li><a href="pyBL.thwaites_method.html">pyBL.thwaites_method</a><ul>
+      <li>Previous: <a href="pyBL.thwaites_method.ThwaitesMethod.html" title="previous chapter">pyBL.thwaites_method.ThwaitesMethod</a></li>
+      <li>Next: <a href="pyBL.thwaites_method.ThwaitesMethodNonlinear.html" title="next chapter">pyBL.thwaites_method.ThwaitesMethodNonlinear</a></li>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2022, David D. Marshall.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 5.1.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

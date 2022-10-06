@@ -1,0 +1,25 @@
+pyBL.initial\_condition.ManualCondition
+=======================================
+
+.. currentmodule:: pyBL.initial_condition
+
+.. autoclass:: ManualCondition
+   :members:
+   :show-inheritance:
+   :inherited-members:
+
+   
+   
+   
+      ~ManualCondition.H_d
+      ~ManualCondition.H_k
+      ~ManualCondition.__init__
+      ~ManualCondition.delta_d
+      ~ManualCondition.delta_k
+      ~ManualCondition.delta_m
+   
+   
+
+   
+   
+   

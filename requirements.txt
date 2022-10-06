@@ -4,7 +4,3 @@
 numpy
 scipy
 
-# Needed for examples to work
-casadi # For falkner_skan code
-sympy # For Falkner Skan example
-

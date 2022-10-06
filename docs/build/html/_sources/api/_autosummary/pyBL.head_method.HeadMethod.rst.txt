@@ -1,0 +1,37 @@
+pyBL.head\_method.HeadMethod
+============================
+
+.. currentmodule:: pyBL.head_method
+
+.. autoclass:: HeadMethod
+   :members:
+   :show-inheritance:
+   :inherited-members:
+
+   
+   
+   
+      ~HeadMethod.D
+      ~HeadMethod.H_d
+      ~HeadMethod.H_k
+      ~HeadMethod.U_e
+      ~HeadMethod.V_e
+      ~HeadMethod.__init__
+      ~HeadMethod.d2U_edx2
+      ~HeadMethod.dU_edx
+      ~HeadMethod.delta_d
+      ~HeadMethod.delta_k
+      ~HeadMethod.delta_m
+      ~HeadMethod.nu
+      ~HeadMethod.set_H_d_critical
+      ~HeadMethod.set_initial_condition
+      ~HeadMethod.set_initial_parameters
+      ~HeadMethod.set_velocity
+      ~HeadMethod.solve
+      ~HeadMethod.tau_w
+   
+   
+
+   
+   
+   

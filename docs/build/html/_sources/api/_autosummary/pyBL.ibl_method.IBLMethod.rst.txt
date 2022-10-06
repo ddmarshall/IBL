@@ -1,0 +1,35 @@
+pyBL.ibl\_method.IBLMethod
+==========================
+
+.. currentmodule:: pyBL.ibl_method
+
+.. autoclass:: IBLMethod
+   :members:
+   :show-inheritance:
+   :inherited-members:
+
+   
+   
+   
+      ~IBLMethod.D
+      ~IBLMethod.H_d
+      ~IBLMethod.H_k
+      ~IBLMethod.U_e
+      ~IBLMethod.V_e
+      ~IBLMethod.__init__
+      ~IBLMethod.d2U_edx2
+      ~IBLMethod.dU_edx
+      ~IBLMethod.delta_d
+      ~IBLMethod.delta_k
+      ~IBLMethod.delta_m
+      ~IBLMethod.nu
+      ~IBLMethod.set_initial_condition
+      ~IBLMethod.set_velocity
+      ~IBLMethod.solve
+      ~IBLMethod.tau_w
+   
+   
+
+   
+   
+   
