@@ -16,7 +16,7 @@
     <script src="../../_static/doctools.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="pyBL.ibl_base" href="pyBL.ibl_base.html" />
+    <link rel="next" title="pyBL.ibl_method" href="pyBL.ibl_method.html" />
     <link rel="prev" title="pyBL.head_method" href="pyBL.head_method.html" />
    
   <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
@@ -38,8 +38,8 @@
 <h1>pyBL.head_method.HeadMethod<a class="headerlink" href="#pybl-head-method-headmethod" title="Permalink to this heading">¶</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="pyBL.head_method.HeadMethod">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">HeadMethod</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">U_e</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dU_edx</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">d2U_edx2</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">H_d_crit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2.4</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pyBL/head_method.html#HeadMethod"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyBL.head_method.HeadMethod" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="pyBL.ibl_base.IBLBase.html#pyBL.ibl_base.IBLBase" title="pyBL.ibl_base.IBLBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">IBLBase</span></code></a></p>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">HeadMethod</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nu</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">U_e</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dU_edx</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">d2U_edx2</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">H_d_crit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2.4</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pyBL/head_method.html#HeadMethod"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyBL.head_method.HeadMethod" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="pyBL.ibl_method.IBLMethod.html#pyBL.ibl_method.IBLMethod" title="pyBL.ibl_method.IBLMethod"><code class="xref py py-class docutils literal notranslate"><span class="pre">IBLMethod</span></code></a></p>
 <p>Models a turbulent bondary layer using Head’s Method (1958).</p>
 <p>Solves the system of ODEs from Head’s method when provided the edge
 velocity profile and other configuration information.</p>
@@ -82,16 +82,19 @@ velocity profile and other configuration information.</p>
 <tr class="row-even"><td><p><a class="reference internal" href="#pyBL.head_method.HeadMethod.set_H_d_critical" title="pyBL.head_method.HeadMethod.set_H_d_critical"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_H_d_critical</span></code></a>(H_d_crit)</p></td>
 <td><p>Set the critical displacement shape factor for separation.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#pyBL.head_method.HeadMethod.set_solution_parameters" title="pyBL.head_method.HeadMethod.set_solution_parameters"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_solution_parameters</span></code></a>(x0, x_end, delta_m0, ...)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pyBL.head_method.HeadMethod.set_initial_condition" title="pyBL.head_method.HeadMethod.set_initial_condition"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_initial_condition</span></code></a>(ic)</p></td>
+<td><p>Set the initial conditions for solver.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pyBL.head_method.HeadMethod.set_initial_parameters" title="pyBL.head_method.HeadMethod.set_initial_parameters"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_initial_parameters</span></code></a>(delta_m0, H_d0)</p></td>
 <td><p>Set the parameters needed for the solver to propagate.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#pyBL.head_method.HeadMethod.set_velocity" title="pyBL.head_method.HeadMethod.set_velocity"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_velocity</span></code></a>(U_e[, dU_edx, d2U_edx2])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pyBL.head_method.HeadMethod.set_velocity" title="pyBL.head_method.HeadMethod.set_velocity"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_velocity</span></code></a>(U_e[, dU_edx, d2U_edx2])</p></td>
 <td><p>Set the edge velocity relations.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#pyBL.head_method.HeadMethod.solve" title="pyBL.head_method.HeadMethod.solve"><code class="xref py py-obj docutils literal notranslate"><span class="pre">solve</span></code></a>([term_event])</p></td>
-<td><p>Solve the ODEs associated with Head's method.</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#pyBL.head_method.HeadMethod.solve" title="pyBL.head_method.HeadMethod.solve"><code class="xref py py-obj docutils literal notranslate"><span class="pre">solve</span></code></a>(x0, x_end[, term_event])</p></td>
+<td><p>Solve the ODE associated with Thwaites' method.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#pyBL.head_method.HeadMethod.tau_w" title="pyBL.head_method.HeadMethod.tau_w"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tau_w</span></code></a>(x, rho)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pyBL.head_method.HeadMethod.tau_w" title="pyBL.head_method.HeadMethod.tau_w"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tau_w</span></code></a>(x, rho)</p></td>
 <td><p>Calculate the wall shear stress.</p></td>
 </tr>
 </tbody>
@@ -318,7 +321,7 @@ velocity profile and other configuration information.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pyBL.head_method.HeadMethod.nu">
-<span class="sig-name descname"><span class="pre">nu</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pyBL/head_method.html#HeadMethod.nu"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyBL.head_method.HeadMethod.nu" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">nu</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyBL.head_method.HeadMethod.nu" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return kinematic viscosity used for the solution.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -341,7 +344,7 @@ displacement shape factor to indicate separation has occurred.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><dl class="simple">
-<dt><strong>H_d_crit</strong><span class="classifier">float</span></dt><dd><p>New value for the .displacement shape factor to be used to indicate
+<dt><strong>H_d_crit</strong><span class="classifier">float</span></dt><dd><p>New value for the displacement shape factor to be used to indicate
 that the boundary layer has separated.</p>
 </dd>
 </dl>
@@ -350,21 +353,29 @@ that the boundary layer has separated.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="pyBL.head_method.HeadMethod.set_solution_parameters">
-<span class="sig-name descname"><span class="pre">set_solution_parameters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x_end</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">delta_m0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">H_d0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nu</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pyBL/head_method.html#HeadMethod.set_solution_parameters"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyBL.head_method.HeadMethod.set_solution_parameters" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="pyBL.head_method.HeadMethod.set_initial_condition">
+<span class="sig-name descname"><span class="pre">set_initial_condition</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ic</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pyBL.initial_condition.InitialCondition.html#pyBL.initial_condition.InitialCondition" title="pyBL.initial_condition.InitialCondition"><span class="pre">InitialCondition</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pyBL.head_method.HeadMethod.set_initial_condition" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the initial conditions for solver.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>ic</strong><span class="classifier">InitialCondition</span></dt><dd><p>Desired initial condition.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyBL.head_method.HeadMethod.set_initial_parameters">
+<span class="sig-name descname"><span class="pre">set_initial_parameters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">delta_m0</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">H_d0</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../../_modules/pyBL/head_method.html#HeadMethod.set_initial_parameters"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyBL.head_method.HeadMethod.set_initial_parameters" title="Permalink to this definition">¶</a></dt>
 <dd><p>Set the parameters needed for the solver to propagate.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><dl class="simple">
-<dt><strong>x0: float</strong></dt><dd><p>Location to start integration.</p>
-</dd>
-<dt><strong>x_end: float</strong></dt><dd><p>Location to end integration.</p>
-</dd>
 <dt><strong>delta_m0: float</strong></dt><dd><p>Momentum thickness at start location.</p>
 </dd>
 <dt><strong>H_d0: float</strong></dt><dd><p>Displacement shape factor at start location.</p>
-</dd>
-<dt><strong>nu: float</strong></dt><dd><p>Kinematic viscosity.</p>
 </dd>
 </dl>
 </dd>
@@ -407,12 +418,21 @@ be used in analysis. The default is <cite>None</cite>.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pyBL.head_method.HeadMethod.solve">
-<span class="sig-name descname"><span class="pre">solve</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">term_event</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pyBL/head_method.html#HeadMethod.solve"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyBL.head_method.HeadMethod.solve" title="Permalink to this definition">¶</a></dt>
-<dd><p>Solve the ODEs associated with Head’s method.</p>
+<span class="sig-name descname"><span class="pre">solve</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x0</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x_end</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">term_event</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="pyBL.ibl_method.IBLResult.html#pyBL.ibl_method.IBLResult" title="pyBL.ibl_method.IBLResult"><span class="pre">IBLResult</span></a></span></span><a class="headerlink" href="#pyBL.head_method.HeadMethod.solve" title="Permalink to this definition">¶</a></dt>
+<dd><p>Solve the ODE associated with Thwaites’ method.</p>
+<p>This actually solves the following differential equation</p>
+<div class="math">
+<p><img src="../../_images/math/81d4aa23bc6054cf0a594a44f5612281d4cdd8fa.svg" alt="\frac{d}{dx}\left(\frac{\delta_m^2}{\nu}\right)=\frac{F}{U_e}"/></p>
+</div><p>where <img class="math" src="../../_images/math/554c67f29d2a5a152bb7848d418ebd4ade9d0f10.svg" alt="F"/> is either the linear approximation or the actual term
+from Thwaites’ original paper.</p>
 <dl class="field-list">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><dl>
-<dt><strong>term_event</strong><span class="classifier">List based on <code class="xref py py-class docutils literal notranslate"><span class="pre">IBLTermEventBase</span></code>, optional</span></dt><dd><p>User events that can terminate the integration process before the
+<dt><strong>x0: float</strong></dt><dd><p>Location to start integration.</p>
+</dd>
+<dt><strong>x_end: float</strong></dt><dd><p>Location to end integration.</p>
+</dd>
+<dt><strong>term_event</strong><span class="classifier">List based on <code class="xref py py-class docutils literal notranslate"><span class="pre">IBLTermEvent</span></code>, optional</span></dt><dd><p>User events that can terminate the integration process before the
 end location of the integration is reached. The default is <cite>None</cite>.</p>
 </dd>
 </dl>
@@ -420,6 +440,12 @@ end location of the integration is reached. The default is <cite>None</cite>.</p
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><dl class="simple">
 <dt><code class="xref py py-class docutils literal notranslate"><span class="pre">IBLResult</span></code></dt><dd><p>Information associated with the integration process.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt>TypeError</dt><dd><p>When solution parameters have not been set.</p>
 </dd>
 </dl>
 </dd>
@@ -490,7 +516,7 @@ end location of the integration is reached. The default is <cite>None</cite>.</p
   <li><a href="pyBL.html">pyBL</a><ul>
   <li><a href="pyBL.head_method.html">pyBL.head_method</a><ul>
       <li>Previous: <a href="pyBL.head_method.html" title="previous chapter">pyBL.head_method</a></li>
-      <li>Next: <a href="pyBL.ibl_base.html" title="next chapter">pyBL.ibl_base</a></li>
+      <li>Next: <a href="pyBL.ibl_method.html" title="next chapter">pyBL.ibl_method</a></li>
   </ul></li>
   </ul></li>
   </ul></li>

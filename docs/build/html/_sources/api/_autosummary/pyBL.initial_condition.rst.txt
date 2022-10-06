@@ -1,7 +1,7 @@
-pyBL.thwaites\_method
-=====================
+pyBL.initial\_condition
+=======================
 
-.. automodule:: pyBL.thwaites_method
+.. automodule:: pyBL.initial_condition
 
    
    
@@ -20,9 +20,9 @@ pyBL.thwaites\_method
       :template: custom-class-template.rst
       :nosignatures:
    
-      ThwaitesMethod
-      ThwaitesMethodLinear
-      ThwaitesMethodNonlinear
+      FalknerSkanStagnationCondition
+      InitialCondition
+      ManualCondition
    
    
 

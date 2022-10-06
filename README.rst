@@ -25,9 +25,7 @@ For example:
     delta_m0 = ...
 
     tm = ThwaitesMethodNonlinear(U_e=U_e)
-    tm.set_solution_parameters(x0=s[0], x_end=s[-1], delta_m0=delta_m0,
-                               nu=nu_inf)
-    rtn = tm.solve()
+    rtn = tm.solve(x0=s[0], x_end=s[-1])
     if not rtn.success:
         print("Could not get solution for Thwaites method: " + rtn.message)
     else
@@ -52,9 +50,7 @@ Otherwise, the interface is the same as for Thwaites' method:
     H_d0 = ...
 
     hm = ThwaitesMethodNonlinear(U_e=U_e)
-    hm.set_solution_parameters(x0=s[0], x_end=s[-1], delta_m0=delta_m0,
-                               H_d0=H_d0, nu=nu_inf)
-    rtn = hm.solve()
+    rtn = hm.solve(x0=s[0], x_end=s[-1])
     if not rtn.success:
         print("Could not get solution for Thwaites method: " + rtn.message)
     else

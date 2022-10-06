@@ -25,28 +25,25 @@ def compare_case1200():
     rho = 1.2
 
     hm_reg = HeadMethod(nu=so68.nu, U_e=[x, U_e])
-    hm_reg.set_solution_parameters(x0=so68.x()[0], x_end=so68.x()[-1],
-                                   delta_m0=so68.delta_m()[0],
-                                   H_d0=so68.H_d()[0])
-    rtn = hm_reg.solve()
+    hm_reg.set_initial_parameters(delta_m0=so68.delta_m()[0],
+                                  H_d0=so68.H_d()[0])
+    rtn = hm_reg.solve(x0=so68.x()[0], x_end=so68.x()[-1])
     if not rtn.success:
         print("Could not get solution for Head method: " + rtn.message)
         return
 
     hm_sm = HeadMethod(nu=so68.nu, U_e=[x_sm, U_e_sm])
-    hm_sm.set_solution_parameters(x0=so68.x()[0], x_end=so68.x()[-1],
-                                  delta_m0=so68.delta_m()[0],
-                                  H_d0=so68.H_d()[0])
-    rtn = hm_sm.solve()
+    hm_sm.set_initial_parameters(delta_m0=so68.delta_m()[0],
+                                 H_d0=so68.H_d()[0])
+    rtn = hm_sm.solve(x0=so68.x()[0], x_end=so68.x()[-1])
     if not rtn.success:
         print("Could not get solution for Head method: " + rtn.message)
         return
 
     hm_sm2 = HeadMethod(nu=so68.nu, U_e=U_e[0], dU_edx=[x, dU_edx])
-    hm_sm2.set_solution_parameters(x0=so68.x()[0], x_end=so68.x()[-1],
-                                   delta_m0=so68.delta_m()[0],
-                                   H_d0=so68.H_d()[0])
-    rtn = hm_sm2.solve()
+    hm_sm2.set_initial_parameters(delta_m0=so68.delta_m()[0],
+                                  H_d0=so68.H_d()[0])
+    rtn = hm_sm2.solve(x0=so68.x()[0], x_end=so68.x()[-1])
     if not rtn.success:
         print("Could not get solution for Head method: " + rtn.message)
         return

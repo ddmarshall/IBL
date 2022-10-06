@@ -1,0 +1,25 @@
+pyBL.ibl\_method.InitialCondition
+=================================
+
+.. currentmodule:: pyBL.ibl_method
+
+.. autoclass:: InitialCondition
+   :members:
+   :show-inheritance:
+   :inherited-members:
+
+   
+   
+   
+      ~InitialCondition.H_d
+      ~InitialCondition.H_k
+      ~InitialCondition.__init__
+      ~InitialCondition.delta_d
+      ~InitialCondition.delta_k
+      ~InitialCondition.delta_m
+   
+   
+
+   
+   
+   

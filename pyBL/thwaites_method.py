@@ -12,12 +12,15 @@ assumption and provides slightly better results in all cases tested.
 """
 
 from abc import abstractmethod
+from typing import Tuple
 import numpy as np
+import numpy.typing as np_type
 from scipy.interpolate import CubicSpline
 from scipy.misc import derivative as fd
 
 from pyBL.ibl_method import IBLMethod
 from pyBL.ibl_method import IBLTermEvent
+from pyBL.initial_condition import ManualCondition
 
 
 class ThwaitesMethod(IBLMethod):
@@ -37,38 +40,32 @@ class ThwaitesMethod(IBLMethod):
     """
 
     # Attributes
-    #    _delta_m0: Momentum thickness at start location
-    #    _nu: Kinematic viscosity
     #    _model: Collection of functions for S, H, and H'
     def __init__(self, nu: float = 1.0, U_e=None, dU_edx=None, d2U_edx2=None,
                  data_fits="Spline"):
         super().__init__(nu, U_e, dU_edx, d2U_edx2)
-        self.set_data_fits(data_fits)
-        self._delta_m0 = None
 
-    def set_solution_parameters(self, x0, x_end, delta_m0):
+        self.set_data_fits(data_fits)
+
+    def set_initial_parameters(self, delta_m0: float) -> None:
         """
-        Set the parameters needed for the solver to propagate.
+        Set the initial conditions for the solver.
 
         Parameters
         ----------
-        x0: float
-            Location to start integration.
-        x_end: float
-            Location to end integration.
         delta_m0: float
             Momentum thickness at start location.
 
         Raises
         ------
         ValueError
-            When negative viscosity provided, or invalid initial conditions
+            When negative invalid initial conditions
         """
         if delta_m0 < 0:
             raise ValueError("Initial momentum thickness must be positive")
 
-        self._delta_m0 = delta_m0
-        self._set_x_range(x0, x_end)
+        ic = ManualCondition(0.0, delta_m0, 0)
+        self.set_initial_condition(ic)
 
     def set_data_fits(self, data_fits):
         """
@@ -148,31 +145,6 @@ class ThwaitesMethod(IBLMethod):
 
         self._set_kill_event(_ThwaitesSeparationEvent(self._calc_lambda,
                                                       self._model.S))
-
-    def solve(self, term_event=None):
-        r"""
-        Solve the ODE associated with Thwaites' method.
-
-        This actually solves the following differential equation
-
-        .. math:: \frac{d}{dx}\left(\frac{\delta_m^2}{\nu}\right)=\frac{F}{U_e}
-
-        where :math:`F` is either the linear approximation or the actual term
-        from Thwaites' original paper.
-
-        Parameters
-        ----------
-        term_event : List based on :class:`IBLTermEvent`, optional
-            User events that can terminate the integration process before the
-            end location of the integration is reached. The default is `None`.
-
-        Returns
-        -------
-        :class:`IBLResult`
-            Information associated with the integration process.
-        """
-        return self._solve_impl(self._delta_m0**2/self._nu,
-                                term_event=term_event)
 
     def V_e(self, x):
         """
@@ -318,6 +290,19 @@ class ThwaitesMethod(IBLMethod):
         """
         return np.zeros_like(x)
 
+    def _ode_setup(self) -> Tuple[np_type.NDArray, float, float]:
+        """
+        Set the solver specific parameters.
+
+        Returns
+        -------
+        3-Tuple
+            IBL initialization array
+            Relative tolerance for ODE solver
+            Absolute tolerance for ODE solver
+        """
+        return np.array([self._ic.delta_m()**2/self._nu]), 1e-8, 1e-11
+
     def _ode_impl(self, x, F):
         """
         Right-hand-side of the ODE representing Thwaites method.
@@ -336,6 +321,24 @@ class ThwaitesMethod(IBLMethod):
             The right-hand side of the ODE at the given state.
         """
         return self._calc_F(x, F)/(1e-3 + self.U_e(x))
+
+    def _calc_lambda(self, x, delta_m2_on_nu):
+        r"""
+        Calculate the :math:`\lambda` term needed in Thwaites' method.
+
+        Parameters
+        ----------
+        x : array-like
+            Streamwise location of current step.
+        delta_m2_on_nu : array-like
+            Dependent variable in the ODE solver.
+
+        Returns
+        -------
+        array-like same shape as `x`
+            The :math:`\lambda` parameter that corresponds to the given state.
+        """
+        return delta_m2_on_nu*self.dU_edx(x)
 
     @abstractmethod
     def _calc_F(self, x, delta_m2_on_nu):
@@ -359,24 +362,6 @@ class ThwaitesMethod(IBLMethod):
         array-like same shape as `x`
             The calculated value of :math:`F`
         """
-
-    def _calc_lambda(self, x, delta_m2_on_nu):
-        r"""
-        Calculate the :math:`\lambda` term needed in Thwaites' method.
-
-        Parameters
-        ----------
-        x : array-like
-            Streamwise location of current step.
-        delta_m2_on_nu : array-like
-            Dependent variable in the ODE solver.
-
-        Returns
-        -------
-        array-like same shape as `x`
-            The :math:`\lambda` parameter that corresponds to the given state.
-        """
-        return delta_m2_on_nu*self.dU_edx(x)
 
 
 class ThwaitesMethodLinear(ThwaitesMethod):

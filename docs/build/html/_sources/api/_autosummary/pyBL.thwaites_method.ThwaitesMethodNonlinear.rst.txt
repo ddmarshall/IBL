@@ -24,7 +24,8 @@ pyBL.thwaites\_method.ThwaitesMethodNonlinear
       ~ThwaitesMethodNonlinear.delta_m
       ~ThwaitesMethodNonlinear.nu
       ~ThwaitesMethodNonlinear.set_data_fits
-      ~ThwaitesMethodNonlinear.set_solution_parameters
+      ~ThwaitesMethodNonlinear.set_initial_condition
+      ~ThwaitesMethodNonlinear.set_initial_parameters
       ~ThwaitesMethodNonlinear.set_velocity
       ~ThwaitesMethodNonlinear.solve
       ~ThwaitesMethodNonlinear.tau_w

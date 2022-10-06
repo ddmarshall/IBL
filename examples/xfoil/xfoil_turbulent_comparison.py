@@ -19,7 +19,7 @@ from pyBL.xfoil_reader import XFoilReader
 
 
 def compare_xfoil_turbulent():
-    """Compare the Thwaites' method results to XFoil results."""
+    """Compare the Head's method results to XFoil results."""
     # Read in XFoil data
     inv_filename = "../data/xfoil_0012_inviscid_dump.txt"
     visc_filename = "../data/xfoil_0012_turbulent_dump.txt"
@@ -44,13 +44,11 @@ def compare_xfoil_turbulent():
     s = np.linspace(s_ref[0], s_ref[-1], 101)
 
     # Setup Head methods
-    ivisc = 0
-    delta_m0 = xfoil_visc.delta_m_upper()[ivisc]
-    H_d0 = xfoil_visc.H_d_upper()[ivisc]
+    delta_m0 = xfoil_visc.delta_m_upper()[0]
+    H_d0 = xfoil_visc.H_d_upper()[0]
     hm_visc = HeadMethod(nu=nu_inf, U_e=[s_ref, U_e_visc])
-    hm_visc.set_solution_parameters(x0=s[ivisc], x_end=s[-1],
-                                    delta_m0=delta_m0, H_d0=H_d0)
-    rtn = hm_visc.solve()
+    hm_visc.set_initial_parameters(delta_m0=delta_m0, H_d0=H_d0)
+    rtn = hm_visc.solve(x0=s[0], x_end=s[-1])
     if not rtn.success:
         print("Could not get solution for Head method: " + rtn.message)
         return
@@ -58,13 +56,11 @@ def compare_xfoil_turbulent():
     if rtn.status == -1:
         s_sep_visc = rtn.x_end
 
-    iinv = 0
     hm_inv = HeadMethod(nu=nu_inf, U_e=[s_ref, U_e_inv])
-    delta_m0 = np.sqrt(0.075*nu_inf/hm_inv.dU_edx(s[iinv]))  # Moran's method
+    delta_m0 = np.sqrt(0.075*nu_inf/hm_inv.dU_edx(s[0]))  # Moran's method
     H_d0 = 2.35  # Thwaites method predicts this value for stagnation flow
-    hm_inv.set_solution_parameters(x0=s[iinv], x_end=s[-1],
-                                   delta_m0=delta_m0, H_d0=H_d0)
-    rtn = hm_inv.solve()
+    hm_inv.set_initial_parameters(delta_m0=delta_m0, H_d0=H_d0)
+    rtn = hm_inv.solve(x0=s[0], x_end=s[-1])
     if not rtn.success:
         print("Could not get solution for Head method: " + rtn.message)
         return
@@ -90,7 +86,7 @@ def compare_xfoil_turbulent():
     H_d_ref_inv = H_d_ref[s_ref < s_sep_inv]
     c_f_ref_inv = c_f_ref[s_ref < s_sep_inv]
 
-    s_visc = np.linspace(s_ref[ivisc], min(s_ref[-1], s_sep_visc), 101)
+    s_visc = np.linspace(s_ref[0], min(s_ref[-1], s_sep_visc), 101)
     delta_d_visc = hm_visc.delta_d(s_visc)
     delta_m_visc = hm_visc.delta_m(s_visc)
     H_d_visc = hm_visc.H_d(s_visc)
@@ -99,7 +95,7 @@ def compare_xfoil_turbulent():
     dU_edx_visc = hm_visc.dU_edx(s_visc)
     d2U_edx2_visc = hm_visc.d2U_edx2(s_visc)
 
-    s_inv = np.linspace(s_ref[ivisc], min(s_ref[-1], s_sep_inv), 101)
+    s_inv = np.linspace(s_ref[0], min(s_ref[-1], s_sep_inv), 101)
     delta_d_inv = hm_inv.delta_d(s_inv)
     delta_m_inv = hm_inv.delta_m(s_inv)
     H_d_inv = hm_inv.H_d(s_inv)
@@ -129,9 +125,9 @@ def compare_xfoil_turbulent():
     ref_color = "black"
     ref_label = "XFoil"
     thwaites_visc_color = "red"
-    thwaites_visc_label = "Thwaites (Viscous $U_e$)"
+    thwaites_visc_label = "Head (Viscous $U_e$)"
     thwaites_inv_color = "blue"
-    thwaites_inv_label = "Thwaites (Inviscid $U_e$)"
+    thwaites_inv_label = "Head (Inviscid $U_e$)"
 
     # Displacement thickness in 0,:
     ax = axis_delta_d

@@ -24,7 +24,8 @@ pyBL.head\_method.HeadMethod
       ~HeadMethod.delta_m
       ~HeadMethod.nu
       ~HeadMethod.set_H_d_critical
-      ~HeadMethod.set_solution_parameters
+      ~HeadMethod.set_initial_condition
+      ~HeadMethod.set_initial_parameters
       ~HeadMethod.set_velocity
       ~HeadMethod.solve
       ~HeadMethod.tau_w

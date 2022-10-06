@@ -7,11 +7,14 @@ This module contains the necessary classes and data for the implementation of
 Head's two equation integral boundary layer method.
 """
 
+from typing import Tuple
 import numpy as np
+import numpy.typing as np_type
 
 from pyBL.ibl_method import IBLMethod
 from pyBL.ibl_method import IBLTermEvent
 from pyBL.skin_friction import c_f_LudwiegTillman as c_f_fun
+from pyBL.initial_condition import ManualCondition
 
 
 class HeadMethod(IBLMethod):
@@ -46,21 +49,17 @@ class HeadMethod(IBLMethod):
         Parameters
         ----------
         H_d_crit : float
-            New value for the .displacement shape factor to be used to indicate
+            New value for the displacement shape factor to be used to indicate
             that the boundary layer has separated.
         """
         self._set_kill_event(_HeadSeparationEvent(H_d_crit))
 
-    def set_solution_parameters(self, x0, x_end, delta_m0, H_d0):
+    def set_initial_parameters(self, delta_m0: float, H_d0: float) -> None:
         """
         Set the parameters needed for the solver to propagate.
 
         Parameters
         ----------
-        x0: float
-            Location to start integration.
-        x_end: float
-            Location to end integration.
         delta_m0: float
             Momentum thickness at start location.
         H_d0: float
@@ -79,26 +78,8 @@ class HeadMethod(IBLMethod):
             raise ValueError("Initial displacement shape factor must be "
                              "greater than one")
 
-        self._H_d0 = H_d0
-        self._set_x_range(x0, x_end)
-
-    def solve(self, term_event=None):
-        """
-        Solve the ODEs associated with Head's method.
-
-        Parameters
-        ----------
-        term_event : List based on :class:`IBLTermEvent`, optional
-            User events that can terminate the integration process before the
-            end location of the integration is reached. The default is `None`.
-
-        Returns
-        -------
-        :class:`IBLResult`
-            Information associated with the integration process.
-        """
-        return self._solve_impl([self._delta_m0, self._H_d0],
-                                term_event=term_event)
+        ic = ManualCondition(H_d0*delta_m0, delta_m0, 0)
+        self.set_initial_condition(ic)
 
     def V_e(self, x):
         """
@@ -242,6 +223,19 @@ class HeadMethod(IBLMethod):
             Desired dissipation integral at the specified locations.
         """
         return np.zeros_like(x)
+
+    def _ode_setup(self) -> Tuple[np_type.NDArray, float, float]:
+        """
+        Set the solver specific parameters.
+
+        Returns
+        -------
+        3-Tuple
+            IBL initialization array
+            Relative tolerance for ODE solver
+            Absolute tolerance for ODE solver
+        """
+        return np.array([self._ic.delta_m(), self._ic.H_d()]), 1e-8, 1e-11
 
     def _ode_impl(self, x, F):
         """

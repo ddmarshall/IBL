@@ -41,14 +41,17 @@
 <span class="sd">Head&#39;s two equation integral boundary layer method.</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Tuple</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">numpy.typing</span> <span class="k">as</span> <span class="nn">np_type</span>
 
-<span class="kn">from</span> <span class="nn">pyBL.ibl_base</span> <span class="kn">import</span> <span class="n">IBLBase</span>
-<span class="kn">from</span> <span class="nn">pyBL.ibl_base</span> <span class="kn">import</span> <span class="n">IBLTermEventBase</span>
+<span class="kn">from</span> <span class="nn">pyBL.ibl_method</span> <span class="kn">import</span> <span class="n">IBLMethod</span>
+<span class="kn">from</span> <span class="nn">pyBL.ibl_method</span> <span class="kn">import</span> <span class="n">IBLTermEvent</span>
 <span class="kn">from</span> <span class="nn">pyBL.skin_friction</span> <span class="kn">import</span> <span class="n">c_f_LudwiegTillman</span> <span class="k">as</span> <span class="n">c_f_fun</span>
+<span class="kn">from</span> <span class="nn">pyBL.initial_condition</span> <span class="kn">import</span> <span class="n">ManualCondition</span>
 
 
-<div class="viewcode-block" id="HeadMethod"><a class="viewcode-back" href="../../api/_autosummary/pyBL.head_method.HeadMethod.html#pyBL.head_method.HeadMethod">[docs]</a><span class="k">class</span> <span class="nc">HeadMethod</span><span class="p">(</span><span class="n">IBLBase</span><span class="p">):</span>
+<div class="viewcode-block" id="HeadMethod"><a class="viewcode-back" href="../../api/_autosummary/pyBL.head_method.HeadMethod.html#pyBL.head_method.HeadMethod">[docs]</a><span class="k">class</span> <span class="nc">HeadMethod</span><span class="p">(</span><span class="n">IBLMethod</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Models a turbulent bondary layer using Head&#39;s Method (1958).</span>
 
@@ -60,11 +63,10 @@
     <span class="c1"># ----------</span>
     <span class="c1">#    _delta_m0: Momentum thickness at start location</span>
     <span class="c1">#    _H_d0: Displacement shape factor at start location</span>
-    <span class="c1">#    _nu: Kinematic viscosity</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">U_e</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dU_edx</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">d2U_edx2</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">H_d_crit</span><span class="o">=</span><span class="mf">2.4</span><span class="p">):</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">U_e</span><span class="p">,</span> <span class="n">dU_edx</span><span class="p">,</span> <span class="n">d2U_edx2</span><span class="p">)</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nu</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span> <span class="n">U_e</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dU_edx</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">d2U_edx2</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">H_d_crit</span><span class="o">=</span><span class="mf">2.4</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">nu</span><span class="p">,</span> <span class="n">U_e</span><span class="p">,</span> <span class="n">dU_edx</span><span class="p">,</span> <span class="n">d2U_edx2</span><span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">_nu</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_H_d0</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_delta_m0</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">set_H_d_critical</span><span class="p">(</span><span class="n">H_d_crit</span><span class="p">)</span>
@@ -81,38 +83,27 @@
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        H_d_crit : float</span>
-<span class="sd">            New value for the .displacement shape factor to be used to indicate</span>
+<span class="sd">            New value for the displacement shape factor to be used to indicate</span>
 <span class="sd">            that the boundary layer has separated.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_set_kill_event</span><span class="p">(</span><span class="n">_HeadSeparationEvent</span><span class="p">(</span><span class="n">H_d_crit</span><span class="p">))</span></div>
 
-<div class="viewcode-block" id="HeadMethod.set_solution_parameters"><a class="viewcode-back" href="../../api/_autosummary/pyBL.head_method.HeadMethod.html#pyBL.head_method.HeadMethod.set_solution_parameters">[docs]</a>    <span class="k">def</span> <span class="nf">set_solution_parameters</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x0</span><span class="p">,</span> <span class="n">x_end</span><span class="p">,</span> <span class="n">delta_m0</span><span class="p">,</span> <span class="n">H_d0</span><span class="p">,</span> <span class="n">nu</span><span class="p">):</span>
+<div class="viewcode-block" id="HeadMethod.set_initial_parameters"><a class="viewcode-back" href="../../api/_autosummary/pyBL.head_method.HeadMethod.html#pyBL.head_method.HeadMethod.set_initial_parameters">[docs]</a>    <span class="k">def</span> <span class="nf">set_initial_parameters</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">delta_m0</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">H_d0</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Set the parameters needed for the solver to propagate.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        x0: float</span>
-<span class="sd">            Location to start integration.</span>
-<span class="sd">        x_end: float</span>
-<span class="sd">            Location to end integration.</span>
 <span class="sd">        delta_m0: float</span>
 <span class="sd">            Momentum thickness at start location.</span>
 <span class="sd">        H_d0: float</span>
 <span class="sd">            Displacement shape factor at start location.</span>
-<span class="sd">        nu: float</span>
-<span class="sd">            Kinematic viscosity.</span>
 
 <span class="sd">        Raises</span>
 <span class="sd">        ------</span>
 <span class="sd">        ValueError</span>
 <span class="sd">            When negative viscosity provided, or invalid initial conditions</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="c1"># pylint: disable=too-many-arguments</span>
-        <span class="k">if</span> <span class="n">nu</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Viscosity must be positive&quot;</span><span class="p">)</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">_nu</span> <span class="o">=</span> <span class="n">nu</span>
         <span class="k">if</span> <span class="n">delta_m0</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Initial momentum thickness must be positive&quot;</span><span class="p">)</span>
 
@@ -121,37 +112,8 @@
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Initial displacement shape factor must be &quot;</span>
                              <span class="s2">&quot;greater than one&quot;</span><span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">_H_d0</span> <span class="o">=</span> <span class="n">H_d0</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_set_x_range</span><span class="p">(</span><span class="n">x0</span><span class="p">,</span> <span class="n">x_end</span><span class="p">)</span></div>
-
-<div class="viewcode-block" id="HeadMethod.nu"><a class="viewcode-back" href="../../api/_autosummary/pyBL.head_method.HeadMethod.html#pyBL.head_method.HeadMethod.nu">[docs]</a>    <span class="k">def</span> <span class="nf">nu</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Return kinematic viscosity used for the solution.</span>
-
-<span class="sd">        Returns</span>
-<span class="sd">        -------</span>
-<span class="sd">        float</span>
-<span class="sd">            Kinematic viscosity.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_nu</span></div>
-
-<div class="viewcode-block" id="HeadMethod.solve"><a class="viewcode-back" href="../../api/_autosummary/pyBL.head_method.HeadMethod.html#pyBL.head_method.HeadMethod.solve">[docs]</a>    <span class="k">def</span> <span class="nf">solve</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">term_event</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Solve the ODEs associated with Head&#39;s method.</span>
-
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        term_event : List based on :class:`IBLTermEventBase`, optional</span>
-<span class="sd">            User events that can terminate the integration process before the</span>
-<span class="sd">            end location of the integration is reached. The default is `None`.</span>
-
-<span class="sd">        Returns</span>
-<span class="sd">        -------</span>
-<span class="sd">        :class:`IBLResult`</span>
-<span class="sd">            Information associated with the integration process.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_solve_impl</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">_delta_m0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_H_d0</span><span class="p">],</span>
-                                <span class="n">term_event</span><span class="o">=</span><span class="n">term_event</span><span class="p">)</span></div>
+        <span class="n">ic</span> <span class="o">=</span> <span class="n">ManualCondition</span><span class="p">(</span><span class="n">H_d0</span><span class="o">*</span><span class="n">delta_m0</span><span class="p">,</span> <span class="n">delta_m0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_initial_condition</span><span class="p">(</span><span class="n">ic</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="HeadMethod.V_e"><a class="viewcode-back" href="../../api/_autosummary/pyBL.head_method.HeadMethod.html#pyBL.head_method.HeadMethod.V_e">[docs]</a>    <span class="k">def</span> <span class="nf">V_e</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -294,8 +256,20 @@
 <span class="sd">        array-like same shape as `x`</span>
 <span class="sd">            Desired dissipation integral at the specified locations.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="c1"># To Do: This needs to be implemented</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;This method needs to be implemented.&quot;</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">x</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">_ode_setup</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">np_type</span><span class="o">.</span><span class="n">NDArray</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Set the solver specific parameters.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        3-Tuple</span>
+<span class="sd">            IBL initialization array</span>
+<span class="sd">            Relative tolerance for ODE solver</span>
+<span class="sd">            Absolute tolerance for ODE solver</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">_ic</span><span class="o">.</span><span class="n">delta_m</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ic</span><span class="o">.</span><span class="n">H_d</span><span class="p">()]),</span> <span class="mf">1e-8</span><span class="p">,</span> <span class="mf">1e-11</span>
 
     <span class="k">def</span> <span class="nf">_ode_impl</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">F</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -415,7 +389,7 @@
         <span class="k">return</span> <span class="mf">0.0306</span><span class="o">/</span><span class="p">(</span><span class="n">H1_local</span><span class="o">-</span><span class="mi">3</span><span class="p">)</span><span class="o">**</span><span class="mf">0.6169</span></div>
 
 
-<span class="k">class</span> <span class="nc">_HeadSeparationEvent</span><span class="p">(</span><span class="n">IBLTermEventBase</span><span class="p">):</span>
+<span class="k">class</span> <span class="nc">_HeadSeparationEvent</span><span class="p">(</span><span class="n">IBLTermEvent</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Detects separation and will terminate integration when it occurs.</span>
 

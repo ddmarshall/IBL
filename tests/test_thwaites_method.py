@@ -317,9 +317,8 @@ class TestLinearThwaites(unittest.TestCase):
                                   d2U_edx2=d2U_edx2_fun,
                                   data_fits="Spline")
         tm_ref = ThwaitesLinearAnalytic(U_ref, m, nu, tm._model.H, tm._model.S)
-        tm.set_solution_parameters(x0=x[0], x_end=x[-1],
-                                   delta_m0=tm_ref.delta_m(x[0]))
-        rtn = tm.solve()
+        tm.set_initial_parameters(delta_m0=tm_ref.delta_m(x[0]))
+        rtn = tm.solve(x0=x[0], x_end=x[-1])
         self.assertTrue(rtn.success)
         self.assertEqual(rtn.status, 0)
         self.assertEqual(rtn.message, "Completed")
@@ -338,9 +337,8 @@ class TestLinearThwaites(unittest.TestCase):
         tm = ThwaitesMethodLinear(nu=nu, U_e=U_e_fun, dU_edx=dU_edx_fun,
                                   d2U_edx2=d2U_edx2_fun, data_fits="White")
         tm_ref = ThwaitesLinearAnalytic(U_ref, m, nu, tm._model.H, tm._model.S)
-        tm.set_solution_parameters(x0=x[0], x_end=x[-1],
-                                   delta_m0=tm_ref.delta_m(x[0]))
-        rtn = tm.solve()
+        tm.set_initial_parameters(delta_m0=tm_ref.delta_m(x[0]))
+        rtn = tm.solve(x0=x[0], x_end=x[-1])
         self.assertTrue(rtn.success)
         self.assertEqual(rtn.status, 0)
         self.assertEqual(rtn.message, "Completed")
@@ -360,9 +358,8 @@ class TestLinearThwaites(unittest.TestCase):
                                   d2U_edx2=d2U_edx2_fun,
                                   data_fits="Cebeci-Bradshaw")
         tm_ref = ThwaitesLinearAnalytic(U_ref, m, nu, tm._model.H, tm._model.S)
-        tm.set_solution_parameters(x0=x[0], x_end=x[-1],
-                                   delta_m0=tm_ref.delta_m(x[0]))
-        rtn = tm.solve()
+        tm.set_initial_parameters(delta_m0=tm_ref.delta_m(x[0]))
+        rtn = tm.solve(x0=x[0], x_end=x[-1])
         self.assertTrue(rtn.success)
         self.assertEqual(rtn.status, 0)
         self.assertEqual(rtn.message, "Completed")
@@ -393,9 +390,8 @@ class TestLinearThwaites(unittest.TestCase):
                                   d2U_edx2=d2U_edx2_fun,
                                   data_fits=(S_fun, H_fun, Hp_fun))
         tm_ref = ThwaitesLinearAnalytic(U_ref, m, nu, H_fun, S_fun)
-        tm.set_solution_parameters(x0=x[0], x_end=x[-1],
-                                   delta_m0=tm_ref.delta_m(x[0]))
-        rtn = tm.solve()
+        tm.set_initial_parameters(delta_m0=tm_ref.delta_m(x[0]))
+        rtn = tm.solve(x0=x[0], x_end=x[-1])
         self.assertTrue(rtn.success)
         self.assertEqual(rtn.status, 0)
         self.assertEqual(rtn.message, "Completed")
@@ -415,9 +411,8 @@ class TestLinearThwaites(unittest.TestCase):
                                   d2U_edx2=d2U_edx2_fun,
                                   data_fits=(S_fun, H_fun))
         tm_ref = ThwaitesLinearAnalytic(U_ref, m, nu, H_fun, S_fun)
-        tm.set_solution_parameters(x0=x[0], x_end=x[-1],
-                                   delta_m0=tm_ref.delta_m(x[0]))
-        rtn = tm.solve()
+        tm.set_initial_parameters(delta_m0=tm_ref.delta_m(x[0]))
+        rtn = tm.solve(x0=x[0], x_end=x[-1])
         self.assertTrue(rtn.success)
         self.assertEqual(rtn.status, 0)
         self.assertEqual(rtn.message, "Completed")
@@ -465,9 +460,8 @@ class TestLinearThwaites(unittest.TestCase):
                                   d2U_edx2=d2U_edx2_fun,
                                   data_fits="Spline")
         tm_ref = ThwaitesLinearAnalytic(U_ref, m, nu, tm._model.H, tm._model.S)
-        tm.set_solution_parameters(x0=x[0], x_end=x[-1],
-                                   delta_m0=tm_ref.delta_m(x[0]))
-        rtn = tm.solve()
+        tm.set_initial_parameters(delta_m0=tm_ref.delta_m(x[0]))
+        rtn = tm.solve(x0=x[0], x_end=x[-1])
         self.assertTrue(rtn.success)
         self.assertEqual(rtn.status, 0)
         self.assertEqual(rtn.message, "Completed")
@@ -487,9 +481,8 @@ class TestLinearThwaites(unittest.TestCase):
         tm = ThwaitesMethodLinear(nu=nu, U_e=U_e_fun, dU_edx=dU_edx_fun,
                                   d2U_edx2=d2U_edx2_fun, data_fits="White")
         tm_ref = ThwaitesLinearAnalytic(U_ref, m, nu, tm._model.H, tm._model.S)
-        tm.set_solution_parameters(x0=x[0], x_end=x[-1],
-                                   delta_m0=tm_ref.delta_m(x[0]))
-        rtn = tm.solve()
+        tm.set_initial_parameters(delta_m0=tm_ref.delta_m(x[0]))
+        rtn = tm.solve(x0=x[0], x_end=x[-1])
         self.assertTrue(rtn.success)
         self.assertEqual(rtn.status, 0)
         self.assertEqual(rtn.message, "Completed")
@@ -510,9 +503,8 @@ class TestLinearThwaites(unittest.TestCase):
                                   d2U_edx2=d2U_edx2_fun,
                                   data_fits="Cebeci-Bradshaw")
         tm_ref = ThwaitesLinearAnalytic(U_ref, m, nu, tm._model.H, tm._model.S)
-        tm.set_solution_parameters(x0=x[0], x_end=x[-1],
-                                   delta_m0=tm_ref.delta_m(x[0]))
-        rtn = tm.solve()
+        tm.set_initial_parameters(delta_m0=tm_ref.delta_m(x[0]))
+        rtn = tm.solve(x0=x[0], x_end=x[-1])
         self.assertTrue(rtn.success)
         self.assertEqual(rtn.status, 0)
         self.assertEqual(rtn.message, "Completed")
@@ -556,9 +548,8 @@ class TestLinearThwaites(unittest.TestCase):
                                   d2U_edx2=d2U_edx2_fun,
                                   data_fits="Spline")
         tm_ref = ThwaitesLinearAnalytic(U_ref, m, nu, tm._model.H, tm._model.S)
-        tm.set_solution_parameters(x0=x[0], x_end=x[-1],
-                                   delta_m0=tm_ref.delta_m(x[0]))
-        rtn = tm.solve()
+        tm.set_initial_parameters(delta_m0=tm_ref.delta_m(x[0]))
+        rtn = tm.solve(x0=x[0], x_end=x[-1])
         self.assertTrue(rtn.success)
         self.assertEqual(rtn.status, 0)
         self.assertEqual(rtn.message, "Completed")
@@ -578,9 +569,8 @@ class TestLinearThwaites(unittest.TestCase):
         tm = ThwaitesMethodLinear(nu=nu, U_e=U_e_fun, dU_edx=dU_edx_fun,
                                   d2U_edx2=d2U_edx2_fun, data_fits="White")
         tm_ref = ThwaitesLinearAnalytic(U_ref, m, nu, tm._model.H, tm._model.S)
-        tm.set_solution_parameters(x0=x[0], x_end=x[-1],
-                                   delta_m0=tm_ref.delta_m(x[0]))
-        rtn = tm.solve()
+        tm.set_initial_parameters(delta_m0=tm_ref.delta_m(x[0]))
+        rtn = tm.solve(x0=x[0], x_end=x[-1])
         self.assertTrue(rtn.success)
         self.assertEqual(rtn.status, 0)
         self.assertEqual(rtn.message, "Completed")
@@ -601,9 +591,8 @@ class TestLinearThwaites(unittest.TestCase):
                                   d2U_edx2=d2U_edx2_fun,
                                   data_fits="Cebeci-Bradshaw")
         tm_ref = ThwaitesLinearAnalytic(U_ref, m, nu, tm._model.H, tm._model.S)
-        tm.set_solution_parameters(x0=x[0], x_end=x[-1],
-                                   delta_m0=tm_ref.delta_m(x[0]))
-        rtn = tm.solve()
+        tm.set_initial_parameters(delta_m0=tm_ref.delta_m(x[0]))
+        rtn = tm.solve(x0=x[0], x_end=x[-1])
         self.assertTrue(rtn.success)
         self.assertEqual(rtn.status, 0)
         self.assertEqual(rtn.message, "Completed")
@@ -647,9 +636,8 @@ class TestLinearThwaites(unittest.TestCase):
                                   d2U_edx2=d2U_edx2_fun,
                                   data_fits="Spline")
         tm_ref = ThwaitesLinearAnalytic(U_ref, m, nu, tm._model.H, tm._model.S)
-        tm.set_solution_parameters(x0=x[0], x_end=x[-1],
-                                   delta_m0=tm_ref.delta_m(x[0]))
-        rtn = tm.solve()
+        tm.set_initial_parameters(delta_m0=tm_ref.delta_m(x[0]))
+        rtn = tm.solve(x0=x[0], x_end=x[-1])
         self.assertTrue(rtn.success)
         self.assertEqual(rtn.status, 0)
         self.assertEqual(rtn.message, "Completed")
@@ -667,9 +655,8 @@ class TestLinearThwaites(unittest.TestCase):
         tm = ThwaitesMethodLinear(nu=nu, U_e=U_e_fun, dU_edx=dU_edx_fun,
                                   d2U_edx2=d2U_edx2_fun, data_fits="White")
         tm_ref = ThwaitesLinearAnalytic(U_ref, m, nu, tm._model.H, tm._model.S)
-        tm.set_solution_parameters(x0=x[0], x_end=x[-1],
-                                   delta_m0=tm_ref.delta_m(x[0]))
-        rtn = tm.solve()
+        tm.set_initial_parameters(delta_m0=tm_ref.delta_m(x[0]))
+        rtn = tm.solve(x0=x[0], x_end=x[-1])
         self.assertTrue(rtn.success)
         self.assertEqual(rtn.status, 0)
         self.assertEqual(rtn.message, "Completed")
@@ -688,9 +675,8 @@ class TestLinearThwaites(unittest.TestCase):
                                   d2U_edx2=d2U_edx2_fun,
                                   data_fits="Cebeci-Bradshaw")
         tm_ref = ThwaitesLinearAnalytic(U_ref, m, nu, tm._model.H, tm._model.S)
-        tm.set_solution_parameters(x0=x[0], x_end=x[-1],
-                                   delta_m0=tm_ref.delta_m(x[0]))
-        rtn = tm.solve()
+        tm.set_initial_parameters(delta_m0=tm_ref.delta_m(x[0]))
+        rtn = tm.solve(x0=x[0], x_end=x[-1])
         self.assertTrue(rtn.success)
         self.assertEqual(rtn.status, 0)
         self.assertEqual(rtn.message, "Completed")
@@ -737,9 +723,8 @@ class TestNonlinearThwaites(unittest.TestCase):
                                      d2U_edx2=d2U_edx2_fun,
                                      data_fits="Spline")
         tm_ref = ThwaitesLinearAnalytic(U_ref, m, nu, tm._model.H, tm._model.S)
-        tm.set_solution_parameters(x0=x[0], x_end=x[-1],
-                                   delta_m0=tm_ref.delta_m(x[0]))
-        rtn = tm.solve()
+        tm.set_initial_parameters(delta_m0=tm_ref.delta_m(x[0]))
+        rtn = tm.solve(x0=x[0], x_end=x[-1])
         self.assertTrue(rtn.success)
         self.assertEqual(rtn.status, 0)
         self.assertEqual(rtn.message, "Completed")
@@ -760,9 +745,8 @@ class TestNonlinearThwaites(unittest.TestCase):
                                      d2U_edx2=d2U_edx2_fun,
                                      data_fits="White")
         tm_ref = ThwaitesLinearAnalytic(U_ref, m, nu, tm._model.H, tm._model.S)
-        tm.set_solution_parameters(x0=x[0], x_end=x[-1],
-                                   delta_m0=tm_ref.delta_m(x[0]))
-        rtn = tm.solve()
+        tm.set_initial_parameters(delta_m0=tm_ref.delta_m(x[0]))
+        rtn = tm.solve(x0=x[0], x_end=x[-1])
         self.assertTrue(rtn.success)
         self.assertEqual(rtn.status, 0)
         self.assertEqual(rtn.message, "Completed")
@@ -783,9 +767,8 @@ class TestNonlinearThwaites(unittest.TestCase):
                                      d2U_edx2=d2U_edx2_fun,
                                      data_fits="Cebeci-Bradshaw")
         tm_ref = ThwaitesLinearAnalytic(U_ref, m, nu, tm._model.H, tm._model.S)
-        tm.set_solution_parameters(x0=x[0], x_end=x[-1],
-                                   delta_m0=tm_ref.delta_m(x[0]))
-        rtn = tm.solve()
+        tm.set_initial_parameters(delta_m0=tm_ref.delta_m(x[0]))
+        rtn = tm.solve(x0=x[0], x_end=x[-1])
         self.assertTrue(rtn.success)
         self.assertEqual(rtn.status, 0)
         self.assertEqual(rtn.message, "Completed")
@@ -817,9 +800,8 @@ class TestNonlinearThwaites(unittest.TestCase):
                                      d2U_edx2=d2U_edx2_fun,
                                      data_fits=(S_fun, H_fun, Hp_fun))
         tm_ref = ThwaitesLinearAnalytic(U_ref, m, nu, H_fun, S_fun)
-        tm.set_solution_parameters(x0=x[0], x_end=x[-1],
-                                   delta_m0=tm_ref.delta_m(x[0]))
-        rtn = tm.solve()
+        tm.set_initial_parameters(delta_m0=tm_ref.delta_m(x[0]))
+        rtn = tm.solve(x0=x[0], x_end=x[-1])
         self.assertTrue(rtn.success)
         self.assertEqual(rtn.status, 0)
         self.assertEqual(rtn.message, "Completed")
@@ -840,9 +822,8 @@ class TestNonlinearThwaites(unittest.TestCase):
                                      d2U_edx2=d2U_edx2_fun,
                                      data_fits=(S_fun, H_fun))
         tm_ref = ThwaitesLinearAnalytic(U_ref, m, nu, H_fun, S_fun)
-        tm.set_solution_parameters(x0=x[0], x_end=x[-1],
-                                   delta_m0=tm_ref.delta_m(x[0]))
-        rtn = tm.solve()
+        tm.set_initial_parameters(delta_m0=tm_ref.delta_m(x[0]))
+        rtn = tm.solve(x0=x[0], x_end=x[-1])
         self.assertTrue(rtn.success)
         self.assertEqual(rtn.status, 0)
         self.assertEqual(rtn.message, "Completed")
@@ -892,9 +873,8 @@ class TestNonlinearThwaites(unittest.TestCase):
                                      d2U_edx2=d2U_edx2_fun,
                                      data_fits="Spline")
         tm_ref = ThwaitesLinearAnalytic(U_ref, m, nu, tm._model.H, tm._model.S)
-        tm.set_solution_parameters(x0=x[0], x_end=x[-1],
-                                   delta_m0=tm_ref.delta_m(x[0]))
-        rtn = tm.solve()
+        tm.set_initial_parameters(delta_m0=tm_ref.delta_m(x[0]))
+        rtn = tm.solve(x0=x[0], x_end=x[-1])
         self.assertTrue(rtn.success)
         self.assertEqual(rtn.status, 0)
         self.assertEqual(rtn.message, "Completed")
@@ -916,9 +896,8 @@ class TestNonlinearThwaites(unittest.TestCase):
                                      d2U_edx2=d2U_edx2_fun,
                                      data_fits="White")
         tm_ref = ThwaitesLinearAnalytic(U_ref, m, nu, tm._model.H, tm._model.S)
-        tm.set_solution_parameters(x0=x[0], x_end=x[-1],
-                                   delta_m0=tm_ref.delta_m(x[0]))
-        rtn = tm.solve()
+        tm.set_initial_parameters(delta_m0=tm_ref.delta_m(x[0]))
+        rtn = tm.solve(x0=x[0], x_end=x[-1])
         self.assertTrue(rtn.success)
         self.assertEqual(rtn.status, 0)
         self.assertEqual(rtn.message, "Completed")
@@ -940,9 +919,8 @@ class TestNonlinearThwaites(unittest.TestCase):
                                      d2U_edx2=d2U_edx2_fun,
                                      data_fits="Cebeci-Bradshaw")
         tm_ref = ThwaitesLinearAnalytic(U_ref, m, nu, tm._model.H, tm._model.S)
-        tm.set_solution_parameters(x0=x[0], x_end=x[-1],
-                                   delta_m0=tm_ref.delta_m(x[0]))
-        rtn = tm.solve()
+        tm.set_initial_parameters(delta_m0=tm_ref.delta_m(x[0]))
+        rtn = tm.solve(x0=x[0], x_end=x[-1])
         self.assertTrue(rtn.success)
         self.assertEqual(rtn.status, 0)
         self.assertEqual(rtn.message, "Completed")
@@ -987,9 +965,8 @@ class TestNonlinearThwaites(unittest.TestCase):
                                      d2U_edx2=d2U_edx2_fun,
                                      data_fits="Spline")
         tm_ref = ThwaitesLinearAnalytic(U_ref, m, nu, tm._model.H, tm._model.S)
-        tm.set_solution_parameters(x0=x[0], x_end=x[-1],
-                                   delta_m0=tm_ref.delta_m(x[0]))
-        rtn = tm.solve()
+        tm.set_initial_parameters(delta_m0=tm_ref.delta_m(x[0]))
+        rtn = tm.solve(x0=x[0], x_end=x[-1])
         self.assertTrue(rtn.success)
         self.assertEqual(rtn.status, 0)
         self.assertEqual(rtn.message, "Completed")
@@ -1011,9 +988,8 @@ class TestNonlinearThwaites(unittest.TestCase):
                                      d2U_edx2=d2U_edx2_fun,
                                      data_fits="White")
         tm_ref = ThwaitesLinearAnalytic(U_ref, m, nu, tm._model.H, tm._model.S)
-        tm.set_solution_parameters(x0=x[0], x_end=x[-1],
-                                   delta_m0=tm_ref.delta_m(x[0]))
-        rtn = tm.solve()
+        tm.set_initial_parameters(delta_m0=tm_ref.delta_m(x[0]))
+        rtn = tm.solve(x0=x[0], x_end=x[-1])
         self.assertTrue(rtn.success)
         self.assertEqual(rtn.status, 0)
         self.assertEqual(rtn.message, "Completed")
@@ -1035,9 +1011,8 @@ class TestNonlinearThwaites(unittest.TestCase):
                                      d2U_edx2=d2U_edx2_fun,
                                      data_fits="Cebeci-Bradshaw")
         tm_ref = ThwaitesLinearAnalytic(U_ref, m, nu, tm._model.H, tm._model.S)
-        tm.set_solution_parameters(x0=x[0], x_end=x[-1],
-                                   delta_m0=tm_ref.delta_m(x[0]))
-        rtn = tm.solve()
+        tm.set_initial_parameters(delta_m0=tm_ref.delta_m(x[0]))
+        rtn = tm.solve(x0=x[0], x_end=x[-1])
         self.assertTrue(rtn.success)
         self.assertEqual(rtn.status, 0)
         self.assertEqual(rtn.message, "Completed")
@@ -1082,9 +1057,8 @@ class TestNonlinearThwaites(unittest.TestCase):
                                      d2U_edx2=d2U_edx2_fun,
                                      data_fits="Spline")
         tm_ref = ThwaitesLinearAnalytic(U_ref, m, nu, tm._model.H, tm._model.S)
-        tm.set_solution_parameters(x0=x[0], x_end=x[-1],
-                                   delta_m0=tm_ref.delta_m(x[0]))
-        rtn = tm.solve()
+        tm.set_initial_parameters(delta_m0=tm_ref.delta_m(x[0]))
+        rtn = tm.solve(x0=x[0], x_end=x[-1])
         self.assertTrue(rtn.success)
         self.assertEqual(rtn.status, 0)
         self.assertEqual(rtn.message, "Completed")
@@ -1106,9 +1080,8 @@ class TestNonlinearThwaites(unittest.TestCase):
                                      d2U_edx2=d2U_edx2_fun,
                                      data_fits="White")
         tm_ref = ThwaitesLinearAnalytic(U_ref, m, nu, tm._model.H, tm._model.S)
-        tm.set_solution_parameters(x0=x[0], x_end=x[-1],
-                                   delta_m0=tm_ref.delta_m(x[0]))
-        rtn = tm.solve()
+        tm.set_initial_parameters(delta_m0=tm_ref.delta_m(x[0]))
+        rtn = tm.solve(x0=x[0], x_end=x[-1])
         self.assertTrue(rtn.success)
         self.assertEqual(rtn.status, 0)
         self.assertEqual(rtn.message, "Completed")
@@ -1130,9 +1103,8 @@ class TestNonlinearThwaites(unittest.TestCase):
                                      d2U_edx2=d2U_edx2_fun,
                                      data_fits="Cebeci-Bradshaw")
         tm_ref = ThwaitesLinearAnalytic(U_ref, m, nu, tm._model.H, tm._model.S)
-        tm.set_solution_parameters(x0=x[0], x_end=x[-1],
-                                   delta_m0=tm_ref.delta_m(x[0]))
-        rtn = tm.solve()
+        tm.set_initial_parameters(delta_m0=tm_ref.delta_m(x[0]))
+        rtn = tm.solve(x0=x[0], x_end=x[-1])
         self.assertTrue(rtn.success)
         self.assertEqual(rtn.status, 0)
         self.assertEqual(rtn.message, "Completed")

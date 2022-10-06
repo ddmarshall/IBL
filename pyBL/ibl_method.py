@@ -15,13 +15,81 @@ All integral boundary layer method classes return an instance of
 """
 
 from abc import ABC, abstractmethod
+from typing import Tuple
 import numpy as np
+import numpy.typing as np_type
 from scipy.interpolate import PchipInterpolator
 from scipy.integrate import solve_ivp
 from scipy.misc import derivative as fd
 
 from pyBL.initial_condition import InitialCondition
 from pyBL.initial_condition import FalknerSkanStagnationCondition
+
+
+TERMINATION_MESSAGES = {0: "Completed",
+                        -1: "Separated",
+                        1: "Transition",
+                        -99: "Unknown Event"}
+
+
+class IBLResult:
+    """
+    Bunch object representing the results of the IBL integration.
+
+    The integrator within the :class:`IBLMethod` is `solve_ivp` from the
+    integrate package from SciPy. To provide as much information as possible
+    after the integration has completed this class is returned to provide
+    detailed information about the integration process. The most important
+    attributes are `success`, `status`, and `message`.
+
+    Attributes
+    ----------
+    x_end: float
+        x-location of end of integration.
+    F_end: np.array
+        State value(s) at end of integration.
+    status: int
+        Reason integration terminated:
+            **0** Reached final distance
+
+            **-1** Separation occured at x_end
+
+            **1** Transition occured at x_end
+
+            **Other values** Specified by implementations
+    message: string
+        Description of termination reason.
+    success: Boolean
+        True if solver successfully completed.
+    """
+
+    # pylint: disable=too-few-public-methods
+    def __init__(self, x_end=np.inf, F_end=np.inf, status=-99,
+                 message="Not Set", success=False):
+        # pylint: disable=too-many-arguments
+        self.x_end = x_end
+        self.F_end = F_end
+        self.status = status
+        self.message = message
+        self.success = success
+
+    def __str__(self):
+        """
+        Return a readable presentation of instance.
+
+        Returns
+        -------
+        string
+            Readable string representation of instance.
+        """
+        strout = f"{self.__class__.__name__}:\n"
+        strout += f"    x_end: {self.x_end}\n"
+        strout += f"    F_end: {self.F_end}\n"
+        strout += f"    status: {self.status}\n"
+        strout += f"    message: {self.message}\n"
+        strout += f"    success: {self.success}"
+
+        return strout
 
 
 class IBLMethod(ABC):
@@ -103,6 +171,7 @@ class IBLMethod(ABC):
     #     Function representing the streamwise second derivative of the edge
     #     velocity.
     # _nu: Kinematic viscosity
+    # _ic: Initial condition generator
     # _x_range: 2-tuple
     #     Start and end location for integration.
     # _kill_events: List of classes based on :class:`IBLTermEvent`
@@ -111,7 +180,8 @@ class IBLMethod(ABC):
     # _solution: vector of callables
     #     Piecewise polynomials representing the state variables from the ODE
     #     solution.
-    def __init__(self, nu: float, U_e=None, dU_edx=None, d2U_edx2=None):
+    def __init__(self, nu: float, U_e=None, dU_edx=None, d2U_edx2=None,
+                 ic=None):
         # set the velocity terms
         if U_e is None:
             if dU_edx is not None:
@@ -124,11 +194,16 @@ class IBLMethod(ABC):
         else:
             self.set_velocity(U_e, dU_edx, d2U_edx2)
 
-        # initialize other parameters
         # check viscosity
         if nu < 0:
             raise ValueError("Viscosity must be positive")
         self._nu = nu
+
+        # initialize other parameters
+        if ic is None:
+            self._ic = FalknerSkanStagnationCondition(0, nu)
+        else:
+            self.set_initial_condition(ic)
 
         self._x_range = None
         self._kill_events = None
@@ -144,6 +219,17 @@ class IBLMethod(ABC):
             Kinematic viscosity.
         """
         return self._nu
+
+    def set_initial_condition(self, ic: InitialCondition) -> None:
+        """
+        Set the initial conditions for solver.
+
+        Parameters
+        ----------
+        ic : InitialCondition
+            Desired initial condition.
+        """
+        self._ic = ic
 
     def set_velocity(self, U_e, dU_edx=None, d2U_edx2=None):
         """
@@ -170,6 +256,7 @@ class IBLMethod(ABC):
         """
         # pylint: disable=too-many-branches
         # pylint: disable=too-many-statements
+
         # check if U_e is callable
         if callable(U_e):
             self._U_e = U_e
@@ -253,35 +340,31 @@ class IBLMethod(ABC):
                 raise ValueError(f"Don't know how to use {U_e} to initialize "
                                  "velocity")
 
-    def _solve_impl(self, y0i, rtol=1e-8, atol=1e-11, term_event=None):
-        """
-        Solve the ODEs to determine the boundary layer properties.
+    def solve(self, x0: float, x_end: float, term_event=None) -> IBLResult:
+        r"""
+        Solve the ODE associated with Thwaites' method.
+
+        This actually solves the following differential equation
+
+        .. math:: \frac{d}{dx}\left(\frac{\delta_m^2}{\nu}\right)=\frac{F}{U_e}
+
+        where :math:`F` is either the linear approximation or the actual term
+        from Thwaites' original paper.
 
         Parameters
         ----------
-        y0i: scalar or array-like
-            Initial condition of the state vector for integration
-
-            The specific type will depend on the details of the differential
-            equations that the child class needs solved.
-        rtol: float, optional
-            Relative tolerance for integration scheme. The default is 1e-8.
-        atol: float, optional
-            Absolute tolerance for integration scheme. The default is 1e-11.
-        term_event: List based on :class:`IBLTermEvent`, optional
-            Additional termination events. The default is `None`.
-
-        Notes
-        -----
-        These events will be used in addition to any internal ones to determine
-        if/when the integration should terminate before the end location. These
-        should mostly be for transition to turbulent boundary layer or
-        separation.
+        x0: float
+            Location to start integration.
+        x_end: float
+            Location to end integration.
+        term_event : List based on :class:`IBLTermEvent`, optional
+            User events that can terminate the integration process before the
+            end location of the integration is reached. The default is `None`.
 
         Returns
         -------
-        Bunch object: :class:`IBLResult`
-            Information about the solution process and termination.
+        :class:`IBLResult`
+            Information associated with the integration process.
 
         Raises
         ------
@@ -289,14 +372,21 @@ class IBLMethod(ABC):
             When solution parameters have not been set.
         """
         # pylint: disable=too-many-branches
+
+        # setup the initial conditions
+        self._ic.nu = self._nu
+        self._ic.dU_edx = self.dU_edx(x0)
+        y0, rtol_set, atol_set = self._ode_setup()
+        if rtol_set is None:
+            rtol = 1e-5
+        else:
+            rtol = rtol_set
+        if atol_set is None:
+            atol = 1e-8
+        else:
+            atol = atol_set
+
         # setup the ODE solver
-        if self._x_range is None:
-            raise TypeError("Derived class needs to set the x-range")
-
-        y0 = np.asarray(y0i)
-        if y0.ndim == 0:
-            y0 = [y0i]
-
         kill_events = []
         if self._kill_events is not None:
             kill_events = kill_events + self._kill_events
@@ -310,13 +400,13 @@ class IBLMethod(ABC):
             else:
                 kill_events.append(term_event)
 
-        rtn = solve_ivp(fun=self._ode_impl, t_span=self._x_range, y0=y0,
+        rtn = solve_ivp(fun=self._ode_impl, t_span=[x0, x_end], y0=y0,
                         method="RK45", dense_output=True, events=kill_events,
                         rtol=rtol, atol=atol)
 
         # if completed gather info
         self._solution = None
-        x_end = self._x_range[0]
+        x_end = x0
         F_end = y0
         status = -99
         message = rtn.message
@@ -346,19 +436,6 @@ class IBLMethod(ABC):
             message = TERMINATION_MESSAGES.get(status)
         return IBLResult(x_end=x_end, F_end=F_end, status=status,
                          message=message, success=rtn.success)
-
-    def _set_x_range(self, x0, x1):
-        """
-        Set the start and end location for analysis.
-
-        Parameters
-        ----------
-        x0 : float
-            Starting location along surface for integration.
-        x1 : float
-            Ending location along surface for integration.
-        """
-        self._x_range = [x0, x1]
 
     def U_e(self, x):
         """
@@ -428,6 +505,33 @@ class IBLMethod(ABC):
         if self._d2U_edx2 is None:
             raise ValueError("d2U_edx2 was not set")
         return self._d2U_edx2(x)
+
+    def _add_kill_event(self, ke):
+        """
+        Add kill event to the ODE solver.
+
+        Parameters
+        ----------
+        ke: List of classes based on :class:`IBLTermEvent`
+            Way of child classes to automatically add kill events to the ODE
+            solver.
+        """
+        if self._kill_events is None:
+            self._set_kill_event(ke)
+        else:
+            self._kill_events.append(ke)
+
+    def _set_kill_event(self, ke):
+        """
+        Set kill events for the ODE solver.
+
+        Parameters
+        ----------
+        ke: List of classes based on :class:`IBLTermEvent`
+            Way of setting the kill events to the ODE solver and removing all
+            existing events.
+        """
+        self._kill_events = [ke]
 
     @abstractmethod
     def V_e(self, x):
@@ -561,32 +665,18 @@ class IBLMethod(ABC):
             Desired dissipation integral at the specified locations.
         """
 
-    def _add_kill_event(self, ke):
+    @abstractmethod
+    def _ode_setup(self) -> Tuple[np_type.NDArray, float, float]:
         """
-        Add kill event to the ODE solver.
+        Set the solver specific parameters.
 
-        Parameters
-        ----------
-        ke: List of classes based on :class:`IBLTermEvent`
-            Way of child classes to automatically add kill events to the ODE
-            solver.
+        Returns
+        -------
+        3-Tuple
+            IBL initialization array
+            Relative tolerance for ODE solver
+            Absolute tolerance for ODE solver
         """
-        if self._kill_events is None:
-            self._set_kill_event(ke)
-        else:
-            self._kill_events.append(ke)
-
-    def _set_kill_event(self, ke):
-        """
-        Set kill events for the ODE solver.
-
-        Parameters
-        ----------
-        ke: List of classes based on :class:`IBLTermEvent`
-            Way of setting the kill events to the ODE solver and removing all
-            existing events.
-        """
-        self._kill_events = [ke]
 
     @abstractmethod
     def _ode_impl(self, x, F):
@@ -606,72 +696,6 @@ class IBLMethod(ABC):
         array-like same shape as `F`
             The right-hand side of the ODE at the given state.
         """
-
-
-TERMINATION_MESSAGES = {0: "Completed",
-                        -1: "Separated",
-                        1: "Transition",
-                        -99: "Unknown Event"}
-
-
-class IBLResult:
-    """
-    Bunch object representing the results of the IBL integration.
-
-    The integrator within the :class:`IBLMethod` is `solve_ivp` from the
-    integrate package from SciPy. To provide as much information as possible
-    after the integration has completed this class is returned to provide
-    detailed information about the integration process. The most important
-    attributes are `success`, `status`, and `message`.
-
-    Attributes
-    ----------
-    x_end: float
-        x-location of end of integration.
-    F_end: np.array
-        State value(s) at end of integration.
-    status: int
-        Reason integration terminated:
-            **0** Reached final distance
-
-            **-1** Separation occured at x_end
-
-            **1** Transition occured at x_end
-
-            **Other values** Specified by implementations
-    message: string
-        Description of termination reason.
-    success: Boolean
-        True if solver successfully completed.
-    """
-
-    # pylint: disable=too-few-public-methods
-    def __init__(self, x_end=np.inf, F_end=np.inf, status=-99,
-                 message="Not Set", success=False):
-        # pylint: disable=too-many-arguments
-        self.x_end = x_end
-        self.F_end = F_end
-        self.status = status
-        self.message = message
-        self.success = success
-
-    def __str__(self):
-        """
-        Return a readable presentation of instance.
-
-        Returns
-        -------
-        string
-            Readable string representation of instance.
-        """
-        strout = f"{self.__class__.__name__}:\n"
-        strout += f"    x_end: {self.x_end}\n"
-        strout += f"    F_end: {self.F_end}\n"
-        strout += f"    status: {self.status}\n"
-        strout += f"    message: {self.message}\n"
-        strout += f"    success: {self.success}"
-
-        return strout
 
 
 class IBLTermEvent(ABC):

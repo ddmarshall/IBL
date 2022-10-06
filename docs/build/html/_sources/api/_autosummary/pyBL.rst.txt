@@ -32,7 +32,8 @@
    pyBL.dense_output_ppoly
    pyBL.falkner_skan
    pyBL.head_method
-   pyBL.ibl_base
+   pyBL.ibl_method
+   pyBL.initial_condition
    pyBL.pyBL
    pyBL.skin_friction
    pyBL.stanford_olympics

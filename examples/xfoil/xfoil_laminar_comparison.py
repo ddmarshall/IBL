@@ -44,13 +44,9 @@ def compare_xfoil_laminar():
     s = np.linspace(s_ref[0], s_ref[-1], 101)
 
     # Setup Thwaites methods
-    ivisc = 0
-    delta_m0 = xfoil_visc.delta_m_upper()[ivisc]
     tm_visc = ThwaitesMethodNonlinear(nu=nu_inf, U_e=[s_ref, U_e_visc],
                                       data_fits="Spline")
-    tm_visc.set_solution_parameters(x0=s[ivisc], x_end=s[-1],
-                                    delta_m0=delta_m0)
-    rtn = tm_visc.solve()
+    rtn = tm_visc.solve(x0=s[0], x_end=s[-1])
     if not rtn.success:
         print("Could not get solution for Thwaites method: " + rtn.message)
         return
@@ -58,14 +54,9 @@ def compare_xfoil_laminar():
     if rtn.status == -1:
         s_sep_visc = rtn.x_end
 
-    iinv = 0
     tm_inv = ThwaitesMethodNonlinear(nu=nu_inf, U_e=[s_ref, U_e_inv],
                                      data_fits="Spline")
-    delta_m0 = np.sqrt(0.075*nu_inf/tm_inv.dU_edx(s[iinv]))  # Moran's method
-
-    tm_inv.set_solution_parameters(x0=s[iinv], x_end=s[-1],
-                                   delta_m0=delta_m0)
-    rtn = tm_inv.solve()
+    rtn = tm_inv.solve(x0=s[0], x_end=s[-1])
     if not rtn.success:
         print("Could not get solution for Thwaites method: " + rtn.message)
         return
@@ -91,7 +82,7 @@ def compare_xfoil_laminar():
     H_d_ref_inv = H_d_ref[s_ref < s_sep_inv]
     c_f_ref_inv = c_f_ref[s_ref < s_sep_inv]
 
-    s_visc = np.linspace(s_ref[ivisc], min(s_ref[-1], s_sep_visc), 101)
+    s_visc = np.linspace(s_ref[0], min(s_ref[-1], s_sep_visc), 101)
     delta_d_visc = tm_visc.delta_d(s_visc)
     delta_m_visc = tm_visc.delta_m(s_visc)
     H_d_visc = tm_visc.H_d(s_visc)
@@ -100,7 +91,7 @@ def compare_xfoil_laminar():
     dU_edx_visc = tm_visc.dU_edx(s_visc)
     d2U_edx2_visc = tm_visc.d2U_edx2(s_visc)
 
-    s_inv = np.linspace(s_ref[ivisc], min(s_ref[-1], s_sep_inv), 101)
+    s_inv = np.linspace(s_ref[0], min(s_ref[-1], s_sep_inv), 101)
     delta_d_inv = tm_inv.delta_d(s_inv)
     delta_m_inv = tm_inv.delta_m(s_inv)
     H_d_inv = tm_inv.H_d(s_inv)

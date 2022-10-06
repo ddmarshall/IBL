@@ -102,12 +102,11 @@ class FalknerSkanStagnationCondition(InitialCondition):
     ----------
     dU_edx: float
         Rate of change of the inviscid edge velocity at stagnation point.
-        Default value is 1.0.
     nu: float
-        Kinematic viscosity. Default value is 1.0.
+        Kinematic viscosity.
     """
 
-    def __init__(self, dU_edx: float = 1.0, nu: float = 1.0):
+    def __init__(self, dU_edx: float, nu: float):
         super().__init__(dU_edx, nu)
         self._fpp0 = 1.23259
         self._H_d = 2.2162

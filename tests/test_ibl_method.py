@@ -8,8 +8,10 @@ Created on Tue Aug  9 17:26:49 2022
 
 
 import unittest
+from typing import Tuple
 import numpy as np
 import numpy.testing as npt
+import numpy.typing as np_type
 from scipy.interpolate import PchipInterpolator
 
 from pyBL.ibl_method import IBLMethod
@@ -79,16 +81,25 @@ class IBLMethodTest(IBLMethod):
 
     def __init__(self, U_e=None, dU_edx=None, d2U_edx2=None, x_kill=None):
         # setup base class
-        super().__init__(U_e=U_e, dU_edx=dU_edx, d2U_edx2=d2U_edx2)
+        super().__init__(nu=1, U_e=U_e, dU_edx=dU_edx, d2U_edx2=d2U_edx2)
+        self.y0 = np.array([0])
 
         # set up this class
         if x_kill is not None:
             self._set_kill_event(_IBLMethodTestTermEvent(x_kill))
 
-    def solve(self, x_start, x_end, y0, term_event=None):
-        """Solve the ODE."""
-        self._set_x_range(x_start, x_end)
-        return self._solve_impl(y0, term_event=term_event)
+    def _ode_setup(self) -> Tuple[np_type.NDArray, float, float]:
+        """
+        Set the solver specific parameters.
+
+        Returns
+        -------
+        3-Tuple
+            IBL initialization array
+            Relative tolerance for ODE solver
+            Absolute tolerance for ODE solver
+        """
+        return self.y0, None, None
 
     def _ode_impl(self, x, F):
         """
@@ -358,8 +369,11 @@ class TestEdgeVelocity(unittest.TestCase):
 
     def test_terminating_solver(self):
         """Test early termination of solver."""
+        U_inf = 10
+        m = 1
         x_kill = 3
-        iblb = IBLMethodTest(x_kill=x_kill)
+        iblb = IBLMethodTest(U_e=lambda x: self.U_e_fun(x, U_inf, m),
+                             x_kill=x_kill)
 
         # go through the entire xrange
         #
@@ -371,8 +385,8 @@ class TestEdgeVelocity(unittest.TestCase):
 
         x_start = 1
         x_end = 2
-        y_start = ref_fun(x_start)
-        rtn = iblb.solve(x_start, x_end, y_start)
+        iblb.y0 = ref_fun(x_start)
+        rtn = iblb.solve(x_start, x_end)
         self.assertTrue(rtn.success)
         self.assertEqual(rtn.status, 0)
         self.assertEqual(rtn.message, "Completed")
@@ -382,8 +396,8 @@ class TestEdgeVelocity(unittest.TestCase):
         # stop because solver terminated early
         x_start = 1
         x_end = x_kill + 1
-        y_start = ref_fun(x_start)
-        rtn = iblb.solve(x_start, x_end, y_start)
+        iblb.y0 = ref_fun(x_start)
+        rtn = iblb.solve(x_start, x_end)
         self.assertTrue(rtn.success)
         self.assertEqual(rtn.status, -1)
         self.assertEqual(rtn.message, "Separated")
@@ -393,10 +407,10 @@ class TestEdgeVelocity(unittest.TestCase):
         # stop because external trigger
         x_start = 1
         x_end = x_kill + 1
-        y_start = ref_fun(x_start)
-        y_trans = 0.5*(y_start+ref_fun(x_kill))[0]
+        iblb.y0 = ref_fun(x_start)
+        y_trans = 0.5*(iblb.y0+ref_fun(x_kill))[0]
         x_trans = np.sqrt(2*(y_trans-1))
-        rtn = iblb.solve(x_start, x_end, y_start,
+        rtn = iblb.solve(x_start, x_end,
                          term_event=IBLMethodTestTransition(y_trans))
         self.assertTrue(rtn.success)
         self.assertEqual(rtn.status, 1)

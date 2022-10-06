@@ -51,18 +51,16 @@ def compare_stagnation_solution():
     fs = FalknerSkanSolution(U_ref=U_inf, m=m, nu=nu_inf)
     tml = ThwaitesMethodLinear(nu=nu_inf, U_e=U_e_fun, dU_edx=dU_edx_fun,
                                d2U_edx2=d2U_edx2_fun, data_fits="Spline")
-    tml.set_solution_parameters(x0=x[0], x_end=x[-1],
-                                delta_m0=fs.delta_m(x[0]))
-    rtn = tml.solve()
+    tml.set_initial_parameters(delta_m0=fs.delta_m(x[0]))
+    rtn = tml.solve(x0=x[0], x_end=x[-1])
     if not rtn.success:
         print("Could not get solution for Thwaites method: " + rtn.message)
         return
 
     tmn = ThwaitesMethodNonlinear(nu=nu_inf, U_e=U_e_fun, dU_edx=dU_edx_fun,
                                   d2U_edx2=d2U_edx2_fun, data_fits="Spline")
-    tmn.set_solution_parameters(x0=x[0], x_end=x[-1],
-                                delta_m0=fs.delta_m(x[0]))
-    rtn = tmn.solve()
+    tmn.set_initial_parameters(delta_m0=fs.delta_m(x[0]))
+    rtn = tmn.solve(x0=x[0], x_end=x[-1])
     if not rtn.success:
         print("Could not get solution for Thwaites method: " + rtn.message)
         return
