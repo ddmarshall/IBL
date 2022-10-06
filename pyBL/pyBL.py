@@ -20,7 +20,7 @@
 #         self._x_sep = None
 #         self._buffer = buffer
 
-#     separated = property(fget = lambda self:self.x_sep!=None) #returns true if x_sep not none    
+#     separated = property(fget = lambda self:self.x_sep!=None) #returns true if x_sep not none
 #     @property
 #     def x_sep(self):
 #         if self._x_sep == None and np.any(self._criteria(self._iblsim._data.x_vec[self._iblsim._data.x_vec>self._buffer])>0):
@@ -32,17 +32,17 @@
 #             #best_guess = np.argmax(self._criteria(self._iblsim._data.x_vec)>0)
 #             # best_guess = self._iblsim._data.x_vec[crits>0][0] #furthest upstream occurrence of criteria met
 #             best_guess = buffered_x[crits>0][0] #furthest upstream occurrence of criteria met
-            
+
 #             find_x_sep = root(lambda xpt:float(self._criteria(np.array([xpt]))),x0=best_guess)
 #             self._x_sep = find_x_sep.x
 #         return self._x_sep
 
 # class TransitionModel:
 #     def __init__(self,iblsim,criteria,h0calc,buffer):
-#         #iblsim: instance of a laminar ibl sim 
+#         #iblsim: instance of a laminar ibl sim
 #         #criteria: f(iblsim), returns difference from criteria at last point. Positive if transitioned.
 #         self._iblsim = iblsim
-        
+
 #         self._criteria = lambda x=None: criteria(self.iblsim,x) #x is none by default
 #         self._h0calc = h0calc
 #         #self._transitioned = False
@@ -57,11 +57,11 @@
 #         if self._x_tr == None and np.any(self._criteria(self._iblsim._data.x_vec[self._iblsim._data.x_vec>self._buffer])>0):
 #             self._transitioned = True
 #             buffered_x = self._iblsim._data.x_vec[self._iblsim._data.x_vec>self._buffer]
-            
+
 #             # crits = self._criteria(self._iblsim._data.x_vec)
 #             crits = self._criteria(buffered_x)
 #             #best_guess = np.argmax(self._criteria(self._iblsim._data.x_vec)>0)
-#             # best_guess = self._iblsim._data.x_vec[crits<0][-1] #last occurrence of 
+#             # best_guess = self._iblsim._data.x_vec[crits<0][-1] #last occurrence of
 #             best_guess = buffered_x[crits>0][0] #furthest upstream occurrence of criteria met
 #             find_x_tr = root(lambda xpt:float(self._criteria(np.array([xpt]))),x0=best_guess)
 #             self._x_tr = find_x_tr.x
@@ -74,7 +74,7 @@
 #             self._h0 = self._h0calc(self.iblsim,self.x_tr)
 #             #self._h0= 1.4754/np.log(self.iblsim.rtheta(self.x_tr)) +.9698
 #         return self._h0
-        
+
 
 # class Michel(TransitionModel):
 #     def __init__(self,iblsim,buffer=0):
