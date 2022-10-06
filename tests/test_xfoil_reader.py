@@ -9,6 +9,7 @@ Created on Tue Aug 30 06:21:08 2022
 # pylint: disable=too-many-statements
 
 
+from os.path import abspath, dirname
 import unittest
 import numpy.testing as npt
 
@@ -26,7 +27,8 @@ class TestXFoilDumpReader(unittest.TestCase):
         c = 1  # (m)
 
         # Read a dump file from inviscid solution
-        inv_filename = "data/xfoil_inviscid_dump.txt"
+        directory = dirname(abspath(__file__))
+        inv_filename = directory + "/data/xfoil_inviscid_dump.txt"
         xfoil_inv = XFoilReader(inv_filename, airfoil=airfoil_name,
                                 alpha=alpha, c=c)
 
@@ -175,7 +177,8 @@ class TestXFoilDumpReader(unittest.TestCase):
         n_trans = 9
 
         # Read a dump file from viscous solution
-        visc_filename = "data/xfoil_viscous_dump.txt"
+        directory = dirname(abspath(__file__))
+        visc_filename = directory + "/data/xfoil_viscous_dump.txt"
         xfoil_visc = XFoilReader(visc_filename, airfoil=airfoil_name,
                                  alpha=alpha, c=c, Re=Re,
                                  x_trans=x_trans, n_trans=n_trans)
