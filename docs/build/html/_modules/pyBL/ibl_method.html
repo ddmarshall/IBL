@@ -228,16 +228,16 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">set_velocity</span><span class="p">(</span><span class="n">U_e</span><span class="p">,</span> <span class="n">dU_edx</span><span class="p">,</span> <span class="n">d2U_edx2</span><span class="p">)</span>
 
-        <span class="c1"># initialize other parameters</span>
-        <span class="k">if</span> <span class="n">ic</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_ic</span> <span class="o">=</span> <span class="n">FalknerSkanStagnationCondition</span><span class="p">()</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">set_initial_condition</span><span class="p">(</span><span class="n">ic</span><span class="p">)</span>
-
         <span class="c1"># check viscosity</span>
         <span class="k">if</span> <span class="n">nu</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Viscosity must be positive&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_nu</span> <span class="o">=</span> <span class="n">nu</span>
+
+        <span class="c1"># initialize other parameters</span>
+        <span class="k">if</span> <span class="n">ic</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_ic</span> <span class="o">=</span> <span class="n">FalknerSkanStagnationCondition</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">nu</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">set_initial_condition</span><span class="p">(</span><span class="n">ic</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_x_range</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_kill_events</span> <span class="o">=</span> <span class="kc">None</span>
@@ -410,7 +410,15 @@
         <span class="c1"># setup the initial conditions</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_ic</span><span class="o">.</span><span class="n">nu</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_nu</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_ic</span><span class="o">.</span><span class="n">dU_edx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dU_edx</span><span class="p">(</span><span class="n">x0</span><span class="p">)</span>
-        <span class="n">y0</span><span class="p">,</span> <span class="n">rtol</span><span class="p">,</span> <span class="n">atol</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ode_setup</span><span class="p">()</span>
+        <span class="n">y0</span><span class="p">,</span> <span class="n">rtol_set</span><span class="p">,</span> <span class="n">atol_set</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ode_setup</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">rtol_set</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">rtol</span> <span class="o">=</span> <span class="mf">1e-5</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">rtol</span> <span class="o">=</span> <span class="n">rtol_set</span>
+        <span class="k">if</span> <span class="n">atol_set</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">atol</span> <span class="o">=</span> <span class="mf">1e-8</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">atol</span> <span class="o">=</span> <span class="n">atol_set</span>
 
         <span class="c1"># setup the ODE solver</span>
         <span class="n">kill_events</span> <span class="o">=</span> <span class="p">[]</span>

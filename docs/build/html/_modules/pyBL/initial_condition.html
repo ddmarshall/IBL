@@ -50,7 +50,7 @@
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
 
-<div class="viewcode-block" id="InitialCondition"><a class="viewcode-back" href="../../api/_autosummary/pyBL.initial_condition.InitialCondition.html#pyBL.ibl_method.InitialCondition">[docs]</a><span class="k">class</span> <span class="nc">InitialCondition</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
+<div class="viewcode-block" id="InitialCondition"><a class="viewcode-back" href="../../api/_autosummary/pyBL.initial_condition.InitialCondition.html#pyBL.initial_condition.InitialCondition">[docs]</a><span class="k">class</span> <span class="nc">InitialCondition</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Determines the initial conditions for integral boundary layer solutions.</span>
 
@@ -69,7 +69,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">dU_edx</span> <span class="o">=</span> <span class="n">dU_edx</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">nu</span> <span class="o">=</span> <span class="n">nu</span>
 
-<div class="viewcode-block" id="InitialCondition.H_d"><a class="viewcode-back" href="../../api/_autosummary/pyBL.initial_condition.InitialCondition.html#pyBL.ibl_method.InitialCondition.H_d">[docs]</a>    <span class="nd">@abstractmethod</span>
+<div class="viewcode-block" id="InitialCondition.H_d"><a class="viewcode-back" href="../../api/_autosummary/pyBL.initial_condition.InitialCondition.html#pyBL.initial_condition.InitialCondition.H_d">[docs]</a>    <span class="nd">@abstractmethod</span>
     <span class="k">def</span> <span class="nf">H_d</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the displacement shape factor for this initial condition.</span>
@@ -80,7 +80,7 @@
 <span class="sd">            Displacement shape factor.</span>
 <span class="sd">        &quot;&quot;&quot;</span></div>
 
-<div class="viewcode-block" id="InitialCondition.H_k"><a class="viewcode-back" href="../../api/_autosummary/pyBL.initial_condition.InitialCondition.html#pyBL.ibl_method.InitialCondition.H_k">[docs]</a>    <span class="nd">@abstractmethod</span>
+<div class="viewcode-block" id="InitialCondition.H_k"><a class="viewcode-back" href="../../api/_autosummary/pyBL.initial_condition.InitialCondition.html#pyBL.initial_condition.InitialCondition.H_k">[docs]</a>    <span class="nd">@abstractmethod</span>
     <span class="k">def</span> <span class="nf">H_k</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the kinetic energy shape factor for this initial condition.</span>
@@ -91,7 +91,7 @@
 <span class="sd">            Kinetic energy shape factor.</span>
 <span class="sd">        &quot;&quot;&quot;</span></div>
 
-<div class="viewcode-block" id="InitialCondition.delta_d"><a class="viewcode-back" href="../../api/_autosummary/pyBL.initial_condition.InitialCondition.html#pyBL.ibl_method.InitialCondition.delta_d">[docs]</a>    <span class="nd">@abstractmethod</span>
+<div class="viewcode-block" id="InitialCondition.delta_d"><a class="viewcode-back" href="../../api/_autosummary/pyBL.initial_condition.InitialCondition.html#pyBL.initial_condition.InitialCondition.delta_d">[docs]</a>    <span class="nd">@abstractmethod</span>
     <span class="k">def</span> <span class="nf">delta_d</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the displacement thickness for this initial condition.</span>
@@ -102,7 +102,7 @@
 <span class="sd">            Displacement thickness.</span>
 <span class="sd">        &quot;&quot;&quot;</span></div>
 
-<div class="viewcode-block" id="InitialCondition.delta_m"><a class="viewcode-back" href="../../api/_autosummary/pyBL.initial_condition.InitialCondition.html#pyBL.ibl_method.InitialCondition.delta_m">[docs]</a>    <span class="nd">@abstractmethod</span>
+<div class="viewcode-block" id="InitialCondition.delta_m"><a class="viewcode-back" href="../../api/_autosummary/pyBL.initial_condition.InitialCondition.html#pyBL.initial_condition.InitialCondition.delta_m">[docs]</a>    <span class="nd">@abstractmethod</span>
     <span class="k">def</span> <span class="nf">delta_m</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the momentum thickness for this initial condition.</span>
@@ -113,7 +113,7 @@
 <span class="sd">            Momentum thickness.</span>
 <span class="sd">        &quot;&quot;&quot;</span></div>
 
-<div class="viewcode-block" id="InitialCondition.delta_k"><a class="viewcode-back" href="../../api/_autosummary/pyBL.initial_condition.InitialCondition.html#pyBL.ibl_method.InitialCondition.delta_k">[docs]</a>    <span class="nd">@abstractmethod</span>
+<div class="viewcode-block" id="InitialCondition.delta_k"><a class="viewcode-back" href="../../api/_autosummary/pyBL.initial_condition.InitialCondition.html#pyBL.initial_condition.InitialCondition.delta_k">[docs]</a>    <span class="nd">@abstractmethod</span>
     <span class="k">def</span> <span class="nf">delta_k</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the kinetic energy thickness for this initial condition.</span>
@@ -125,7 +125,7 @@
 <span class="sd">        &quot;&quot;&quot;</span></div></div>
 
 
-<div class="viewcode-block" id="FalknerSkanStagnationCondition"><a class="viewcode-back" href="../../api/_autosummary/pyBL.initial_condition.FalknerSkanStagnationCondition.html#pyBL.ibl_method.FalknerSkanStagnationCondition">[docs]</a><span class="k">class</span> <span class="nc">FalknerSkanStagnationCondition</span><span class="p">(</span><span class="n">InitialCondition</span><span class="p">):</span>
+<div class="viewcode-block" id="FalknerSkanStagnationCondition"><a class="viewcode-back" href="../../api/_autosummary/pyBL.initial_condition.FalknerSkanStagnationCondition.html#pyBL.initial_condition.FalknerSkanStagnationCondition">[docs]</a><span class="k">class</span> <span class="nc">FalknerSkanStagnationCondition</span><span class="p">(</span><span class="n">InitialCondition</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Returns the stagnation conditions based on the Falkner-Skan solution.</span>
 
@@ -136,19 +136,18 @@
 <span class="sd">    ----------</span>
 <span class="sd">    dU_edx: float</span>
 <span class="sd">        Rate of change of the inviscid edge velocity at stagnation point.</span>
-<span class="sd">        Default value is 1.0.</span>
 <span class="sd">    nu: float</span>
-<span class="sd">        Kinematic viscosity. Default value is 1.0.</span>
+<span class="sd">        Kinematic viscosity.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dU_edx</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span> <span class="n">nu</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dU_edx</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">nu</span><span class="p">:</span> <span class="nb">float</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">dU_edx</span><span class="p">,</span> <span class="n">nu</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_fpp0</span> <span class="o">=</span> <span class="mf">1.23259</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_H_d</span> <span class="o">=</span> <span class="mf">2.2162</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_H_k</span> <span class="o">=</span> <span class="mf">1.6257</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_eta_m</span> <span class="o">=</span> <span class="mf">0.29235</span>
 
-<div class="viewcode-block" id="FalknerSkanStagnationCondition.H_d"><a class="viewcode-back" href="../../api/_autosummary/pyBL.initial_condition.FalknerSkanStagnationCondition.html#pyBL.ibl_method.FalknerSkanStagnationCondition.H_d">[docs]</a>    <span class="k">def</span> <span class="nf">H_d</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<div class="viewcode-block" id="FalknerSkanStagnationCondition.H_d"><a class="viewcode-back" href="../../api/_autosummary/pyBL.initial_condition.FalknerSkanStagnationCondition.html#pyBL.initial_condition.FalknerSkanStagnationCondition.H_d">[docs]</a>    <span class="k">def</span> <span class="nf">H_d</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the displacement shape factor for this initial condition.</span>
 
@@ -159,7 +158,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_H_d</span></div>
 
-<div class="viewcode-block" id="FalknerSkanStagnationCondition.H_k"><a class="viewcode-back" href="../../api/_autosummary/pyBL.initial_condition.FalknerSkanStagnationCondition.html#pyBL.ibl_method.FalknerSkanStagnationCondition.H_k">[docs]</a>    <span class="k">def</span> <span class="nf">H_k</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<div class="viewcode-block" id="FalknerSkanStagnationCondition.H_k"><a class="viewcode-back" href="../../api/_autosummary/pyBL.initial_condition.FalknerSkanStagnationCondition.html#pyBL.initial_condition.FalknerSkanStagnationCondition.H_k">[docs]</a>    <span class="k">def</span> <span class="nf">H_k</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the kinetic energy shape factor for this initial condition.</span>
 
@@ -170,7 +169,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_H_k</span></div>
 
-<div class="viewcode-block" id="FalknerSkanStagnationCondition.delta_d"><a class="viewcode-back" href="../../api/_autosummary/pyBL.initial_condition.FalknerSkanStagnationCondition.html#pyBL.ibl_method.FalknerSkanStagnationCondition.delta_d">[docs]</a>    <span class="k">def</span> <span class="nf">delta_d</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<div class="viewcode-block" id="FalknerSkanStagnationCondition.delta_d"><a class="viewcode-back" href="../../api/_autosummary/pyBL.initial_condition.FalknerSkanStagnationCondition.html#pyBL.initial_condition.FalknerSkanStagnationCondition.delta_d">[docs]</a>    <span class="k">def</span> <span class="nf">delta_d</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the displacement thickness for this initial condition.</span>
 
@@ -181,7 +180,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">delta_m</span><span class="p">()</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">H_d</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="FalknerSkanStagnationCondition.delta_m"><a class="viewcode-back" href="../../api/_autosummary/pyBL.initial_condition.FalknerSkanStagnationCondition.html#pyBL.ibl_method.FalknerSkanStagnationCondition.delta_m">[docs]</a>    <span class="k">def</span> <span class="nf">delta_m</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<div class="viewcode-block" id="FalknerSkanStagnationCondition.delta_m"><a class="viewcode-back" href="../../api/_autosummary/pyBL.initial_condition.FalknerSkanStagnationCondition.html#pyBL.initial_condition.FalknerSkanStagnationCondition.delta_m">[docs]</a>    <span class="k">def</span> <span class="nf">delta_m</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the momentum thickness for this initial condition.</span>
 
@@ -193,7 +192,7 @@
         <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nu</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">_eta_m</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">_fpp0</span>
                        <span class="o">/</span> <span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">_H_d</span><span class="o">+</span><span class="mi">2</span><span class="p">)</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">dU_edx</span><span class="p">))</span></div>
 
-<div class="viewcode-block" id="FalknerSkanStagnationCondition.delta_k"><a class="viewcode-back" href="../../api/_autosummary/pyBL.initial_condition.FalknerSkanStagnationCondition.html#pyBL.ibl_method.FalknerSkanStagnationCondition.delta_k">[docs]</a>    <span class="k">def</span> <span class="nf">delta_k</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<div class="viewcode-block" id="FalknerSkanStagnationCondition.delta_k"><a class="viewcode-back" href="../../api/_autosummary/pyBL.initial_condition.FalknerSkanStagnationCondition.html#pyBL.initial_condition.FalknerSkanStagnationCondition.delta_k">[docs]</a>    <span class="k">def</span> <span class="nf">delta_k</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the kinetic energy thickness for this initial condition.</span>
 
@@ -205,7 +204,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">delta_m</span><span class="p">()</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">H_k</span><span class="p">()</span></div></div>
 
 
-<div class="viewcode-block" id="ManualCondition"><a class="viewcode-back" href="../../api/_autosummary/pyBL.initial_condition.ManualCondition.html#pyBL.ibl_method.ManualCondition">[docs]</a><span class="k">class</span> <span class="nc">ManualCondition</span><span class="p">(</span><span class="n">InitialCondition</span><span class="p">):</span>
+<div class="viewcode-block" id="ManualCondition"><a class="viewcode-back" href="../../api/_autosummary/pyBL.initial_condition.ManualCondition.html#pyBL.initial_condition.ManualCondition">[docs]</a><span class="k">class</span> <span class="nc">ManualCondition</span><span class="p">(</span><span class="n">InitialCondition</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Returns the stagnation conditions from manually set conditions.</span>
 
@@ -228,7 +227,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">del_m</span> <span class="o">=</span> <span class="n">delta_m</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">del_k</span> <span class="o">=</span> <span class="n">delta_k</span>
 
-<div class="viewcode-block" id="ManualCondition.H_d"><a class="viewcode-back" href="../../api/_autosummary/pyBL.initial_condition.ManualCondition.html#pyBL.ibl_method.ManualCondition.H_d">[docs]</a>    <span class="k">def</span> <span class="nf">H_d</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<div class="viewcode-block" id="ManualCondition.H_d"><a class="viewcode-back" href="../../api/_autosummary/pyBL.initial_condition.ManualCondition.html#pyBL.initial_condition.ManualCondition.H_d">[docs]</a>    <span class="k">def</span> <span class="nf">H_d</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the displacement shape factor for this initial condition.</span>
 
@@ -239,7 +238,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">del_d</span><span class="o">/</span><span class="bp">self</span><span class="o">.</span><span class="n">del_m</span></div>
 
-<div class="viewcode-block" id="ManualCondition.H_k"><a class="viewcode-back" href="../../api/_autosummary/pyBL.initial_condition.ManualCondition.html#pyBL.ibl_method.ManualCondition.H_k">[docs]</a>    <span class="k">def</span> <span class="nf">H_k</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<div class="viewcode-block" id="ManualCondition.H_k"><a class="viewcode-back" href="../../api/_autosummary/pyBL.initial_condition.ManualCondition.html#pyBL.initial_condition.ManualCondition.H_k">[docs]</a>    <span class="k">def</span> <span class="nf">H_k</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the kinetic energy shape factor for this initial condition.</span>
 
@@ -250,7 +249,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">del_k</span><span class="o">/</span><span class="bp">self</span><span class="o">.</span><span class="n">del_m</span></div>
 
-<div class="viewcode-block" id="ManualCondition.delta_d"><a class="viewcode-back" href="../../api/_autosummary/pyBL.initial_condition.ManualCondition.html#pyBL.ibl_method.ManualCondition.delta_d">[docs]</a>    <span class="k">def</span> <span class="nf">delta_d</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<div class="viewcode-block" id="ManualCondition.delta_d"><a class="viewcode-back" href="../../api/_autosummary/pyBL.initial_condition.ManualCondition.html#pyBL.initial_condition.ManualCondition.delta_d">[docs]</a>    <span class="k">def</span> <span class="nf">delta_d</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the displacement thickness for this initial condition.</span>
 
@@ -261,7 +260,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">del_d</span></div>
 
-<div class="viewcode-block" id="ManualCondition.delta_m"><a class="viewcode-back" href="../../api/_autosummary/pyBL.initial_condition.ManualCondition.html#pyBL.ibl_method.ManualCondition.delta_m">[docs]</a>    <span class="k">def</span> <span class="nf">delta_m</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<div class="viewcode-block" id="ManualCondition.delta_m"><a class="viewcode-back" href="../../api/_autosummary/pyBL.initial_condition.ManualCondition.html#pyBL.initial_condition.ManualCondition.delta_m">[docs]</a>    <span class="k">def</span> <span class="nf">delta_m</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the momentum thickness for this initial condition.</span>
 
@@ -272,7 +271,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">del_m</span></div>
 
-<div class="viewcode-block" id="ManualCondition.delta_k"><a class="viewcode-back" href="../../api/_autosummary/pyBL.initial_condition.ManualCondition.html#pyBL.ibl_method.ManualCondition.delta_k">[docs]</a>    <span class="k">def</span> <span class="nf">delta_k</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<div class="viewcode-block" id="ManualCondition.delta_k"><a class="viewcode-back" href="../../api/_autosummary/pyBL.initial_condition.ManualCondition.html#pyBL.initial_condition.ManualCondition.delta_k">[docs]</a>    <span class="k">def</span> <span class="nf">delta_k</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the kinetic energy thickness for this initial condition.</span>
 
