@@ -72,10 +72,10 @@ The main contributors to this project are:
 Version History
 ---------------
 
-*  0.0.4-develop - Latest development effort
-*  0.0.3 - Last release directly supporting Malachi’s thesis
-*  0.0.2 - Has code mostly working as from Malachi’s thesis
-*  0.0.1 - Initial Release
+* 0.5.0 - Updated interface to IBL methods to simplify configuration and provided more features that can be obtained from the IBL methods. Added documentation and cleaned up the code.
+* 0.0.3 - Last release directly supporting Malachi’s thesis
+* 0.0.2 - Code is mostly working as from Malachi’s thesis
+* 0.0.1 - Initial Release
 
 License
 -------
