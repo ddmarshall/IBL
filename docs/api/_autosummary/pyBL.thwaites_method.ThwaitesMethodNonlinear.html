@@ -101,7 +101,7 @@ capture a more accurate representation of the laminar boundary layer flow</p>
 <td><p>Set the edge velocity relations.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#pyBL.thwaites_method.ThwaitesMethodNonlinear.solve" title="pyBL.thwaites_method.ThwaitesMethodNonlinear.solve"><code class="xref py py-obj docutils literal notranslate"><span class="pre">solve</span></code></a>(x0, x_end[, term_event])</p></td>
-<td><p>Solve the ODE associated with Thwaites' method.</p></td>
+<td><p>Solve the ODE associated with particular IBL method.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#pyBL.thwaites_method.ThwaitesMethodNonlinear.tau_w" title="pyBL.thwaites_method.ThwaitesMethodNonlinear.tau_w"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tau_w</span></code></a>(x, rho)</p></td>
 <td><p>Calculate the wall shear stress.</p></td>
@@ -452,12 +452,10 @@ be used in analysis. The default is <cite>None</cite>.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="pyBL.thwaites_method.ThwaitesMethodNonlinear.solve">
 <span class="sig-name descname"><span class="pre">solve</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x0</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x_end</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">term_event</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="pyBL.ibl_method.IBLResult.html#pyBL.ibl_method.IBLResult" title="pyBL.ibl_method.IBLResult"><span class="pre">IBLResult</span></a></span></span><a class="headerlink" href="#pyBL.thwaites_method.ThwaitesMethodNonlinear.solve" title="Permalink to this definition">¶</a></dt>
-<dd><p>Solve the ODE associated with Thwaites’ method.</p>
-<p>This actually solves the following differential equation</p>
-<div class="math">
-<p><img src="../../_images/math/81d4aa23bc6054cf0a594a44f5612281d4cdd8fa.svg" alt="\frac{d}{dx}\left(\frac{\delta_m^2}{\nu}\right)=\frac{F}{U_e}"/></p>
-</div><p>where <img class="math" src="../../_images/math/554c67f29d2a5a152bb7848d418ebd4ade9d0f10.svg" alt="F"/> is either the linear approximation or the actual term
-from Thwaites’ original paper.</p>
+<dd><p>Solve the ODE associated with particular IBL method.</p>
+<p>This sets up the ODE solver using specific information from the child
+class and then runs the ODE solver to completion or termination
+because a termination event was triggered.</p>
 <dl class="field-list">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><dl>

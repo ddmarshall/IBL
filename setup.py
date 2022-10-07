@@ -14,7 +14,7 @@ with open("LICENSE.md") as f:
 
 setup(
     name="pyBL",
-    version="0.5.0",
+    version="0.5.3",
     description="Integral boundary layer method implementations for use with"
                 "inviscid flow solvers.",
     long_description=readme,
