@@ -1,0 +1,60 @@
+pyBL.xfoil\_reader.XFoilReader
+==============================
+
+.. currentmodule:: pyBL.xfoil_reader
+
+.. autoclass:: XFoilReader
+   :members:
+   :show-inheritance:
+   :inherited-members:
+
+   
+   
+   
+      ~XFoilReader.H_d_lower
+      ~XFoilReader.H_d_upper
+      ~XFoilReader.H_d_wake
+      ~XFoilReader.H_k_lower
+      ~XFoilReader.H_k_upper
+      ~XFoilReader.K_lower
+      ~XFoilReader.K_upper
+      ~XFoilReader.P_lower
+      ~XFoilReader.P_upper
+      ~XFoilReader.U_e_lower
+      ~XFoilReader.U_e_upper
+      ~XFoilReader.U_e_wake
+      ~XFoilReader.__init__
+      ~XFoilReader.c_f_lower
+      ~XFoilReader.c_f_upper
+      ~XFoilReader.change_case_data
+      ~XFoilReader.delta_d_lower
+      ~XFoilReader.delta_d_upper
+      ~XFoilReader.delta_d_wake
+      ~XFoilReader.delta_k_lower
+      ~XFoilReader.delta_k_upper
+      ~XFoilReader.delta_m_lower
+      ~XFoilReader.delta_m_upper
+      ~XFoilReader.delta_m_wake
+      ~XFoilReader.m_lower
+      ~XFoilReader.m_upper
+      ~XFoilReader.num_points_lower
+      ~XFoilReader.num_points_upper
+      ~XFoilReader.num_points_wake
+      ~XFoilReader.point_lower
+      ~XFoilReader.point_upper
+      ~XFoilReader.point_wake
+      ~XFoilReader.s_lower
+      ~XFoilReader.s_upper
+      ~XFoilReader.s_wake
+      ~XFoilReader.x_lower
+      ~XFoilReader.x_upper
+      ~XFoilReader.x_wake
+      ~XFoilReader.y_lower
+      ~XFoilReader.y_upper
+      ~XFoilReader.y_wake
+   
+   
+
+   
+   
+   
