@@ -1,6 +1,0 @@
-pyBL.skin\_friction.c\_f\_White
-===============================
-
-.. currentmodule:: pyBL.skin_friction
-
-.. autofunction:: c_f_White
