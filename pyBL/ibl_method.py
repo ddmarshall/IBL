@@ -172,8 +172,6 @@ class IBLMethod(ABC):
     #     velocity.
     # _nu: Kinematic viscosity
     # _ic: Initial condition generator
-    # _x_range: 2-tuple
-    #     Start and end location for integration.
     # _kill_events: List of classes based on :class:`IBLTermEvent`
     #     Events that should be passed into ODE solver that might cause the
     #     integration to terminate early.
@@ -205,7 +203,6 @@ class IBLMethod(ABC):
         else:
             self.set_initial_condition(ic)
 
-        self._x_range = None
         self._kill_events = None
         self._solution = None
 
@@ -342,14 +339,11 @@ class IBLMethod(ABC):
 
     def solve(self, x0: float, x_end: float, term_event=None) -> IBLResult:
         r"""
-        Solve the ODE associated with Thwaites' method.
+        Solve the ODE associated with particular IBL method.
 
-        This actually solves the following differential equation
-
-        .. math:: \frac{d}{dx}\left(\frac{\delta_m^2}{\nu}\right)=\frac{F}{U_e}
-
-        where :math:`F` is either the linear approximation or the actual term
-        from Thwaites' original paper.
+        This sets up the ODE solver using specific information from the child
+        class and then runs the ODE solver to completion or termination
+        because a termination event was triggered.
 
         Parameters
         ----------
