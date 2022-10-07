@@ -14,7 +14,7 @@ sys.path.insert(0, os.path.abspath('../..'))
 project = 'pyBL'
 copyright = '2022, David D. Marshall'
 author = 'David D. Marshall'
-release = '0.0.4-develop'
+release = '0.5.4'
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
