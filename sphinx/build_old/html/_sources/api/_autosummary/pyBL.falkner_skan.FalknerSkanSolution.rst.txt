@@ -1,0 +1,40 @@
+pyBL.falkner\_skan.FalknerSkanSolution
+======================================
+
+.. currentmodule:: pyBL.falkner_skan
+
+.. autoclass:: FalknerSkanSolution
+   :members:
+   :show-inheritance:
+   :inherited-members:
+
+   
+   
+   
+      ~FalknerSkanSolution.D
+      ~FalknerSkanSolution.H_d
+      ~FalknerSkanSolution.H_k
+      ~FalknerSkanSolution.U_e
+      ~FalknerSkanSolution.V_e
+      ~FalknerSkanSolution.__init__
+      ~FalknerSkanSolution.delta_d
+      ~FalknerSkanSolution.delta_k
+      ~FalknerSkanSolution.delta_m
+      ~FalknerSkanSolution.delta_s
+      ~FalknerSkanSolution.eta
+      ~FalknerSkanSolution.eta_d
+      ~FalknerSkanSolution.eta_k
+      ~FalknerSkanSolution.eta_m
+      ~FalknerSkanSolution.eta_s
+      ~FalknerSkanSolution.f
+      ~FalknerSkanSolution.fp
+      ~FalknerSkanSolution.fpp
+      ~FalknerSkanSolution.tau_w
+      ~FalknerSkanSolution.u
+      ~FalknerSkanSolution.v
+   
+   
+
+   
+   
+   

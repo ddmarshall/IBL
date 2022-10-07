@@ -1,0 +1,32 @@
+pyBL.xfoil\_reader
+==================
+
+.. automodule:: pyBL.xfoil_reader
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+      :toctree:
+      :template: custom-class-template.rst
+      :nosignatures:
+   
+      XFoilReader
+   
+   
+
+   
+   
+   
+
+
+

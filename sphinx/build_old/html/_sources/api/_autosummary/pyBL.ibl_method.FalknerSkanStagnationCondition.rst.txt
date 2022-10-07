@@ -1,0 +1,25 @@
+pyBL.ibl\_method.FalknerSkanStagnationCondition
+===============================================
+
+.. currentmodule:: pyBL.ibl_method
+
+.. autoclass:: FalknerSkanStagnationCondition
+   :members:
+   :show-inheritance:
+   :inherited-members:
+
+   
+   
+   
+      ~FalknerSkanStagnationCondition.H_d
+      ~FalknerSkanStagnationCondition.H_k
+      ~FalknerSkanStagnationCondition.__init__
+      ~FalknerSkanStagnationCondition.delta_d
+      ~FalknerSkanStagnationCondition.delta_k
+      ~FalknerSkanStagnationCondition.delta_m
+   
+   
+
+   
+   
+   

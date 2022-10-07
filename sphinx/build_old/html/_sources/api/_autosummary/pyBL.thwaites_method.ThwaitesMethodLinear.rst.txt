@@ -1,0 +1,37 @@
+pyBL.thwaites\_method.ThwaitesMethodLinear
+==========================================
+
+.. currentmodule:: pyBL.thwaites_method
+
+.. autoclass:: ThwaitesMethodLinear
+   :members:
+   :show-inheritance:
+   :inherited-members:
+
+   
+   
+   
+      ~ThwaitesMethodLinear.D
+      ~ThwaitesMethodLinear.H_d
+      ~ThwaitesMethodLinear.H_k
+      ~ThwaitesMethodLinear.U_e
+      ~ThwaitesMethodLinear.V_e
+      ~ThwaitesMethodLinear.__init__
+      ~ThwaitesMethodLinear.d2U_edx2
+      ~ThwaitesMethodLinear.dU_edx
+      ~ThwaitesMethodLinear.delta_d
+      ~ThwaitesMethodLinear.delta_k
+      ~ThwaitesMethodLinear.delta_m
+      ~ThwaitesMethodLinear.nu
+      ~ThwaitesMethodLinear.set_data_fits
+      ~ThwaitesMethodLinear.set_initial_condition
+      ~ThwaitesMethodLinear.set_initial_parameters
+      ~ThwaitesMethodLinear.set_velocity
+      ~ThwaitesMethodLinear.solve
+      ~ThwaitesMethodLinear.tau_w
+   
+   
+
+   
+   
+   

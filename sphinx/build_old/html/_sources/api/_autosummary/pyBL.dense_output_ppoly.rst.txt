@@ -1,0 +1,23 @@
+pyBL.dense\_output\_ppoly
+=========================
+
+.. automodule:: pyBL.dense_output_ppoly
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+
+

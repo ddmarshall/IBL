@@ -1,0 +1,32 @@
+pyBL.ibl\_base.IBLBase
+======================
+
+.. currentmodule:: pyBL.ibl_base
+
+.. autoclass:: IBLBase
+   :members:
+   :show-inheritance:
+   :inherited-members:
+
+   
+   
+   
+      ~IBLBase.D
+      ~IBLBase.H_d
+      ~IBLBase.H_k
+      ~IBLBase.U_e
+      ~IBLBase.V_e
+      ~IBLBase.__init__
+      ~IBLBase.d2U_edx2
+      ~IBLBase.dU_edx
+      ~IBLBase.delta_d
+      ~IBLBase.delta_k
+      ~IBLBase.delta_m
+      ~IBLBase.set_velocity
+      ~IBLBase.tau_w
+   
+   
+
+   
+   
+   

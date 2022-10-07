@@ -1,0 +1,32 @@
+pyBL.blasius
+============
+
+.. automodule:: pyBL.blasius
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+      :toctree:
+      :template: custom-class-template.rst
+      :nosignatures:
+   
+      BlasiusSolution
+   
+   
+
+   
+   
+   
+
+
+

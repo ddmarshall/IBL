@@ -1,0 +1,32 @@
+pyBL.head\_method
+=================
+
+.. automodule:: pyBL.head_method
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+      :toctree:
+      :template: custom-class-template.rst
+      :nosignatures:
+   
+      HeadMethod
+   
+   
+
+   
+   
+   
+
+
+

@@ -1,5 +1,5 @@
 .spyproject/
 examples/figures/
 **/__pycache__/
-docs/build/doctrees/
-docs/source/api/_autosummary/
+sphinx/build/
+sphinx/source/api/_autosummary/

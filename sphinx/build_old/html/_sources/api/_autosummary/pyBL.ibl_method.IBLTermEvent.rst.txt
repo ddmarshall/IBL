@@ -1,0 +1,21 @@
+pyBL.ibl\_method.IBLTermEvent
+=============================
+
+.. currentmodule:: pyBL.ibl_method
+
+.. autoclass:: IBLTermEvent
+   :members:
+   :show-inheritance:
+   :inherited-members:
+
+   
+   
+   
+      ~IBLTermEvent.__init__
+      ~IBLTermEvent.event_info
+   
+   
+
+   
+   
+   
