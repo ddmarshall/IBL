@@ -18,6 +18,7 @@ Note that the version number is `X.Y.Z` where `X` is the major number, `Y` is th
         - [ ] `setup.py`
         - [ ] `sphinx/source/conf.py`
     - [ ] Run checks that all version interfaces are correct
+    - [ ] Build documentation and put it in place for github with `make github`
     - [ ] Finish the release in Git-Flow
 
 ## Post-Release Actions
