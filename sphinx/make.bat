@@ -25,6 +25,16 @@ if errorlevel 9009 (
 
 if "%1" == "" goto help
 
+REM From https://github.com/sphinx-doc/sphinx/issues/3382#issuecomment-470772316
+if "%1" == "github" (
+    %SPHINXBUILD% -M html %SOURCEDIR% %BUILDDIR% %SPHINXOPTS%
+    DEL ../docs/*.*? > nul
+    robocopy .nojekyll ../docs /E > nul
+    robocopy %BUILDDIR%/html ../docs /E > nul
+    echo.Generated files copied to ../docs
+    goto end
+)
+
 %SPHINXBUILD% -M %1 %SOURCEDIR% %BUILDDIR% %SPHINXOPTS% %O%
 goto end
 
