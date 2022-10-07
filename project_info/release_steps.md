@@ -23,7 +23,10 @@ Note that the version number is `X.Y.Z` where `X` is the major number, `Y` is th
 ## Post-Release Actions
 After a release has been created these steps need to be taken.
 
-- [ ] Start a new feature in Git-Flow
+- [ ] Start a new feature called `Start_Development` in Git-Flow
     - [ ] Increment the minor number by 1, set patch number to 0, and append `-develop`
+        - [ ] `README.rst`
+        - [ ] `setup.py`
+        - [ ] `sphinx/source/conf.py`
     - [ ] Run checks that all version interfaces are correct
     - [ ] Finish the feature in Git-Flow
