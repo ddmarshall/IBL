@@ -1,0 +1,20 @@
+pyBL.ibl\_method.IBLResult
+==========================
+
+.. currentmodule:: pyBL.ibl_method
+
+.. autoclass:: IBLResult
+   :members:
+   :show-inheritance:
+   :inherited-members:
+
+   
+   
+   
+      ~IBLResult.__init__
+   
+   
+
+   
+   
+   

@@ -1,0 +1,612 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>pyBL.falkner_skan &#8212; pyBL 0.0.4-develop documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/alabaster.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for pyBL.falkner_skan</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/env python3</span>
+<span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Numerical solution to Falkner-Skan equation.</span>
+
+<span class="sd">This module calculates the solution to the laminar, incompressible flow over</span>
+<span class="sd">a wedge. These solutions depend on the edge veocity profile parameter, `m`,</span>
+<span class="sd">which can be related to the wedge angle for the inviscid flow. These solutions</span>
+<span class="sd">are known as the Falkner-Skan solutions. After the differential equation is</span>
+<span class="sd">solved, a number of properties can be obtained about the flow in similarity</span>
+<span class="sd">coordinates as well as in Cartesian coordinates.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">scipy.integrate</span> <span class="kn">import</span> <span class="n">solve_ivp</span>
+<span class="kn">from</span> <span class="nn">scipy.integrate</span> <span class="kn">import</span> <span class="n">quadrature</span>
+<span class="kn">from</span> <span class="nn">scipy.optimize</span> <span class="kn">import</span> <span class="n">root_scalar</span>
+
+
+<div class="viewcode-block" id="FalknerSkanSolution"><a class="viewcode-back" href="../../api/_autosummary/pyBL.falkner_skan.FalknerSkanSolution.html#pyBL.falkner_skan.FalknerSkanSolution">[docs]</a><span class="k">class</span> <span class="nc">FalknerSkanSolution</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Solution to Falkner-Skan equation.</span>
+
+<span class="sd">    This class represents the solution to the Falkner-Skan equation. It needs</span>
+<span class="sd">    to perform a search for the appropriate initial condition during the</span>
+<span class="sd">    initialization.</span>
+
+<span class="sd">    Once the solution is obtained, the dense output from the ODE integrator is</span>
+<span class="sd">    used to report back a wide variety of parameters associated with the</span>
+<span class="sd">    boundary layer. Both integrated and point properties can be obtained from</span>
+<span class="sd">    the similarity coordinate or from the corresponding Cartesian coordinates.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">U_ref</span><span class="p">,</span> <span class="n">nu</span><span class="p">,</span> <span class="n">m</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">eta_inf</span><span class="o">=</span><span class="mi">10</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_U_ref</span> <span class="o">=</span> <span class="n">U_ref</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_nu</span> <span class="o">=</span> <span class="n">nu</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_eta_inf</span> <span class="o">=</span> <span class="n">eta_inf</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_F</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_set_boundary_condition</span><span class="p">(</span><span class="n">m</span><span class="p">)</span>
+
+<div class="viewcode-block" id="FalknerSkanSolution.f"><a class="viewcode-back" href="../../api/_autosummary/pyBL.falkner_skan.FalknerSkanSolution.html#pyBL.falkner_skan.FalknerSkanSolution.f">[docs]</a>    <span class="k">def</span> <span class="nf">f</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">eta</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the non-dimensional stream function from the solution.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        eta : array-like</span>
+<span class="sd">            Similarity coordinates to calculate the property.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        array-like same shape as `eta`</span>
+<span class="sd">            Non-dimensional stream function values.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_F</span><span class="p">(</span><span class="n">eta</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="FalknerSkanSolution.fp"><a class="viewcode-back" href="../../api/_autosummary/pyBL.falkner_skan.FalknerSkanSolution.html#pyBL.falkner_skan.FalknerSkanSolution.fp">[docs]</a>    <span class="k">def</span> <span class="nf">fp</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">eta</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the non-dimensional velocity from the solution.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        eta : array-like</span>
+<span class="sd">            Similarity coordinates to calculate the property.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        array-like same shape as `eta`</span>
+<span class="sd">            Non-dimensional velocity values.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_F</span><span class="p">(</span><span class="n">eta</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="FalknerSkanSolution.fpp"><a class="viewcode-back" href="../../api/_autosummary/pyBL.falkner_skan.FalknerSkanSolution.html#pyBL.falkner_skan.FalknerSkanSolution.fpp">[docs]</a>    <span class="k">def</span> <span class="nf">fpp</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">eta</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the derivative of the non-dimensional velocity from solution.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        eta : array-like</span>
+<span class="sd">            Similarity coordinates to calculate the property.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        array-like same shape as `eta`</span>
+<span class="sd">            Derivative of the non-dimensional velocity values.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_F</span><span class="p">(</span><span class="n">eta</span><span class="p">)[</span><span class="mi">2</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="FalknerSkanSolution.eta_d"><a class="viewcode-back" href="../../api/_autosummary/pyBL.falkner_skan.FalknerSkanSolution.html#pyBL.falkner_skan.FalknerSkanSolution.eta_d">[docs]</a>    <span class="k">def</span> <span class="nf">eta_d</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the displacement thickness in similarity coordinates.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        float</span>
+<span class="sd">            Displacement thickness in similarity coordinates.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_eta_inf</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">f</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_eta_inf</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="FalknerSkanSolution.eta_m"><a class="viewcode-back" href="../../api/_autosummary/pyBL.falkner_skan.FalknerSkanSolution.html#pyBL.falkner_skan.FalknerSkanSolution.eta_m">[docs]</a>    <span class="k">def</span> <span class="nf">eta_m</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the momentum thickness in similarity coordinates.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        float</span>
+<span class="sd">            Momentum thickness in similarity coordinates.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">beta</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_beta</span><span class="p">()</span>
+        <span class="k">return</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fpp</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">-</span><span class="n">beta</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">eta_d</span><span class="p">())</span><span class="o">/</span><span class="p">(</span><span class="mi">1</span><span class="o">+</span><span class="n">beta</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="FalknerSkanSolution.eta_k"><a class="viewcode-back" href="../../api/_autosummary/pyBL.falkner_skan.FalknerSkanSolution.html#pyBL.falkner_skan.FalknerSkanSolution.eta_k">[docs]</a>    <span class="k">def</span> <span class="nf">eta_k</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the kinetic energy thickness in similarity coordinates.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        float</span>
+<span class="sd">            Kinetic energy thickness in similarity coordinates.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">def</span> <span class="nf">fun</span><span class="p">(</span><span class="n">eta</span><span class="p">):</span>
+            <span class="k">return</span> <span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">prod</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_F</span><span class="p">(</span><span class="n">eta</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+        <span class="n">val</span> <span class="o">=</span> <span class="n">quadrature</span><span class="p">(</span><span class="n">fun</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_eta_inf</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">val</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="FalknerSkanSolution.eta_s"><a class="viewcode-back" href="../../api/_autosummary/pyBL.falkner_skan.FalknerSkanSolution.html#pyBL.falkner_skan.FalknerSkanSolution.eta_s">[docs]</a>    <span class="k">def</span> <span class="nf">eta_s</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the shear thickness in similarity coordinates.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        float</span>
+<span class="sd">            Shear thickness in similarity coordinates.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">def</span> <span class="nf">fun</span><span class="p">(</span><span class="n">eta</span><span class="p">):</span>
+            <span class="k">return</span> <span class="mf">0.99</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">fp</span><span class="p">(</span><span class="n">eta</span><span class="p">)</span>
+
+        <span class="n">sol</span> <span class="o">=</span> <span class="n">root_scalar</span><span class="p">(</span><span class="n">fun</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;bisect&quot;</span><span class="p">,</span> <span class="n">bracket</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">])</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">sol</span><span class="o">.</span><span class="n">converged</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Could not find shear thickness with error: &quot;</span>
+                             <span class="o">+</span> <span class="n">sol</span><span class="o">.</span><span class="n">flag</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">sol</span><span class="o">.</span><span class="n">root</span></div>
+
+<div class="viewcode-block" id="FalknerSkanSolution.eta"><a class="viewcode-back" href="../../api/_autosummary/pyBL.falkner_skan.FalknerSkanSolution.html#pyBL.falkner_skan.FalknerSkanSolution.eta">[docs]</a>    <span class="k">def</span> <span class="nf">eta</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the similarity coordinate corresponding to coordinates.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        x : array-like</span>
+<span class="sd">            Streamwise coordinates of points of interest.</span>
+<span class="sd">        y : array-llike</span>
+<span class="sd">            Coordinates normal to the streamwise direction of points of</span>
+<span class="sd">            interest.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        array-like same shape as either `x` or `y`</span>
+<span class="sd">            Similarity coordinate at the Cartesian coordinates.</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        Both `x` and `y` must be the same shape.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">y</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">_g</span><span class="p">(</span><span class="n">x</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="FalknerSkanSolution.u"><a class="viewcode-back" href="../../api/_autosummary/pyBL.falkner_skan.FalknerSkanSolution.html#pyBL.falkner_skan.FalknerSkanSolution.u">[docs]</a>    <span class="k">def</span> <span class="nf">u</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the x-velocity that corresponds to the Cartesian coordinates.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        x : array-like</span>
+<span class="sd">            Streamwise coordinates of points of interest.</span>
+<span class="sd">        y : array-llike</span>
+<span class="sd">            Coordinates normal to the streamwise direction of points of</span>
+<span class="sd">            interest.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        array-like same shape as either `x` or `y`</span>
+<span class="sd">            Velocity component in the x-direction at the Cartesian</span>
+<span class="sd">            coordinates.</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        Both `x` and `y` must be the same shape.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">eta</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">eta</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">U_e</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">fp</span><span class="p">(</span><span class="n">eta</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="FalknerSkanSolution.v"><a class="viewcode-back" href="../../api/_autosummary/pyBL.falkner_skan.FalknerSkanSolution.html#pyBL.falkner_skan.FalknerSkanSolution.v">[docs]</a>    <span class="k">def</span> <span class="nf">v</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the y-velocity that corresponds to the Cartesian coordinates.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        x : array-like</span>
+<span class="sd">            Streamwise coordinates of points of interest.</span>
+<span class="sd">        y : array-llike</span>
+<span class="sd">            Coordinates normal to the streamwise direction of points of</span>
+<span class="sd">            interest.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        array-like same shape as either `x` or `y`</span>
+<span class="sd">            Velocity component in the y-direction at the Cartesian</span>
+<span class="sd">            coordinates.</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        Both `x` and `y` must be the same shape.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">eta</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">eta</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_nu</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">_g</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="n">eta</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">fp</span><span class="p">(</span><span class="n">eta</span><span class="p">)</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">f</span><span class="p">(</span><span class="n">eta</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="FalknerSkanSolution.U_e"><a class="viewcode-back" href="../../api/_autosummary/pyBL.falkner_skan.FalknerSkanSolution.html#pyBL.falkner_skan.FalknerSkanSolution.U_e">[docs]</a>    <span class="k">def</span> <span class="nf">U_e</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the inviscid edge velocity at specified location(s).</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        x : array-like</span>
+<span class="sd">            Streamwise location of points of interest.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        array-like same as `x`</span>
+<span class="sd">            Edge streamwise velocity at streamwise locations.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_U_ref</span><span class="o">*</span><span class="n">x</span><span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">_m</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="n">x</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="FalknerSkanSolution.V_e"><a class="viewcode-back" href="../../api/_autosummary/pyBL.falkner_skan.FalknerSkanSolution.html#pyBL.falkner_skan.FalknerSkanSolution.V_e">[docs]</a>    <span class="k">def</span> <span class="nf">V_e</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Calculate the transpiration velocity.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        x: array-like</span>
+<span class="sd">            Streamwise loations to calculate this property.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        array-like same shape as `x`</span>
+<span class="sd">            Desired transpiration velocity at the specified locations.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_nu</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">_g</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">eta_d</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="FalknerSkanSolution.delta_d"><a class="viewcode-back" href="../../api/_autosummary/pyBL.falkner_skan.FalknerSkanSolution.html#pyBL.falkner_skan.FalknerSkanSolution.delta_d">[docs]</a>    <span class="k">def</span> <span class="nf">delta_d</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Calculate the displacement thickness.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        x: array-like</span>
+<span class="sd">            Streamwise loations to calculate this property.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        array-like same shape as `x`</span>
+<span class="sd">            Desired displacement thickness at the specified locations.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">eta_d</span><span class="p">()</span><span class="o">/</span><span class="bp">self</span><span class="o">.</span><span class="n">_g</span><span class="p">(</span><span class="n">x</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="FalknerSkanSolution.delta_m"><a class="viewcode-back" href="../../api/_autosummary/pyBL.falkner_skan.FalknerSkanSolution.html#pyBL.falkner_skan.FalknerSkanSolution.delta_m">[docs]</a>    <span class="k">def</span> <span class="nf">delta_m</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Calculate the momentum thickness.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        x: array-like</span>
+<span class="sd">            Streamwise loations to calculate this property.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        array-like same shape as `x`</span>
+<span class="sd">            Desired momentum thickness at the specified locations.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">eta_m</span><span class="p">()</span><span class="o">/</span><span class="bp">self</span><span class="o">.</span><span class="n">_g</span><span class="p">(</span><span class="n">x</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="FalknerSkanSolution.delta_k"><a class="viewcode-back" href="../../api/_autosummary/pyBL.falkner_skan.FalknerSkanSolution.html#pyBL.falkner_skan.FalknerSkanSolution.delta_k">[docs]</a>    <span class="k">def</span> <span class="nf">delta_k</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Calculate the kinetic energy thickness.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        x: array-like</span>
+<span class="sd">            Streamwise loations to calculate this property.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        array-like same shape as `x`</span>
+<span class="sd">            Desired kinetic energy thickness at the specified locations.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">eta_k</span><span class="p">()</span><span class="o">/</span><span class="bp">self</span><span class="o">.</span><span class="n">_g</span><span class="p">(</span><span class="n">x</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="FalknerSkanSolution.delta_s"><a class="viewcode-back" href="../../api/_autosummary/pyBL.falkner_skan.FalknerSkanSolution.html#pyBL.falkner_skan.FalknerSkanSolution.delta_s">[docs]</a>    <span class="k">def</span> <span class="nf">delta_s</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Calculate the shear thickness.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        x: array-like</span>
+<span class="sd">            Streamwise loations to calculate this property.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        array-like same shape as `x`</span>
+<span class="sd">            Desired shear thickness at the specified locations.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">eta_s</span><span class="p">()</span><span class="o">/</span><span class="bp">self</span><span class="o">.</span><span class="n">_g</span><span class="p">(</span><span class="n">x</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="FalknerSkanSolution.H_d"><a class="viewcode-back" href="../../api/_autosummary/pyBL.falkner_skan.FalknerSkanSolution.html#pyBL.falkner_skan.FalknerSkanSolution.H_d">[docs]</a>    <span class="k">def</span> <span class="nf">H_d</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Calculate the displacement shape factor.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        x: array-like</span>
+<span class="sd">            Streamwise loations to calculate this property.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        array-like same shape as `x`</span>
+<span class="sd">            Desired displacement shape factor at the specified locations.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">eta_d</span><span class="p">()</span><span class="o">/</span><span class="bp">self</span><span class="o">.</span><span class="n">eta_m</span><span class="p">())</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="n">x</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="FalknerSkanSolution.H_k"><a class="viewcode-back" href="../../api/_autosummary/pyBL.falkner_skan.FalknerSkanSolution.html#pyBL.falkner_skan.FalknerSkanSolution.H_k">[docs]</a>    <span class="k">def</span> <span class="nf">H_k</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Calculate the kinetic energy shape factor.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        x: array-like</span>
+<span class="sd">            Streamwise loations to calculate this property.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        array-like same shape as `x`</span>
+<span class="sd">            Desired kinetic energy shape factor at the specified locations.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">eta_k</span><span class="p">()</span><span class="o">/</span><span class="bp">self</span><span class="o">.</span><span class="n">eta_m</span><span class="p">())</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="n">x</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="FalknerSkanSolution.tau_w"><a class="viewcode-back" href="../../api/_autosummary/pyBL.falkner_skan.FalknerSkanSolution.html#pyBL.falkner_skan.FalknerSkanSolution.tau_w">[docs]</a>    <span class="k">def</span> <span class="nf">tau_w</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">rho</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Calculate the wall shear stress.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        x: array-like</span>
+<span class="sd">            Streamwise loations to calculate this property.</span>
+<span class="sd">        rho: float</span>
+<span class="sd">            Freestream density.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        array-like same shape as `x`</span>
+<span class="sd">            Desired wall shear stress at the specified locations.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">rho</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">_nu</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">U_e</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">_g</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">fpp</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="FalknerSkanSolution.D"><a class="viewcode-back" href="../../api/_autosummary/pyBL.falkner_skan.FalknerSkanSolution.html#pyBL.falkner_skan.FalknerSkanSolution.D">[docs]</a>    <span class="k">def</span> <span class="nf">D</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">rho</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Calculate the dissipation integral.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        x: array-like</span>
+<span class="sd">            Streamwise loations to calculate this property.</span>
+<span class="sd">        rho: float</span>
+<span class="sd">            Freestream density.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        array-like same shape as `x`</span>
+<span class="sd">            Desired dissipation integral at the specified locations.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">D_term</span> <span class="o">=</span> <span class="mf">0.5</span><span class="o">*</span><span class="p">(</span><span class="mi">1</span><span class="o">+</span><span class="mi">2</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">_beta</span><span class="p">())</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">eta_k</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">rho</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">_nu</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">_g</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">U_e</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="o">*</span><span class="n">D_term</span></div>
+
+    <span class="k">def</span> <span class="nf">_beta</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_m</span> <span class="o">==</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">:</span>
+            <span class="n">beta</span> <span class="o">=</span> <span class="mi">2</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">beta</span> <span class="o">=</span> <span class="mi">2</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">_m</span><span class="o">/</span><span class="p">(</span><span class="mi">1</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">_m</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">beta</span>
+
+    <span class="k">def</span> <span class="nf">_g</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mf">0.5</span><span class="o">*</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_m</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">U_e</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_nu</span><span class="o">*</span><span class="n">x</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">_set_boundary_condition</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">m</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+        <span class="c1"># pylint: disable=too-many-branches</span>
+        <span class="c1"># pylint: disable=too-many-statements</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_m</span> <span class="o">=</span> <span class="n">m</span>
+
+        <span class="k">def</span> <span class="nf">fun</span><span class="p">(</span><span class="n">fpp0</span><span class="p">):</span>
+            <span class="k">class</span> <span class="nc">bc_event</span><span class="p">:</span>
+                <span class="sd">&quot;&quot;&quot;Bounday condition event to terminate ODE solver.&quot;&quot;&quot;</span>
+
+                <span class="c1"># pylint: disable=too-few-public-methods</span>
+                <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">terminal</span> <span class="o">=</span> <span class="kc">True</span>
+
+                <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">F</span><span class="p">):</span>
+                    <span class="k">return</span> <span class="n">F</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="mf">1.1</span>
+
+            <span class="n">F0</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">fpp0</span><span class="p">]</span>
+            <span class="n">rtn</span> <span class="o">=</span> <span class="n">solve_ivp</span><span class="p">(</span><span class="n">fun</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_ode_fun</span><span class="p">,</span>
+                            <span class="n">t_span</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_eta_inf</span><span class="p">],</span> <span class="n">y0</span><span class="o">=</span><span class="n">F0</span><span class="p">,</span>
+                            <span class="n">method</span><span class="o">=</span><span class="s2">&quot;RK45&quot;</span><span class="p">,</span> <span class="n">dense_output</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                            <span class="n">events</span><span class="o">=</span><span class="n">bc_event</span><span class="p">(),</span> <span class="n">rtol</span><span class="o">=</span><span class="mf">1e-8</span><span class="p">,</span> <span class="n">atol</span><span class="o">=</span><span class="mf">1e-11</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">rtn</span><span class="o">.</span><span class="n">success</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Could not find boundary condition&quot;</span><span class="p">)</span>
+
+            <span class="c1"># hack to get beta at separation to work</span>
+            <span class="n">val</span> <span class="o">=</span> <span class="mi">1</span><span class="o">-</span><span class="n">rtn</span><span class="o">.</span><span class="n">y</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">m</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="o">-</span><span class="mf">2e-6</span> <span class="o">&lt;</span> <span class="n">val</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">):</span>
+                <span class="n">val</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="k">return</span> <span class="n">val</span>
+
+        <span class="c1"># These ranges were found via trial and error. Is there a more robust</span>
+        <span class="c1"># way of finding a suitable initial range?</span>
+        <span class="k">if</span> <span class="n">m</span> <span class="o">&lt;=</span> <span class="o">-</span><span class="mf">0.905</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Value of m is below separation value&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">m</span> <span class="o">&lt;=</span> <span class="o">-</span><span class="mf">0.09</span><span class="p">:</span>
+            <span class="n">rng</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="n">m</span> <span class="o">&lt;=</span> <span class="o">-</span><span class="mf">0.08</span><span class="p">:</span>
+            <span class="n">rng</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="n">m</span> <span class="o">&lt;=</span> <span class="o">-</span><span class="mf">0.05</span><span class="p">:</span>
+            <span class="n">rng</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.4</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="n">m</span> <span class="o">&lt;=</span> <span class="mf">0.00</span><span class="p">:</span>
+            <span class="n">rng</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.4</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="n">m</span> <span class="o">&lt;=</span> <span class="mf">0.05</span><span class="p">:</span>
+            <span class="n">rng</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.6</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="n">m</span> <span class="o">&lt;=</span> <span class="mf">0.1</span><span class="p">:</span>
+            <span class="n">rng</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.6</span><span class="p">,</span> <span class="mf">0.7</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="n">m</span> <span class="o">&lt;=</span> <span class="mf">0.2</span><span class="p">:</span>
+            <span class="n">rng</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.7</span><span class="p">,</span> <span class="mf">0.9</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="n">m</span> <span class="o">&lt;=</span> <span class="mf">0.35</span><span class="p">:</span>
+            <span class="n">rng</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.9</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="n">m</span> <span class="o">&lt;=</span> <span class="mf">0.5</span><span class="p">:</span>
+            <span class="n">rng</span> <span class="o">=</span> <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.05</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="n">m</span> <span class="o">&lt;=</span> <span class="mf">0.7</span><span class="p">:</span>
+            <span class="n">rng</span> <span class="o">=</span> <span class="p">[</span><span class="mf">1.05</span><span class="p">,</span> <span class="mf">1.15</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="n">m</span> <span class="o">&lt;=</span> <span class="mf">0.9</span><span class="p">:</span>
+            <span class="n">rng</span> <span class="o">=</span> <span class="p">[</span><span class="mf">1.15</span><span class="p">,</span> <span class="mf">1.23</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="n">m</span> <span class="o">&lt;=</span> <span class="mf">1.0</span><span class="p">:</span>
+            <span class="n">rng</span> <span class="o">=</span> <span class="p">[</span><span class="mf">1.23</span><span class="p">,</span> <span class="mf">1.25</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="n">m</span> <span class="o">&lt;=</span> <span class="mf">1.1</span><span class="p">:</span>
+            <span class="n">rng</span> <span class="o">=</span> <span class="p">[</span><span class="mf">1.25</span><span class="p">,</span> <span class="mf">1.26</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="n">m</span> <span class="o">&lt;=</span> <span class="mf">1.5</span><span class="p">:</span>
+            <span class="n">rng</span> <span class="o">=</span> <span class="p">[</span><span class="mf">1.26</span><span class="p">,</span> <span class="mf">1.3</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="n">m</span> <span class="o">&lt;=</span> <span class="mf">1.7</span><span class="p">:</span>
+            <span class="n">rng</span> <span class="o">=</span> <span class="p">[</span><span class="mf">1.3</span><span class="p">,</span> <span class="mi">138</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="n">m</span> <span class="o">&lt;=</span> <span class="mf">2.0</span><span class="p">:</span>
+            <span class="n">rng</span> <span class="o">=</span> <span class="p">[</span><span class="mf">1.38</span><span class="p">,</span> <span class="mf">1.41</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="n">m</span> <span class="o">&lt;=</span> <span class="mf">2.5</span><span class="p">:</span>
+            <span class="n">rng</span> <span class="o">=</span> <span class="p">[</span><span class="mf">1.41</span><span class="p">,</span> <span class="mf">1.45</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="n">m</span> <span class="o">&lt;=</span> <span class="mf">3.0</span><span class="p">:</span>
+            <span class="n">rng</span> <span class="o">=</span> <span class="p">[</span><span class="mf">1.45</span><span class="p">,</span> <span class="mf">1.48</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="n">m</span> <span class="o">&lt;=</span> <span class="mf">4.0</span><span class="p">:</span>
+            <span class="n">rng</span> <span class="o">=</span> <span class="p">[</span><span class="mf">1.48</span><span class="p">,</span> <span class="mf">1.525</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Value of m is out of range for this solver&quot;</span><span class="p">)</span>
+        <span class="n">sol</span> <span class="o">=</span> <span class="n">root_scalar</span><span class="p">(</span><span class="n">fun</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;bisect&quot;</span><span class="p">,</span> <span class="n">bracket</span><span class="o">=</span><span class="n">rng</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">sol</span><span class="o">.</span><span class="n">converged</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_fpp0</span> <span class="o">=</span> <span class="n">sol</span><span class="o">.</span><span class="n">root</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Root finded could not find boundary &quot;</span>
+                             <span class="s2">&quot;condition&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_set_solution</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_set_solution</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">F0</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fpp0</span><span class="p">]</span>
+
+        <span class="n">rtn</span> <span class="o">=</span> <span class="n">solve_ivp</span><span class="p">(</span><span class="n">fun</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_ode_fun</span><span class="p">,</span> <span class="n">t_span</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_eta_inf</span><span class="p">],</span>
+                        <span class="n">y0</span><span class="o">=</span><span class="n">F0</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;RK45&quot;</span><span class="p">,</span> <span class="n">dense_output</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                        <span class="n">events</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">rtol</span><span class="o">=</span><span class="mf">1e-8</span><span class="p">,</span> <span class="n">atol</span><span class="o">=</span><span class="mf">1e-11</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_F</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="n">rtn</span><span class="o">.</span><span class="n">success</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_F</span> <span class="o">=</span> <span class="n">rtn</span><span class="o">.</span><span class="n">sol</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Initial condition for solver, &quot;</span>
+                             <span class="sa">f</span><span class="s2">&quot;f</span><span class="se">\&#39;\&#39;</span><span class="s2">(0)=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_fpp0</span><span class="si">:</span><span class="s2">.6f</span><span class="si">}</span><span class="s2">, did not produce &quot;</span>
+                             <span class="s2">&quot;converged solution.&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_ode_fun</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">eta</span><span class="p">,</span> <span class="n">F</span><span class="p">):</span>
+        <span class="n">_</span> <span class="o">=</span> <span class="n">eta</span>  <span class="c1"># To avoid pylint unused-argument message</span>
+        <span class="n">Fp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">F</span><span class="p">)</span>
+
+        <span class="n">Fp</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">F</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">Fp</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">F</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+        <span class="n">Fp</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="n">F</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="n">F</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">_beta</span><span class="p">()</span><span class="o">*</span><span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">F</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">Fp</span></div>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../index.html">pyBL</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../index.html">Home</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../examples/index.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/modules.html">API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../developers/index.html">Developer Resources</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/ddmarshall/IBL">Project</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../license/index.html">License</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2022, David D. Marshall.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 5.1.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>
