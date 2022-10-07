@@ -15,7 +15,8 @@ Note that the version number is `X.Y.Z` where `X` is the major number, `Y` is th
 - [ ] Create release in Git-Flow with name `X.Y.Z`
     - [ ] Update version numbers in
         - [ ] `README.rst`
-        - [ ] `stepup.py`
+        - [ ] `setup.py`
+        - [ ] `sphinx/source/conf.py`
     - [ ] Run checks that all version interfaces are correct
     - [ ] Finish the release in Git-Flow
 
