@@ -1,4 +1,5 @@
 .spyproject/
+.vscode/
 examples/figures/
 **/__pycache__/
 sphinx/build/
