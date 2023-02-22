@@ -13,6 +13,7 @@ similar results to Figures 1.2 and 1.3 in Edland thesis.
 # pylint: disable=too-many-statements
 import numpy as np
 import matplotlib.pyplot as plt
+from matplotlib.gridspec import GridSpec
 
 from pyBL.thwaites_method import _ThwaitesFunctionsWhite
 from pyBL.thwaites_method import _ThwaitesFunctionsCebeciBradshaw
@@ -57,19 +58,27 @@ def compare_thwaites_fits():
     tab_lambda = spline._tab_lambda
     tab_F = spline._tab_F
 
+    # plot functions
+    fig = plt.figure()
+    fig.set_figwidth(10)
+    fig.set_figheight(15)
+    gs = GridSpec(3, 1, figure=fig)
+    axis_plot = fig.add_subplot(gs[0, 0])
+    axis_zoom = fig.add_subplot(gs[1, 0])
+    axis_err = fig.add_subplot(gs[2, 0])
+
     # Plot functions compared to the Thwaites tabulated values
-    plt.figure()
-    plt.plot(tab_lambda, tab_F, marker='o', linestyle='', color="black",
-             label=r"Thwaites Original")
-    plt.plot(linear_lambda, linear_F, color="green", label=r"Linear")
-    plt.plot(white_lambda, white_F, color="red", label=r"White")
-    plt.plot(cb_lambda, cb_F, color="orange", label=r"Cebeci & Bradshaw")
-    plt.plot(spline_lambda, spline_F, color="purple", label=r"Spline")
-    plt.xlabel(r"$\lambda$")
-    plt.ylabel(r"$F\left(\lambda\right)$")
-    plt.grid(True)
-    plt.legend()
-    plt.show()
+    ax = axis_plot
+    ax.plot(tab_lambda, tab_F, marker='o', linestyle='', color="black",
+            label=r"Thwaites Original")
+    ax.plot(linear_lambda, linear_F, color="green", label=r"Linear")
+    ax.plot(white_lambda, white_F, color="red", label=r"White")
+    ax.plot(cb_lambda, cb_F, color="orange", label=r"Cebeci & Bradshaw")
+    ax.plot(spline_lambda, spline_F, color="purple", label=r"Spline")
+    ax.set_xlabel(r"$\lambda$")
+    ax.set_ylabel(r"$F\left(\lambda\right)$")
+    ax.grid(True)
+    ax.legend()
 
     # Zoom in on separation region of previous plot
     lambda_zoom_min = -0.10
@@ -96,20 +105,19 @@ def compare_thwaites_fits():
     tab_F_zoom = tab_F[tab_lambda < lambda_zoom_max]
 
     # Plot the zoomed in region
-    plt.figure()
-    plt.plot(tab_lambda_zoom, tab_F_zoom, marker='o', linestyle='',
-             color="black", label=r"Thwaites Original")
-    plt.plot(linear_lambda_zoom, linear_F_zoom, color="green", label=r"Linear")
-    plt.plot(white_lambda_zoom, white_F_zoom, color="red", label=r"White")
-    plt.plot(cb_lambda_zoom, cb_F_zoom, color="orange",
-             label=r"Cebeci & Bradshaw")
-    plt.plot(spline_lambda_zoom, spline_F_zoom, color="purple",
-             label=r"Spline")
-    plt.xlabel(r"$\lambda$")
-    plt.ylabel(r"$F\left(\lambda\right)$")
-    plt.grid(True)
-    plt.legend()
-    plt.show()
+    ax = axis_zoom
+    ax.plot(tab_lambda_zoom, tab_F_zoom, marker='o', linestyle='',
+            color="black", label=r"Thwaites Original")
+    ax.plot(linear_lambda_zoom, linear_F_zoom, color="green", label=r"Linear")
+    ax.plot(white_lambda_zoom, white_F_zoom, color="red", label=r"White")
+    ax.plot(cb_lambda_zoom, cb_F_zoom, color="orange",
+            label=r"Cebeci & Bradshaw")
+    ax.plot(spline_lambda_zoom, spline_F_zoom, color="purple",
+            label=r"Spline")
+    ax.set_xlabel(r"$\lambda$")
+    ax.set_ylabel(r"$F\left(\lambda\right)$")
+    ax.grid(True)
+    ax.legend()
 
     # Calculate the errors between tabular data and fits
     #
@@ -129,19 +137,19 @@ def compare_thwaites_fits():
     spline_error = np.abs(1 - spline.F(tab_lambda)/tab_F)
 
     # Show relative errors
-    plt.figure()
-    plt.plot(tab_lambda, linear_error, color="green", label=r"Linear")
-    plt.plot(tab_lambda, white_error, color="red", label=r"White")
-    plt.plot(cb_lambda_error, cb_error, color="orange",
-             label=r"Cebeci & Bradshaw")
-    plt.plot(tab_lambda, spline_error, color="purple", label=r"Spline")
-    plt.xlabel(r"$\lambda$")
-    plt.ylabel("Relative Error")
-    plt.xlim([-0.10, 0.25])
-    plt.ylim([.00001,1])
-    plt.yscale("log")
-    plt.grid(True)
-    plt.legend()
+    ax = axis_err
+    ax.plot(tab_lambda, linear_error, color="green", label=r"Linear")
+    ax.plot(tab_lambda, white_error, color="red", label=r"White")
+    ax.plot(cb_lambda_error, cb_error, color="orange",
+            label=r"Cebeci & Bradshaw")
+    ax.plot(tab_lambda, spline_error, color="purple", label=r"Spline")
+    ax.set_xlabel(r"$\lambda$")
+    ax.set_ylabel("Relative Error")
+    ax.set_xlim([-0.10, 0.25])
+    ax.set_ylim([.00001,1])
+    ax.set_yscale("log")
+    ax.grid(True)
+    ax.legend()
     plt.show()
 
 
