@@ -1,10 +1,14 @@
+# Top level build settings
 [build-system]
-requires = ["setuptools>=64.0", "wheel"]
+requires = [
+    "setuptools>=64.0",
+    "wheel"
+]
 build-backend = "setuptools.build_meta"
 
 
-[project]
 # See this for settings: https://packaging.python.org/en/latest/specifications/declaring-project-metadata/
+[project]
 name = "pyBL"
 version = "0.5.5"
 authors = [
@@ -15,7 +19,11 @@ description = "Integral boundary layer method implementations for use with invis
 readme = "README.rst"
 requires-python = ">=3.8"
 license = {file = "license.md"}
-keywords = ["Integral Boundary Layer Methods", "Aerodynamics", "Viscous Flow"]
+keywords = [
+    "Integral Boundary Layer Methods",
+    "Aerodynamics",
+    "Viscous Flow"
+]
 classifiers = [
     "Development Status :: 4 - Beta",
     "Programming Language :: Python",
@@ -27,11 +35,9 @@ dependencies = [
     "scipy>=1.8"
 ]
 
-
 [project.urls]
 documentation = "https://ddmarshall.github.io/IBL/index.html"
 repository = "https://github.com/ddmarshall/IBL"
-
 
 [project.optional-dependencies]
 examples = ["matplotlib>=3.5"]
@@ -43,25 +49,37 @@ tests = [
 ]
 
 
+# Setuptools settings
 [tool.setuptools]
 packages=["pyBL"]
-
 
 [tools.setuptools.package-data]
 stanford_olympics = ["stanford_olypics/*.txt"]
 
 
-[tool.pylint.main]
-fail-under = 10.0
-ignore = ["CVS"]
-ignore-patterns = ["^\\.#"]
-jobs = 1
-limit-inference-results = 100
-persistent = true
-py-version = "3.9"
-suggestion-mode = true
+# Mypy settings
+[tool.mypy]
+plugins = "numpy.typing.mypy_plugin"
+warn_unused_configs = true
+disallow_untyped_calls = true
+disallow_untyped_defs = true
+disallow_incomplete_defs = true
+disallow_untyped_decorators = true
+files = [
+    "pyBL",
+    "examples",
+    "tests"
+]
+
+[[tool.mypy.overrides]]
+module = [
+    "scipy.*",
+    "matplotlib.*"
+]
+ignore_missing_imports = true
 
 
+# Pylint settings
 [tool.pylint.basic]
 good-names-rgxs = ["^[_a-z][_a-z0-9]?$"]
 
