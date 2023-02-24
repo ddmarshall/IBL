@@ -1,6 +1,16 @@
+# Virtual environment
+venvs/*
+!venvs/info.txt
+
+# IDEs
 .spyproject/
 .vscode/
-examples/figures/
+
+# Caches
+.mypy_cache/
 **/__pycache__/
+pyBL.egg-info/
+
+# Documentation
 sphinx/build/
 sphinx/source/api/_autosummary/
