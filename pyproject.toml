@@ -38,7 +38,8 @@ examples = ["matplotlib>=3.5"]
 tests = [
     "pylint>=2.15",
     "mypy>=0.991",
-    "pycodestyle>=2.10"
+    "pycodestyle>=2.10",
+    "coverage>=7.2"
 ]
 
 

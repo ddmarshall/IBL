@@ -14,3 +14,7 @@ pyBL.egg-info/
 # Documentation
 sphinx/build/
 sphinx/source/api/_autosummary/
+
+# Code coverage with coverage.py
+.coverage
+htmlcov

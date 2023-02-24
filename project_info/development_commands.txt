@@ -24,5 +24,5 @@ source {path to venv}/bin/activate
 deactivate
 
 # editable install with optional libraries for examples and tests
-pip install -e .[examples,tests]
+pip install -e .[examples, tests]
 
