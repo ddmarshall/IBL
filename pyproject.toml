@@ -1,0 +1,45 @@
+[build-system]
+requires = ["setuptools>=64.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+# See this for settings: https://packaging.python.org/en/latest/specifications/declaring-project-metadata/
+[project]
+name = "pyBL"
+version = "0.5.5"
+authors = [
+    {name = "David D. Marshall", email = "ddmarshall@gmail.com"},
+    {name = "Malachi Edland"},
+]
+description = "Integral boundary layer method implementations for use with inviscid flow solvers."
+readme = "README.rst"
+requires-python = ">=3.8"
+license = {file = "license.md"}
+keywords = ["Integral Boundary Layer Methods", "Aerodynamics", "Viscous Flow"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Programming Language :: Python",
+    "Intended Audience :: Science/Research",
+    "Topic :: Scientific/Engineering"
+]
+dependencies = [
+    "numpy>=1.20",
+    "scipy>=1.8"
+]
+
+[project.urls]
+documentation = "https://ddmarshall.github.io/IBL/index.html"
+repository = "https://github.com/ddmarshall/IBL"
+
+[project.optional-dependencies]
+examples = ["matplotlib>=3.5"]
+tests = [
+    "pylint>=2.15",
+    "mypy>=0.991",
+    "pycodestyle>=2.10"
+]
+
+[tool.setuptools]
+packages=["pyBL"]
+
+[tools.setuptools.package-data]
+stanford_olympics = ["stanford_olypics/*.txt"]
