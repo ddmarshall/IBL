@@ -2,8 +2,9 @@
 requires = ["setuptools>=64.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
-# See this for settings: https://packaging.python.org/en/latest/specifications/declaring-project-metadata/
+
 [project]
+# See this for settings: https://packaging.python.org/en/latest/specifications/declaring-project-metadata/
 name = "pyBL"
 version = "0.5.5"
 authors = [
@@ -26,9 +27,11 @@ dependencies = [
     "scipy>=1.8"
 ]
 
+
 [project.urls]
 documentation = "https://ddmarshall.github.io/IBL/index.html"
 repository = "https://github.com/ddmarshall/IBL"
+
 
 [project.optional-dependencies]
 examples = ["matplotlib>=3.5"]
@@ -38,8 +41,10 @@ tests = [
     "pycodestyle>=2.10"
 ]
 
+
 [tool.setuptools]
 packages=["pyBL"]
+
 
 [tools.setuptools.package-data]
 stanford_olympics = ["stanford_olypics/*.txt"]
