@@ -367,7 +367,6 @@ class _HeadSeparationEvent(IBLTermEvent):
         H_d_crit: Displacement shape factor value that indicates separation
     """
 
-    # pylint: disable=too-few-public-methods
     def __init__(self, H_d_crit):
         super().__init__()
         self._H_d_crit = H_d_crit

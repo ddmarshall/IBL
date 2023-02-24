@@ -114,8 +114,6 @@ class StanfordOlympics1968:
             Defect velocity at this station.
         """
 
-        # pylint: disable=too-many-instance-attributes
-        # pylint: disable=too-few-public-methods
         def __init__(self, row, si_unit):
             col = row.split()
             if len(col) != 11:

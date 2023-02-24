@@ -5,8 +5,6 @@ Created on Tue Aug 30 06:21:08 2022
 
 @author: ddmarshall
 """
-# pylint: disable=too-many-locals
-# pylint: disable=too-many-statements
 
 
 from os.path import abspath, dirname

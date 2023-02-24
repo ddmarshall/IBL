@@ -47,7 +47,6 @@ class _IBLMethodTestTermEvent(IBLTermEvent):
         _x_kill: x-location that the integrator should stop.
     """
 
-    # pylint: disable=too-few-public-methods
     def __init__(self, x_kill):
         self._x_kill = x_kill
         super().__init__()
@@ -141,7 +140,6 @@ class IBLMethodTest(IBLMethod):
 class IBLMethodTestTransition(IBLTermEvent):
     """Generic class to pass termination events during the solve method."""
 
-    # pylint: disable=too-few-public-methods
     def __init__(self, F_kill):
         self._F_kill = F_kill
         super().__init__()

@@ -86,7 +86,6 @@ class TestCurveFits(unittest.TestCase):
 
     def testBoundaryLayerParameters(self):
         """Test the reporting of the boundary layer parameters."""
-        # pylint: disable=too-many-locals
         U_inf = 10
         nu = 1e-5
         rho = 1

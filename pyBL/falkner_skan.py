@@ -398,15 +398,12 @@ class FalknerSkanSolution:
         return np.sqrt(0.5*(self._m+1)*self.U_e(x)/(self._nu*x))
 
     def _set_boundary_condition(self, m=0):
-        # pylint: disable=too-many-branches
-        # pylint: disable=too-many-statements
         self._m = m
 
         def fun(fpp0):
             class bc_event:
                 """Bounday condition event to terminate ODE solver."""
 
-                # pylint: disable=too-few-public-methods
                 def __init__(self):
                     self.terminal = True
 
