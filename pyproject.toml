@@ -178,3 +178,16 @@ ignored-argument-names = "_.*|^ignored_|^unused_"
 redefining-builtins-modules = ["six.moves", "past.builtins", "future.builtins", "builtins", "io"]
 
 
+[tool.mypy]
+plugins = "numpy.typing.mypy_plugin"
+warn_unused_configs = true
+disallow_untyped_calls = true
+disallow_untyped_defs = true
+disallow_incomplete_defs = true
+disallow_untyped_decorators = true
+files = ["pyBL", "examples", "tests"]
+
+
+[[tool.mypy.overrides]]
+module = ["scipy.*", "matplotlib.*"]
+ignore_missing_imports = true
