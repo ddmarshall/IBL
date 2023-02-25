@@ -1,0 +1,2 @@
+# This directory should hold all of the virtual environments for this library.
+# Don't commit any of the virtual environment files into git.

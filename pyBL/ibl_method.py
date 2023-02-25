@@ -63,10 +63,8 @@ class IBLResult:
         True if solver successfully completed.
     """
 
-    # pylint: disable=too-few-public-methods
     def __init__(self, x_end=np.inf, F_end=np.inf, status=-99,
                  message="Not Set", success=False):
-        # pylint: disable=too-many-arguments
         self.x_end = x_end
         self.F_end = F_end
         self.status = status
@@ -251,9 +249,6 @@ class IBLMethod(ABC):
         ValueError
             When configuration parameter is invalid (see message).
         """
-        # pylint: disable=too-many-branches
-        # pylint: disable=too-many-statements
-
         # check if U_e is callable
         if callable(U_e):
             self._U_e = U_e
@@ -365,8 +360,6 @@ class IBLMethod(ABC):
         TypeError
             When solution parameters have not been set.
         """
-        # pylint: disable=too-many-branches
-
         # setup the initial conditions
         self._ic.nu = self._nu
         self._ic.dU_edx = self.dU_edx(x0)

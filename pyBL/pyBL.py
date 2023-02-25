@@ -6,6 +6,8 @@
 # """
 
 
+# pylint: skip-file
+
 # #from scipy.integrate import cumtrapz
 # import numpy as np
 # #import warnings
