@@ -14,6 +14,7 @@ pycodestyle --statistics pyBL tests examples
 python -m unittest discover --start-directory tests
 # code coverage
 python -m coverage run -m unittest discover --start-directory tests
+python -m coverage  # for using the run command in pyproject.toml
 python -m coverage report -m  # for text report with list of lines missed
 python -m coverage html  # creates HTML in htmlcov directory
 
@@ -28,5 +29,5 @@ source {path to venv}/bin/activate
 deactivate
 
 ## editable install with optional libraries for examples and tests
-pip install -e .[examples, tests]
+pip install -e .[examples,tests]
 
