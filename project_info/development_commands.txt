@@ -14,7 +14,7 @@ pycodestyle --statistics pyBL tests examples
 python -m unittest discover --start-directory tests
 # code coverage
 python -m coverage run -m unittest discover --start-directory tests
-python -m coverage  # for using the run command in pyproject.toml
+python -m coverage run  # for using the run command in pyproject.toml
 python -m coverage report -m  # for text report with list of lines missed
 python -m coverage html  # creates HTML in htmlcov directory
 

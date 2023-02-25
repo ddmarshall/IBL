@@ -6,6 +6,9 @@ venvs/*
 .spyproject/
 .vscode/
 
+# Automated testing
+.tox
+
 # Caches
 .mypy_cache/
 **/__pycache__/
