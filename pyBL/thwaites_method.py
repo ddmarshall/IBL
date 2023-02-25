@@ -99,7 +99,6 @@ class ThwaitesMethod(IBLMethod):
         ValueError
             When an invalid fit name or unusable 2-tuple or 3-tuple provided
         """
-        # pylint: disable=too-many-branches
         # data_fits can either be string or 2-tuple of callables
         self._model = None
         if isinstance(data_fits, str):
@@ -460,7 +459,6 @@ class _ThwaitesFunctions:
     """Base class for curve fits for Thwaites data."""
 
     def __init__(self, name, S_fun, H_fun, Hp_fun, lambda_min, lambda_max):
-        # pylint: disable=too-many-arguments
         self._range = [lambda_min, lambda_max]
         self._name = name
         self._H_fun = H_fun
@@ -594,7 +592,6 @@ class _ThwaitesSeparationEvent(IBLTermEvent):
     the integration should terminate before the end location.
     """
 
-    # pylint: disable=too-few-public-methods
     # Attributes
     # ----------
     #    _calc_lam: Callable that can calculate lambda.

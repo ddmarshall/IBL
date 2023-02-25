@@ -205,6 +205,7 @@ def compare_blasius_solution():
                labels=[exact_label, standard_label, nonlinear_label],
                loc="upper center", bbox_to_anchor=(0.45, 0.03), ncol=3,
                borderaxespad=0.1)
+    plt.show()
 
 
 if __name__ == "__main__":

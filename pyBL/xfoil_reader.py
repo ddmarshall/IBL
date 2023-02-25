@@ -38,8 +38,6 @@ class XFoilReader:
         Freestream Reynolds number based on the airfoil chord length.
     """
 
-    # pylint: disable=too-many-instance-attributes
-    # pylint: disable=too-many-public-methods
     # Attributes
     # ----------
     # _filename: File name of dump
@@ -78,7 +76,6 @@ class XFoilReader:
             Kinetic energy defect at point.
         """
 
-        # pylint: disable=too-few-public-methods
         def __init__(self, row):
             if row == "":
                 self.s = np.inf
@@ -158,7 +155,6 @@ class XFoilReader:
             Displacement shape factor at point.
         """
 
-        # pylint: disable=too-few-public-methods
         def __init__(self, row):
             if row == "":
                 self.s = np.inf
@@ -203,7 +199,6 @@ class XFoilReader:
 
     def __init__(self, filename="", airfoil="", alpha=np.inf, c=1, Re=None,
                  x_trans=None, n_trans=None):
-        # pylint: disable=too-many-arguments
         self.change_case_data(filename, airfoil, alpha, c, Re, x_trans,
                               n_trans)
 
@@ -237,10 +232,6 @@ class XFoilReader:
         Exception
             When dump file is not correctly formatted.
         """
-        # pylint: disable=too-many-locals
-        # pylint: disable=too-many-branches
-        # pylint: disable=too-many-statements
-        # pylint: disable=too-many-arguments
         # Reset everything
         self._filename = filename
         self.aifoil = airfoil

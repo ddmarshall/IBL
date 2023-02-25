@@ -64,7 +64,6 @@ class TestCurveFits(unittest.TestCase):
 
     def testBeta0Solution(self):
         """Test the first case from White table."""
-        # pylint: disable=too-many-locals
         idx = 0
         U_inf = 10
         nu = 1e-5
@@ -134,7 +133,6 @@ class TestCurveFits(unittest.TestCase):
 
     def testBeta1Solution(self):
         """Test the second case from White table."""
-        # pylint: disable=too-many-locals
         idx = 1
         U_inf = 10
         nu = 1e-5
@@ -204,7 +202,6 @@ class TestCurveFits(unittest.TestCase):
 
     def testBeta2Solution(self):
         """Test the third case from White table."""
-        # pylint: disable=too-many-locals
         idx = 2
         U_inf = 10
         nu = 1e-5
@@ -273,7 +270,6 @@ class TestCurveFits(unittest.TestCase):
 
     def testBeta3Solution(self):
         """Test the fourth case from White table."""
-        # pylint: disable=too-many-locals
         idx = 3
         U_inf = 10
         nu = 1e-5
@@ -342,7 +338,6 @@ class TestCurveFits(unittest.TestCase):
 
     def testBeta4Solution(self):
         """Test the fifth case from White table."""
-        # pylint: disable=too-many-locals
         idx = 4
         U_inf = 10
         nu = 1e-5

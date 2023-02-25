@@ -6,7 +6,6 @@ Created on Mon Aug  8 14:09:25 2022
 @author: ddmarshall
 """
 # pylint: disable=protected-access
-# pylint: disable=too-many-lines
 
 import unittest
 import numpy as np
@@ -242,7 +241,6 @@ class ThwaitesLinearAnalytic:
 
     def __init__(self, U_ref, m, nu, H_fun, S_fun):
 
-        # pylint: disable=too-many-arguments
         self.m = m
         self.U_ref = U_ref
         self.nu = nu
@@ -290,7 +288,6 @@ class TestLinearThwaites(unittest.TestCase):
 
     def testBlaisusCase(self):
         """Test the flat plate case."""
-        # pylint: disable=too-many-statements
         # set parameters
         U_ref = 10
         m = 0
@@ -696,7 +693,6 @@ class TestNonlinearThwaites(unittest.TestCase):
 
     def testBlaisusCase(self):
         """Test the flat plate case."""
-        # pylint: disable=too-many-statements
         # set parameters
         U_ref = 10
         m = 0

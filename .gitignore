@@ -1,5 +1,24 @@
+# Virtual environment
+venvs/*
+!venvs/info.txt
+
+# IDEs
 .spyproject/
-examples/figures/
+.vscode/
+
+# Automated testing
+.tox
+
+# Caches
+.mypy_cache/
 **/__pycache__/
+pyBL.egg-info/
+build/
+
+# Documentation
 sphinx/build/
 sphinx/source/api/_autosummary/
+
+# Code coverage with coverage.py
+.coverage
+htmlcov

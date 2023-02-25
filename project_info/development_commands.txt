@@ -1,0 +1,33 @@
+## build documentation
+cd sphinx
+make html
+
+## finalize documentation for release
+cd sphinx
+make github
+
+## static code analyis
+pylint pyBL tests examples
+pycodestyle --statistics pyBL tests examples
+
+## unit tests
+python -m unittest discover --start-directory tests
+# code coverage
+python -m coverage run -m unittest discover --start-directory tests
+python -m coverage run  # for using the run command in pyproject.toml
+python -m coverage report -m  # for text report with list of lines missed
+python -m coverage html  # creates HTML in htmlcov directory
+
+## type checking
+mypy {optionally can provide specific directory or file to check}
+
+## virtual environment setup: https://docs.python.org/3/library/venv.html
+python3 -m venv {path to venv}
+# activate virtual environment
+source {path to venv}/bin/activate
+# deactivate virtual environment
+deactivate
+
+## editable install with optional libraries for examples and tests
+pip install -e .[examples,tests]
+
