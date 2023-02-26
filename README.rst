@@ -3,6 +3,8 @@ Summary
 
 This project provides a python library to model the viscous effects for thin boundary layers using the integral boundary layer method.
 
+![Tests](https://github.com/ddmarshall/IBL/actions/workflows/tests.yml/badge.svg?branch=develop)
+
 Example Usage
 -------------
 
