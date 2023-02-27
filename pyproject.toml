@@ -10,7 +10,7 @@ build-backend = "setuptools.build_meta"
 # See this for settings: https://packaging.python.org/en/latest/specifications/declaring-project-metadata/
 [project]
 name = "pyBL"
-version = "0.5.5"
+version = "0.6.dev"
 authors = [
     {name = "David D. Marshall", email = "ddmarshall@gmail.com"},
     {name = "Malachi Edland"},
@@ -101,4 +101,3 @@ min-similarity-lines = 12
 [tool.coverage.run]
 branch = true
 command_line = "-m unittest discover --start-directory tests"
-

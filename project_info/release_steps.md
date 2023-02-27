@@ -26,7 +26,7 @@ Note that the version number is `X.Y.Z` where `X` is the major number, `Y` is th
 After a release has been created these steps need to be taken.
 
 - [ ] Start a new feature called `Start_Development` in Git-Flow
-    - [ ] Increment the minor number by 1, remove patch number, and append `dev`
+    - [ ] Increment the minor number by 1, remove patch number, and append `.dev`
         - [ ] `README.rst`
         - [ ] `pyproject.toml`
         - [ ] `sphinx/source/conf.py`
