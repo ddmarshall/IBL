@@ -93,8 +93,8 @@ class XFoilReader:
             else:
                 col = row.split()
                 if len(col) != 12:
-                    raise Exception("Invalid number of columns in airfoil "
-                                    f"data: {row}")
+                    raise ValueError("Invalid number of columns in airfoil "
+                                     f"data: {row}")
                 self.s = float(col[0])
                 self.x = float(col[1])
                 self.y = float(col[2])
@@ -167,8 +167,8 @@ class XFoilReader:
             else:
                 col = row.split()
                 if len(col) != 8:
-                    raise Exception("Invalid number of columns in wake "
-                                    f"data: {row}")
+                    raise ValueError("Invalid number of columns in wake "
+                                     f"data: {row}")
                 self.s = float(col[0])
                 self.x = float(col[1])
                 self.y = float(col[2])
@@ -283,8 +283,8 @@ class XFoilReader:
                 col = row.split()
                 if len(col) == 12:
                     if found_wake:
-                        raise Exception("Cannot have airfoil data after waike"
-                                        "data")
+                        raise ValueError("Cannot have airfoil data after wake "
+                                         "data")
                     info = self.AirfoilData(row)
                     if found_stag_pt:
                         te_s = info.s
@@ -356,8 +356,7 @@ class XFoilReader:
                     info.s = info.s - te_s
                     self._wake.append(info)
                 else:
-                    raise Exception("Invalid data in XFoil dump file: "
-                                    f"{col}")
+                    raise ValueError(f"Invalid data in XFoil dump file: {col}")
 
     def num_points_upper(self):
         """

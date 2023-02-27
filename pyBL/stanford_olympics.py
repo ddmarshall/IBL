@@ -117,8 +117,8 @@ class StanfordOlympics1968:
         def __init__(self, row, si_unit):
             col = row.split()
             if len(col) != 11:
-                raise Exception("Invalid number of columns in summary "
-                                f"data: {row}")
+                raise ValueError("Invalid number of columns in summary "
+                                 f"data: {row}")
 
             temp0 = float(col[0])
             temp1 = float(col[1])
@@ -257,7 +257,7 @@ class StanfordOlympics1968:
             if chunk[0].startswith("IDENT = "):
                 self.case = chunk[0].split()[2]
             else:
-                raise Exception(f"Expected IDENT line but have: {chunk[0]}")
+                raise ValueError(f"Expected IDENT line but have: {chunk[0]}")
             si_unit = self.case[0] == '1'
             if chunk[1].startswith("V = "):
                 temp0 = float(chunk[1].split()[2])
@@ -267,7 +267,7 @@ class StanfordOlympics1968:
                     temp0 = temp0*_FOOT_TO_METER**2
                 self.nu = temp0
             else:
-                raise Exception(f"Expected V line but have: {chunk[1]}")
+                raise ValueError(f"Expected V line but have: {chunk[1]}")
 
             # read the summary data
             chunk = next_chunk(case_file)
@@ -279,8 +279,8 @@ class StanfordOlympics1968:
             for row in chunk:
                 col = row.split()
                 if len(col) != 3:
-                    raise Exception("Invalid number of columns in summary "
-                                    f"data: {row}")
+                    raise ValueError("Invalid number of columns in summary "
+                                     f"data: {row}")
                 tmp0 = float(col[0])
                 tmp1 = float(col[1])
                 tmp2 = float(col[2])
