@@ -23,6 +23,7 @@ velocity, and other parameters based on the model used.
    API <api/modules.rst>
    Developer Resources <developers/index.rst>
    Project <https://github.com/ddmarshall/IBL>
+   Documentation <https://ddmarshall.github.io/IBL>
    License <license/index.rst>
 
 Indices and tables
