@@ -31,6 +31,9 @@ napoleon_numpy_docstring = True
 autosummary_generate = True
 html_show_sourcelink = False
 autodoc_inherit_docstrings = True
+#autodoc_default_options = {
+#    'special-members': ''
+#}
 
 templates_path = ['_templates']
 exclude_patterns = []
