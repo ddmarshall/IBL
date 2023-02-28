@@ -18,7 +18,7 @@ authors = [
 description = "Integral boundary layer method implementations for use with inviscid flow solvers."
 readme = "README.rst"
 requires-python = ">=3.8"
-license = {file = "license.md"}
+license = {file = "license.rst"}
 keywords = [
     "Integral Boundary Layer Methods",
     "Aerodynamics",
