@@ -1,5 +1,3 @@
-.. include:: ../../README.rst
-
 Welcome to IBL's documentation!
 ================================
 
@@ -13,6 +11,8 @@ velocity, and other parameters based on the model used.
 .. note::
 
    This project is under development and the API might change between releases.
+
+.. include:: ../../README.rst
 
 .. toctree::
    :maxdepth: 2
