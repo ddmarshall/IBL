@@ -11,7 +11,7 @@ sys.path.insert(0, os.path.abspath('../..'))
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
-project = 'pyBL'
+project = 'IBL'
 copyright = '2023, David D. Marshall'
 author = 'David D. Marshall'
 release = '0.6.dev'

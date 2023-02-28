@@ -7,8 +7,8 @@ cd sphinx
 make github
 
 ## static code analyis
-pylint pyBL tests examples
-pycodestyle --statistics pyBL tests examples
+pylint ibl tests examples
+pycodestyle --statistics ibl tests examples
 
 ## unit tests
 python -m unittest discover --start-directory tests

@@ -1,16 +1,14 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Numerical solution to Falkner-Skan equation.
+Numerical solution to Blasius equation.
 
 This module calculates the solution to the laminar, incompressible flow over
-a wedge. These solutions depend on the edge veocity profile parameter, `m`,
-which can be related to the wedge angle for the inviscid flow. These solutions
-are known as the Falkner-Skan solutions. After the differential equation is
-solved, a number of properties can be obtained about the flow in similarity
-coordinates as well as in Cartesian coordinates.
+a flat plate with no pressure gradient. This solution is known as the Blasius
+solution. After the differential equation is solved, a number of properties
+can be obtained about the flow in similarity coordinates as well as in
+Cartesian coordinates.
 """
-
 
 import numpy as np
 from scipy.integrate import solve_ivp
@@ -18,13 +16,13 @@ from scipy.integrate import quadrature
 from scipy.optimize import root_scalar
 
 
-class FalknerSkanSolution:
+class BlasiusSolution_old:
     """
-    Solution to Falkner-Skan equation.
+    Solution to Blasius equation.
 
-    This class represents the solution to the Falkner-Skan equation. It needs
-    to perform a search for the appropriate initial condition during the
-    initialization.
+    This class represents the solution to the Blasius equation. While it can
+    be initialized with user defined parameters needed for the solution, the
+    default parameters are sufficient to obain an accurate solution.
 
     Once the solution is obtained, the dense output from the ODE integrator is
     used to report back a wide variety of parameters associated with the
@@ -32,13 +30,13 @@ class FalknerSkanSolution:
     the similarity coordinate or from the corresponding Cartesian coordinates.
     """
 
-    def __init__(self, U_ref, nu, m=0, eta_inf=10):
+    def __init__(self, U_ref, nu, fpp0=0.46959998713136886, eta_inf=10):
         self._U_ref = U_ref
         self._nu = nu
         self._eta_inf = eta_inf
         self._F = None
 
-        self._set_boundary_condition(m)
+        self._set_boundary_condition(fpp0)
 
     def f(self, eta):
         """
@@ -108,8 +106,7 @@ class FalknerSkanSolution:
         float
             Momentum thickness in similarity coordinates.
         """
-        beta = self._beta()
-        return (self.fpp(0)-beta*self.eta_d())/(1+beta)
+        return self.fpp(0)
 
     def eta_k(self):
         """
@@ -192,7 +189,7 @@ class FalknerSkanSolution:
         Both `x` and `y` must be the same shape.
         """
         eta = self.eta(x, y)
-        return self.U_e(x)*self.fp(eta)
+        return self._U_ref*self.fp(eta)
 
     def v(self, x, y):
         """
@@ -234,7 +231,7 @@ class FalknerSkanSolution:
             Edge streamwise velocity at streamwise locations.
         """
         x = np.asarray(x)
-        return self._U_ref*x**self._m*np.ones_like(x)
+        return self._U_ref*np.ones_like(x)
 
     def V_e(self, x):
         """
@@ -366,7 +363,7 @@ class FalknerSkanSolution:
         array-like same shape as `x`
             Desired wall shear stress at the specified locations.
         """
-        return rho*self._nu*self.U_e(x)*self._g(x)*self.fpp(0)
+        return rho*self._nu*self._U_ref*self._g(x)*self.fpp(0)
 
     def D(self, x, rho):
         """
@@ -384,96 +381,28 @@ class FalknerSkanSolution:
         array-like same shape as `x`
             Desired dissipation integral at the specified locations.
         """
-        D_term = 0.5*(1+2*self._beta())*self.eta_k()
-        return rho*self._nu*self._g(x)*self.U_e(x)**2*D_term
+        return 0.5*rho*self._nu*self._g(x)*self._U_ref**2*self.eta_k()
 
-    def _beta(self):
-        if self._m == np.inf:
-            beta = 2
+    def _set_boundary_condition(self, fpp0=None):
+        if fpp0 is None:
+            def fun(fpp0):
+                F0 = [0, 0, fpp0]
+                rtn = solve_ivp(fun=self._ode_fun,
+                                t_span=[0, self._eta_inf], y0=F0,
+                                method="RK45", dense_output=False,
+                                events=None, rtol=1e-8, atol=1e-11)
+                if not rtn.success:
+                    raise ValueError("Could not find boundary condition")
+                return 1 - rtn.y[1, -1]
+
+            sol = root_scalar(fun, method="bisect", bracket=[0.4, 0.5])
+            if sol.converged:
+                self._fpp0 = sol.root
+            else:
+                raise ValueError("Root finded could not find boundary "
+                                 "condition")
         else:
-            beta = 2*self._m/(1+self._m)
-        return beta
-
-    def _g(self, x):
-        return np.sqrt(0.5*(self._m+1)*self.U_e(x)/(self._nu*x))
-
-    def _set_boundary_condition(self, m=0):
-        self._m = m
-
-        def fun(fpp0):
-            class bc_event:
-                """Bounday condition event to terminate ODE solver."""
-
-                def __init__(self):
-                    self.terminal = True
-
-                def __call__(self, x, F):
-                    return F[1] - 1.1
-
-            F0 = [0, 0, fpp0]
-            rtn = solve_ivp(fun=self._ode_fun,
-                            t_span=[0, self._eta_inf], y0=F0,
-                            method="RK45", dense_output=False,
-                            events=bc_event(), rtol=1e-8, atol=1e-11)
-            if not rtn.success:
-                raise ValueError("Could not find boundary condition")
-
-            # hack to get beta at separation to work
-            val = 1-rtn.y[1, -1]
-            if (m < 0) and (-2e-6 < val < 0):
-                val = 0
-            return val
-
-        # These ranges were found via trial and error. Is there a more robust
-        # way of finding a suitable initial range?
-        if m <= -0.905:
-            raise ValueError("Value of m is below separation value")
-        if m <= -0.09:
-            rng = [0, 0.1]
-        elif m <= -0.08:
-            rng = [0.1, 0.2]
-        elif m <= -0.05:
-            rng = [0.2, 0.4]
-        elif m <= 0.00:
-            rng = [0.4, 0.5]
-        elif m <= 0.05:
-            rng = [0.5, 0.6]
-        elif m <= 0.1:
-            rng = [0.6, 0.7]
-        elif m <= 0.2:
-            rng = [0.7, 0.9]
-        elif m <= 0.35:
-            rng = [0.9, 1.0]
-        elif m <= 0.5:
-            rng = [1.0, 1.05]
-        elif m <= 0.7:
-            rng = [1.05, 1.15]
-        elif m <= 0.9:
-            rng = [1.15, 1.23]
-        elif m <= 1.0:
-            rng = [1.23, 1.25]
-        elif m <= 1.1:
-            rng = [1.25, 1.26]
-        elif m <= 1.5:
-            rng = [1.26, 1.3]
-        elif m <= 1.7:
-            rng = [1.3, 138]
-        elif m <= 2.0:
-            rng = [1.38, 1.41]
-        elif m <= 2.5:
-            rng = [1.41, 1.45]
-        elif m <= 3.0:
-            rng = [1.45, 1.48]
-        elif m <= 4.0:
-            rng = [1.48, 1.525]
-        else:
-            raise ValueError("Value of m is out of range for this solver")
-        sol = root_scalar(fun, method="bisect", bracket=rng)
-        if sol.converged:
-            self._fpp0 = sol.root
-        else:
-            raise ValueError("Root finded could not find boundary "
-                             "condition")
+            self._fpp0 = fpp0
         self._set_solution()
 
     def _set_solution(self):
@@ -491,12 +420,16 @@ class FalknerSkanSolution:
                              f"f\'\'(0)={self._fpp0:.6f}, did not produce "
                              "converged solution.")
 
-    def _ode_fun(self, eta, F):
+    def _g(self, x):
+        return np.sqrt(0.5*self._U_ref/(self._nu*x))
+
+    @staticmethod
+    def _ode_fun(eta, F):
         _ = eta  # To avoid pylint unused-argument message
         Fp = np.zeros_like(F)
 
         Fp[0] = F[1]
         Fp[1] = F[2]
-        Fp[2] = -F[0]*F[2]-self._beta()*(1-F[1]**2)
+        Fp[2] = -F[0]*F[2]
 
         return Fp

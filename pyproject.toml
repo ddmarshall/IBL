@@ -9,7 +9,7 @@ build-backend = "setuptools.build_meta"
 
 # See this for settings: https://packaging.python.org/en/latest/specifications/declaring-project-metadata/
 [project]
-name = "pyBL"
+name = "IBL"
 version = "0.6.dev"
 authors = [
     {name = "David D. Marshall", email = "ddmarshall@gmail.com"},
@@ -53,7 +53,7 @@ tests = [
 
 # Setuptools settings
 [tool.setuptools]
-packages=["pyBL"]
+packages=["ibl"]
 
 [tools.setuptools.package-data]
 stanford_olympics = ["stanford_olypics/*.txt"]
@@ -68,7 +68,7 @@ disallow_untyped_defs = true
 disallow_incomplete_defs = true
 disallow_untyped_decorators = true
 files = [
-    "pyBL",
+    "ibl",
     "examples",
     "tests"
 ]

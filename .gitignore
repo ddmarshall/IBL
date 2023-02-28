@@ -12,7 +12,7 @@ venvs/*
 # Caches
 .mypy_cache/
 **/__pycache__/
-pyBL.egg-info/
+IBL.egg-info/
 build/
 
 # Documentation

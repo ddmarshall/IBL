@@ -21,7 +21,7 @@ For example:
 
 .. code-block:: python
 
-    from pyBL.thwaites_method import ThwaitesMethodNonlinear
+    from ibl.thwaites_method import ThwaitesMethodNonlinear
 
     # Configure edge information
     U_e = ...
@@ -45,7 +45,7 @@ Otherwise, the interface is the same as for Thwaites' method:
 
 .. code-block:: python
 
-    from pyBL.head_method import HeadMethod
+    from ibl.head_method import HeadMethod
 
     # Configure edge information
     U_e = ...
