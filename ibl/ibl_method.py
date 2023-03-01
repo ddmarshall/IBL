@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 """
 All base classes and data for integral boundary layer method classes.
 
@@ -22,8 +20,8 @@ from scipy.interpolate import PchipInterpolator
 from scipy.integrate import solve_ivp
 from scipy.misc import derivative as fd
 
-from pyBL.initial_condition import InitialCondition
-from pyBL.initial_condition import FalknerSkanStagnationCondition
+from ibl.initial_condition import InitialCondition
+from ibl.initial_condition import FalknerSkanStagnationCondition
 
 
 TERMINATION_MESSAGES = {0: "Completed",

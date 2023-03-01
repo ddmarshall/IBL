@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 """
 Implementation of Head's method.
 
@@ -11,10 +9,10 @@ from typing import Tuple
 import numpy as np
 import numpy.typing as np_type
 
-from pyBL.ibl_method import IBLMethod
-from pyBL.ibl_method import IBLTermEvent
-from pyBL.skin_friction import c_f_LudwiegTillman as c_f_fun
-from pyBL.initial_condition import ManualCondition
+from ibl.ibl_method import IBLMethod
+from ibl.ibl_method import IBLTermEvent
+from ibl.skin_friction import c_f_LudwiegTillman as c_f_fun
+from ibl.initial_condition import ManualCondition
 
 
 class HeadMethod(IBLMethod):

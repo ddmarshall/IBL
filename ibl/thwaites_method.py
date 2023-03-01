@@ -16,9 +16,9 @@ import numpy.typing as np_type
 from scipy.interpolate import CubicSpline
 from scipy.misc import derivative as fd
 
-from pyBL.ibl_method import IBLMethod
-from pyBL.ibl_method import IBLTermEvent
-from pyBL.initial_condition import ManualCondition
+from ibl.ibl_method import IBLMethod
+from ibl.ibl_method import IBLTermEvent
+from ibl.initial_condition import ManualCondition
 
 
 class ThwaitesMethod(IBLMethod):
