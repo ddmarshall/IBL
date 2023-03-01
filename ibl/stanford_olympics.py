@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 """
 Classes needed to for the 1968 Stanford Turbulence Olympics data.
 
@@ -10,9 +8,6 @@ methods used to predict the turbulent boundary layer behavior. Volume II is
 a currated collection of high quality experimental data of a wide variety of
 turbulent boundary layer flows.
 """
-
-import pyBL
-
 
 # Unit conversions
 _METER_TO_FOOT = 0.3048

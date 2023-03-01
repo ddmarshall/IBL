@@ -1,10 +1,4 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
-Created on Thu Aug 11 15:59:40 2022.
-
-@author: ddmarshall
-"""
+"""Manual merging of dense output results."""
 
 # import numpy as np
 # from scipy.interpolate import PPoly

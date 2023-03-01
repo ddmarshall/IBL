@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 """
 Functions to calculate skin friction coefficient for turbulent boundary layers.
 

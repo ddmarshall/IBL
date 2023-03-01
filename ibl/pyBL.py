@@ -1,11 +1,3 @@
-# # -*- coding: utf-8 -*-
-# """
-# Created on Mon Feb  1 11:33:36 2021
-
-# @author: blond
-# """
-
-
 # pylint: skip-file
 
 # #from scipy.integrate import cumtrapz
