@@ -89,7 +89,7 @@ good-names-rgxs = ["^[_a-z][_a-z0-9]?$"]
 max-args = 10
 max-attributes = 20
 max-locals = 20
-max-public-methods = 20
+max-public-methods = 30
 min-public-methods = 1
 
 [tool.pylint.format]
