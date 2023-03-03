@@ -8,7 +8,7 @@ import numpy.typing as npt
 import numpy.testing as np_test
 from scipy.integrate import quadrature
 
-from ibl.analytic import BlasiusSolution
+from ibl.analytic import Blasius
 
 
 class TestBlasius(unittest.TestCase):
@@ -55,7 +55,7 @@ class TestBlasius(unittest.TestCase):
 
     def test_setters(self) -> None:
         """Test the setters."""
-        sol = BlasiusSolution(u_ref=100.0, nu_ref=1e-5)
+        sol = Blasius(u_ref=100.0, nu_ref=1e-5)
 
         # test the default values
         self.assertEqual(sol.u_ref, 100.0)
@@ -105,7 +105,7 @@ class TestBlasius(unittest.TestCase):
         """Test the calculation of the basic solution."""
         u_inf = 10
         nu = 1e-5
-        sol = BlasiusSolution(u_ref=u_inf, nu_ref=nu, f_pp0=self.f_pp_ref[0])
+        sol = Blasius(u_ref=u_inf, nu_ref=nu, f_pp0=self.f_pp_ref[0])
 
         # test the solution for f, f', and f''
         self.assertIsNone(np_test.assert_allclose(sol.f(self.eta_ref),
@@ -119,16 +119,16 @@ class TestBlasius(unittest.TestCase):
         """Test the reporting of the boundary layer parameters in eta."""
         u_inf = 10
         nu = 1e-5
-        sol = BlasiusSolution(u_ref=u_inf, nu_ref=nu, f_pp0=self.f_pp_ref[0])
+        sol = Blasius(u_ref=u_inf, nu_ref=nu, f_pp0=self.f_pp_ref[0])
 
         # Test the values in terms of eta
         #
-        FunType = Union[float, npt.NDArray]
+        # FunType = Union[float, npt.NDArray]
 
-        def ke_fun(eta: FunType) -> FunType:
-            f_p = sol.f_p(eta)
-            return f_p*(1-f_p**2)
-        self.eta_k_ref = quadrature(ke_fun, 0, 10)[0]
+        # def ke_fun(eta: FunType) -> FunType:
+        #     f_p = sol.f_p(eta)
+        #     return f_p*(1-f_p**2)
+        # self.eta_k_ref = quadrature(ke_fun, 0, 10)[0]
         # print(f"eta_k = {eta_k_ref:.10f}")
 
         # displacement thickness
@@ -145,7 +145,7 @@ class TestBlasius(unittest.TestCase):
         u_inf = 10
         nu = 1e-5
         rho = 1
-        sol = BlasiusSolution(u_ref=u_inf, nu_ref=nu, f_pp0=self.f_pp_ref[0])
+        sol = Blasius(u_ref=u_inf, nu_ref=nu, f_pp0=self.f_pp_ref[0])
         # Test the values in terms of x
         #
         x = np.linspace(0.2, 2, 101)
@@ -192,7 +192,7 @@ class TestBlasius(unittest.TestCase):
                                                   rtol=5e-7))
 
         # test wall shear stress
-        tau_w_ref = rho*nu*u_inf*g_ref*sol.f_pp(0)
+        tau_w_ref = rho*nu*u_inf*g_ref*self.f_pp_ref[0]
         self.assertIsNone(np_test.assert_allclose(sol.tau_w(x, rho),
                                                   tau_w_ref))
 
@@ -209,7 +209,7 @@ class TestBlasius(unittest.TestCase):
         """Test the local property calculations."""
         u_inf = 10
         nu = 1e-5
-        sol = BlasiusSolution(u_ref=u_inf, nu_ref=nu, f_pp0=self.f_pp_ref[0])
+        sol = Blasius(u_ref=u_inf, nu_ref=nu, f_pp0=self.f_pp_ref[0])
 
         # Test the values in terms of x,y
         x0 = 0.4

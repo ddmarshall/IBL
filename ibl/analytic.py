@@ -19,7 +19,7 @@ from scipy.optimize import root_scalar
 from ibl.typing import InputParam, SolutionFunc
 
 
-class BlasiusSolution:
+class Blasius:
     """
     Solution to Blasius equation.
 
@@ -219,7 +219,7 @@ class BlasiusSolution:
         float
             Momentum thickness in similarity coordinates.
         """
-        beta = self._beta()
+        beta = self._get_beta()
         return float(self.f_pp0-beta*self.eta_d())/(1+beta)
 
     def eta_k(self) -> float:
@@ -273,7 +273,7 @@ class BlasiusSolution:
             Edge streamwise velocity at specified locations.
         """
         # x = np.asarray(x)
-        beta = self._beta()
+        beta = self._get_beta()
         return self.u_ref*x**(beta/(2-beta))
 
     def v_e(self, x: InputParam) -> InputParam:
@@ -359,8 +359,8 @@ class BlasiusSolution:
         Both `x` and `y` must be the same shape.
         """
         eta = self.eta(x, y)
-        return -self.nu_ref*self._g(x)*(self.f(eta)
-                                        + (self._beta()-1)*eta*self.f_p(eta))
+        return -(self.nu_ref*self._g(x)
+                 * (self.f(eta) + (self._get_beta()-1)*eta*self.f_p(eta)))
 
     def delta_d(self, x: InputParam) -> InputParam:
         """
@@ -494,7 +494,7 @@ class BlasiusSolution:
         numpy.ndarray
             Dissipation integral at the specified locations.
         """
-        diss_term = 0.5*(1+2*self._beta())*self.eta_k()
+        diss_term = 0.5*(1+2*self._get_beta())*self.eta_k()
         return rho_ref*self.nu_ref*self._g(x)*self.u_e(x)**2*diss_term
 
     def _calculate_solution(self, f_pp0: Optional[float],
@@ -548,7 +548,7 @@ class BlasiusSolution:
                                  f"eta_inf={eta_inf:.6f}, did not produce "
                                  "converged solution.")
 
-    def _beta(self) -> float:
+    def _get_beta(self) -> float:
         """
         Return the wall angle term in PDE.
 
@@ -582,7 +582,7 @@ class BlasiusSolution:
 
         f_p[0] = f[1]
         f_p[1] = f[2]
-        f_p[2] = -f[0]*f[2]-self._beta()*(1-f[1]**2)
+        f_p[2] = -f[0]*f[2]-self._get_beta()*(1-f[1]**2)
 
         return f_p
 
@@ -600,4 +600,165 @@ class BlasiusSolution:
         numpy.ndarray
             Transformation parameter at points of interest.
         """
-        return np.sqrt(self.u_e(x)/((2-self._beta())*self.nu_ref*x))
+        return np.sqrt(self.u_e(x)/((2-self._get_beta())*self.nu_ref*x))
+
+
+class FalknerSkan(Blasius):
+    """
+    Solution to Falkner-Skan equation.
+
+    This class represents the solution to the Falkner-Skan equation. It needs
+    to perform a search for the appropriate initial condition during the
+    initialization.
+
+    Once the solution is obtained, the dense output from the ODE integrator is
+    used to report back a wide variety of parameters associated with the
+    boundary layer. Both integrated and point properties can be obtained from
+    the similarity coordinate or from the corresponding Cartesian coordinates.
+
+    Raises
+    ------
+    ValueError
+        If properties are being set outside of the valid range.
+    """
+
+    def __init__(self, beta: float, u_ref: float, nu_ref: float,
+                 eta_inf: Optional[float] = None) -> None:
+        """
+        Initialize class.
+
+        Parameters
+        ----------
+        beta : float
+            Inviscid wedge angle parameter. Must be in range [-0.19884, 2].
+        u_ref : float
+            Initial value of reference velocity. Must be positive.
+        nu_ref : float
+            Initial value of reference kinematic viscosity. Must be positive.
+        fpp0 : float, optional
+            Initial condition for PDE solution, by default 0.469.... Must be
+            positive.
+        eta_inf : float, optional
+            Maximum similarity coordinate, by default 10.0. Must be positive.
+        """
+        # need to get the class in default state
+        if (beta < -0.19884) or (beta > 2):
+            raise ValueError(f"Invalid inviscid wedge angle parameter: {beta}")
+        self._beta = beta
+
+        # find the correct ODE intial condition
+        if eta_inf is None:
+            eta_inf_in = 10.0
+        else:
+            eta_inf_in = eta_inf
+        f_pp0 = self._find_fpp0(eta_inf_in)
+
+        # initialize base class
+        super().__init__(u_ref=u_ref, nu_ref=nu_ref, f_pp0=f_pp0,
+                         eta_inf=eta_inf)
+
+    @property
+    def beta(self) -> float:
+        """
+        Inviscid wedge angle parameter. Must be in range [-0.19884, 2].
+        """
+        return self._beta
+
+    @beta.setter
+    def beta(self, beta: float) -> None:
+        if (beta < -0.19884) or (beta > 2):
+            raise ValueError(f"Invalid inviscid wedge angle parameter: {beta}")
+
+        if beta != self._beta:
+            # find the correct ODE intial condition
+            self._beta = beta
+            f_pp0 = self._find_fpp0(self.eta_inf)
+            self._calculate_solution(f_pp0=f_pp0, eta_inf=self.eta_inf,
+                                     force_resolve=True)
+
+    @property
+    def m(self) -> float:
+        """
+        Edge velocity profile parameter.
+        """
+        beta = self.beta
+        if beta == 2.0:
+            return np.inf
+        return beta/(2-beta)
+
+    @m.setter
+    def m(self, m: float) -> None:
+        if m == np.inf:
+            beta = 2.0
+        else:
+            beta = 2*m/(1+m)
+        self.beta = beta
+
+    def _get_beta(self) -> float:
+        """
+        Return the wall angle term in PDE.
+
+        For the Blasius solution the wall angle is always 0.0.
+
+        Returns
+        -------
+        float
+            Wall angle term.
+        """
+        return self.beta
+
+    def _find_fpp0(self, eta_inf: float) -> float:
+        """
+        Find the appropriate initial condition for ODE.
+
+        Parameters
+        ----------
+        eta_inf : Maximum similarity coordinate. Must be positive.
+
+        Returns
+        -------
+        float
+            Appropriate initial condition for ODE.
+        """
+        def fun(fpp0: float) -> float:
+            class BCEvent:
+                """Bounday condition event to terminate ODE solver."""
+
+                def __init__(self) -> None:
+                    self.terminal = True
+
+                def __call__(self, x: float, f: npt.NDArray) -> float:
+                    return f[1] - 1.01
+
+            f0 = [0, 0, fpp0]
+            rtn = solve_ivp(fun=self._ode_fun,
+                            t_span=[0, eta_inf], y0=f0,
+                            method="RK45", dense_output=False,
+                            events=BCEvent(), rtol=1e-8, atol=1e-11)
+            if not rtn.success:
+                raise ValueError("Could not find boundary condition")
+
+            val = 1-rtn.y[1, -1]
+            # # hack to get beta at separation to work
+            # if (m < 0) and (-2e-6 < val < 0):
+            #     val = 0
+            return val
+
+        # This Pade approximation is based on fitting values from White (2011)
+        def calc_fpp0(beta: float) -> float:
+            a = np.array([0.469600, 3.817635, 7.570524, 1.249101])
+            b = np.array([5.430058, 4.203534])
+            num = a[0] + a[1]*beta + a[2]*beta**2 + a[3]*beta**3
+            den = 1 + b[0]*beta + b[1]*beta**2
+            return num/den
+
+        if self.beta < 0:
+            x0 = calc_fpp0(self.beta)
+            x1 = calc_fpp0(self.beta + 1e-3)
+        else:
+            x0 = calc_fpp0(self.beta - 1e-3)
+            x1 = calc_fpp0(self.beta)
+        sol = root_scalar(fun, x0=x0, x1=x1)
+        if not sol.converged:
+            raise ValueError("Root finded could not find boundary condition")
+        return sol.root
