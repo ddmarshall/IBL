@@ -54,9 +54,13 @@ tests = [
 # Setuptools settings
 [tool.setuptools]
 packages=["ibl"]
+include-package-data = true
+
+[tools.setuptools.packages.find]
+where = ["ibl"]
 
 [tools.setuptools.package-data]
-stanford_olympics = ["stanford_olypics/*.txt"]
+stanford_olympics = ["*.txt"]
 
 
 # Mypy settings
