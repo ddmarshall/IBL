@@ -851,6 +851,7 @@ class StanfordOlympics1968:
     -----
     See page ix of proceedings for precise definition of each term.
     """
+    # pylint: disable=too-many-public-methods
 
     def __init__(self, case: Optional[str] = None) -> None:
         """

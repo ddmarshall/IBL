@@ -292,27 +292,26 @@ class TestStanfordOlympics1968(unittest.TestCase):
         self.assertIsNone(np_test.assert_allclose(so.re_delta_d(), ref))
 
         # test getting station data
-        st_idx = 2
         ref = np.array([0, 32.9, 65.8, 131.6, 263.2, 394.8, 526.4, 658, 789.6,
                         987, 1184.4, 1316, 1645.1, 1974.1, 2632.1, 3948.1])
-        self.assertIsNone(np_test.assert_allclose(so.y_plus(st_idx), ref))
+        self.assertIsNone(np_test.assert_allclose(so.y_plus(2), ref))
         ref = np.array([0, 13.91, 15.35, 16.92, 18.6, 19.67, 20.59, 21.28,
                         22.02, 22.97, 23.9, 24.38, 25.81, 27.04, 29.05, 30.1])
-        self.assertIsNone(np_test.assert_allclose(so.u_plus(st_idx), ref))
+        self.assertIsNone(np_test.assert_allclose(so.u_plus(2), ref))
         ref = np.array([0, 0.05, 0.1, 0.2, 0.4, 0.6, 0.8, 1, 1.2, 1.5, 1.8, 2,
                         2.5, 3, 4, 6])*1e-2
-        self.assertIsNone(np_test.assert_allclose(so.y(st_idx), ref))
+        self.assertIsNone(np_test.assert_allclose(so.y(2), ref))
         ref = np.array([0, 0.462, 0.51, 0.562, 0.618, 0.6535, 0.684, 0.707,
                         0.7315, 0.763, 0.794, 0.81, 0.8575, 0.8985, 0.965,
-                        1])*so.u_e()[st_idx]
-        self.assertIsNone(np_test.assert_allclose(so.u(st_idx), ref))
+                        1])*so.u_e()[2]
+        self.assertIsNone(np_test.assert_allclose(so.u(2), ref))
         ref = np.array([0, 0.002, 0.0039, 0.0078, 0.0156, 0.0235, 0.0313,
                         0.0391, 0.0469, 0.0587, 0.0704, 0.0782, 0.0978,
                         0.1173, 0.1564, 0.2346])
-        self.assertIsNone(np_test.assert_allclose(so.y_c(st_idx), ref))
+        self.assertIsNone(np_test.assert_allclose(so.y_c(2), ref))
         ref = np.array([30.1, 16.19, 14.75, 13.18, 11.5, 10.43, 9.51, 8.82,
                         8.08, 7.13, 6.2, 5.72, 4.29, 3.06, 1.05, 0])
-        self.assertIsNone(np_test.assert_allclose(so.u_defect(st_idx), ref))
+        self.assertIsNone(np_test.assert_allclose(so.u_defect(2), ref))
 
     def test_smooth_velocity_data(self) -> None:
         """Test getting smooth velocity data."""
