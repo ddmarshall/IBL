@@ -347,17 +347,20 @@ class TestStanfordOlympics1968(unittest.TestCase):
         # loading case will raise an exception if data doesn't match
         try:
             StanfordOlympics1968("1100")
-        except ValueError:
+        except ValueError as e:
+            print(e)
             raised = True
         self.assertFalse(raised)
         try:
             StanfordOlympics1968("1200")
-        except ValueError:
+        except ValueError as e:
+            print(e)
             raised = True
         self.assertFalse(raised)
         try:
             StanfordOlympics1968("1300")
-        except ValueError:
+        except ValueError as e:
+            print(e)
             raised = True
         self.assertFalse(raised)
 

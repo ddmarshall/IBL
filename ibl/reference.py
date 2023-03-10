@@ -725,16 +725,10 @@ class StanfordOlympics1968StationData:
                                  f"summary data ({y/self.delta_c}) "
                                  f"for Clauser distance sample {i}")
             if (np.abs(uplus - u/self.u_star) > 5e-1).any():
-                # print(f"Station data ({uplus}) does not match "
-                #       f"summary data ({u/self.u_star}) "
-                #       f"for U+ sample {i}")
                 raise ValueError(f"Station data ({uplus}) does not match "
                                  f"summary data ({u/self.u_star}) "
                                  f"for U+ sample {i}")
             if (np.abs(udef - (self.u_e - u)/self.u_star) > 5e-1).any():
-                # print(f"Station data ({udef}) does not match "
-                #       f"summary data ({(self.u_e-u)/self.u_star}) "
-                #       f"for defect velocity sample {i}")
                 raise ValueError(f"Station data ({udef}) does not match "
                                  f"summary data ({(self.u_e-u)/self.u_star}) "
                                  f"for defect velocity sample {i}")
