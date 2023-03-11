@@ -368,6 +368,12 @@ class TestStanfordOlympics1968(unittest.TestCase):
             print(f"{e} for case 2200")
             raised = True
         self.assertFalse(raised)
+        try:
+            StanfordOlympics1968("2300")
+        except ValueError as e:
+            print(f"{e} for case 2300")
+            raised = True
+        self.assertFalse(raised)
 
 
 if __name__ == "__main__":
