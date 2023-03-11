@@ -33,10 +33,10 @@ import numpy as np
 import numpy.typing as npt
 
 # Unit conversions
-_METER_TO_FOOT = 0.3048
-_FOOT_TO_METER = 1/_METER_TO_FOOT
-_METER_TO_INCH = _METER_TO_FOOT/12
-_INCH_TO_METER = 1/_METER_TO_INCH
+_FOOT_PER_METER = 0.3048
+_METER_PER_FOOT = 1/_FOOT_PER_METER
+_METER_PER_INCH = 12*_METER_PER_FOOT
+_INCH_PER_METER = 1/_METER_PER_INCH
 
 
 class StanfordOlympics1968StationData:
@@ -526,9 +526,9 @@ class StanfordOlympics1968StationData:
         if si_unit:
             theta = theta*1e-2
         else:
-            x = x*_FOOT_TO_METER
-            ui = ui*_FOOT_TO_METER
-            theta = theta*_INCH_TO_METER
+            x = x*_FOOT_PER_METER
+            ui = ui*_FOOT_PER_METER
+            theta = theta*_INCH_PER_METER
 
         # set values
         self.x = x
@@ -601,14 +601,14 @@ class StanfordOlympics1968StationData:
             enth = enth*1e-2
             clth = clth*1e-2
         else:
-            v = v*_FOOT_TO_METER**2
-            x = x*_FOOT_TO_METER
-            us = us*_FOOT_TO_METER
-            ui = ui*_FOOT_TO_METER
-            theta = theta*_INCH_TO_METER
-            dels = dels*_INCH_TO_METER
-            enth = enth*_INCH_TO_METER
-            clth = clth*_INCH_TO_METER
+            v = v*_FOOT_PER_METER**2
+            x = x*_FOOT_PER_METER
+            us = us*_FOOT_PER_METER
+            ui = ui*_FOOT_PER_METER
+            theta = theta*_INCH_PER_METER
+            dels = dels*_INCH_PER_METER
+            enth = enth*_INCH_PER_METER
+            clth = clth*_INCH_PER_METER
 
         # check duplicate values
         if np.abs(x-self.x) >= 2e-3:
@@ -713,7 +713,7 @@ class StanfordOlympics1968StationData:
             if si_unit:
                 y = y*1e-2
             else:
-                y = y*_INCH_TO_METER
+                y = y*_INCH_PER_METER
 
             # check derived values
             if (np.abs(yplus - y*self.u_star/self.nu) > 1e0).any():
@@ -819,8 +819,8 @@ class StanfordOlympics1968SmoothVel:
 
             # perform unit conversion
             if not si_unit:
-                x = x*_FOOT_TO_METER
-                ui = ui*_FOOT_TO_METER
+                x = x*_FOOT_PER_METER
+                ui = ui*_FOOT_PER_METER
 
             # set values
             self.x[i] = x
@@ -928,7 +928,7 @@ class StanfordOlympics1968:
         if si_unit:
             self._nu_ref = float(nu_parts[1])*1e-4
         else:
-            self._nu_ref = float(nu_parts[1])*_FOOT_TO_METER**2
+            self._nu_ref = float(nu_parts[1])*_FOOT_PER_METER**2
 
         # extract smoothed velocity info
         self._smooth_vel = StanfordOlympics1968SmoothVel(si_unit=si_unit,
