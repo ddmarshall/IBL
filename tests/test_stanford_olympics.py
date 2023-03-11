@@ -347,19 +347,25 @@ class TestStanfordOlympics1968(unittest.TestCase):
         try:
             StanfordOlympics1968("1100")
         except ValueError as e:
-            print(e)
+            print(f"{e} for case 1100")
             raised = True
         self.assertFalse(raised)
         try:
             StanfordOlympics1968("1200")
         except ValueError as e:
-            print(e)
+            print(f"{e} for case 1200")
             raised = True
         self.assertFalse(raised)
         try:
             StanfordOlympics1968("1300")
         except ValueError as e:
-            print(e)
+            print(f"{e} for case 1300")
+            raised = True
+        self.assertFalse(raised)
+        try:
+            StanfordOlympics1968("2200")
+        except ValueError as e:
+            print(f"{e} for case 2200")
             raised = True
         self.assertFalse(raised)
 
