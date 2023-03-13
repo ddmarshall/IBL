@@ -26,6 +26,7 @@ file <https://web.mit.edu/drela/Public/web/xfoil/xfoil_doc.txt>`__ for more
 information.
 """
 
+import copy
 from typing import Optional, List
 from importlib.resources import files
 
@@ -1399,3 +1400,1161 @@ class StanfordOlympics1968:
                     idx_prev = cidx
 
         return contents
+
+
+class XFoilAirfoilData:
+    """
+    Data reported for each station on airfoil.
+
+    This class is initialized with the row data from the dump file from XFOIL.
+
+    Notes
+    -----
+    See the XFOIL documentation for details on these terms.
+
+    Raises
+    ------
+    ValueError
+        If invalid data is used.
+    """
+
+    def __init__(self, data: str) -> None:
+        """
+        Initialize class.
+
+        Parameters
+        ----------
+        data : str
+            String containing the data at this point.
+        """
+        self._s = np.inf
+        self._x = np.inf
+        self._y = np.inf
+        self._u_e_rel = np.inf
+        self._delta_d = np.inf
+        self._delta_m = np.inf
+        self._c_f = np.inf
+        self._shape_d = np.inf
+        self._shape_k = np.inf
+        self._mom_defect = np.inf
+        self._mass_defect = np.inf
+        self._ke_defect = np.inf
+
+        self.reset(data=data)
+
+    @property
+    def s(self) -> float:
+        """
+        Arclength distance from stagnation point along surface.
+        Must be greater than or equal to zero.
+        Original symbol: `s`.
+        """
+        return self._s
+
+    @s.setter
+    def s(self, s: float) -> None:
+        if s < 0:
+            raise ValueError("Invalid arclength distance from leading edge: "
+                             f"{s}")
+        self._s = s
+
+    @property
+    def x(self) -> float:
+        """
+        Chord location of point along surface.
+        Original symbol: `x`.
+        """
+        return self._x
+
+    @x.setter
+    def x(self, x: float) -> None:
+        self._x = x
+
+    @property
+    def y(self) -> float:
+        """
+        Normal coordinate of point along surface.
+        Original symbol: `y`.
+        """
+        return self._y
+
+    @y.setter
+    def y(self, y: float) -> None:
+        self._y = y
+
+    @property
+    def u_e_rel(self) -> float:
+        """
+        Nondimensionalized edge velocity at point along surface.
+        Original symbol: `Ue/Vinf`.
+        """
+        return self._u_e_rel
+
+    @u_e_rel.setter
+    def u_e_rel(self, u_e_rel: float) -> None:
+        self._u_e_rel = u_e_rel
+
+    @property
+    def delta_d(self) -> float:
+        """
+        Displacement thickness at point along surface.
+        Must be greater than or equal to zero.
+        Original symbol: `Dstar`.
+        """
+        return self._delta_d
+
+    @delta_d.setter
+    def delta_d(self, delta_d: float) -> None:
+        if delta_d < 0:
+            raise ValueError(f"Invalid displacement thickness: {delta_d}")
+        self._delta_d = delta_d
+
+    @property
+    def delta_m(self) -> float:
+        """
+        Momentum thickness at point along surface.
+        Must be greater than or equal to zero.
+        Original symbol: `Theta`.
+        """
+        return self._delta_m
+
+    @delta_m.setter
+    def delta_m(self, delta_m: float) -> None:
+        if delta_m < 0:
+            raise ValueError(f"Invalid momentum thickness: {delta_m}")
+        self._delta_m = delta_m
+
+    @property
+    def c_f(self) -> float:
+        """
+        Skin friction coefficient at point along surface.
+        Must be greater than or equal to zero.
+        Original symbol: `Cf`.
+        """
+        return self._c_f
+
+    @c_f.setter
+    def c_f(self, c_f: float) -> None:
+        if c_f < 0:
+            raise ValueError(f"Invalid skin friction coefficient: {c_f}")
+        self._c_f = c_f
+
+    @property
+    def shape_d(self) -> float:
+        """
+        Displacement shape factor at point along surface.
+        Must be greater than zero.
+        Original symbol: `H`.
+        """
+        return self._shape_d
+
+    @shape_d.setter
+    def shape_d(self, shape_d: float) -> None:
+        if shape_d <= 0:
+            raise ValueError(f"Invalid displacement shape factor: {shape_d}")
+        self._shape_d = shape_d
+
+    @property
+    def shape_k(self) -> float:
+        """
+        Kinetic energy shape factor at point along surface.
+        Must be greater than zero.
+        Original symbol: `H*`.
+        """
+        return self._shape_k
+
+    @shape_k.setter
+    def shape_k(self, shape_k: float) -> None:
+        if shape_k <= 0:
+            raise ValueError(f"Invalid kinetic energy shape factor: {shape_k}")
+        self._shape_k = shape_k
+
+    @property
+    def mass_defect(self) -> float:
+        """
+        Mass defect at point along surface.
+        Original symbol: `m`.
+        """
+        return self._mass_defect
+
+    @mass_defect.setter
+    def mass_defect(self, mass_defect: float) -> None:
+        self._mass_defect = mass_defect
+
+    @property
+    def mom_defect(self) -> float:
+        """
+        Momentum defect at point along surface.
+        Original symbol: `P`.
+        """
+        return self._mom_defect
+
+    @mom_defect.setter
+    def mom_defect(self, mom_defect: float) -> None:
+        self._mom_defect = mom_defect
+
+    @property
+    def ke_defect(self) -> float:
+        """
+        Kinetic energy defect at point along surface.
+        Original symbol: `K`.
+        """
+        return self._ke_defect
+
+    @ke_defect.setter
+    def ke_defect(self, ke_defect: float) -> None:
+        self._ke_defect = ke_defect
+
+    def reset(self, data: str) -> None:
+        """
+        Reset the data to new values.
+
+        Parameters
+        ----------
+        data : str
+            String containing new data at point, empty string resets values.
+
+        Raises
+        ------
+        ValueError
+            If invalid data is used.
+        """
+        # Reset values
+        self.s = np.inf
+        self.x = np.inf
+        self.y = np.inf
+        self.u_e_rel = np.inf
+        self.delta_d = np.inf
+        self.delta_m = np.inf
+        self.c_f = np.inf
+        self.shape_d = np.inf
+        self.shape_k = np.inf
+        self.mom_defect = np.inf
+        self.mass_defect = np.inf
+        self.ke_defect = np.inf
+        if data == "":
+            return
+
+        # unpack values from string
+        try:
+            (s, x, y, u_e_rel, delta_d, delta_m,
+             c_f, shape_d, shape_k, mom_defect,
+             mass_defect, ke_defect) = [float(x) for x in data.split()]
+        except ValueError:
+            raise ValueError("Invalid number of columns in airfoil "
+                             f"data: {data}") from None
+        self.s = s
+        self.x = x
+        self.y = y
+        self.u_e_rel = u_e_rel
+        self.delta_d = delta_d
+        self.delta_m = delta_m
+        self.c_f = c_f
+        self.shape_d = shape_d
+        self.shape_k = shape_k
+        self.mom_defect = mom_defect
+        self.mass_defect = mass_defect
+        self.ke_defect = ke_defect
+
+
+class XFoilWakeData:
+    """
+    Data reported for each station in wake.
+
+    This class is initialized with the row data from the dump file from XFOIL.
+    """
+
+    def __init__(self, data: str) -> None:
+        """
+        Initialize class.
+
+        Parameters
+        ----------
+        data : str
+            String containing the data at this point.
+        """
+        self._s = np.inf
+        self._x = np.inf
+        self._y = np.inf
+        self._u_e_rel = np.inf
+        self._delta_d = np.inf
+        self._delta_m = np.inf
+        self._shape_d = np.inf
+
+        self.reset(data=data)
+
+    @property
+    def s(self) -> float:
+        """
+        Arclength distance from stagnation point along surface.
+        Must be greater than or equal to zero.
+        Original symbol: `s`.
+        """
+        return self._s
+
+    @s.setter
+    def s(self, s: float) -> None:
+        if s < 0:
+            raise ValueError("Invalid arclength distance from leading edge: "
+                             f"{s}")
+        self._s = s
+
+    @property
+    def x(self) -> float:
+        """
+        Chord location of point along surface.
+        Original symbol: `x`.
+        """
+        return self._x
+
+    @x.setter
+    def x(self, x: float) -> None:
+        self._x = x
+
+    @property
+    def y(self) -> float:
+        """
+        Normal coordinate of point along surface.
+        Original symbol: `y`.
+        """
+        return self._y
+
+    @y.setter
+    def y(self, y: float) -> None:
+        self._y = y
+
+    @property
+    def u_e_rel(self) -> float:
+        """
+        Nondimensionalized edge velocity at point along surface.
+        Original symbol: `Ue/Vinf`.
+        """
+        return self._u_e_rel
+
+    @u_e_rel.setter
+    def u_e_rel(self, u_e_rel: float) -> None:
+        self._u_e_rel = u_e_rel
+
+    @property
+    def delta_d(self) -> float:
+        """
+        Displacement thickness at point along surface.
+        Must be greater than or equal to zero.
+        Original symbol: `Dstar`.
+        """
+        return self._delta_d
+
+    @delta_d.setter
+    def delta_d(self, delta_d: float) -> None:
+        if delta_d < 0:
+            raise ValueError(f"Invalid displacement thickness: {delta_d}")
+        self._delta_d = delta_d
+
+    @property
+    def delta_m(self) -> float:
+        """
+        Momentum thickness at point along surface.
+        Must be greater than or equal to zero.
+        Original symbol: `Theta`.
+        """
+        return self._delta_m
+
+    @delta_m.setter
+    def delta_m(self, delta_m: float) -> None:
+        if delta_m < 0:
+            raise ValueError(f"Invalid momentum thickness: {delta_m}")
+        self._delta_m = delta_m
+
+    @property
+    def shape_d(self) -> float:
+        """
+        Displacement shape factor at point along surface.
+        Must be greater than zero.
+        Original symbol: `H`.
+        """
+        return self._shape_d
+
+    @shape_d.setter
+    def shape_d(self, shape_d: float) -> None:
+        if shape_d <= 0:
+            raise ValueError(f"Invalid displacement shape factor: {shape_d}")
+        self._shape_d = shape_d
+
+    def reset(self, data: str) -> None:
+        """
+        Reset the data to new values.
+
+        Parameters
+        ----------
+        data : str
+            String containing new data at point, empty string resets values.
+
+        Raises
+        ------
+        ValueError
+            If invalid data is used.
+        """
+        # Reset values
+        self.s = np.inf
+        self.x = np.inf
+        self.y = np.inf
+        self.u_e_rel = np.inf
+        self.delta_d = np.inf
+        self.delta_m = np.inf
+        self.shape_d = np.inf
+        if data == "":
+            return
+
+        # unpack values from string
+        try:
+            (s, x, y, u_e_rel, delta_d, delta_m, _,
+             shape_d) = [float(x) for x in data.split()]
+        except ValueError:
+            raise ValueError("Invalid number of columns in wake "
+                             f"data: {data}") from None
+        self.s = s
+        self.x = x
+        self.y = y
+        self.u_e_rel = u_e_rel
+        self.delta_d = delta_d
+        self.delta_m = delta_m
+        self.shape_d = shape_d
+
+
+class XFoilReader:
+    """
+    XFoil dump file reader.
+
+    This class is an interface to the dump file from XFoil. The data for the
+    airfoil and wake are read in and processed into upper flow and lower flow
+    at the stagnation point (not leading edge) and the wake. Each portion is
+    stored separately and the parameters are obtained separately.
+
+    Attributes
+    ----------
+    airfoil: string
+        Name of airfoil analyzed.
+    alpha: float
+        Angle of attack for this case.
+    x_trans: 2-tuple of floats
+        Chord location of transition for upper and lower surface.
+    n_trans: float
+        Amplification factor used for transition model.
+    c: float
+        Airfoil chord length used for this case.
+    Re: float
+        Freestream Reynolds number based on the airfoil chord length.
+    """
+
+    # Attributes
+    # ----------
+    # _filename: File name of dump
+    # _upper: Data at each upper station
+    # _lower: Data at each lower station
+    # _wake: Data at each wake station
+
+    def __init__(self, filename="", airfoil="", alpha=np.inf, c=1, Re=None,
+                 x_trans=None, n_trans=None):
+        self.change_case_data(filename, airfoil, alpha, c, Re, x_trans,
+                              n_trans)
+
+    def change_case_data(self, filename, airfoil="", alpha=np.inf, c=1,
+                         Re=None, x_trans=None, n_trans=None):
+        """
+        Reset the case data to new case.
+
+        Parameters
+        ----------
+        filename : string
+            Name of file containing dump data.
+        airfoil : string, optional
+            Name of airfoil. The default is "".
+        alpha : float, optional
+            Angle of attack for this case. The default is np.inf.
+        c : float, optional
+            Chord length of airfoil for this case. The default is 1.
+        Re : float, optional
+            Reynolds based on the airfoil chord for this case. The default
+            is `None`.
+        x_trans : float or 2-tuple, optional
+            Chord location specified for the boundary layer to transition from
+            laminar to turbulent. The default is `None`.
+        n_trans : float, optional
+            Amplification factor used for the transition model. The default
+            is `None`.
+
+        Raises
+        ------
+        Exception
+            When dump file is not correctly formatted.
+        """
+        # Reset everything
+        self._filename = filename
+        self.aifoil = airfoil
+        self.alpha = alpha
+        if isinstance(x_trans, (int, float)):
+            self.x_trans = [x_trans, x_trans]
+        else:
+            self.x_trans = x_trans
+        self.n_trans = n_trans
+        self.c = c
+        self. Re = Re
+
+        self._upper = []
+        self._lower = []
+        self._wake = []
+
+        if filename == "":
+            return
+
+        # define function to each comments and empty lines
+        def next_chunk(f):
+            line = f.readline()
+            if line == "":
+                return ""
+            while (line == "\n") or (line[0] == "#"):
+                line = f.readline()
+                if line == "":
+                    return ""
+
+            chunk = [line]
+            line = f.readline()
+            if line == "":
+                return ""
+            while (line != "") and (line != "\n") and (line[0] != "#"):
+                chunk.append(line)
+                line = f.readline()
+            return chunk
+
+        with open(filename, "r", encoding="utf8") as dump_file:
+            # read case information
+            chunk = next_chunk(dump_file)
+
+            # collect raw airfoil and wake info
+            found_stag_pt = False
+            found_wake = False
+            stag_s = 0
+            te_s = 0
+            for row in chunk:
+                col = row.split()
+                if len(col) == 12:
+                    if found_wake:
+                        raise ValueError("Cannot have airfoil data after wake "
+                                         "data")
+                    info = XFoilAirfoilData(row)
+                    if found_stag_pt:
+                        te_s = info.s
+                        info.s = info.s - stag_s
+                        info.u_e_rel = -info.u_e_rel
+                        info.mass_defect = -info.mass_defect
+                        info.ke_defect = -info.ke_defect
+                        self._lower.append(info)
+                    else:
+                        if info.u_e_rel < 0:
+                            # append the first lower element after corrections
+                            found_stag_pt = True
+                            info.u_e_rel = -info.u_e_rel
+                            info.mass_defect = -info.mass_defect
+                            info.ke_defect = -info.ke_defect
+
+                            # interpolate actual stagnation point
+                            stag_info = XFoilAirfoilData("")
+                            u = self._upper[-1]
+                            dU = info.u_e_rel + u.u_e_rel
+                            frac = info.u_e_rel/dU
+
+                            # standard interpolation for sign changes
+                            stag_info.u_e_rel = 0.0
+                            stag_info.x = np.abs(-frac*u.x + (1-frac)*info.x)
+                            stag_info.s = frac*u.s + (1-frac)*info.s
+                            stag_info.y = frac*u.y + (1-frac)*info.y
+                            # invert sign for one term for rest
+                            stag_info.delta_d = (frac*u.delta_d
+                                                 + (1-frac)*info.delta_d)
+                            stag_info.delta_m = (frac*u.delta_m
+                                                 + (1-frac)*info.delta_m)
+                            stag_info.c_f = frac*u.c_f + (1-frac)*info.c_f
+                            stag_info.shape_d = frac*u.shape_d + (1-frac)*info.shape_d
+                            stag_info.shape_k = frac*u.shape_k + (1-frac)*info.shape_k
+                            stag_info.mom_defect = frac*u.mom_defect + (1-frac)*info.mom_defect
+                            stag_info.mass_defect = frac*u.mass_defect + (1-frac)*info.mass_defect
+                            stag_info.ke_defect = frac*u.ke_defect + (1-frac)*info.ke_defect
+
+                            # append stag_info to upper
+                            stag_s = stag_info.s
+                            self._upper.append(copy.copy(stag_info))
+
+                            # correct arc lengths for two lower terms then add
+                            stag_info.s = 0
+                            info.s = info.s - stag_s
+                            self._lower.append(stag_info)
+                            self._lower.append(info)
+
+                            # correct upper with the stag_info.s
+                            for af in self._upper:
+                                af.s = stag_s - af.s
+
+                            # Reverse upper surface so that it goes from
+                            # stagnation point to trailing edge
+                            self._upper.reverse()
+                        elif info.u_e_rel == 0:
+                            found_stag_pt = True
+                            stag_s = info.s
+                            self._upper.append(info)
+                            for af in self._upper:
+                                af.s = af.s - stag_s
+                            self._lower.append(info)
+                        else:
+                            self._upper.append(info)
+                elif len(col) == 8:
+                    found_wake = True
+                    info = XFoilWakeData(row)
+                    info.s = info.s - te_s
+                    self._wake.append(info)
+                else:
+                    raise ValueError(f"Invalid data in XFoil dump file: {col}")
+
+    def num_points_upper(self):
+        """
+        Return number of points on the upper surface of airofil.
+
+        Returns
+        -------
+        int
+            Number of points on the upper surface of airfoil.
+        """
+        return len(self._upper)
+
+    def num_points_lower(self):
+        """
+        Return number of points on the lower surface of airofil.
+
+        Returns
+        -------
+        int
+            Number of points on the lower surface of airfoil.
+        """
+        return len(self._lower)
+
+    def num_points_wake(self):
+        """
+        Return number of points in the airofil wake.
+
+        Returns
+        -------
+        int
+            Number of points in the airfoil wake.
+        """
+        return len(self._wake)
+
+    def point_upper(self, i):
+        """
+        Return the specified data on the upper surface of airfoil.
+
+        Parameters
+        ----------
+        i : int
+            Index of point.
+
+        Returns
+        -------
+        AirfoilData
+            Upper airfoil surface data.
+        """
+        return self._upper[i]
+
+    def point_lower(self, i):
+        """
+        Return the specified data on the lower surface of airfoil.
+
+        Parameters
+        ----------
+        i : int
+            Index of point.
+
+        Returns
+        -------
+        AirfoilData
+            Lower airfoil surface data.
+        """
+        return self._lower[i]
+
+    def point_wake(self, i):
+        """
+        Return the specified airfoil wake data.
+
+        Parameters
+        ----------
+        i : int
+            Index of point.
+
+        Returns
+        -------
+        AirfoilData
+            Airfoil wake data.
+        """
+        return self._wake[i]
+
+    def s_upper(self):
+        """
+        Return arc-length distances from stagnation point for upper surface.
+
+        Returns
+        -------
+        array-like
+            Arc-length distances from the stagnation point for the upper
+            surface.
+        """
+        s = []
+        for sd in self._upper:
+            s.append(sd.s)
+        return s
+
+    def s_lower(self):
+        """
+        Return arc-length distances from stagnation point for lower surface.
+
+        Returns
+        -------
+        array-like
+            Arc-length distances from the stagnation point for the lower
+            surface.
+        """
+        s = []
+        for sd in self._lower:
+            s.append(sd.s)
+        return s
+
+    def s_wake(self):
+        """
+        Return arc-length distances from airfoil trailing edge.
+
+        Returns
+        -------
+        array-like
+            Arc-length distances from the airfoil trailing edge.
+        """
+        s = []
+        for sd in self._wake:
+            s.append(sd.s)
+        return s
+
+    def x_upper(self):
+        """
+        Return the chord locations for upper surface of airfoil.
+
+        Returns
+        -------
+        array-like
+            Chord locations for upper surface of airfoil.
+        """
+        x = []
+        for sd in self._upper:
+            x.append(sd.x)
+        return x
+
+    def x_lower(self):
+        """
+        Return the chord locations for lower surface of airfoil.
+
+        Returns
+        -------
+        array-like
+            Chord locations for lower surface of airfoil.
+        """
+        x = []
+        for sd in self._lower:
+            x.append(sd.x)
+        return x
+
+    def x_wake(self):
+        """
+        Return the chord locations for airfoil wake.
+
+        Returns
+        -------
+        array-like
+            Chord locations for airfoil wake.
+        """
+        x = []
+        for sd in self._wake:
+            x.append(sd.x)
+        return x
+
+    def y_upper(self):
+        """
+        Return the normal locations for upper surface of airfoil.
+
+        Returns
+        -------
+        array-like
+            Normal locations for upper surface of airfoil.
+        """
+        y = []
+        for sd in self._upper:
+            y.append(sd.y)
+        return y
+
+    def y_lower(self):
+        """
+        Return the normal locations for lower surface of airfoil.
+
+        Returns
+        -------
+        array-like
+            Normal locations for lower surface of airfoil.
+        """
+        y = []
+        for sd in self._lower:
+            y.append(sd.y)
+        return y
+
+    def y_wake(self):
+        """
+        Return the normal locations for airfoil wake.
+
+        Returns
+        -------
+        array-like
+            Normal locations for airfoil wake.
+        """
+        y = []
+        for sd in self._wake:
+            y.append(sd.y)
+        return y
+
+    def u_e_rel_upper(self):
+        """
+        Return the nondimensionalized velocities for upper surface of airfoil.
+
+        Returns
+        -------
+        array-like
+            Nondimensionalized velocities for upper surface of airfoil.
+        """
+        u_e_rel = []
+        for sd in self._upper:
+            u_e_rel.append(sd.u_e_rel)
+        return u_e_rel
+
+    def u_e_rel_lower(self):
+        """
+        Return the nondimensionalized velocities for lower surface of airfoil.
+
+        Returns
+        -------
+        array-like
+            Nondimensionalized velocities for lower surface of airfoil.
+        """
+        u_e_rel = []
+        for sd in self._lower:
+            u_e_rel.append(sd.u_e_rel)
+        return u_e_rel
+
+    def u_e_rel_wake(self):
+        """
+        Return the nondimensionalized velocities for airfoil wake.
+
+        Returns
+        -------
+        array-like
+            Nondimensionalized velocities for airfoil wake.
+        """
+        u_e_rel = []
+        for sd in self._wake:
+            u_e_rel.append(sd.u_e_rel)
+        return u_e_rel
+
+    def delta_d_upper(self):
+        """
+        Return the displacement thicknesses for upper surface of airfoil.
+
+        Returns
+        -------
+        array-like
+            Displacement thicknesses for upper surface of airfoil.
+        """
+        delta_d = []
+        for sd in self._upper:
+            delta_d.append(sd.delta_d)
+        return delta_d
+
+    def delta_d_lower(self):
+        """
+        Return the displacement thicknesses for lower surface of airfoil.
+
+        Returns
+        -------
+        array-like
+            Displacement thicknesses for lower surface of airfoil.
+        """
+        delta_d = []
+        for sd in self._lower:
+            delta_d.append(sd.delta_d)
+        return delta_d
+
+    def delta_d_wake(self):
+        """
+        Return the displacement thicknesses for airfoil wake.
+
+        Returns
+        -------
+        array-like
+            Displacement thicknesses for airfoil wake.
+        """
+        delta_d = []
+        for sd in self._wake:
+            delta_d.append(sd.delta_d)
+        return delta_d
+
+    def delta_m_upper(self):
+        """
+        Return the momentum thicknesses for upper surface of airfoil.
+
+        Returns
+        -------
+        array-like
+            Momentum thicknesses for upper surface of airfoil.
+        """
+        delta_m = []
+        for sd in self._upper:
+            delta_m.append(sd.delta_m)
+        return delta_m
+
+    def delta_m_lower(self):
+        """
+        Return the momentum thicknesses for lower surface of airfoil.
+
+        Returns
+        -------
+        rray-like
+            Momentum thicknesses for lower surface of airfoil.
+        """
+        delta_m = []
+        for sd in self._lower:
+            delta_m.append(sd.delta_m)
+        return delta_m
+
+    def delta_m_wake(self):
+        """
+        Return the momentum thicknesses for airfoil wake.
+
+        Returns
+        -------
+        array-like
+            Momentum thicknesses for airfoil wake.
+        """
+        delta_m = []
+        for sd in self._wake:
+            delta_m.append(sd.delta_m)
+        return delta_m
+
+    def delta_k_upper(self):
+        """
+        Return the kinetic energy thicknesses for upper surface of airfoil.
+
+        Returns
+        -------
+        array-like
+            Kinetic energy thicknesses for upper surface of airfoil.
+        """
+        delta_k = []
+        for sd in self._upper:
+            delta_k.append(sd.shape_k*sd.delta_m)
+        return delta_k
+
+    def delta_k_lower(self):
+        """
+        Return the kinetic energy thicknesses for lower surface of airfoil.
+
+        Returns
+        -------
+        array-like
+            Kinetic energy thicknesses for lower surface of airfoil.
+        """
+        delta_k = []
+        for sd in self._lower:
+            delta_k.append(sd.shape_k*sd.delta_m)
+        return delta_k
+
+    def shape_d_upper(self):
+        """
+        Return the displacement shape factor for upper surface of airfoil.
+
+        Returns
+        -------
+        array-like
+            Displacement shape factor for upper surface of airfoil.
+        """
+        shape_d = []
+        for sd in self._upper:
+            shape_d.append(sd.shape_d)
+        return shape_d
+
+    def shape_d_lower(self):
+        """
+        Return the displacement shape factor for lower surface of airfoil.
+
+        Returns
+        -------
+        array-like
+            Displacement shape factor for lower surface of airfoil.
+        """
+        shape_d = []
+        for sd in self._lower:
+            shape_d.append(sd.shape_d)
+        return shape_d
+
+    def shape_d_wake(self):
+        """
+        Return the displacement shape factor for airfoil wake.
+
+        Returns
+        -------
+        array-like
+            Displacement shape factor for airfoil wake.
+        """
+        shape_d = []
+        for sd in self._wake:
+            shape_d.append(sd.shape_d)
+        return shape_d
+
+    def shape_k_upper(self):
+        """
+        Return the kinetic energy shape factor for upper surface of airfoil.
+
+        Returns
+        -------
+        array-like
+            Kinetic energy shape factor for upper surface of airfoil.
+        """
+        shape_k = []
+        for sd in self._upper:
+            shape_k.append(sd.shape_k)
+        return shape_k
+
+    def shape_k_lower(self):
+        """
+        Return the kinetic energy shape factor for lower surface of airfoil.
+
+        Returns
+        -------
+        array-like
+            Kinetic energy shape factor for lower surface of airfoil.
+        """
+        shape_k = []
+        for sd in self._lower:
+            shape_k.append(sd.shape_k)
+        return shape_k
+
+    def c_f_upper(self):
+        """
+        Return the skin friction coefficient for upper surface of airfoil.
+
+        Returns
+        -------
+        array-like
+            Skin friction coefficient for upper surface of airfoil.
+        """
+        c_f = []
+        for sd in self._upper:
+            c_f.append(sd.c_f)
+        return c_f
+
+    def c_f_lower(self):
+        """
+        Return the skin friction coefficient for lower surface of airfoil.
+
+        Returns
+        -------
+        array-like
+            Skin friction coefficient for lower surface of airfoil.
+        """
+        c_f = []
+        for sd in self._lower:
+            c_f.append(sd.c_f)
+        return c_f
+
+    def mass_defect_upper(self):
+        """
+        Return the mass defect for upper surface of airfoil.
+
+        Returns
+        -------
+        array-like
+            Mass defect for upper surface of airfoil.
+        """
+        mass_defect = []
+        for sd in self._upper:
+            mass_defect.append(sd.mass_defect)
+        return mass_defect
+
+    def mass_defect_lower(self):
+        """
+        Return the mass defect for lower surface of airfoil.
+
+        Returns
+        -------
+        array-like
+            Mass defect for lower surface of airfoil.
+        """
+        mass_defect = []
+        for sd in self._lower:
+            mass_defect.append(sd.mass_defect)
+        return mass_defect
+
+    def mom_defect_upper(self):
+        """
+        Return the momentum defect for upper surface of airfoil.
+
+        Returns
+        -------
+        array-like
+            Momentum defect for upper surface of airfoil.
+        """
+        mom_defect = []
+        for sd in self._upper:
+            mom_defect.append(sd.mom_defect)
+        return mom_defect
+
+    def mom_defect_lower(self):
+        """
+        Return the momentum defect for lower surface of airfoil.
+
+        Returns
+        -------
+        array-like
+            Momentum defect for lower surface of airfoil.
+        """
+        mom_defect = []
+        for sd in self._lower:
+            mom_defect.append(sd.mom_defect)
+        return mom_defect
+
+    def ke_defect_upper(self):
+        """
+        Return the kinetic energy defect for upper surface of airfoil.
+
+        Returns
+        -------
+        array-like
+            Kinetic energy defect for upper surface of airfoil.
+        """
+        ke_defect = []
+        for sd in self._upper:
+            ke_defect.append(sd.ke_defect)
+        return ke_defect
+
+    def ke_defect_lower(self):
+        """
+        Return the kinetic energy defect for lower surface of airfoil.
+
+        Returns
+        -------
+        array-like
+            Kinetic energy defect for lower surface of airfoil.
+        """
+        ke_defect = []
+        for sd in self._lower:
+            ke_defect.append(sd.ke_defect)
+        return ke_defect

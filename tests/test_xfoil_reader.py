@@ -11,14 +11,101 @@ from os.path import abspath, dirname
 import unittest
 import numpy.testing as npt
 
-from pyBL.xfoil_reader import XFoilReader
+from ibl.reference import XFoilReader
+from ibl.reference import XFoilAirfoilData
+from ibl.reference import XFoilWakeData
 
 
 class TestXFoilDumpReader(unittest.TestCase):
     """Class to test importing data from XFoil dump file"""
 
-    def test_case_inviscid(self):
+    def test_aifoil_data(self) -> None:
+        """Test the aifoil data."""
+        xfa = XFoilAirfoilData(data="")
+
+        # test setting values manually
+        xfa.s = 2.0
+        self.assertEqual(xfa.s, 2.0)
+        with self.assertRaises(ValueError):
+            xfa.s = -1
+        xfa.x = 2.0
+        self.assertEqual(xfa.x, 2.0)
+        xfa.y = 2.0
+        self.assertEqual(xfa.y, 2.0)
+        xfa.u_e_rel = 1.0
+        self.assertEqual(xfa.u_e_rel, 1.0)
+        xfa.delta_d = 2.0
+        self.assertEqual(xfa.delta_d, 2.0)
+        with self.assertRaises(ValueError):
+            xfa.delta_d = -1
+        xfa.delta_m = 2.0
+        self.assertEqual(xfa.delta_m, 2.0)
+        with self.assertRaises(ValueError):
+            xfa.delta_m = -1
+        xfa.c_f = 2.0
+        self.assertEqual(xfa.c_f, 2.0)
+        with self.assertRaises(ValueError):
+            xfa.c_f = -1
+        xfa.shape_d = 2.0
+        self.assertEqual(xfa.shape_d, 2.0)
+        with self.assertRaises(ValueError):
+            xfa.shape_d = 0
+        xfa.shape_k = 2.0
+        self.assertEqual(xfa.shape_k, 2.0)
+        with self.assertRaises(ValueError):
+            xfa.shape_k = 0
+        xfa.mass_defect = 2.0
+        self.assertEqual(xfa.mass_defect, 2.0)
+        xfa.mom_defect = 2.0
+        self.assertEqual(xfa.mom_defect, 2.0)
+        xfa.ke_defect = 2.0
+        self.assertEqual(xfa.ke_defect, 2.0)
+
+        # test setting values from string
+        data = ("   0.40029  0.59987  0.01141  1.03951  0.043102  0.016399  "
+                "0.025638    2.6284    1.5721  0.01772  0.04481  0.02896")
+        xfa.reset(data=data)
+
+        pass
+
+    def test_wake_data(self) -> None:
+        """Test the wake data."""
+        xfw = XFoilWakeData(data="")
+
+        # test setting values manually
+        xfw.s = 2.0
+        self.assertEqual(xfw.s, 2.0)
+        with self.assertRaises(ValueError):
+            xfw.s = -1
+        xfw.x = 2.0
+        self.assertEqual(xfw.x, 2.0)
+        xfw.y = 2.0
+        self.assertEqual(xfw.y, 2.0)
+        xfw.u_e_rel = 1.0
+        self.assertEqual(xfw.u_e_rel, 1.0)
+        xfw.delta_d = 2.0
+        self.assertEqual(xfw.delta_d, 2.0)
+        with self.assertRaises(ValueError):
+            xfw.delta_d = -1
+        xfw.delta_m = 2.0
+        self.assertEqual(xfw.delta_m, 2.0)
+        with self.assertRaises(ValueError):
+            xfw.delta_m = -1
+        xfw.shape_d = 2.0
+        self.assertEqual(xfw.shape_d, 2.0)
+        with self.assertRaises(ValueError):
+            xfw.shape_d = 0
+
+        # test setting values from string
+        data = ("   2.11827  1.11481 -0.00000  1.01470  0.115166  0.045430  "
+                "0.000000    2.5350")
+        xfw = XFoilWakeData(data=data)
+
+    def test_case_inviscid(self) -> None:
         """Test importing an inviscid case."""
+        # pylint: disable=too-many-locals
+        # pylint: disable=too-many-statements
+
         # Common XFoil case settings
         airfoil_name = "NACA 0003"
         alpha = 0  # (deg)
@@ -60,11 +147,13 @@ class TestXFoilDumpReader(unittest.TestCase):
                        -0.0131, -0.01141, -0.00906, -0.00632, -0.00362,
                        -0.00031]
         y_wake_ref = []
-        U_e_upper_ref = [0.0, 0.72574, 1.05098, 1.04538, 1.03909, 1.03339,
-                         1.02688, 1.02041, 1.01457, 1.00702, 0.9962, 0.92497]
-        U_e_lower_ref = [0.0, 0.72574, 1.05034, 1.04462, 1.03909, 1.03258,
-                         1.02607, 1.02041, 1.0137, 1.00594, 0.9962, 0.92497]
-        U_e_wake_ref = []
+        u_e_rel_upper_ref = [0.0, 0.72574, 1.05098, 1.04538, 1.03909, 1.03339,
+                             1.02688, 1.02041, 1.01457, 1.00702, 0.9962,
+                             0.92497]
+        u_e_rel_lower_ref = [0.0, 0.72574, 1.05034, 1.04462, 1.03909, 1.03258,
+                             1.02607, 1.02041, 1.0137, 1.00594, 0.9962,
+                             0.92497]
+        u_e_rel_wake_ref = []
         delta_d_upper_ref = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
                              0.0, 0.0]
         delta_d_lower_ref = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
@@ -79,31 +168,31 @@ class TestXFoilDumpReader(unittest.TestCase):
                              0.0, 0.0]
         delta_k_lower_ref = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
                              0.0, 0.0]
-        H_d_upper_ref = [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
-                         1.0]
-        H_d_lower_ref = [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
-                         1.0]
-        H_d_wake_ref = []
-        H_k_upper_ref = [2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0,
-                         2.0]
-        H_k_lower_ref = [2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0,
-                         2.0]
+        shape_d_upper_ref = [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
+                             1.0, 1.0]
+        shape_d_lower_ref = [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
+                             1.0, 1.0]
+        shape_d_wake_ref = []
+        shape_k_upper_ref = [2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0,
+                             2.0, 2.0]
+        shape_k_lower_ref = [2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0,
+                             2.0, 2.0]
         c_f_upper_ref = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
                          0.0]
         c_f_lower_ref = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
                          0.0]
-        m_upper_ref = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-                       0.0]
-        m_lower_ref = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-                       0.0]
-        P_upper_ref = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-                       0.0]
-        P_lower_ref = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-                       0.0]
-        K_upper_ref = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-                       0.0]
-        K_lower_ref = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-                       0.0]
+        mass_defect_upper_ref = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+                                 0.0, 0.0, 0.0]
+        mass_defect_lower_ref = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+                                 0.0, 0.0, 0.0]
+        mom_defect_upper_ref = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+                                0.0, 0.0, 0.0]
+        mom_defect_lower_ref = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+                                0.0, 0.0, 0.0]
+        ke_defect_upper_ref = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+                               0.0, 0.0, 0.0]
+        ke_defect_lower_ref = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+                               0.0, 0.0, 0.0]
         self.assertIsNone(npt.assert_allclose(s_upper_ref,
                                               xfoil_inv.s_upper()))
         self.assertIsNone(npt.assert_allclose(s_lower_ref,
@@ -119,11 +208,11 @@ class TestXFoilDumpReader(unittest.TestCase):
         self.assertIsNone(npt.assert_allclose(y_lower_ref,
                                               xfoil_inv.y_lower()))
         self.assertEqual(y_wake_ref, xfoil_inv.y_wake())
-        self.assertIsNone(npt.assert_allclose(U_e_upper_ref,
-                                              xfoil_inv.U_e_upper()))
-        self.assertIsNone(npt.assert_allclose(U_e_lower_ref,
-                                              xfoil_inv.U_e_lower()))
-        self.assertEqual(U_e_wake_ref, xfoil_inv.U_e_wake())
+        self.assertIsNone(npt.assert_allclose(u_e_rel_upper_ref,
+                                              xfoil_inv.u_e_rel_upper()))
+        self.assertIsNone(npt.assert_allclose(u_e_rel_lower_ref,
+                                              xfoil_inv.u_e_rel_lower()))
+        self.assertEqual(u_e_rel_wake_ref, xfoil_inv.u_e_rel_wake())
         self.assertIsNone(npt.assert_allclose(delta_d_upper_ref,
                                               xfoil_inv.delta_d_upper()))
         self.assertIsNone(npt.assert_allclose(delta_d_lower_ref,
@@ -138,39 +227,42 @@ class TestXFoilDumpReader(unittest.TestCase):
                                               xfoil_inv.delta_k_upper()))
         self.assertIsNone(npt.assert_allclose(delta_k_lower_ref,
                                               xfoil_inv.delta_k_lower()))
-        self.assertIsNone(npt.assert_allclose(H_d_upper_ref,
-                                              xfoil_inv.H_d_upper()))
-        self.assertIsNone(npt.assert_allclose(H_d_lower_ref,
-                                              xfoil_inv.H_d_lower()))
-        self.assertEqual(H_d_wake_ref, xfoil_inv.H_d_wake())
-        self.assertIsNone(npt.assert_allclose(H_k_upper_ref,
-                                              xfoil_inv.H_k_upper()))
-        self.assertIsNone(npt.assert_allclose(H_k_lower_ref,
-                                              xfoil_inv.H_k_lower()))
+        self.assertIsNone(npt.assert_allclose(shape_d_upper_ref,
+                                              xfoil_inv.shape_d_upper()))
+        self.assertIsNone(npt.assert_allclose(shape_d_lower_ref,
+                                              xfoil_inv.shape_d_lower()))
+        self.assertEqual(shape_d_wake_ref, xfoil_inv.shape_d_wake())
+        self.assertIsNone(npt.assert_allclose(shape_k_upper_ref,
+                                              xfoil_inv.shape_k_upper()))
+        self.assertIsNone(npt.assert_allclose(shape_k_lower_ref,
+                                              xfoil_inv.shape_k_lower()))
         self.assertIsNone(npt.assert_allclose(c_f_upper_ref,
                                               xfoil_inv.c_f_upper()))
         self.assertIsNone(npt.assert_allclose(c_f_lower_ref,
                                               xfoil_inv.c_f_lower()))
-        self.assertIsNone(npt.assert_allclose(m_upper_ref,
-                                              xfoil_inv.m_upper()))
-        self.assertIsNone(npt.assert_allclose(m_lower_ref,
-                                              xfoil_inv.m_lower()))
-        self.assertIsNone(npt.assert_allclose(P_upper_ref,
-                                              xfoil_inv.P_upper()))
-        self.assertIsNone(npt.assert_allclose(P_lower_ref,
-                                              xfoil_inv.P_lower()))
-        self.assertIsNone(npt.assert_allclose(K_upper_ref,
-                                              xfoil_inv.K_upper()))
-        self.assertIsNone(npt.assert_allclose(K_lower_ref,
-                                              xfoil_inv.K_lower()))
+        self.assertIsNone(npt.assert_allclose(mass_defect_upper_ref,
+                                              xfoil_inv.mass_defect_upper()))
+        self.assertIsNone(npt.assert_allclose(mass_defect_lower_ref,
+                                              xfoil_inv.mass_defect_lower()))
+        self.assertIsNone(npt.assert_allclose(mom_defect_upper_ref,
+                                              xfoil_inv.mom_defect_upper()))
+        self.assertIsNone(npt.assert_allclose(mom_defect_lower_ref,
+                                              xfoil_inv.mom_defect_lower()))
+        self.assertIsNone(npt.assert_allclose(ke_defect_upper_ref,
+                                              xfoil_inv.ke_defect_upper()))
+        self.assertIsNone(npt.assert_allclose(ke_defect_lower_ref,
+                                              xfoil_inv.ke_defect_lower()))
 
-    def test_case_viscous(self):
+    def test_case_viscous(self) -> None:
         """Test importing a viscous case."""
+        # pylint: disable=too-many-locals
+        # pylint: disable=too-many-statements
+
         # Common XFoil case settings
         airfoil_name = "NACA 0003"
         alpha = 0  # (deg)
         c = 1  # (m)
-        Re = 1000
+        re = 1000
         x_trans = 1
         n_trans = 9
 
@@ -178,14 +270,14 @@ class TestXFoilDumpReader(unittest.TestCase):
         directory = dirname(abspath(__file__))
         visc_filename = directory + "/data/xfoil_viscous_dump.txt"
         xfoil_visc = XFoilReader(visc_filename, airfoil=airfoil_name,
-                                 alpha=alpha, c=c, Re=Re,
+                                 alpha=alpha, c=c, Re=re,
                                  x_trans=x_trans, n_trans=n_trans)
 
         # test case info
         self.assertEqual(xfoil_visc.aifoil, airfoil_name)
         self.assertEqual(xfoil_visc.alpha, alpha)
         self.assertEqual(xfoil_visc.c, c)
-        self.assertEqual(xfoil_visc.Re, Re)
+        self.assertEqual(xfoil_visc.Re, re)
         self.assertEqual(xfoil_visc.x_trans[0], x_trans)
         self.assertEqual(xfoil_visc.x_trans[1], x_trans)
         self.assertEqual(xfoil_visc.n_trans, n_trans)
@@ -214,12 +306,14 @@ class TestXFoilDumpReader(unittest.TestCase):
                        -0.0131, -0.01141, -0.00906, -0.00632, -0.00362,
                        -0.00031]
         y_wake_ref = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
-        U_e_upper_ref = [0.0, 0.4447, 1.06059, 1.05732, 1.05267, 1.0485,
-                         1.04388, 1.03951, 1.03593, 1.03207, 1.02842, 1.02513]
-        U_e_lower_ref = [0.0, 0.4447, 1.06044, 1.05676, 1.05267, 1.04791,
-                         1.04332, 1.03951, 1.03543, 1.03161, 1.02842, 1.02513]
-        U_e_wake_ref = [1.02513, 1.0147, 1.0081, 0.99912, 0.99122, 0.98638,
-                        0.96382, 0.92209]
+        u_e_rel_upper_ref = [0.0, 0.4447, 1.06059, 1.05732, 1.05267, 1.0485,
+                             1.04388, 1.03951, 1.03593, 1.03207, 1.02842,
+                             1.02513]
+        u_e_rel_lower_ref = [0.0, 0.4447, 1.06044, 1.05676, 1.05267, 1.04791,
+                             1.04332, 1.03951, 1.03543, 1.03161, 1.02842,
+                             1.02513]
+        u_e_rel_wake_ref = [1.02513, 1.0147, 1.0081, 0.99912, 0.99122, 0.98638,
+                            0.96382, 0.92209]
         delta_d_upper_ref = [0.000811, 0.000811, 0.015435, 0.023266, 0.029346,
                              0.033966, 0.038734, 0.043102, 0.04667, 0.050523,
                              0.054191, 0.05753]
@@ -244,34 +338,40 @@ class TestXFoilDumpReader(unittest.TestCase):
                              0.014677288, 0.0177857912, 0.0208530987,
                              0.0235857088, 0.0257808679, 0.0281154888,
                              0.0303038736, 0.032118441, 0.0339346189]
-        H_d_upper_ref = [2.2295, 2.2295, 2.5668, 2.585, 2.5984, 2.6089, 2.6194,
-                         2.6284, 2.6352, 2.6423, 2.6493, 2.6548]
-        H_d_lower_ref = [2.2295, 2.2295, 2.5699, 2.5868, 2.5984, 2.6103,
-                         2.6206, 2.6284, 2.6361, 2.6431, 2.6493, 2.6548]
-        H_d_wake_ref = [2.6693, 2.535, 2.4452, 2.3284, 2.2403, 2.1969, 2.1231,
-                        2.5373]
-        H_k_upper_ref = [1.6211, 1.6211, 1.5779, 1.5761, 1.5748, 1.5739,
-                         1.5729, 1.5721, 1.5715, 1.5708, 1.5702, 1.5659]
-        H_k_lower_ref = [1.6211, 1.6211, 1.5776, 1.576, 1.5748, 1.5737, 1.5728,
-                         1.5721, 1.5714, 1.5708, 1.5702, 1.5659]
+        shape_d_upper_ref = [2.2295, 2.2295, 2.5668, 2.585, 2.5984, 2.6089,
+                             2.6194, 2.6284, 2.6352, 2.6423, 2.6493, 2.6548]
+        shape_d_lower_ref = [2.2295, 2.2295, 2.5699, 2.5868, 2.5984, 2.6103,
+                             2.6206, 2.6284, 2.6361, 2.6431, 2.6493, 2.6548]
+        shape_d_wake_ref = [2.6693, 2.535, 2.4452, 2.3284, 2.2403, 2.1969,
+                            2.1231, 2.5373]
+        shape_k_upper_ref = [1.6211, 1.6211, 1.5779, 1.5761, 1.5748, 1.5739,
+                             1.5729, 1.5721, 1.5715, 1.5708, 1.5702, 1.5659]
+        shape_k_lower_ref = [1.6211, 1.6211, 1.5776, 1.576, 1.5748, 1.5737,
+                             1.5728, 1.5721, 1.5714, 1.5708, 1.5702, 1.5659]
         c_f_upper_ref = [0.8771445, 0.877145, 0.078378, 0.050783, 0.039477,
                          0.033566, 0.02895, 0.025638, 0.023409, 0.021365,
                          0.019684, 0.018362]
         c_f_lower_ref = [0.8771445, 0.877144, 0.072669, 0.048918, 0.039477,
                          0.03289, 0.028478, 0.025638, 0.023129, 0.021137,
                          0.019684, 0.018362]
-        m_upper_ref = [0.00036, 0.00036, 0.01637, 0.0246, 0.03089, 0.03561,
-                       0.04043, 0.04481, 0.04835, 0.05214, 0.05573, 0.05898]
-        m_lower_ref = [0.00036, 0.00036, 0.01759, 0.02546, 0.03089, 0.03625,
-                       0.041, 0.04481, 0.04884, 0.0526, 0.05573, 0.05898]
-        P_upper_ref = [7e-05, 7e-05, 0.00676, 0.01006, 0.01251, 0.01431,
-                       0.01611, 0.01772, 0.01901, 0.02037, 0.02163, 0.02277]
-        P_lower_ref = [7e-05, 7e-05, 0.00726, 0.0104, 0.01251, 0.01455,
-                       0.01632, 0.01772, 0.01918, 0.02053, 0.02163, 0.02277]
-        K_upper_ref = [5e-05, 5e-05, 0.01132, 0.01677, 0.02075, 0.02362,
-                       0.02646, 0.02896, 0.03094, 0.03302, 0.03494, 0.03656]
-        K_lower_ref = [5e-05, 5e-05, 0.01214, 0.01732, 0.02075, 0.024, 0.02679,
-                       0.02896, 0.03121, 0.03327, 0.03494, 0.03656]
+        mass_defect_upper_ref = [0.00036, 0.00036, 0.01637, 0.0246, 0.03089,
+                                 0.03561, 0.04043, 0.04481, 0.04835, 0.05214,
+                                 0.05573, 0.05898]
+        mass_defect_lower_ref = [0.00036, 0.00036, 0.01759, 0.02546, 0.03089,
+                                 0.03625, 0.041, 0.04481, 0.04884, 0.0526,
+                                 0.05573, 0.05898]
+        mom_defect_upper_ref = [7e-05, 7e-05, 0.00676, 0.01006, 0.01251,
+                                0.01431, 0.01611, 0.01772, 0.01901, 0.02037,
+                                0.02163, 0.02277]
+        mom_defect_lower_ref = [7e-05, 7e-05, 0.00726, 0.0104, 0.01251,
+                                0.01455, 0.01632, 0.01772, 0.01918, 0.02053,
+                                0.02163, 0.02277]
+        ke_defect_upper_ref = [5e-05, 5e-05, 0.01132, 0.01677, 0.02075,
+                               0.02362, 0.02646, 0.02896, 0.03094, 0.03302,
+                               0.03494, 0.03656]
+        ke_defect_lower_ref = [5e-05, 5e-05, 0.01214, 0.01732, 0.02075, 0.024,
+                               0.02679, 0.02896, 0.03121, 0.03327, 0.03494,
+                               0.03656]
         self.assertIsNone(npt.assert_allclose(s_upper_ref,
                                               xfoil_visc.s_upper()))
         self.assertIsNone(npt.assert_allclose(s_lower_ref,
@@ -290,12 +390,12 @@ class TestXFoilDumpReader(unittest.TestCase):
                                               xfoil_visc.y_lower()))
         self.assertIsNone(npt.assert_allclose(y_wake_ref,
                                               xfoil_visc.y_wake()))
-        self.assertIsNone(npt.assert_allclose(U_e_upper_ref,
-                                              xfoil_visc.U_e_upper()))
-        self.assertIsNone(npt.assert_allclose(U_e_lower_ref,
-                                              xfoil_visc.U_e_lower()))
-        self.assertIsNone(npt.assert_allclose(U_e_wake_ref,
-                                              xfoil_visc.U_e_wake()))
+        self.assertIsNone(npt.assert_allclose(u_e_rel_upper_ref,
+                                              xfoil_visc.u_e_rel_upper()))
+        self.assertIsNone(npt.assert_allclose(u_e_rel_lower_ref,
+                                              xfoil_visc.u_e_rel_lower()))
+        self.assertIsNone(npt.assert_allclose(u_e_rel_wake_ref,
+                                              xfoil_visc.u_e_rel_wake()))
         self.assertIsNone(npt.assert_allclose(delta_d_upper_ref,
                                               xfoil_visc.delta_d_upper()))
         self.assertIsNone(npt.assert_allclose(delta_d_lower_ref,
@@ -312,32 +412,32 @@ class TestXFoilDumpReader(unittest.TestCase):
                                               xfoil_visc.delta_k_upper()))
         self.assertIsNone(npt.assert_allclose(delta_k_lower_ref,
                                               xfoil_visc.delta_k_lower()))
-        self.assertIsNone(npt.assert_allclose(H_d_upper_ref,
-                                              xfoil_visc.H_d_upper()))
-        self.assertIsNone(npt.assert_allclose(H_d_lower_ref,
-                                              xfoil_visc.H_d_lower()))
-        self.assertIsNone(npt.assert_allclose(H_d_wake_ref,
-                                              xfoil_visc.H_d_wake()))
-        self.assertIsNone(npt.assert_allclose(H_k_upper_ref,
-                                              xfoil_visc.H_k_upper()))
-        self.assertIsNone(npt.assert_allclose(H_k_lower_ref,
-                                              xfoil_visc.H_k_lower()))
+        self.assertIsNone(npt.assert_allclose(shape_d_upper_ref,
+                                              xfoil_visc.shape_d_upper()))
+        self.assertIsNone(npt.assert_allclose(shape_d_lower_ref,
+                                              xfoil_visc.shape_d_lower()))
+        self.assertIsNone(npt.assert_allclose(shape_d_wake_ref,
+                                              xfoil_visc.shape_d_wake()))
+        self.assertIsNone(npt.assert_allclose(shape_k_upper_ref,
+                                              xfoil_visc.shape_k_upper()))
+        self.assertIsNone(npt.assert_allclose(shape_k_lower_ref,
+                                              xfoil_visc.shape_k_lower()))
         self.assertIsNone(npt.assert_allclose(c_f_upper_ref,
                                               xfoil_visc.c_f_upper()))
         self.assertIsNone(npt.assert_allclose(c_f_lower_ref,
                                               xfoil_visc.c_f_lower()))
-        self.assertIsNone(npt.assert_allclose(m_upper_ref,
-                                              xfoil_visc.m_upper()))
-        self.assertIsNone(npt.assert_allclose(m_lower_ref,
-                                              xfoil_visc.m_lower()))
-        self.assertIsNone(npt.assert_allclose(P_upper_ref,
-                                              xfoil_visc.P_upper()))
-        self.assertIsNone(npt.assert_allclose(P_lower_ref,
-                                              xfoil_visc.P_lower()))
-        self.assertIsNone(npt.assert_allclose(K_upper_ref,
-                                              xfoil_visc.K_upper()))
-        self.assertIsNone(npt.assert_allclose(K_lower_ref,
-                                              xfoil_visc.K_lower()))
+        self.assertIsNone(npt.assert_allclose(mass_defect_upper_ref,
+                                              xfoil_visc.mass_defect_upper()))
+        self.assertIsNone(npt.assert_allclose(mass_defect_lower_ref,
+                                              xfoil_visc.mass_defect_lower()))
+        self.assertIsNone(npt.assert_allclose(mom_defect_upper_ref,
+                                              xfoil_visc.mom_defect_upper()))
+        self.assertIsNone(npt.assert_allclose(mom_defect_lower_ref,
+                                              xfoil_visc.mom_defect_lower()))
+        self.assertIsNone(npt.assert_allclose(ke_defect_upper_ref,
+                                              xfoil_visc.ke_defect_upper()))
+        self.assertIsNone(npt.assert_allclose(ke_defect_lower_ref,
+                                              xfoil_visc.ke_defect_lower()))
 
 
 if __name__ == "__main__":
