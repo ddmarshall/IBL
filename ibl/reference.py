@@ -1358,7 +1358,8 @@ class StanfordOlympics1968:
         """
         return self._station[idx].u_defect
 
-    def _get_case_data(self, case_id: str) -> List[List[str]]:
+    @staticmethod
+    def _get_case_data(case_id: str) -> List[List[str]]:
         """
         Return the case data from file.
 
