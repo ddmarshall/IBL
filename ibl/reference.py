@@ -2015,7 +2015,7 @@ class XFoilReader:
                 else:
                     raise ValueError(f"Invalid data in XFoil dump file: {col}")
 
-    def num_points_upper(self):
+    def upper_count(self) -> int:
         """
         Return number of points on the upper surface of airofil.
 
@@ -2026,7 +2026,7 @@ class XFoilReader:
         """
         return len(self._upper)
 
-    def num_points_lower(self):
+    def lower_count(self) -> int:
         """
         Return number of points on the lower surface of airofil.
 
@@ -2037,7 +2037,7 @@ class XFoilReader:
         """
         return len(self._lower)
 
-    def num_points_wake(self):
+    def wake_count(self) -> int:
         """
         Return number of points in the airofil wake.
 

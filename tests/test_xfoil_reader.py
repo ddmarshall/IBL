@@ -108,7 +108,7 @@ class TestXFoilDumpReader(unittest.TestCase):
 
         # Common XFoil case settings
         airfoil_name = "NACA 0003"
-        alpha = 0  # (deg)
+        alpha = np.deg2rad(0)  # (rad)
         c = 1  # (m)
 
         # Read a dump file from inviscid solution
@@ -124,9 +124,9 @@ class TestXFoilDumpReader(unittest.TestCase):
         self.assertIsNone(xfoil_inv.Re)
         self.assertIsNone(xfoil_inv.x_trans)
         self.assertIsNone(xfoil_inv.n_trans)
-        self.assertEqual(xfoil_inv.num_points_upper(), 12)
-        self.assertEqual(xfoil_inv.num_points_lower(), 12)
-        self.assertEqual(xfoil_inv.num_points_wake(), 0)
+        self.assertEqual(xfoil_inv.upper_count(), 12)
+        self.assertEqual(xfoil_inv.lower_count(), 12)
+        self.assertEqual(xfoil_inv.wake_count(), 0)
 
         # test point info
         s_upper_ref = [0.0, 0.000695, 0.092695, 0.196925, 0.301285, 0.392635,
@@ -260,10 +260,10 @@ class TestXFoilDumpReader(unittest.TestCase):
 
         # Common XFoil case settings
         airfoil_name = "NACA 0003"
-        alpha = 0  # (deg)
+        alpha = np.deg2rad(0)  # (rad)
         c = 1  # (m)
         re = 1000
-        x_trans = 1
+        x_trans = 1  # (m)
         n_trans = 9
 
         # Read a dump file from viscous solution
@@ -281,9 +281,9 @@ class TestXFoilDumpReader(unittest.TestCase):
         self.assertEqual(xfoil_visc.x_trans[0], x_trans)
         self.assertEqual(xfoil_visc.x_trans[1], x_trans)
         self.assertEqual(xfoil_visc.n_trans, n_trans)
-        self.assertEqual(xfoil_visc.num_points_upper(), 12)
-        self.assertEqual(xfoil_visc.num_points_lower(), 12)
-        self.assertEqual(xfoil_visc.num_points_wake(), 8)
+        self.assertEqual(xfoil_visc.upper_count(), 12)
+        self.assertEqual(xfoil_visc.lower_count(), 12)
+        self.assertEqual(xfoil_visc.wake_count(), 8)
 
         # test point info
         s_upper_ref = [0.0, 0.000695, 0.092695, 0.196925, 0.301285, 0.392635,
