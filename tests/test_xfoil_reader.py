@@ -9,6 +9,8 @@ Created on Tue Aug 30 06:21:08 2022
 
 from os.path import abspath, dirname
 import unittest
+
+import numpy as np
 import numpy.testing as npt
 
 from ibl.reference import XFoilReader
@@ -66,8 +68,6 @@ class TestXFoilDumpReader(unittest.TestCase):
                 "0.025638    2.6284    1.5721  0.01772  0.04481  0.02896")
         xfa.reset(data=data)
 
-        pass
-
     def test_wake_data(self) -> None:
         """Test the wake data."""
         xfw = XFoilWakeData(data="")
@@ -101,6 +101,45 @@ class TestXFoilDumpReader(unittest.TestCase):
                 "0.000000    2.5350")
         xfw = XFoilWakeData(data=data)
 
+    def test_setters(self) -> None:
+        """Test manually setting parameters."""
+        xf = XFoilReader(filename="")
+
+        self.assertEqual(xf.filename, "")
+        xf.name = "no name"
+        self.assertEqual(xf.name, "no name")
+        xf.alpha = 0.5
+        self.assertEqual(xf.alpha, 0.5)
+        xf.c = 2.0
+        self.assertEqual(xf.c, 2.0)
+        with self.assertRaises(ValueError):
+            xf.c = 0
+        xf.reynolds = 0.0
+        self.assertEqual(xf.reynolds, 0.0)
+        with self.assertRaises(ValueError):
+            xf.reynolds = -1
+        xf.n_trans = 9.0
+        self.assertEqual(xf.n_trans, 9.0)
+        with self.assertRaises(ValueError):
+            xf.n_trans = 0
+        xf.x_trans_upper = 0.5
+        self.assertEqual(xf.x_trans_upper, 0.5)
+        xf.x_trans_lower = 0.5
+        self.assertEqual(xf.x_trans_lower, 0.5)
+        with self.assertRaises(FileNotFoundError):
+            xf.filename = "badname"
+
+        # test accessing empty data
+        self.assertEqual(xf.upper_count(), 0)
+        self.assertEqual(xf.lower_count(), 0)
+        self.assertEqual(xf.wake_count(), 0)
+        with self.assertRaises(IndexError):
+            xf.upper(0)
+        with self.assertRaises(IndexError):
+            xf.lower(0)
+        with self.assertRaises(IndexError):
+            xf.wake(0)
+
     def test_case_inviscid(self) -> None:
         """Test importing an inviscid case."""
         # pylint: disable=too-many-locals
@@ -114,16 +153,16 @@ class TestXFoilDumpReader(unittest.TestCase):
         # Read a dump file from inviscid solution
         directory = dirname(abspath(__file__))
         inv_filename = directory + "/data/xfoil_inviscid_dump.txt"
-        xfoil_inv = XFoilReader(inv_filename, airfoil=airfoil_name,
-                                alpha=alpha, c=c)
+        xfoil_inv = XFoilReader(inv_filename)
+        xfoil_inv.name = airfoil_name
+        xfoil_inv.alpha = alpha
+        xfoil_inv.c = c
 
         # test case info
-        self.assertEqual(xfoil_inv.aifoil, airfoil_name)
+        self.assertEqual(xfoil_inv.name, airfoil_name)
         self.assertEqual(xfoil_inv.alpha, alpha)
         self.assertEqual(xfoil_inv.c, c)
-        self.assertIsNone(xfoil_inv.Re)
-        self.assertIsNone(xfoil_inv.x_trans)
-        self.assertIsNone(xfoil_inv.n_trans)
+        self.assertEqual(xfoil_inv.reynolds, 0)
         self.assertEqual(xfoil_inv.upper_count(), 12)
         self.assertEqual(xfoil_inv.lower_count(), 12)
         self.assertEqual(xfoil_inv.wake_count(), 0)
@@ -253,6 +292,36 @@ class TestXFoilDumpReader(unittest.TestCase):
         self.assertIsNone(npt.assert_allclose(ke_defect_lower_ref,
                                               xfoil_inv.ke_defect_lower()))
 
+        # test getting upper, lower, and wake data
+        idx = 2
+        upper = xfoil_inv.upper(idx)
+        self.assertAlmostEqual(upper.s, s_upper_ref[idx])
+        self.assertAlmostEqual(upper.x, x_upper_ref[idx])
+        self.assertAlmostEqual(upper.y, y_upper_ref[idx])
+        self.assertAlmostEqual(upper.u_e_rel, u_e_rel_upper_ref[idx])
+        self.assertAlmostEqual(upper.delta_d, delta_d_upper_ref[idx])
+        self.assertAlmostEqual(upper.delta_m, delta_m_upper_ref[idx])
+        self.assertAlmostEqual(upper.c_f, c_f_upper_ref[idx])
+        self.assertAlmostEqual(upper.shape_d, shape_d_upper_ref[idx])
+        self.assertAlmostEqual(upper.shape_k, shape_k_upper_ref[idx])
+        self.assertAlmostEqual(upper.mass_defect, mass_defect_upper_ref[idx])
+        self.assertAlmostEqual(upper.mom_defect, mom_defect_upper_ref[idx])
+        self.assertAlmostEqual(upper.ke_defect, ke_defect_upper_ref[idx])
+        idx = 3
+        lower = xfoil_inv.lower(idx)
+        self.assertAlmostEqual(lower.s, s_lower_ref[idx])
+        self.assertAlmostEqual(lower.x, x_lower_ref[idx])
+        self.assertAlmostEqual(lower.y, y_lower_ref[idx])
+        self.assertAlmostEqual(lower.u_e_rel, u_e_rel_lower_ref[idx])
+        self.assertAlmostEqual(lower.delta_d, delta_d_lower_ref[idx])
+        self.assertAlmostEqual(lower.delta_m, delta_m_lower_ref[idx])
+        self.assertAlmostEqual(lower.c_f, c_f_lower_ref[idx])
+        self.assertAlmostEqual(lower.shape_d, shape_d_lower_ref[idx])
+        self.assertAlmostEqual(lower.shape_k, shape_k_lower_ref[idx])
+        self.assertAlmostEqual(lower.mass_defect, mass_defect_lower_ref[idx])
+        self.assertAlmostEqual(lower.mom_defect, mom_defect_lower_ref[idx])
+        self.assertAlmostEqual(lower.ke_defect, ke_defect_lower_ref[idx])
+
     def test_case_viscous(self) -> None:
         """Test importing a viscous case."""
         # pylint: disable=too-many-locals
@@ -269,17 +338,22 @@ class TestXFoilDumpReader(unittest.TestCase):
         # Read a dump file from viscous solution
         directory = dirname(abspath(__file__))
         visc_filename = directory + "/data/xfoil_viscous_dump.txt"
-        xfoil_visc = XFoilReader(visc_filename, airfoil=airfoil_name,
-                                 alpha=alpha, c=c, Re=re,
-                                 x_trans=x_trans, n_trans=n_trans)
+        xfoil_visc = XFoilReader(visc_filename)
+        xfoil_visc.name = airfoil_name
+        xfoil_visc.alpha = alpha
+        xfoil_visc.c = c
+        xfoil_visc.reynolds = re
+        xfoil_visc.x_trans_lower = x_trans
+        xfoil_visc.x_trans_upper = x_trans
+        xfoil_visc.n_trans = n_trans
 
         # test case info
-        self.assertEqual(xfoil_visc.aifoil, airfoil_name)
+        self.assertEqual(xfoil_visc.name, airfoil_name)
         self.assertEqual(xfoil_visc.alpha, alpha)
         self.assertEqual(xfoil_visc.c, c)
-        self.assertEqual(xfoil_visc.Re, re)
-        self.assertEqual(xfoil_visc.x_trans[0], x_trans)
-        self.assertEqual(xfoil_visc.x_trans[1], x_trans)
+        self.assertEqual(xfoil_visc.reynolds, re)
+        self.assertEqual(xfoil_visc.x_trans_upper, x_trans)
+        self.assertEqual(xfoil_visc.x_trans_lower, x_trans)
         self.assertEqual(xfoil_visc.n_trans, n_trans)
         self.assertEqual(xfoil_visc.upper_count(), 12)
         self.assertEqual(xfoil_visc.lower_count(), 12)
@@ -438,6 +512,79 @@ class TestXFoilDumpReader(unittest.TestCase):
                                               xfoil_visc.ke_defect_upper()))
         self.assertIsNone(npt.assert_allclose(ke_defect_lower_ref,
                                               xfoil_visc.ke_defect_lower()))
+
+        # test getting upper, lower, and wake data
+        idx = 2
+        upper = xfoil_visc.upper(idx)
+        self.assertAlmostEqual(upper.s, s_upper_ref[idx])
+        self.assertAlmostEqual(upper.x, x_upper_ref[idx])
+        self.assertAlmostEqual(upper.y, y_upper_ref[idx])
+        self.assertAlmostEqual(upper.u_e_rel, u_e_rel_upper_ref[idx])
+        self.assertAlmostEqual(upper.delta_d, delta_d_upper_ref[idx])
+        self.assertAlmostEqual(upper.delta_m, delta_m_upper_ref[idx])
+        self.assertAlmostEqual(upper.c_f, c_f_upper_ref[idx])
+        self.assertAlmostEqual(upper.shape_d, shape_d_upper_ref[idx])
+        self.assertAlmostEqual(upper.shape_k, shape_k_upper_ref[idx])
+        self.assertAlmostEqual(upper.mass_defect, mass_defect_upper_ref[idx])
+        self.assertAlmostEqual(upper.mom_defect, mom_defect_upper_ref[idx])
+        self.assertAlmostEqual(upper.ke_defect, ke_defect_upper_ref[idx])
+        idx = 3
+        lower = xfoil_visc.lower(idx)
+        self.assertAlmostEqual(lower.s, s_lower_ref[idx])
+        self.assertAlmostEqual(lower.x, x_lower_ref[idx])
+        self.assertAlmostEqual(lower.y, y_lower_ref[idx])
+        self.assertAlmostEqual(lower.u_e_rel, u_e_rel_lower_ref[idx])
+        self.assertAlmostEqual(lower.delta_d, delta_d_lower_ref[idx])
+        self.assertAlmostEqual(lower.delta_m, delta_m_lower_ref[idx])
+        self.assertAlmostEqual(lower.c_f, c_f_lower_ref[idx])
+        self.assertAlmostEqual(lower.shape_d, shape_d_lower_ref[idx])
+        self.assertAlmostEqual(lower.shape_k, shape_k_lower_ref[idx])
+        self.assertAlmostEqual(lower.mass_defect, mass_defect_lower_ref[idx])
+        self.assertAlmostEqual(lower.mom_defect, mom_defect_lower_ref[idx])
+        self.assertAlmostEqual(lower.ke_defect, ke_defect_lower_ref[idx])
+        idx = 5
+        wake = xfoil_visc.wake(idx)
+        self.assertAlmostEqual(wake.s, s_wake_ref[idx])
+        self.assertAlmostEqual(wake.x, x_wake_ref[idx])
+        self.assertAlmostEqual(wake.y, y_wake_ref[idx])
+        self.assertAlmostEqual(wake.u_e_rel, u_e_rel_wake_ref[idx])
+        self.assertAlmostEqual(wake.delta_d, delta_d_wake_ref[idx])
+        self.assertAlmostEqual(wake.delta_m, delta_m_wake_ref[idx])
+        self.assertAlmostEqual(wake.shape_d, shape_d_wake_ref[idx])
+
+    def test_stagnation_point(self) -> None:
+        """Test the stagnation point."""
+        directory = dirname(abspath(__file__))
+        filename = directory + "/data/xfoil_viscous_dump.txt"
+        xf = XFoilReader(filename)
+
+        up = xf.upper(0)
+        lo = xf.lower(0)
+
+        self.assertAlmostEqual(lo.s, 0)
+        self.assertAlmostEqual(lo.x, 0)
+        self.assertAlmostEqual(lo.y, 0)
+        self.assertAlmostEqual(lo.u_e_rel, 0)
+        self.assertAlmostEqual(lo.delta_d, 0.000811)
+        self.assertAlmostEqual(lo.delta_m, 0.000364)
+        self.assertAlmostEqual(lo.c_f, 0.8771445)
+        self.assertAlmostEqual(lo.shape_d, 2.2295)
+        self.assertAlmostEqual(lo.shape_k, 1.6211)
+        self.assertAlmostEqual(lo.mass_defect, 0.00036)
+        self.assertAlmostEqual(lo.mom_defect, 7e-5)
+        self.assertAlmostEqual(lo.ke_defect, 5e-5)
+        self.assertAlmostEqual(lo.s, up.s)
+        self.assertAlmostEqual(lo.x, up.x)
+        self.assertAlmostEqual(lo.y, up.y)
+        self.assertAlmostEqual(lo.u_e_rel, up.u_e_rel)
+        self.assertAlmostEqual(lo.delta_d, up.delta_d)
+        self.assertAlmostEqual(lo.delta_m, up.delta_m)
+        self.assertAlmostEqual(lo.c_f, up.c_f)
+        self.assertAlmostEqual(lo.shape_d, up.shape_d)
+        self.assertAlmostEqual(lo.shape_k, up.shape_k)
+        self.assertAlmostEqual(lo.mass_defect, up.mass_defect)
+        self.assertAlmostEqual(lo.mom_defect, up.mom_defect)
+        self.assertAlmostEqual(lo.ke_defect, up.ke_defect)
 
 
 if __name__ == "__main__":

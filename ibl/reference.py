@@ -27,7 +27,7 @@ information.
 """
 
 import copy
-from typing import Optional, List
+from typing import Optional, List, Tuple
 from importlib.resources import files
 
 import numpy as np
@@ -1830,21 +1830,6 @@ class XFoilReader:
     airfoil and wake are read in and processed into upper flow and lower flow
     at the stagnation point (not leading edge) and the wake. Each portion is
     stored separately and the parameters are obtained separately.
-
-    Attributes
-    ----------
-    airfoil: string
-        Name of airfoil analyzed.
-    alpha: float
-        Angle of attack for this case.
-    x_trans: 2-tuple of floats
-        Chord location of transition for upper and lower surface.
-    n_trans: float
-        Amplification factor used for transition model.
-    c: float
-        Airfoil chord length used for this case.
-    Re: float
-        Freestream Reynolds number based on the airfoil chord length.
     """
 
     # Attributes
@@ -1854,57 +1839,136 @@ class XFoilReader:
     # _lower: Data at each lower station
     # _wake: Data at each wake station
 
-    def __init__(self, filename="", airfoil="", alpha=np.inf, c=1, Re=None,
-                 x_trans=None, n_trans=None):
-        self.change_case_data(filename, airfoil, alpha, c, Re, x_trans,
-                              n_trans)
-
-    def change_case_data(self, filename, airfoil="", alpha=np.inf, c=1,
-                         Re=None, x_trans=None, n_trans=None):
+    def __init__(self, filename=""):
         """
-        Reset the case data to new case.
+        Initialize class with filename.
 
         Parameters
         ----------
-        filename : string
-            Name of file containing dump data.
-        airfoil : string, optional
-            Name of airfoil. The default is "".
-        alpha : float, optional
-            Angle of attack for this case. The default is np.inf.
-        c : float, optional
-            Chord length of airfoil for this case. The default is 1.
-        Re : float, optional
-            Reynolds based on the airfoil chord for this case. The default
-            is `None`.
-        x_trans : float or 2-tuple, optional
-            Chord location specified for the boundary layer to transition from
-            laminar to turbulent. The default is `None`.
-        n_trans : float, optional
-            Amplification factor used for the transition model. The default
-            is `None`.
-
-        Raises
-        ------
-        Exception
-            When dump file is not correctly formatted.
+        filename : str, optional
+            Name of XFoil dump file to parse, by default ""
         """
-        # Reset everything
-        self._filename = filename
-        self.aifoil = airfoil
-        self.alpha = alpha
-        if isinstance(x_trans, (int, float)):
-            self.x_trans = [x_trans, x_trans]
-        else:
-            self.x_trans = x_trans
-        self.n_trans = n_trans
-        self.c = c
-        self. Re = Re
+        self._filename = ""
+        self._name = ""
+        self._alpha = np.inf
+        self._u_e = 1.0
+        self._c = 1.0
+        self._re = 0.0
+        self._x_trans = [np.inf, np.inf]
+        self._n_trans = np.inf
+        self._upper: List[XFoilAirfoilData] = []
+        self._lower: List[XFoilAirfoilData] = []
+        self._wake: List[XFoilWakeData] = []
+        self.filename = filename
 
-        self._upper = []
-        self._lower = []
-        self._wake = []
+    @property
+    def name(self) -> str:
+        """
+        Name airfoil being analyzed.
+        """
+        return self._name
 
+    @name.setter
+    def name(self, name: str) -> None:
+        self._name = name
+
+    @property
+    def alpha(self) -> float:
+        """
+        Angle of attack, in radians, for case.
+        """
+        return self._alpha
+
+    @alpha.setter
+    def alpha(self, alpha: float) -> None:
+        self._alpha = alpha
+
+    @property
+    def c(self) -> float:
+        """
+        Chord length in [m] of airfoil.
+        Must be greater than zero.
+        """
+        return self._c
+
+    @c.setter
+    def c(self, c: float) -> None:
+        if c <= 0:
+            raise ValueError(f"Invalid chord length: {c}")
+        self._c = c
+
+    @property
+    def reynolds(self) -> float:
+        """
+        Reynolds number based on airfoil chord length for case.
+        Must be greater than zero. If zero then the solution is assumed
+        inviscid.
+        """
+        return self._re
+
+    @reynolds.setter
+    def reynolds(self, re) -> float:
+        if re < 0:
+            raise ValueError(f"Invalid Reynolds number: {re}")
+        self._re = re
+
+    @property
+    def n_trans(self) -> float:
+        """
+        Amplification factor used in transition model.
+        Must be greater than zero.
+        """
+        return self._n_trans
+
+    @n_trans.setter
+    def n_trans(self, n_trans: float) -> None:
+        if n_trans <= 0:
+            raise ValueError(f"Invalid amplification factor: {n_trans}")
+        self._n_trans = n_trans
+
+    @property
+    def x_trans_upper(self) -> float:
+        """
+        Chord location of boundary layer transition on upper surface.
+        """
+        return self._x_trans[0]
+
+    @x_trans_upper.setter
+    def x_trans_upper(self, x_tu: float) -> None:
+        self._x_trans[0] = x_tu
+
+    @property
+    def x_trans_lower(self) -> float:
+        """
+        Chord location of boundary layer transition on lower surface.
+        """
+        return self._x_trans[1]
+
+    @x_trans_lower.setter
+    def x_trans_lower(self, x_tl: float) -> None:
+        self._x_trans[1] = x_tl
+
+    @property
+    def filename(self) -> str:
+        """
+        Name of file containing XFoil dump data.
+        """
+        return self._filename
+
+    @filename.setter
+    def filename(self, filename: str) -> None:
+        # reset everything
+        self._filename = ""
+        self._name = ""
+        self._alpha = np.inf
+        self._u_e = 1.0
+        self._c = 1.0
+        self._re = 0.0
+        self._x_trans = [np.inf, np.inf]
+        self._n_trans = np.inf
+        self._upper: List[XFoilAirfoilData] = []
+        self._lower: List[XFoilAirfoilData] = []
+        self._wake: List[XFoilWakeData] = []
         if filename == "":
             return
 
@@ -1961,8 +2025,8 @@ class XFoilReader:
                             # interpolate actual stagnation point
                             stag_info = XFoilAirfoilData("")
                             u = self._upper[-1]
-                            dU = info.u_e_rel + u.u_e_rel
-                            frac = info.u_e_rel/dU
+                            du = info.u_e_rel + u.u_e_rel
+                            frac = info.u_e_rel/du
 
                             # standard interpolation for sign changes
                             stag_info.u_e_rel = 0.0
@@ -2048,7 +2112,7 @@ class XFoilReader:
         """
         return len(self._wake)
 
-    def point_upper(self, i):
+    def upper(self, i: int) -> XFoilAirfoilData:
         """
         Return the specified data on the upper surface of airfoil.
 
@@ -2064,7 +2128,7 @@ class XFoilReader:
         """
         return self._upper[i]
 
-    def point_lower(self, i):
+    def lower(self, i):
         """
         Return the specified data on the lower surface of airfoil.
 
@@ -2080,7 +2144,7 @@ class XFoilReader:
         """
         return self._lower[i]
 
-    def point_wake(self, i):
+    def wake(self, i):
         """
         Return the specified airfoil wake data.
 
