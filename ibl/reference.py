@@ -1418,6 +1418,7 @@ class XFoilAirfoilData:
     ValueError
         If invalid data is used.
     """
+    # pylint: disable=too-many-instance-attributes
 
     def __init__(self, data: str) -> None:
         """
@@ -1831,6 +1832,7 @@ class XFoilReader:
     at the stagnation point (not leading edge) and the wake. Each portion is
     stored separately and the parameters are obtained separately.
     """
+    # pylint: disable=too-many-public-methods
 
     # Attributes
     # ----------
@@ -1839,7 +1841,7 @@ class XFoilReader:
     # _lower: Data at each lower station
     # _wake: Data at each wake station
 
-    def __init__(self, filename=""):
+    def __init__(self, filename: str = "") -> None:
         """
         Initialize class with filename.
 
@@ -1907,7 +1909,7 @@ class XFoilReader:
         return self._re
 
     @reynolds.setter
-    def reynolds(self, re) -> float:
+    def reynolds(self, re: float) -> None:
         if re < 0:
             raise ValueError(f"Invalid Reynolds number: {re}")
         self._re = re
@@ -1966,118 +1968,59 @@ class XFoilReader:
         self._re = 0.0
         self._x_trans = [np.inf, np.inf]
         self._n_trans = np.inf
-        self._upper: List[XFoilAirfoilData] = []
-        self._lower: List[XFoilAirfoilData] = []
-        self._wake: List[XFoilWakeData] = []
+        self._upper = []
+        self._lower = []
+        self._wake = []
         if filename == "":
             return
 
-        # define function to each comments and empty lines
-        def next_chunk(f):
-            line = f.readline()
-            if line == "":
-                return ""
-            while (line == "\n") or (line[0] == "#"):
-                line = f.readline()
-                if line == "":
-                    return ""
+        # get rows from file
+        airfoil_data, wake_data = self._get_dump_data(filename)
 
-            chunk = [line]
-            line = f.readline()
-            if line == "":
-                return ""
-            while (line != "") and (line != "\n") and (line[0] != "#"):
-                chunk.append(line)
-                line = f.readline()
-            return chunk
+        # extract the upper airfoil data
+        idx_lower = -1
+        for idx, ad in enumerate(airfoil_data):
+            new_pt = XFoilAirfoilData(ad)
+            if new_pt.u_e_rel < 0:
+                idx_lower = idx
+                break
+            self._upper.insert(0, new_pt)
 
-        with open(filename, "r", encoding="utf8") as dump_file:
-            # read case information
-            chunk = next_chunk(dump_file)
+        # extract the lower aifoil data
+        self._lower = [XFoilAirfoilData(x) for x in airfoil_data[idx_lower:]]
+        for a in self._lower:
+            a.u_e_rel *= -1
+            a.mass_defect *= -1
+            a.ke_defect *= -1
 
-            # collect raw airfoil and wake info
-            found_stag_pt = False
-            found_wake = False
-            stag_s = 0
-            te_s = 0
-            for row in chunk:
-                col = row.split()
-                if len(col) == 12:
-                    if found_wake:
-                        raise ValueError("Cannot have airfoil data after wake "
-                                         "data")
-                    info = XFoilAirfoilData(row)
-                    if found_stag_pt:
-                        te_s = info.s
-                        info.s = info.s - stag_s
-                        info.u_e_rel = -info.u_e_rel
-                        info.mass_defect = -info.mass_defect
-                        info.ke_defect = -info.ke_defect
-                        self._lower.append(info)
-                    else:
-                        if info.u_e_rel < 0:
-                            # append the first lower element after corrections
-                            found_stag_pt = True
-                            info.u_e_rel = -info.u_e_rel
-                            info.mass_defect = -info.mass_defect
-                            info.ke_defect = -info.ke_defect
+        # find stagnation point
+        if self._upper[0].u_e_rel == 0:
+            stag_s = self._upper[0].s
+            self._lower.insert(0, self._upper[0])
+        else:
+            # interpolate properties
+            up = self._upper[0]
+            lo = self._lower[0]
+            du = up.u_e_rel + lo.u_e_rel
+            frac = up.u_e_rel/du
+            stag_pt = self._interpolate_aifoil_data(up, lo, frac)
 
-                            # interpolate actual stagnation point
-                            stag_info = XFoilAirfoilData("")
-                            u = self._upper[-1]
-                            du = info.u_e_rel + u.u_e_rel
-                            frac = info.u_e_rel/du
+            stag_s = stag_pt.s
+            self._upper.insert(0, stag_pt)
+            self._lower.insert(0, copy.copy(stag_pt))
 
-                            # standard interpolation for sign changes
-                            stag_info.u_e_rel = 0.0
-                            stag_info.x = np.abs(-frac*u.x + (1-frac)*info.x)
-                            stag_info.s = frac*u.s + (1-frac)*info.s
-                            stag_info.y = frac*u.y + (1-frac)*info.y
-                            # invert sign for one term for rest
-                            stag_info.delta_d = (frac*u.delta_d
-                                                 + (1-frac)*info.delta_d)
-                            stag_info.delta_m = (frac*u.delta_m
-                                                 + (1-frac)*info.delta_m)
-                            stag_info.c_f = frac*u.c_f + (1-frac)*info.c_f
-                            stag_info.shape_d = frac*u.shape_d + (1-frac)*info.shape_d
-                            stag_info.shape_k = frac*u.shape_k + (1-frac)*info.shape_k
-                            stag_info.mom_defect = frac*u.mom_defect + (1-frac)*info.mom_defect
-                            stag_info.mass_defect = frac*u.mass_defect + (1-frac)*info.mass_defect
-                            stag_info.ke_defect = frac*u.ke_defect + (1-frac)*info.ke_defect
+        # adjust arc-length parameter to be based on leading edge
+        for a in self._upper:
+            a.s = stag_s - a.s
+        for a in self._lower:
+            a.s -= stag_s
 
-                            # append stag_info to upper
-                            stag_s = stag_info.s
-                            self._upper.append(copy.copy(stag_info))
-
-                            # correct arc lengths for two lower terms then add
-                            stag_info.s = 0
-                            info.s = info.s - stag_s
-                            self._lower.append(stag_info)
-                            self._lower.append(info)
-
-                            # correct upper with the stag_info.s
-                            for af in self._upper:
-                                af.s = stag_s - af.s
-
-                            # Reverse upper surface so that it goes from
-                            # stagnation point to trailing edge
-                            self._upper.reverse()
-                        elif info.u_e_rel == 0:
-                            found_stag_pt = True
-                            stag_s = info.s
-                            self._upper.append(info)
-                            for af in self._upper:
-                                af.s = af.s - stag_s
-                            self._lower.append(info)
-                        else:
-                            self._upper.append(info)
-                elif len(col) == 8:
-                    found_wake = True
-                    info = XFoilWakeData(row)
-                    info.s = info.s - te_s
-                    self._wake.append(info)
-                else:
-                    raise ValueError(f"Invalid data in XFoil dump file: {col}")
+        # extract the wake data adjust for wake to be from trailing edge
+        if wake_data:
+            self._wake = [XFoilWakeData(x) for x in wake_data]
+            s_offset = self._wake[0].s
+            for w in self._wake:
+                w.s -= s_offset
 
     def upper_count(self) -> int:
         """
@@ -2128,7 +2071,7 @@ class XFoilReader:
         """
         return self._upper[i]
 
-    def lower(self, i):
+    def lower(self, i: int) -> XFoilAirfoilData:
         """
         Return the specified data on the lower surface of airfoil.
 
@@ -2144,7 +2087,7 @@ class XFoilReader:
         """
         return self._lower[i]
 
-    def wake(self, i):
+    def wake(self, i: int) -> XFoilWakeData:
         """
         Return the specified airfoil wake data.
 
@@ -2160,466 +2103,528 @@ class XFoilReader:
         """
         return self._wake[i]
 
-    def s_upper(self):
+    def s_upper(self) -> npt.NDArray:
         """
         Return arc-length distances from stagnation point for upper surface.
 
         Returns
         -------
-        array-like
+        numpy.ndarray
             Arc-length distances from the stagnation point for the upper
             surface.
         """
         s = []
         for sd in self._upper:
             s.append(sd.s)
-        return s
+        return np.array(s)
 
-    def s_lower(self):
+    def s_lower(self) -> npt.NDArray:
         """
         Return arc-length distances from stagnation point for lower surface.
 
         Returns
         -------
-        array-like
+        numpy.ndarray
             Arc-length distances from the stagnation point for the lower
             surface.
         """
         s = []
         for sd in self._lower:
             s.append(sd.s)
-        return s
+        return np.array(s)
 
-    def s_wake(self):
+    def s_wake(self) -> npt.NDArray:
         """
         Return arc-length distances from airfoil trailing edge.
 
         Returns
         -------
-        array-like
+        numpy.ndarray
             Arc-length distances from the airfoil trailing edge.
         """
         s = []
         for sd in self._wake:
             s.append(sd.s)
-        return s
+        return np.array(s)
 
-    def x_upper(self):
+    def x_upper(self) -> npt.NDArray:
         """
         Return the chord locations for upper surface of airfoil.
 
         Returns
         -------
-        array-like
+        numpy.ndarray
             Chord locations for upper surface of airfoil.
         """
         x = []
         for sd in self._upper:
             x.append(sd.x)
-        return x
+        return np.array(x)
 
-    def x_lower(self):
+    def x_lower(self) -> npt.NDArray:
         """
         Return the chord locations for lower surface of airfoil.
 
         Returns
         -------
-        array-like
+        numpy.ndarray
             Chord locations for lower surface of airfoil.
         """
         x = []
         for sd in self._lower:
             x.append(sd.x)
-        return x
+        return np.array(x)
 
-    def x_wake(self):
+    def x_wake(self) -> npt.NDArray:
         """
         Return the chord locations for airfoil wake.
 
         Returns
         -------
-        array-like
+        numpy.ndarray
             Chord locations for airfoil wake.
         """
         x = []
         for sd in self._wake:
             x.append(sd.x)
-        return x
+        return np.array(x)
 
-    def y_upper(self):
+    def y_upper(self) -> npt.NDArray:
         """
         Return the normal locations for upper surface of airfoil.
 
         Returns
         -------
-        array-like
+        numpy.ndarray
             Normal locations for upper surface of airfoil.
         """
         y = []
         for sd in self._upper:
             y.append(sd.y)
-        return y
+        return np.array(y)
 
-    def y_lower(self):
+    def y_lower(self) -> npt.NDArray:
         """
         Return the normal locations for lower surface of airfoil.
 
         Returns
         -------
-        array-like
+        numpy.ndarray
             Normal locations for lower surface of airfoil.
         """
         y = []
         for sd in self._lower:
             y.append(sd.y)
-        return y
+        return np.array(y)
 
-    def y_wake(self):
+    def y_wake(self) -> npt.NDArray:
         """
         Return the normal locations for airfoil wake.
 
         Returns
         -------
-        array-like
+        numpy.ndarray
             Normal locations for airfoil wake.
         """
         y = []
         for sd in self._wake:
             y.append(sd.y)
-        return y
+        return np.array(y)
 
-    def u_e_rel_upper(self):
+    def u_e_rel_upper(self) -> npt.NDArray:
         """
         Return the nondimensionalized velocities for upper surface of airfoil.
 
         Returns
         -------
-        array-like
+        numpy.ndarray
             Nondimensionalized velocities for upper surface of airfoil.
         """
         u_e_rel = []
         for sd in self._upper:
             u_e_rel.append(sd.u_e_rel)
-        return u_e_rel
+        return np.array(u_e_rel)
 
-    def u_e_rel_lower(self):
+    def u_e_rel_lower(self) -> npt.NDArray:
         """
         Return the nondimensionalized velocities for lower surface of airfoil.
 
         Returns
         -------
-        array-like
+        numpy.ndarray
             Nondimensionalized velocities for lower surface of airfoil.
         """
         u_e_rel = []
         for sd in self._lower:
             u_e_rel.append(sd.u_e_rel)
-        return u_e_rel
+        return np.array(u_e_rel)
 
-    def u_e_rel_wake(self):
+    def u_e_rel_wake(self) -> npt.NDArray:
         """
         Return the nondimensionalized velocities for airfoil wake.
 
         Returns
         -------
-        array-like
+        numpy.ndarray
             Nondimensionalized velocities for airfoil wake.
         """
         u_e_rel = []
         for sd in self._wake:
             u_e_rel.append(sd.u_e_rel)
-        return u_e_rel
+        return np.array(u_e_rel)
 
-    def delta_d_upper(self):
+    def delta_d_upper(self) -> npt.NDArray:
         """
         Return the displacement thicknesses for upper surface of airfoil.
 
         Returns
         -------
-        array-like
+        numpy.ndarray
             Displacement thicknesses for upper surface of airfoil.
         """
         delta_d = []
         for sd in self._upper:
             delta_d.append(sd.delta_d)
-        return delta_d
+        return np.array(delta_d)
 
-    def delta_d_lower(self):
+    def delta_d_lower(self) -> npt.NDArray:
         """
         Return the displacement thicknesses for lower surface of airfoil.
 
         Returns
         -------
-        array-like
+        numpy.ndarray
             Displacement thicknesses for lower surface of airfoil.
         """
         delta_d = []
         for sd in self._lower:
             delta_d.append(sd.delta_d)
-        return delta_d
+        return np.array(delta_d)
 
-    def delta_d_wake(self):
+    def delta_d_wake(self) -> npt.NDArray:
         """
         Return the displacement thicknesses for airfoil wake.
 
         Returns
         -------
-        array-like
+        numpy.ndarray
             Displacement thicknesses for airfoil wake.
         """
         delta_d = []
         for sd in self._wake:
             delta_d.append(sd.delta_d)
-        return delta_d
+        return np.array(delta_d)
 
-    def delta_m_upper(self):
+    def delta_m_upper(self) -> npt.NDArray:
         """
         Return the momentum thicknesses for upper surface of airfoil.
 
         Returns
         -------
-        array-like
+        numpy.ndarray
             Momentum thicknesses for upper surface of airfoil.
         """
         delta_m = []
         for sd in self._upper:
             delta_m.append(sd.delta_m)
-        return delta_m
+        return np.array(delta_m)
 
-    def delta_m_lower(self):
+    def delta_m_lower(self) -> npt.NDArray:
         """
         Return the momentum thicknesses for lower surface of airfoil.
 
         Returns
         -------
-        rray-like
+        numpy.ndarray
             Momentum thicknesses for lower surface of airfoil.
         """
         delta_m = []
         for sd in self._lower:
             delta_m.append(sd.delta_m)
-        return delta_m
+        return np.array(delta_m)
 
-    def delta_m_wake(self):
+    def delta_m_wake(self) -> npt.NDArray:
         """
         Return the momentum thicknesses for airfoil wake.
 
         Returns
         -------
-        array-like
+        numpy.ndarray
             Momentum thicknesses for airfoil wake.
         """
         delta_m = []
         for sd in self._wake:
             delta_m.append(sd.delta_m)
-        return delta_m
+        return np.array(delta_m)
 
-    def delta_k_upper(self):
+    def delta_k_upper(self) -> npt.NDArray:
         """
         Return the kinetic energy thicknesses for upper surface of airfoil.
 
         Returns
         -------
-        array-like
+        numpy.ndarray
             Kinetic energy thicknesses for upper surface of airfoil.
         """
         delta_k = []
         for sd in self._upper:
             delta_k.append(sd.shape_k*sd.delta_m)
-        return delta_k
+        return np.array(delta_k)
 
-    def delta_k_lower(self):
+    def delta_k_lower(self) -> npt.NDArray:
         """
         Return the kinetic energy thicknesses for lower surface of airfoil.
 
         Returns
         -------
-        array-like
+        numpy.ndarray
             Kinetic energy thicknesses for lower surface of airfoil.
         """
         delta_k = []
         for sd in self._lower:
             delta_k.append(sd.shape_k*sd.delta_m)
-        return delta_k
+        return np.array(delta_k)
 
-    def shape_d_upper(self):
+    def shape_d_upper(self) -> npt.NDArray:
         """
         Return the displacement shape factor for upper surface of airfoil.
 
         Returns
         -------
-        array-like
+        numpy.ndarray
             Displacement shape factor for upper surface of airfoil.
         """
         shape_d = []
         for sd in self._upper:
             shape_d.append(sd.shape_d)
-        return shape_d
+        return np.array(shape_d)
 
-    def shape_d_lower(self):
+    def shape_d_lower(self) -> npt.NDArray:
         """
         Return the displacement shape factor for lower surface of airfoil.
 
         Returns
         -------
-        array-like
+        numpy.ndarray
             Displacement shape factor for lower surface of airfoil.
         """
         shape_d = []
         for sd in self._lower:
             shape_d.append(sd.shape_d)
-        return shape_d
+        return np.array(shape_d)
 
-    def shape_d_wake(self):
+    def shape_d_wake(self) -> npt.NDArray:
         """
         Return the displacement shape factor for airfoil wake.
 
         Returns
         -------
-        array-like
+        numpy.ndarray
             Displacement shape factor for airfoil wake.
         """
         shape_d = []
         for sd in self._wake:
             shape_d.append(sd.shape_d)
-        return shape_d
+        return np.array(shape_d)
 
-    def shape_k_upper(self):
+    def shape_k_upper(self) -> npt.NDArray:
         """
         Return the kinetic energy shape factor for upper surface of airfoil.
 
         Returns
         -------
-        array-like
+        numpy.ndarray
             Kinetic energy shape factor for upper surface of airfoil.
         """
         shape_k = []
         for sd in self._upper:
             shape_k.append(sd.shape_k)
-        return shape_k
+        return np.array(shape_k)
 
-    def shape_k_lower(self):
+    def shape_k_lower(self) -> npt.NDArray:
         """
         Return the kinetic energy shape factor for lower surface of airfoil.
 
         Returns
         -------
-        array-like
+        numpy.ndarray
             Kinetic energy shape factor for lower surface of airfoil.
         """
         shape_k = []
         for sd in self._lower:
             shape_k.append(sd.shape_k)
-        return shape_k
+        return np.array(shape_k)
 
-    def c_f_upper(self):
+    def c_f_upper(self) -> npt.NDArray:
         """
         Return the skin friction coefficient for upper surface of airfoil.
 
         Returns
         -------
-        array-like
+        numpy.ndarray
             Skin friction coefficient for upper surface of airfoil.
         """
         c_f = []
         for sd in self._upper:
             c_f.append(sd.c_f)
-        return c_f
+        return np.array(c_f)
 
-    def c_f_lower(self):
+    def c_f_lower(self) -> npt.NDArray:
         """
         Return the skin friction coefficient for lower surface of airfoil.
 
         Returns
         -------
-        array-like
+        numpy.ndarray
             Skin friction coefficient for lower surface of airfoil.
         """
         c_f = []
         for sd in self._lower:
             c_f.append(sd.c_f)
-        return c_f
+        return np.array(c_f)
 
-    def mass_defect_upper(self):
+    def mass_defect_upper(self) -> npt.NDArray:
         """
         Return the mass defect for upper surface of airfoil.
 
         Returns
         -------
-        array-like
+        numpy.ndarray
             Mass defect for upper surface of airfoil.
         """
         mass_defect = []
         for sd in self._upper:
             mass_defect.append(sd.mass_defect)
-        return mass_defect
+        return np.array(mass_defect)
 
-    def mass_defect_lower(self):
+    def mass_defect_lower(self) -> npt.NDArray:
         """
         Return the mass defect for lower surface of airfoil.
 
         Returns
         -------
-        array-like
+        numpy.ndarray
             Mass defect for lower surface of airfoil.
         """
         mass_defect = []
         for sd in self._lower:
             mass_defect.append(sd.mass_defect)
-        return mass_defect
+        return np.array(mass_defect)
 
-    def mom_defect_upper(self):
+    def mom_defect_upper(self) -> npt.NDArray:
         """
         Return the momentum defect for upper surface of airfoil.
 
         Returns
         -------
-        array-like
+        numpy.ndarray
             Momentum defect for upper surface of airfoil.
         """
         mom_defect = []
         for sd in self._upper:
             mom_defect.append(sd.mom_defect)
-        return mom_defect
+        return np.array(mom_defect)
 
-    def mom_defect_lower(self):
+    def mom_defect_lower(self) -> npt.NDArray:
         """
         Return the momentum defect for lower surface of airfoil.
 
         Returns
         -------
-        array-like
+        numpy.ndarray
             Momentum defect for lower surface of airfoil.
         """
         mom_defect = []
         for sd in self._lower:
             mom_defect.append(sd.mom_defect)
-        return mom_defect
+        return np.array(mom_defect)
 
-    def ke_defect_upper(self):
+    def ke_defect_upper(self) -> npt.NDArray:
         """
         Return the kinetic energy defect for upper surface of airfoil.
 
         Returns
         -------
-        array-like
+        numpy.ndarray
             Kinetic energy defect for upper surface of airfoil.
         """
         ke_defect = []
         for sd in self._upper:
             ke_defect.append(sd.ke_defect)
-        return ke_defect
+        return np.array(ke_defect)
 
-    def ke_defect_lower(self):
+    def ke_defect_lower(self) -> npt.NDArray:
         """
         Return the kinetic energy defect for lower surface of airfoil.
 
         Returns
         -------
-        array-like
+        numpy.ndarray
             Kinetic energy defect for lower surface of airfoil.
         """
         ke_defect = []
         for sd in self._lower:
             ke_defect.append(sd.ke_defect)
-        return ke_defect
+        return np.array(ke_defect)
+
+    def _get_dump_data(self, filename: str) -> Tuple[List[str], List[str]]:
+        """
+        Return the dump file data.
+
+        Parameters
+        ----------
+        filename : str
+            Name of file containing data.
+
+        Returns
+        -------
+        List[str]
+            List containing rows of airfoil data
+        List[str]
+            List containing rows of wake data
+        """
+
+        # get data from file
+        airfoil: List[str] = []
+        wake: List[str] = []
+        with open(filename, "r", encoding="utf8") as f:
+            buff = f.readlines()
+
+        # find the wake index (if exists)
+        wake_idx = -1
+        for idx, line in enumerate(buff):
+            if len(line) < 80:
+                wake_idx = idx
+                break
+        if buff[0][0] == "#":
+            airfoil_start = 1
+        else:
+            airfoil_start = 0
+
+        if wake_idx > 0:
+            airfoil = buff[airfoil_start:wake_idx]
+            wake = buff[wake_idx:]
+        else:
+            airfoil = buff[airfoil_start:]
+
+        return airfoil, wake
+
+    @staticmethod
+    def _interpolate_aifoil_data(up: XFoilAirfoilData, lo: XFoilAirfoilData,
+                                 frac: float) -> XFoilAirfoilData:
+        stag_pt = XFoilAirfoilData(data="")
+
+        stag_pt.u_e_rel = 0.0
+        stag_pt.x = np.abs(-frac*lo.x + (1-frac)*up.x)
+        stag_pt.u_e_rel = np.abs(-frac*lo.u_e_rel + (1-frac)*up.u_e_rel)
+        stag_pt.s = frac*lo.s + (1-frac)*up.s
+        stag_pt.y = frac*lo.y + (1-frac)*up.y
+        stag_pt.delta_d = frac*lo.delta_d + (1-frac)*up.delta_d
+        stag_pt.delta_m = frac*lo.delta_m + (1-frac)*up.delta_m
+        stag_pt.c_f = frac*lo.c_f + (1-frac)*up.c_f
+        stag_pt.shape_d = frac*lo.shape_d + (1-frac)*up.shape_d
+        stag_pt.shape_k = frac*lo.shape_k + (1-frac)*up.shape_k
+        stag_pt.mom_defect = frac*lo.mom_defect + (1-frac)*up.mom_defect
+        stag_pt.mass_defect = frac*lo.mass_defect + (1-frac)*up.mass_defect
+        stag_pt.ke_defect = frac*lo.ke_defect + (1-frac)*up.ke_defect
+        return stag_pt
