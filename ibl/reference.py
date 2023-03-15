@@ -1853,7 +1853,7 @@ class XFoilReader:
         self._filename = ""
         self._name = ""
         self._alpha = np.inf
-        self._u_e = 1.0
+        self._u_ref = 1.0
         self._c = 1.0
         self._re = 0.0
         self._x_trans = [np.inf, np.inf]
@@ -1884,6 +1884,20 @@ class XFoilReader:
     @alpha.setter
     def alpha(self, alpha: float) -> None:
         self._alpha = alpha
+
+    @property
+    def u_ref(self) -> float:
+        """
+        Reference velocity in [m/s] for case.
+        Must be greater than zero.
+        """
+        return self._u_ref
+
+    @u_ref.setter
+    def u_ref(self, u_ref: float) -> None:
+        if u_ref <= 0:
+            raise ValueError(f"Invalid reference velocity: {u_ref}")
+        self._u_ref = u_ref
 
     @property
     def c(self) -> float:
@@ -1963,7 +1977,7 @@ class XFoilReader:
         self._filename = ""
         self._name = ""
         self._alpha = np.inf
-        self._u_e = 1.0
+        self._u_ref = 1.0
         self._c = 1.0
         self._re = 0.0
         self._x_trans = [np.inf, np.inf]
@@ -2231,9 +2245,9 @@ class XFoilReader:
             y.append(sd.y)
         return np.array(y)
 
-    def u_e_rel_upper(self) -> npt.NDArray:
+    def u_e_upper(self) -> npt.NDArray:
         """
-        Return the nondimensionalized velocities for upper surface of airfoil.
+        Return the velocities for upper surface of airfoil.
 
         Returns
         -------
@@ -2243,11 +2257,11 @@ class XFoilReader:
         u_e_rel = []
         for sd in self._upper:
             u_e_rel.append(sd.u_e_rel)
-        return np.array(u_e_rel)
+        return self.u_ref*np.array(u_e_rel)
 
-    def u_e_rel_lower(self) -> npt.NDArray:
+    def u_e_lower(self) -> npt.NDArray:
         """
-        Return the nondimensionalized velocities for lower surface of airfoil.
+        Return the velocities for lower surface of airfoil.
 
         Returns
         -------
@@ -2257,11 +2271,11 @@ class XFoilReader:
         u_e_rel = []
         for sd in self._lower:
             u_e_rel.append(sd.u_e_rel)
-        return np.array(u_e_rel)
+        return self.u_ref*np.array(u_e_rel)
 
-    def u_e_rel_wake(self) -> npt.NDArray:
+    def u_e_wake(self) -> npt.NDArray:
         """
-        Return the nondimensionalized velocities for airfoil wake.
+        Return the velocities for airfoil wake.
 
         Returns
         -------
@@ -2271,7 +2285,7 @@ class XFoilReader:
         u_e_rel = []
         for sd in self._wake:
             u_e_rel.append(sd.u_e_rel)
-        return np.array(u_e_rel)
+        return self.u_ref*np.array(u_e_rel)
 
     def delta_d_upper(self) -> npt.NDArray:
         """

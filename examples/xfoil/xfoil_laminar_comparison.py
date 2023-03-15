@@ -42,18 +42,20 @@ def compare_xfoil_laminar() -> None:
     xfoil_inv.name = airfoil_name
     xfoil_inv.alpha = alpha
     xfoil_inv.c = c
+    xfoil_inv.u_ref = u_inf
     xfoil_visc = XFoilReader(str(visc_file))
     xfoil_visc.name = airfoil_name
     xfoil_visc.alpha = alpha
     xfoil_visc.c = c
+    xfoil_visc.u_ref = u_inf
     xfoil_visc.reynolds = re
     xfoil_visc.x_trans_lower = x_trans
     xfoil_visc.x_trans_upper = x_trans
     xfoil_visc.n_trans = n_trans
 
     s_ref = xfoil_inv.s_upper()
-    u_e_inv = u_inf*xfoil_inv.u_e_rel_upper()
-    u_e_visc = u_inf*xfoil_visc.u_e_rel_upper()
+    u_e_inv = xfoil_inv.u_e_upper()
+    u_e_visc = xfoil_visc.u_e_upper()
     s = np.linspace(s_ref[0], s_ref[-1], 101)
 
     # Setup Thwaites methods
@@ -114,6 +116,7 @@ def compare_xfoil_laminar() -> None:
     d2u_e_inv = tm_inv.d2U_edx2(s_inv)
 
     # Plot results
+    # pylint: disable=duplicate-code
     fig = plt.figure()
     fig.set_figwidth(10)
     fig.set_figheight(15)
@@ -137,6 +140,7 @@ def compare_xfoil_laminar() -> None:
     thwaites_visc_label = "Thwaites (Viscous $U_e$)"
     thwaites_inv_color = "blue"
     thwaites_inv_label = "Thwaites (Inviscid $U_e$)"
+    # pylint: enable=duplicate-code
 
     # Displacement thickness in 0,:
     ax = axis_delta_d

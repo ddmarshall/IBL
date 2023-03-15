@@ -110,6 +110,10 @@ class TestXFoilDumpReader(unittest.TestCase):
         self.assertEqual(xf.name, "no name")
         xf.alpha = 0.5
         self.assertEqual(xf.alpha, 0.5)
+        xf.u_ref = 2.0
+        self.assertEqual(xf.u_ref, 2.0)
+        with self.assertRaises(ValueError):
+            xf.u_ref = 0
         xf.c = 2.0
         self.assertEqual(xf.c, 2.0)
         with self.assertRaises(ValueError):
@@ -181,7 +185,7 @@ class TestXFoilDumpReader(unittest.TestCase):
         self.assertIsNone(npt.assert_allclose(buff, xf.y_upper()))
         buff = [0.0, 0.72574, 1.05098, 1.04538, 1.03909, 1.03339, 1.02688,
                 1.02041, 1.01457, 1.00702, 0.9962, 0.92497]
-        self.assertIsNone(npt.assert_allclose(buff, xf.u_e_rel_upper()))
+        self.assertIsNone(npt.assert_allclose(buff, xf.u_e_upper()))
         buff = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
         self.assertIsNone(npt.assert_allclose(buff, xf.delta_d_upper()))
         buff = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
@@ -219,7 +223,7 @@ class TestXFoilDumpReader(unittest.TestCase):
         self.assertIsNone(npt.assert_allclose(buff, xf.y_lower()))
         buff = [0.0, 0.72574, 1.05034, 1.04462, 1.03909, 1.03258, 1.02607,
                 1.02041, 1.0137, 1.00594, 0.9962, 0.92497]
-        self.assertIsNone(npt.assert_allclose(buff, xf.u_e_rel_lower()))
+        self.assertIsNone(npt.assert_allclose(buff, xf.u_e_lower()))
         buff = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
         self.assertIsNone(npt.assert_allclose(buff, xf.delta_d_lower()))
         buff = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
@@ -341,7 +345,7 @@ class TestXFoilDumpReader(unittest.TestCase):
         self.assertIsNone(npt.assert_allclose(buff, xf.y_upper()))
         buff = [0.0, 0.4447, 1.06059, 1.05732, 1.05267, 1.0485, 1.04388,
                 1.03951, 1.03593, 1.03207, 1.02842, 1.02513]
-        self.assertIsNone(npt.assert_allclose(buff,xf.u_e_rel_upper()))
+        self.assertIsNone(npt.assert_allclose(buff,xf.u_e_upper()))
         buff = [0.000811, 0.000811, 0.015435, 0.023266, 0.029346, 0.033966,
                 0.038734, 0.043102, 0.04667, 0.050523, 0.054191, 0.05753]
         self.assertIsNone(npt.assert_allclose(buff, xf.delta_d_upper()))
@@ -388,7 +392,7 @@ class TestXFoilDumpReader(unittest.TestCase):
         self.assertIsNone(npt.assert_allclose(buff, xf.y_lower()))
         buff = [0.0, 0.4447, 1.06044, 1.05676, 1.05267, 1.04791, 1.04332,
                 1.03951, 1.03543, 1.03161, 1.02842, 1.02513]
-        self.assertIsNone(npt.assert_allclose(buff, xf.u_e_rel_lower()))
+        self.assertIsNone(npt.assert_allclose(buff, xf.u_e_lower()))
         buff = [0.000811, 0.000811, 0.016586, 0.024091, 0.029346, 0.034589,
                 0.0393, 0.043102, 0.047164, 0.05099, 0.054191, 0.05753]
         self.assertIsNone(npt.assert_allclose(buff, xf.delta_d_lower()))
@@ -434,7 +438,7 @@ class TestXFoilDumpReader(unittest.TestCase):
         self.assertIsNone(npt.assert_allclose(buff, xf.y_wake()))
         buff = [1.02513, 1.0147, 1.0081, 0.99912, 0.99122, 0.98638, 0.96382,
                 0.92209]
-        self.assertIsNone(npt.assert_allclose(buff, xf.u_e_rel_wake()))
+        self.assertIsNone(npt.assert_allclose(buff, xf.u_e_wake()))
         buff = [0.11569, 0.115166, 0.114388, 0.113283, 0.112767, 0.11289,
                 0.120079, 0.173472]
         self.assertIsNone(npt.assert_allclose(buff, xf.delta_d_wake()))
