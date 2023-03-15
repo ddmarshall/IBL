@@ -11,6 +11,7 @@ classes.
 """
 
 from abc import ABC, abstractmethod
+
 import numpy as np
 
 
@@ -20,21 +21,42 @@ class InitialCondition(ABC):
 
     This class provides the interface for the initial conditions of the
     integral boundary layer solutions. This class is intended to provide
-
-    Attributes
-    ----------
-    dUe_dx : float
-        Slope of edge velocity profile at initial condition.
-    nu : float
-        Kinematic viscosity at initial condition.
     """
 
-    def __init__(self, dU_edx: float, nu: float) -> None:
-        self.dU_edx = dU_edx
+    def __init__(self, du_e: float, nu: float) -> None:
+        self._du_e = np.inf
+        self._nu = np.inf
+
+        self.du_e = du_e
         self.nu = nu
 
+    @property
+    def du_e(self) -> float:
+        """
+        Rate of change of edge velocity profile at initial condition.
+        """
+        return self._du_e
+
+    @du_e.setter
+    def du_e(self, du_e: float) -> None:
+        self._du_e = du_e
+
+    @property
+    def nu(self) -> float:
+        """
+        Kinematic viscosity at initial condtion.
+        Must be greater than zero.
+        """
+        return self._nu
+
+    @nu.setter
+    def nu(self, nu: float) -> None:
+        if nu <= 0:
+            raise ValueError(f"Invaid kinematic viscosity: {nu}")
+        self._nu = nu
+
     @abstractmethod
-    def H_d(self) -> float:
+    def shape_d(self) -> float:
         """
         Return the displacement shape factor for this initial condition.
 
@@ -45,7 +67,7 @@ class InitialCondition(ABC):
         """
 
     @abstractmethod
-    def H_k(self) -> float:
+    def shape_k(self) -> float:
         """
         Return the kinetic energy shape factor for this initial condition.
 
@@ -89,29 +111,22 @@ class InitialCondition(ABC):
         """
 
 
-class FalknerSkanStagnationCondition(InitialCondition):
+class FalknerSkanStagCondition(InitialCondition):
     """
     Returns the stagnation conditions based on the Falkner-Skan solution.
 
     This class returns the stagnation conditions obtained from the Falkner-Skan
     solution to the stagnation point flow.
-
-    Attributes
-    ----------
-    dU_edx: float
-        Rate of change of the inviscid edge velocity at stagnation point.
-    nu: float
-        Kinematic viscosity.
     """
 
-    def __init__(self, dU_edx: float, nu: float):
-        super().__init__(dU_edx, nu)
+    def __init__(self, du_e: float, nu: float):
+        super().__init__(du_e, nu)
         self._fpp0 = 1.23259
-        self._H_d = 2.2162
-        self._H_k = 1.6257
+        self._shape_d = 2.2162
+        self._shape_k = 1.6257
         self._eta_m = 0.29235
 
-    def H_d(self) -> float:
+    def shape_d(self) -> float:
         """
         Return the displacement shape factor for this initial condition.
 
@@ -120,9 +135,9 @@ class FalknerSkanStagnationCondition(InitialCondition):
         float
             Displacement shape factor.
         """
-        return self._H_d
+        return self._shape_d
 
-    def H_k(self) -> float:
+    def shape_k(self) -> float:
         """
         Return the kinetic energy shape factor for this initial condition.
 
@@ -131,7 +146,7 @@ class FalknerSkanStagnationCondition(InitialCondition):
         float
             Kinetic energy shape factor.
         """
-        return self._H_k
+        return self._shape_k
 
     def delta_d(self) -> float:
         """
@@ -142,7 +157,7 @@ class FalknerSkanStagnationCondition(InitialCondition):
         float
             Displacement thickness.
         """
-        return self.delta_m()*self.H_d()
+        return self.delta_m()*self.shape_d()
 
     def delta_m(self) -> float:
         """
@@ -154,7 +169,7 @@ class FalknerSkanStagnationCondition(InitialCondition):
             Momentum thickness.
         """
         return np.sqrt(self.nu*self._eta_m*self._fpp0
-                       / ((self._H_d+2)*self.dU_edx))
+                       / ((self._shape_d+2)*self.du_e))
 
     def delta_k(self) -> float:
         """
@@ -165,7 +180,7 @@ class FalknerSkanStagnationCondition(InitialCondition):
         float
             Kinetic energy thickness.
         """
-        return self.delta_m()*self.H_k()
+        return self.delta_m()*self.shape_k()
 
 
 class ManualCondition(InitialCondition):
@@ -186,12 +201,12 @@ class ManualCondition(InitialCondition):
     """
 
     def __init__(self, delta_d: float, delta_m: float, delta_k: float):
-        super().__init__(0.0, 0.0)
+        super().__init__(du_e=0.0, nu=1e-5)
         self.del_d = delta_d
         self.del_m = delta_m
         self.del_k = delta_k
 
-    def H_d(self) -> float:
+    def shape_d(self) -> float:
         """
         Return the displacement shape factor for this initial condition.
 
@@ -202,7 +217,7 @@ class ManualCondition(InitialCondition):
         """
         return self.del_d/self.del_m
 
-    def H_k(self) -> float:
+    def shape_k(self) -> float:
         """
         Return the kinetic energy shape factor for this initial condition.
 
