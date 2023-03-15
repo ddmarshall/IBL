@@ -9,7 +9,6 @@ Created on Tue Aug 30 06:21:08 2022
 
 from os.path import abspath, dirname
 import unittest
-from typing import List
 
 import numpy as np
 import numpy.testing as npt
@@ -247,14 +246,14 @@ class TestXFoilDumpReader(unittest.TestCase):
         filename = directory + "/data/xfoil_inviscid_dump.txt"
         xf = XFoilReader(filename)
 
-        buff:List[None] = []
-        self.assertEqual(buff, xf.s_wake())
-        self.assertEqual(buff, xf.x_wake())
-        self.assertEqual(buff, xf.y_wake())
-        self.assertEqual(buff, xf.u_e_rel_wake())
-        self.assertEqual(buff, xf.delta_d_wake())
-        self.assertEqual(buff, xf.delta_m_wake())
-        self.assertEqual(buff, xf.shape_d_wake())
+        buff = np.array([])
+        self.assertIsNone(npt.assert_equal(buff, xf.s_wake()))
+        self.assertIsNone(npt.assert_equal(buff, xf.x_wake()))
+        self.assertIsNone(npt.assert_equal(buff, xf.y_wake()))
+        self.assertIsNone(npt.assert_equal(buff, xf.u_e_wake()))
+        self.assertIsNone(npt.assert_equal(buff, xf.delta_d_wake()))
+        self.assertIsNone(npt.assert_equal(buff, xf.delta_m_wake()))
+        self.assertIsNone(npt.assert_equal(buff, xf.shape_d_wake()))
 
     def test_inviscid_element_access(self) -> None:
         """Test accessing inviscid properties at specific point."""
