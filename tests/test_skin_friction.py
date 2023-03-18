@@ -10,86 +10,89 @@ import unittest
 import numpy as np
 import numpy.testing as npt
 
-from pyBL.skin_friction import c_f_LudwiegTillman
-from pyBL.skin_friction import c_f_Felsch
-from pyBL.skin_friction import c_f_White
+from ibl.skin_friction import ludwieg_tillman
+from ibl.skin_friction import felsch
+from ibl.skin_friction import white
+from ibl.typing import InputParam
 
 
 class TestSkinFrictionCalculations(unittest.TestCase):
     """Class to test various functions and curve fits for Thwaites method"""
 
-    def test_ludwieg_tillman(self):
+    def test_ludwieg_tillman(self) -> None:
         """Test the Ludwieg-Tillman function."""
-        H_d_range = [1.2, 3.4]
-        Re_delta_m_range = [1e2, 1e5]
+        shape_d_range = np.array([1.2, 3.4])
+        re_delta_m_range = np.array([1e2, 1e5])
 
-        def fun(Re_delta_m, H_d):
-            return 0.246/(Re_delta_m**0.268*10**(0.678*H_d))
+        def fun(re_delta_m: InputParam, shape_d: InputParam) -> InputParam:
+            return 0.246/(re_delta_m**0.268*10**(0.678*shape_d))
 
         # calculate range of displacement shape parameter
-        Re_delta_m = np.average(Re_delta_m_range)
-        H_d = np.linspace(H_d_range[0], H_d_range[-1])
-        c_f_ref = fun(Re_delta_m, H_d)
-        c_f = c_f_LudwiegTillman(Re_delta_m, H_d)
+        re_delta_m = np.average(re_delta_m_range)
+        shape_d = np.linspace(shape_d_range[0], shape_d_range[-1])
+        c_f_ref = fun(re_delta_m, shape_d)
+        c_f = ludwieg_tillman(re_delta_m, shape_d)
         self.assertIsNone(npt.assert_allclose(c_f_ref, c_f))
 
         # calculate range of Reynolds number
-        Re_delta_m = np.logspace(np.log10(Re_delta_m_range[0]),
-                                 np.log10(Re_delta_m_range[-1]))
-        H_d = np.average(H_d_range)
-        c_f_ref = fun(Re_delta_m, H_d)
-        c_f = c_f_LudwiegTillman(Re_delta_m, H_d)
+        re_delta_m = np.logspace(np.log10(re_delta_m_range[0]),
+                                 np.log10(re_delta_m_range[-1]))
+        shape_d = np.average(shape_d_range)
+        c_f_ref = fun(re_delta_m, shape_d)
+        c_f = ludwieg_tillman(re_delta_m, shape_d)
         self.assertIsNone(npt.assert_allclose(c_f_ref, c_f))
 
-    def test_felsch(self):
+    def test_felsch(self) -> None:
         """Test the Felsch function."""
-        H_d_range = [1.2, 2.998]
-        Re_delta_m_range = [1e2, 1e5]
+        shape_d_range = np.array([1.2, 2.998])
+        re_delta_m_range = np.array([1e2, 1e5])
 
-        def fun(Re_delta_m, H_d):
-            return 0.058*(0.93 - 1.95*np.log10(H_d))**1.705/(Re_delta_m**0.268)
+        def fun(re_delta_m: InputParam, shape_d: InputParam) -> InputParam:
+            return 0.058*(0.93
+                          - 1.95*np.log10(shape_d))**1.705/(re_delta_m**0.268)
 
         # calculate range of displacement shape parameter
-        Re_delta_m = np.average(Re_delta_m_range)
-        H_d = np.linspace(H_d_range[0], H_d_range[-1])
-        c_f_ref = fun(Re_delta_m, H_d)
-        c_f = c_f_Felsch(Re_delta_m, H_d)
+        re_delta_m = np.average(re_delta_m_range)
+        shape_d = np.linspace(shape_d_range[0], shape_d_range[-1])
+        c_f_ref = fun(re_delta_m, shape_d)
+        c_f = felsch(re_delta_m, shape_d)
         self.assertIsNone(npt.assert_allclose(c_f_ref, c_f))
 
         # calculate range of Reynolds number
-        Re_delta_m = np.logspace(np.log10(Re_delta_m_range[0]),
-                                 np.log10(Re_delta_m_range[-1]))
-        H_d = np.average(H_d_range)
-        c_f_ref = fun(Re_delta_m, H_d)
-        c_f = c_f_Felsch(Re_delta_m, H_d)
+        re_delta_m = np.logspace(np.log10(re_delta_m_range[0]),
+                                 np.log10(re_delta_m_range[-1]))
+        shape_d = np.average(shape_d_range)
+        c_f_ref = fun(re_delta_m, shape_d)
+        c_f = felsch(re_delta_m, shape_d)
         self.assertIsNone(npt.assert_allclose(c_f_ref, c_f))
 
         # check case when separated
         c_f_ref = 0
-        c_f = c_f_Felsch(1e4, 3)
+        c_f = felsch(1e4, 3)
         self.assertIsNone(npt.assert_allclose(c_f_ref, c_f, rtol=0, atol=1e-7))
 
-    def test_white(self):
+    def test_white(self) -> None:
         """Test the White function."""
-        H_d_range = [1.2, 3.4]
-        Re_delta_m_range = [1e2, 1e5]
+        shape_d_range = np.array([1.2, 3.4])
+        re_delta_m_range = np.array([1e2, 1e5])
 
-        def fun(Re_delta_m, H_d):
-            return 0.3/(np.exp(1.33*H_d)*np.log10(Re_delta_m)**(1.74+0.31*H_d))
+        def fun(re_delta_m: InputParam, shape_d: InputParam) -> InputParam:
+            return 0.3/(np.exp(1.33*shape_d)
+                        * np.log10(re_delta_m)**(1.74+0.31*shape_d))
 
         # calculate range of displacement shape parameter
-        Re_delta_m = np.average(Re_delta_m_range)
-        H_d = np.linspace(H_d_range[0], H_d_range[-1])
-        c_f_ref = fun(Re_delta_m, H_d)
-        c_f = c_f_White(Re_delta_m, H_d)
+        re_delta_m = np.average(re_delta_m_range)
+        shape_d = np.linspace(shape_d_range[0], shape_d_range[-1])
+        c_f_ref = fun(re_delta_m, shape_d)
+        c_f = white(re_delta_m, shape_d)
         self.assertIsNone(npt.assert_allclose(c_f_ref, c_f))
 
         # calculate range of Reynolds number
-        Re_delta_m = np.logspace(np.log10(Re_delta_m_range[0]),
-                                 np.log10(Re_delta_m_range[-1]))
-        H_d = np.average(H_d_range)
-        c_f_ref = fun(Re_delta_m, H_d)
-        c_f = c_f_White(Re_delta_m, H_d)
+        re_delta_m = np.logspace(np.log10(re_delta_m_range[0]),
+                                 np.log10(re_delta_m_range[-1]))
+        shape_d = np.average(shape_d_range)
+        c_f_ref = fun(re_delta_m, shape_d)
+        c_f = white(re_delta_m, shape_d)
         self.assertIsNone(npt.assert_allclose(c_f_ref, c_f))
 
 

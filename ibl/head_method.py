@@ -11,7 +11,7 @@ import numpy.typing as np_type
 
 from ibl.ibl_method import IBLMethod
 from ibl.ibl_method import IBLTermEvent
-from ibl.skin_friction import c_f_LudwiegTillman as c_f_fun
+from ibl.skin_friction import ludwieg_tillman as c_f_fun
 from ibl.initial_condition import ManualCondition
 
 
