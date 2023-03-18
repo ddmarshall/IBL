@@ -6,11 +6,12 @@ Head's two equation integral boundary layer method.
 """
 
 from typing import Tuple
+
 import numpy as np
 import numpy.typing as np_type
 
 from ibl.ibl_method import IBLMethod
-from ibl.ibl_method import IBLTermEvent
+from ibl.ibl_method import TermEvent
 from ibl.skin_friction import ludwieg_tillman as c_f_fun
 from ibl.initial_condition import ManualCondition
 
@@ -79,7 +80,7 @@ class HeadMethod(IBLMethod):
         ic = ManualCondition(H_d0*delta_m0, delta_m0, 0)
         self.set_initial_condition(ic)
 
-    def V_e(self, x):
+    def v_e(self, x):
         """
         Calculate the transpiration velocity.
 
@@ -94,9 +95,9 @@ class HeadMethod(IBLMethod):
             Desired transpiration velocity at the specified locations.
         """
         yp = self._ode_impl(x, self._solution(x))
-        H_d = self.H_d(x)
-        U_e = self.U_e(x)
-        dU_edx = self.dU_edx(x)
+        H_d = self.shape_d(x)
+        U_e = self.u_e(x)
+        dU_edx = self.du_e(x)
         delta_m = self.delta_m(x)
         return dU_edx*H_d*delta_m + U_e*yp[1]*delta_m + U_e*H_d*yp[0]
 
@@ -114,7 +115,7 @@ class HeadMethod(IBLMethod):
         array-like same shape as `x`
             Desired displacement thickness at the specified locations.
         """
-        return self.delta_m(x)*self.H_d(x)
+        return self.delta_m(x)*self.shape_d(x)
 
     def delta_m(self, x):
         """
@@ -148,7 +149,7 @@ class HeadMethod(IBLMethod):
         """
         return np.zeros_like(x)
 
-    def H_d(self, x):
+    def shape_d(self, x):
         """
         Calculate the displacement shape factor.
 
@@ -164,7 +165,7 @@ class HeadMethod(IBLMethod):
         """
         return self._solution(x)[1]
 
-    def H_k(self, x):
+    def shape_k(self, x):
         """
         Calculate the kinetic energy shape factor.
 
@@ -198,13 +199,13 @@ class HeadMethod(IBLMethod):
         """
         delta_m = self._solution(x)[0]
         H_d = self._solution(x)[1]
-        U_e = self.U_e(x)
+        U_e = self.u_e(x)
         U_e[np.abs(U_e) < 0.001] = 0.001
         Re_delta_m = U_e*delta_m/self._nu
         c_f = c_f_fun(Re_delta_m, H_d)
         return 0.5*rho*U_e**2*c_f
 
-    def D(self, x, rho):
+    def dissipation(self, x, rho):
         """
         Calculate the dissipation integral.
 
@@ -233,7 +234,7 @@ class HeadMethod(IBLMethod):
             Relative tolerance for ODE solver
             Absolute tolerance for ODE solver
         """
-        return np.array([self._ic.delta_m(), self._ic.H_d()]), 1e-8, 1e-11
+        return np.array([self._ic.delta_m(), self._ic.shape_d()]), 1e-8, 1e-11
 
     def _ode_impl(self, x, F):
         """
@@ -257,9 +258,9 @@ class HeadMethod(IBLMethod):
         H_d = np.asarray(F[1])
         if (H_d < 1.11).any():
             H_d[H_d < 1.11] = 1.11
-        U_e = self.U_e(x)
+        U_e = self.u_e(x)
         U_e[np.abs(U_e) < 0.001] = 0.001
-        dU_edx = self.dU_edx(x)
+        dU_edx = self.du_e(x)
         Re_delta_m = U_e*delta_m/self._nu
         c_f = c_f_fun(Re_delta_m, H_d)
         H1 = self._H1(H_d)
@@ -353,7 +354,7 @@ class HeadMethod(IBLMethod):
         return 0.0306/(H1_local-3)**0.6169
 
 
-class _HeadSeparationEvent(IBLTermEvent):
+class _HeadSeparationEvent(TermEvent):
     """
     Detects separation and will terminate integration when it occurs.
 

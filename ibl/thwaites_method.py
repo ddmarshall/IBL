@@ -17,7 +17,7 @@ from scipy.interpolate import CubicSpline
 from scipy.misc import derivative as fd
 
 from ibl.ibl_method import IBLMethod
-from ibl.ibl_method import IBLTermEvent
+from ibl.ibl_method import TermEvent
 from ibl.initial_condition import ManualCondition
 
 
@@ -143,7 +143,7 @@ class ThwaitesMethod(IBLMethod):
         self._set_kill_event(_ThwaitesSeparationEvent(self._calc_lambda,
                                                       self._model.S))
 
-    def V_e(self, x):
+    def v_e(self, x):
         """
         Calculate the transpiration velocity.
 
@@ -157,16 +157,16 @@ class ThwaitesMethod(IBLMethod):
         array-like same shape as `x`
             Desired transpiration velocity at the specified locations.
         """
-        U_e = self.U_e(x)
-        dU_edx = self.dU_edx(x)
+        U_e = self.u_e(x)
+        dU_edx = self.du_e(x)
         delta_m2_on_nu = self._solution(x)[0]
         term1 = dU_edx*self.delta_d(x)
         term2 = np.sqrt(self._nu/delta_m2_on_nu)
         dsol_dx = self._ode_impl(x, delta_m2_on_nu)
-        term3 = 0.5*U_e*self.H_d(x)*dsol_dx
+        term3 = 0.5*U_e*self.shape_d(x)*dsol_dx
         term4a = self._model.Hp(self._calc_lambda(x, delta_m2_on_nu))
         term4 = U_e*delta_m2_on_nu*term4a
-        term5 = dU_edx*dsol_dx+self.d2U_edx2(x)*delta_m2_on_nu
+        term5 = dU_edx*dsol_dx+self.d2u_e(x)*delta_m2_on_nu
         return term1 + term2*(term3+term4*term5)
 
     def delta_d(self, x):
@@ -183,7 +183,7 @@ class ThwaitesMethod(IBLMethod):
         array-like same shape as `x`
             Desired displacement thickness at the specified locations.
         """
-        return self.delta_m(x)*self.H_d(x)
+        return self.delta_m(x)*self.shape_d(x)
 
     def delta_m(self, x):
         """
@@ -217,7 +217,7 @@ class ThwaitesMethod(IBLMethod):
         """
         return np.zeros_like(x)
 
-    def H_d(self, x):
+    def shape_d(self, x):
         """
         Calculate the displacement shape factor.
 
@@ -234,7 +234,7 @@ class ThwaitesMethod(IBLMethod):
         lam = self._calc_lambda(x, self._solution(x)[0])
         return self._model.H(lam)
 
-    def H_k(self, x):
+    def shape_k(self, x):
         """
         Calculate the kinetic energy shape factor.
 
@@ -267,9 +267,9 @@ class ThwaitesMethod(IBLMethod):
             Desired wall shear stress at the specified locations.
         """
         lam = self._calc_lambda(x, self._solution(x)[0])
-        return rho*self._nu*self.U_e(x)*self._model.S(lam)/self.delta_m(x)
+        return rho*self._nu*self.u_e(x)*self._model.S(lam)/self.delta_m(x)
 
-    def D(self, x, rho):
+    def dissipation(self, x, rho):
         """
         Calculate the dissipation integral.
 
@@ -317,7 +317,7 @@ class ThwaitesMethod(IBLMethod):
         array-like same shape as `F`
             The right-hand side of the ODE at the given state.
         """
-        return self._calc_F(x, F)/(1e-3 + self.U_e(x))
+        return self._calc_F(x, F)/(1e-3 + self.u_e(x))
 
     def _calc_lambda(self, x, delta_m2_on_nu):
         r"""
@@ -335,7 +335,7 @@ class ThwaitesMethod(IBLMethod):
         array-like same shape as `x`
             The :math:`\lambda` parameter that corresponds to the given state.
         """
-        return delta_m2_on_nu*self.dU_edx(x)
+        return delta_m2_on_nu*self.du_e(x)
 
     @abstractmethod
     def _calc_F(self, x, delta_m2_on_nu):
@@ -582,7 +582,7 @@ class _ThwaitesFunctionsSpline(_ThwaitesFunctions):
                             +0.10,  0.12,   0.14,   0.20,   0.25])
 
 
-class _ThwaitesSeparationEvent(IBLTermEvent):
+class _ThwaitesSeparationEvent(TermEvent):
     """
     Detects separation and will terminate integration when it occurs.
 

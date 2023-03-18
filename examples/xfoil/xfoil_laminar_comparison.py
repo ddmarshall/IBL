@@ -100,20 +100,20 @@ def compare_xfoil_laminar() -> None:
     s_visc = np.linspace(s_ref[0], min(s_ref[-1], s_sep_visc), 101)
     delta_d_visc = tm_visc.delta_d(s_visc)
     delta_m_visc = tm_visc.delta_m(s_visc)
-    shape_d_visc = tm_visc.H_d(s_visc)
+    shape_d_visc = tm_visc.shape_d(s_visc)
     c_f_visc = 2*tm_visc.tau_w(s_visc, rho_inf)/(rho_inf*u_inf**2)
-    v_e_visc = tm_visc.V_e(s_visc)
-    du_e_visc = tm_visc.dU_edx(s_visc)
-    d2u_e_visc = tm_visc.d2U_edx2(s_visc)
+    v_e_visc = tm_visc.v_e(s_visc)
+    du_e_visc = tm_visc.du_e(s_visc)
+    d2u_e_visc = tm_visc.d2u_e(s_visc)
 
     s_inv = np.linspace(s_ref[0], min(s_ref[-1], s_sep_inv), 101)
     delta_d_inv = tm_inv.delta_d(s_inv)
     delta_m_inv = tm_inv.delta_m(s_inv)
-    shape_d_inv = tm_inv.H_d(s_inv)
+    shape_d_inv = tm_inv.shape_d(s_inv)
     c_f_inv = 2*tm_inv.tau_w(s_inv, rho_inf)/(rho_inf*u_inf**2)
-    v_e_inv = tm_inv.V_e(s_inv)
-    du_e_inv = tm_inv.dU_edx(s_inv)
-    d2u_e_inv = tm_inv.d2U_edx2(s_inv)
+    v_e_inv = tm_inv.v_e(s_inv)
+    du_e_inv = tm_inv.du_e(s_inv)
+    d2u_e_inv = tm_inv.d2u_e(s_inv)
 
     # Plot results
     # pylint: disable=duplicate-code
@@ -197,9 +197,9 @@ def compare_xfoil_laminar() -> None:
     ax.grid(True)
 
     ax = axis_shape_d_diff
-    ax.plot(s_ref_visc/c, np.abs(1-tm_visc.H_d(s_ref_visc)/shape_d_ref_visc),
+    ax.plot(s_ref_visc/c, np.abs(1-tm_visc.shape_d(s_ref_visc)/shape_d_ref_visc),
             color=thwaites_visc_color)
-    ax.plot(s_ref_inv/c, np.abs(1-tm_inv.H_d(s_ref_inv)/shape_d_ref_inv),
+    ax.plot(s_ref_inv/c, np.abs(1-tm_inv.shape_d(s_ref_inv)/shape_d_ref_inv),
             color=thwaites_inv_color)
     ax.set_ylabel("Relative Difference")
     ax.set_ylim([1e-3,1])

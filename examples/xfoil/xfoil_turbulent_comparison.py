@@ -72,7 +72,7 @@ def compare_xfoil_turbulent() -> None:
         s_sep_visc = rtn.x_end
 
     hm_inv = HeadMethod(nu=nu_inf, U_e=[s_ref, u_e_inv])
-    delta_m0 = np.sqrt(0.075*nu_inf/hm_inv.dU_edx(s[0]))  # Moran's method
+    delta_m0 = np.sqrt(0.075*nu_inf/hm_inv.du_e(s[0]))  # Moran's method
     shape_d0 = 2.35  # Thwaites method predicts this value for stagnation flow
     hm_inv.set_initial_parameters(delta_m0=delta_m0, H_d0=shape_d0)
     rtn = hm_inv.solve(x0=s[0], x_end=s[-1])
@@ -104,20 +104,20 @@ def compare_xfoil_turbulent() -> None:
     s_visc = np.linspace(s_ref[0], min(s_ref[-1], s_sep_visc), 101)
     delta_d_visc = hm_visc.delta_d(s_visc)
     delta_m_visc = hm_visc.delta_m(s_visc)
-    shape_d_visc = hm_visc.H_d(s_visc)
+    shape_d_visc = hm_visc.shape_d(s_visc)
     c_f_visc = 2*hm_visc.tau_w(s_visc, rho_inf)/(rho_inf*u_inf**2)
-    v_e_visc = hm_visc.V_e(s_visc)
-    du_e_visc = hm_visc.dU_edx(s_visc)
-    d2u_e_visc = hm_visc.d2U_edx2(s_visc)
+    v_e_visc = hm_visc.v_e(s_visc)
+    du_e_visc = hm_visc.du_e(s_visc)
+    d2u_e_visc = hm_visc.d2u_e(s_visc)
 
     s_inv = np.linspace(s_ref[0], min(s_ref[-1], s_sep_inv), 101)
     delta_d_inv = hm_inv.delta_d(s_inv)
     delta_m_inv = hm_inv.delta_m(s_inv)
-    shape_d_inv = hm_inv.H_d(s_inv)
+    shape_d_inv = hm_inv.shape_d(s_inv)
     c_f_inv = 2*hm_inv.tau_w(s_inv, rho_inf)/(rho_inf*u_inf**2)
-    v_e_inv = hm_inv.V_e(s_inv)
-    du_e_inv = hm_inv.dU_edx(s_inv)
-    d2u_e_inv = hm_inv.d2U_edx2(s_inv)
+    v_e_inv = hm_inv.v_e(s_inv)
+    du_e_inv = hm_inv.du_e(s_inv)
+    d2u_e_inv = hm_inv.d2u_e(s_inv)
 
     # Plot results
     # pylint: disable=duplicate-code
@@ -201,9 +201,9 @@ def compare_xfoil_turbulent() -> None:
     ax.grid(True)
 
     ax = axis_shape_d_diff
-    ax.plot(s_ref_visc/c, np.abs(1-hm_visc.H_d(s_ref_visc)/shape_d_ref_visc),
+    ax.plot(s_ref_visc/c, np.abs(1-hm_visc.shape_d(s_ref_visc)/shape_d_ref_visc),
             color=thwaites_visc_color)
-    ax.plot(s_ref_inv/c, np.abs(1-hm_inv.H_d(s_ref_inv)/shape_d_ref_inv),
+    ax.plot(s_ref_inv/c, np.abs(1-hm_inv.shape_d(s_ref_inv)/shape_d_ref_inv),
             color=thwaites_inv_color)
     ax.set_ylabel("Relative Difference")
     ax.set_ylim([1e-3,1])
