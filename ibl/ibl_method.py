@@ -827,8 +827,7 @@ class IBLMethod(ABC):
         x : numpy.ndarray
             Streamwise location of current step.
         f : numpy.ndarray
-            Current step's square of momentum thickness divided by the
-            kinematic viscosity.
+                current step state value(s).
 
         Returns
         -------
