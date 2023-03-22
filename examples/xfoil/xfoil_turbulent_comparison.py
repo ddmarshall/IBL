@@ -62,7 +62,8 @@ def compare_xfoil_turbulent() -> None:
     delta_m0 = xfoil_visc.delta_m_upper()[0]
     shape_d0 = xfoil_visc.shape_d_upper()[0]
     hm_visc = HeadMethod(nu=nu_inf, U_e=[s_ref, u_e_visc])
-    hm_visc.set_initial_parameters(delta_m0=delta_m0, H_d0=shape_d0)
+    hm_visc.initial_delta_m = delta_m0
+    hm_visc.initial_shape_d = shape_d0
     rtn = hm_visc.solve(x0=s[0], x_end=s[-1])
     if not rtn.success:
         print("Could not get solution for Head method: " + rtn.message)
@@ -74,7 +75,8 @@ def compare_xfoil_turbulent() -> None:
     hm_inv = HeadMethod(nu=nu_inf, U_e=[s_ref, u_e_inv])
     delta_m0 = np.sqrt(0.075*nu_inf/hm_inv.du_e(s[0]))  # Moran's method
     shape_d0 = 2.35  # Thwaites method predicts this value for stagnation flow
-    hm_inv.set_initial_parameters(delta_m0=delta_m0, H_d0=shape_d0)
+    hm_inv.initial_delta_m = delta_m0
+    hm_inv.initial_shape_d = shape_d0
     rtn = hm_inv.solve(x0=s[0], x_end=s[-1])
     if not rtn.success:
         print("Could not get solution for Head method: " + rtn.message)

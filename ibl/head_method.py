@@ -5,15 +5,17 @@ This module contains the necessary classes and data for the implementation of
 Head's two equation integral boundary layer method.
 """
 
-from typing import Tuple
+from typing import Tuple, cast
 
 import numpy as np
 import numpy.typing as np_type
 
 from ibl.ibl_method import IBLMethod
+from ibl.ibl_method import TermReason
 from ibl.ibl_method import TermEvent
 from ibl.skin_friction import ludwieg_tillman as c_f_fun
 from ibl.initial_condition import ManualCondition
+from ibl.typing import InputParam
 
 
 class HeadMethod(IBLMethod):
@@ -24,19 +26,42 @@ class HeadMethod(IBLMethod):
     velocity profile and other configuration information.
     """
 
-    # Attributes
-    # ----------
-    #    _delta_m0: Momentum thickness at start location
-    #    _H_d0: Displacement shape factor at start location
     def __init__(self, nu: float = 1.0, U_e=None, dU_edx=None, d2U_edx2=None,
-                 H_d_crit=2.4):
-        super().__init__(nu, U_e, dU_edx, d2U_edx2)
+                 shape_d_crit: float=2.4) -> None:
+        super().__init__(nu=nu, u_e=U_e, du_e=dU_edx, d2u_e=d2U_edx2,
+                         ic=ManualCondition(np.inf, np.inf, 0))
 
-        self._H_d0 = None
-        self._delta_m0 = None
-        self.set_H_d_critical(H_d_crit)
+        self.set_shape_d_critical(shape_d_crit)
 
-    def set_H_d_critical(self, H_d_crit):
+    @property
+    def initial_delta_m(self) -> float:
+        """
+        Momentum thickness at start of integration.
+        Must be greater than zero.
+        """
+        return  self._ic.delta_m()
+
+    @initial_delta_m.setter
+    def initial_delta_m(self, delta_m0: float) -> None:
+        if delta_m0 <= 0:
+            raise ValueError(f"Invalid initial momentum thickness: {delta_m0}")
+        cast(ManualCondition, self._ic).del_m = delta_m0
+
+    @property
+    def initial_shape_d(self) -> float:
+        """
+        Dispacement thickness at start of integration.
+        Must be greater than zero
+        """
+        return self._ic.shape_d()
+
+    @initial_shape_d.setter
+    def initial_shape_d(self, shape_d: float) -> None:
+        if shape_d <= 0:
+            raise ValueError(f"Invalid displacement shape factor: {shape_d}")
+        cast(ManualCondition, self._ic).del_d = shape_d*self.initial_delta_m
+
+    def set_shape_d_critical(self, shape_d_crit: float) -> None:
         """
         Set the critical displacement shape factor for separation.
 
@@ -47,178 +72,163 @@ class HeadMethod(IBLMethod):
 
         Parameters
         ----------
-        H_d_crit : float
+        shape_d_crit : float
             New value for the displacement shape factor to be used to indicate
             that the boundary layer has separated.
         """
-        self._set_kill_event(_HeadSeparationEvent(H_d_crit))
+        self._set_kill_event(_HeadSeparationEvent(shape_d_crit))
 
-    def set_initial_parameters(self, delta_m0: float, H_d0: float) -> None:
-        """
-        Set the parameters needed for the solver to propagate.
-
-        Parameters
-        ----------
-        delta_m0: float
-            Momentum thickness at start location.
-        H_d0: float
-            Displacement shape factor at start location.
-
-        Raises
-        ------
-        ValueError
-            When negative viscosity provided, or invalid initial conditions
-        """
-        if delta_m0 < 0:
-            raise ValueError("Initial momentum thickness must be positive")
-
-        self._delta_m0 = delta_m0
-        if H_d0 <= 1:
-            raise ValueError("Initial displacement shape factor must be "
-                             "greater than one")
-
-        ic = ManualCondition(H_d0*delta_m0, delta_m0, 0)
-        self.set_initial_condition(ic)
-
-    def v_e(self, x):
+    def v_e(self, x: InputParam) -> np_type.NDArray:
         """
         Calculate the transpiration velocity.
 
         Parameters
         ----------
-        x: array-like
+        x: InputParam
             Streamwise loations to calculate this property.
 
         Returns
         -------
-        array-like same shape as `x`
+        numpy.ndarray
             Desired transpiration velocity at the specified locations.
         """
-        yp = self._ode_impl(x, self._solution(x))
-        H_d = self.shape_d(x)
-        U_e = self.u_e(x)
-        dU_edx = self.du_e(x)
-        delta_m = self.delta_m(x)
-        return dU_edx*H_d*delta_m + U_e*yp[1]*delta_m + U_e*H_d*yp[0]
+        if self._solution is None:
+            raise ValueError("No valid solution.")
 
-    def delta_d(self, x):
+        y_p = self._ode_impl(x, self._solution(x))
+        shape_d = self.shape_d(x)
+        u_e = self.u_e(x)
+        du_e = self.du_e(x)
+        delta_m = self.delta_m(x)
+        return du_e*shape_d*delta_m + u_e*y_p[1]*delta_m + u_e*shape_d*y_p[0]
+
+    def delta_d(self, x: InputParam) -> np_type.NDArray:
         """
         Calculate the displacement thickness.
 
         Parameters
         ----------
-        x: array-like
+        x: InputParam
             Streamwise loations to calculate this property.
 
         Returns
         -------
-        array-like same shape as `x`
+        numpy.ndarray
             Desired displacement thickness at the specified locations.
         """
         return self.delta_m(x)*self.shape_d(x)
 
-    def delta_m(self, x):
+    def delta_m(self, x: InputParam) -> np_type.NDArray:
         """
         Calculate the momentum thickness.
 
         Parameters
         ----------
-        x: array-like
+        x: InputParam
             Streamwise loations to calculate this property.
 
         Returns
         -------
-        array-like same shape as `x`
+        numpy.ndarray
             Desired momentum thickness at the specified locations.
         """
+        if self._solution is None:
+            raise ValueError("No valid solution.")
+
         return self._solution(x)[0]
 
-    def delta_k(self, x):
+    def delta_k(self, x: InputParam) -> np_type.NDArray:
         """
         Calculate the kinetic energy thickness.
 
         Parameters
         ----------
-        x: array-like
+        x: InputParam
             Streamwise loations to calculate this property.
 
         Returns
         -------
-        array-like same shape as `x`
+        numpy.ndarray
             Desired kinetic energy thickness at the specified locations.
         """
         return np.zeros_like(x)
 
-    def shape_d(self, x):
+    def shape_d(self, x: InputParam) -> np_type.NDArray:
         """
         Calculate the displacement shape factor.
 
         Parameters
         ----------
-        x: array-like
+        x: InputParam
             Streamwise loations to calculate this property.
 
         Returns
         -------
-        array-like same shape as `x`
+        numpy.ndarray
             Desired displacement shape factor at the specified locations.
         """
+        if self._solution is None:
+            raise ValueError("No valid solution.")
+
         return self._solution(x)[1]
 
-    def shape_k(self, x):
+    def shape_k(self, x: InputParam) -> np_type.NDArray:
         """
         Calculate the kinetic energy shape factor.
 
         Parameters
         ----------
-        x: array-like
+        x: InputParam
             Streamwise loations to calculate this property.
 
         Returns
         -------
-        array-like same shape as `x`
+        numpy.ndarray
             Desired kinetic energy shape factor at the specified locations.
         """
         return self.delta_k(x)/self.delta_m(x)
 
-    def tau_w(self, x, rho):
+    def tau_w(self, x: InputParam, rho: float) -> np_type.NDArray:
         """
         Calculate the wall shear stress.
 
         Parameters
         ----------
-        x: array-like
+        x: InputParam
             Streamwise loations to calculate this property.
         rho: float
             Freestream density.
 
         Returns
         -------
-        array-like same shape as `x`
+        numpy.ndarray
             Desired wall shear stress at the specified locations.
         """
-        delta_m = self._solution(x)[0]
-        H_d = self._solution(x)[1]
-        U_e = self.u_e(x)
-        U_e[np.abs(U_e) < 0.001] = 0.001
-        Re_delta_m = U_e*delta_m/self._nu
-        c_f = c_f_fun(Re_delta_m, H_d)
-        return 0.5*rho*U_e**2*c_f
+        if self._solution is None:
+            raise ValueError("No valid solution.")
 
-    def dissipation(self, x, rho):
+        delta_m = self._solution(x)[0]
+        shape_d = self._solution(x)[1]
+        u_e = self.u_e(x)
+        u_e[np.abs(u_e) < 0.001] = 0.001
+        re_delta_m = u_e*delta_m/self._nu
+        c_f = c_f_fun(re_delta_m, shape_d)
+        return 0.5*rho*u_e**2*c_f
+
+    def dissipation(self, x: InputParam, rho: float) -> np_type.NDArray:
         """
         Calculate the dissipation integral.
 
         Parameters
         ----------
-        x: array-like
+        x: InputParam
             Streamwise loations to calculate this property.
         rho: float
             Freestream density.
 
         Returns
         -------
-        array-like same shape as `x`
+        numpy.ndarray
             Desired dissipation integral at the specified locations.
         """
         return np.zeros_like(x)
@@ -236,122 +246,165 @@ class HeadMethod(IBLMethod):
         """
         return np.array([self._ic.delta_m(), self._ic.shape_d()]), 1e-8, 1e-11
 
-    def _ode_impl(self, x, F):
+    def _ode_impl(self, x: np_type.NDArray,
+                  f: np_type.NDArray) -> np_type.NDArray:
         """
         Right-hand-side of the ODE representing Thwaites method.
 
         Parameters
         ----------
-        x: array-like
+        x: numpy.ndarray
             Streamwise location of current step.
-        F: array-like
+        f: numpy.ndarray
             Current step's solution vector of momentum thickness and
             displacement shape factor.
 
         Returns
         -------
-        array-like same shape as `F`
+        numpy.ndarray
             The right-hand side of the ODE at the given state.
         """
-        Fp = np.zeros_like(F)
-        delta_m = F[0]
-        H_d = np.asarray(F[1])
-        if (H_d < 1.11).any():
-            H_d[H_d < 1.11] = 1.11
-        U_e = self.u_e(x)
-        U_e[np.abs(U_e) < 0.001] = 0.001
-        dU_edx = self.du_e(x)
-        Re_delta_m = U_e*delta_m/self._nu
-        c_f = c_f_fun(Re_delta_m, H_d)
-        H1 = self._H1(H_d)
-        H1p = self._H1p(H_d)
-        Fp[0] = 0.5*c_f-delta_m*(2+H_d)*dU_edx/U_e
-        Fp[1] = (U_e*self._S(H1) - U_e*Fp[0]*H1
-                 - dU_edx*delta_m*H1)/(H1p*U_e*delta_m)
-        return Fp
+        f_p = np.zeros_like(f)
+        delta_m = f[0]
+        shape_d = np.asarray(f[1])
+        if (shape_d < 1.11).any():
+            shape_d[shape_d < 1.11] = 1.11
+        u_e = self.u_e(x)
+        u_e[np.abs(u_e) < 0.001] = 0.001
+        du_e = self.du_e(x)
+        re_delta_m = u_e*delta_m/self._nu
+        c_f = c_f_fun(re_delta_m, shape_d)
+        shape_entrainment = self.shape_entrainment(shape_d)
+        shape_entrainment_p = self._shape_entrainment_p(shape_d)
+        f_p[0] = 0.5*c_f-delta_m*(2+shape_d)*du_e/u_e
+        f_p[1] = (u_e*self._entrainment_velocity(shape_entrainment) - u_e*f_p[0]*shape_entrainment
+                 - du_e*delta_m*shape_entrainment)/(shape_entrainment_p
+                                                    * u_e*delta_m)
+        return f_p
 
     @staticmethod
-    def _H1(H_d):
-        H_d = np.asarray(H_d)
-        if (H_d <= 1.1).any():
-            H_d[H_d <= 1.1] = 1.1001
+    def shape_entrainment(shape_d: InputParam) -> np_type.NDArray:
+        """
+        Calculate the entrainment shape factor from displacement shape factor.
+
+        Parameters
+        ----------
+        shape_d : InputParam
+            Displacement shape factor.
+
+        Returns
+        -------
+        numpy.ndarray
+            Entrainment shape factor.
+        """
+        shape_d = np.asarray(shape_d)
+        if (shape_d <= 1.1).any():
+            shape_d[shape_d <= 1.1] = 1.1001
 #            raise ValueError("Cannot pass displacement shape factor less "
 #                             "than 1.1: {}".format(np.amin(H_d)))
 
-        def H1_low(H_d):
+        def shape_entrainment_low(shape_d: InputParam) -> InputParam:
             a = 0.8234
             b = 1.1
             c = 1.287
             d = 3.3
-            return d + a/(H_d - b)**c
+            return d + a/(shape_d - b)**c
 
-        def H1_high(H_d):
+        def shape_entrainment_high(shape_d: InputParam) -> InputParam:
             a = 1.5501
             b = 0.6778
             c = 3.064
             d = 3.32254659218600974
-            return d + a/(H_d - b)**c
+            return d + a/(shape_d - b)**c
 
-        return np.piecewise(H_d, [H_d <= 1.6, H_d > 1.6], [H1_low, H1_high])
+        return np.piecewise(shape_d, [shape_d <= 1.6, shape_d > 1.6],
+                            [shape_entrainment_low, shape_entrainment_high])
 
     @staticmethod
-    def _H1p(H_d):
-        H_d_local = np.asarray(H_d)
-        if (H_d_local <= 1.1).any():
-            H_d_local[H_d_local <= 1.1] = 1.1001
+    def _shape_entrainment_p(shape_d: InputParam) -> np_type.NDArray:
+        """
+        Calculate the derivative of the shape entrainment factor.
+
+        Parameters
+        ----------
+        shape_d : InputParam
+            Displacement shape factor.
+
+        Returns
+        -------
+        numpy.ndarray
+            Entrainment shape factor.
+        """
+        shape_d = np.asarray(shape_d)
+        if (shape_d <= 1.1).any():
+            shape_d[shape_d <= 1.1] = 1.1001
 #            raise ValueError("Cannot pass displacement shape factor less "
 #                             "than 1.1: {}".format(np.amin(H_d)))
 
-        def H1_low(H_d):
+        def shape_entrainment_low(shape_d: InputParam) -> InputParam:
             a = 0.8234
             b = 1.1
             c = 1.287
-            return -a*c/(H_d - b)**(c+1)
+            return -a*c/(shape_d - b)**(c+1)
 
-        def H1_high(H_d):
+        def shape_entrainment_high(shape_d: InputParam) -> InputParam:
             a = 1.5501
             b = 0.6778
             c = 3.064
-            return -a*c/(H_d - b)**(c+1)
+            return -a*c/(shape_d - b)**(c+1)
 
-        return np.piecewise(H_d_local, [H_d_local <= 1.6, H_d_local > 1.6],
-                            [H1_low, H1_high])
+        return np.piecewise(shape_d, [shape_d <= 1.6, shape_d > 1.6],
+                            [shape_entrainment_low, shape_entrainment_high])
 
     @staticmethod
-    def _H_d(H1):
-        H1_local = np.asarray(H1)
-        if (H1_local <= 3.32254659218600974).any():
-            H1_local[H1_local <= 3.32254659218600974] = 3.323
+    def _shape_d(shape_entrainment: InputParam) -> np_type.NDArray:
+        """
+        Calculate the displacement shape factor from entrainment shape factor.
+
+        Parameters
+        ----------
+        shape_entrainment : InputParam
+            Entrainment shape factor.
+
+        Returns
+        -------
+        numpy.ndarray
+            Displacement shape factor.
+        """
+        shape_entrainment = np.asarray(shape_entrainment)
+        if (shape_entrainment <= 3.32254659218600974).any():
+            shape_entrainment[shape_entrainment <= 3.32254659218600974] = 3.323
 #            raise ValueError("Cannot pass entrainment shape factor less "
 #                             "than 3.323: {}".format(np.amin(H1)))
 
-        def H_d_low(H1):
+        def shape_d_low(shape_entrainment: InputParam) -> InputParam:
             a = 1.5501
             b = 0.6778
             c = 3.064
             d = 3.32254659218600974
-            return b + (a/(H1 - d))**(1/c)
+            return b + (a/(shape_entrainment - d))**(1/c)
 
-        def H_d_high(H1):
+        def shape_d_high(shape_entrainment: InputParam) -> InputParam:
             a = 0.8234
             b = 1.1
             c = 1.287
             d = 3.3
-            return b + (a/(H1 - d))**(1/c)
+            return b + (a/(shape_entrainment - d))**(1/c)
 
-        H1_break = HeadMethod._H1(1.6)
-        return np.piecewise(H1_local, [H1_local <= H1_break,
-                                       H1_local > H1_break],
-                            [H_d_low, H_d_high])
+        shape_entrainment_break = HeadMethod.shape_entrainment(1.6)
+        return np.piecewise(shape_entrainment,
+                            [shape_entrainment <= shape_entrainment_break,
+                             shape_entrainment > shape_entrainment_break],
+                            [shape_d_low, shape_d_high])
 
     @staticmethod
-    def _S(H1):
-        H1_local = np.asarray(H1, float)
-        if (H1_local <= 3).any():
-            H1_local[H1_local <= 3] = 3.001
+    def _entrainment_velocity(shape_entrainment: InputParam) -> np_type.NDArray:
+        shape_entrainment = np.asarray(shape_entrainment, float)
+        if (shape_entrainment <= 3).any():
+            shape_entrainment[shape_entrainment <= 3] = 3.001
 #            raise ValueError("Cannot pass entrainment shape factor less than "
 #                             " 3: {}".format(np.amin(H1)))
-        return 0.0306/(H1_local-3)**0.6169
+        return 0.0306/(shape_entrainment-3)**0.6169
 
 
 class _HeadSeparationEvent(TermEvent):
@@ -366,11 +419,19 @@ class _HeadSeparationEvent(TermEvent):
         H_d_crit: Displacement shape factor value that indicates separation
     """
 
-    def __init__(self, H_d_crit):
-        super().__init__()
-        self._H_d_crit = H_d_crit
+    def __init__(self, shape_d_crit: float) -> None:
+        """
+        Initialize separation criteria for Head's method.
 
-    def _call_impl(self, x, F):
+        Parameters
+        ----------
+        shape_d_crit : float
+            Critical displacement shape factor for separatation.
+        """
+        super().__init__()
+        self._shape_d_crit = shape_d_crit
+
+    def _call_impl(self, x: float, f: np_type.NDArray) -> float:
         """
         Determine if Head method integrator should terminate.
 
@@ -379,9 +440,9 @@ class _HeadSeparationEvent(TermEvent):
 
         Parameters
         ----------
-        x: array-like
+        x : float
             Streamwise location of current step.
-        F: array-like
+        f : numpy.ndarray
             Current step's solution vector of momentum thickness and
             displacement shape factor.
 
@@ -391,7 +452,7 @@ class _HeadSeparationEvent(TermEvent):
             Current value of the difference between the critical displacement
             shape factor and the current displacement shape factor.
         """
-        return self._H_d_crit - F[1]
+        return self._shape_d_crit - f[1]
 
-    def event_info(self):
-        return -1, ""
+    def event_info(self) -> Tuple[TermReason, str]:
+        return TermReason.SEPARATED, ""

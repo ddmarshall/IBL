@@ -10,40 +10,45 @@ Figures 3.10 to 3.16 in Edland thesis.
 
 # pylint: disable=too-many-locals
 # pylint: disable=too-many-statements
+# pylint: disable=duplicate-code
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.gridspec import GridSpec
 
-from pyBL.head_method import HeadMethod
-from pyBL.stanford_olympics import StanfordOlympics1968
+from ibl.head_method import HeadMethod
+from ibl.reference import StanfordOlympics1968
 
 
-def compare_case1100():
+def compare_case1100() -> None:
     """Compare the Head method results to expiremental data."""
     so68 = StanfordOlympics1968("1100")
-    x, U_e, dU_edx = so68.velocity()
-    x_sm, U_e_sm, dU_edx_sm = so68.velocity_smooth()
+    x = so68.x()
+    u_e = so68.u_e()
+    du_e = so68.du_e()
+    x_sm = so68.x_smooth()
+    u_e_sm = so68.u_e_smooth()
+    du_e_sm = so68.du_e_smooth()
     rho = 1.2
 
-    hm_reg = HeadMethod(nu=so68.nu, U_e=[x, U_e])
-    hm_reg.set_initial_parameters(delta_m0=so68.delta_m()[0],
-                                  H_d0=so68.H_d()[0])
+    hm_reg = HeadMethod(nu=so68.nu_ref, U_e=[x, u_e])
+    hm_reg.initial_delta_m = so68.delta_m()[0]
+    hm_reg.initial_shape_d = so68.shape_d()[0]
     rtn = hm_reg.solve(x0=so68.x()[0], x_end=so68.x()[-1])
     if not rtn.success:
         print("Could not get solution for Head method: " + rtn.message)
         return
 
-    hm_sm = HeadMethod(nu=so68.nu, U_e=[x_sm, U_e_sm])
-    hm_sm.set_initial_parameters(delta_m0=so68.delta_m()[0],
-                                 H_d0=so68.H_d()[0])
+    hm_sm = HeadMethod(nu=so68.nu_ref, U_e=[x_sm, u_e_sm])
+    hm_sm.initial_delta_m = so68.delta_m()[0]
+    hm_sm.initial_shape_d = so68.shape_d()[0]
     rtn = hm_sm.solve(x0=so68.x()[0], x_end=so68.x()[-1])
     if not rtn.success:
         print("Could not get solution for Head method: " + rtn.message)
         return
 
-    hm_sm2 = HeadMethod(nu=so68.nu, U_e=U_e[0], dU_edx=[x, dU_edx])
-    hm_sm2.set_initial_parameters(delta_m0=so68.delta_m()[0],
-                                  H_d0=so68.H_d()[0])
+    hm_sm2 = HeadMethod(nu=so68.nu_ref, U_e=u_e[0], dU_edx=[x, du_e])
+    hm_sm2.initial_delta_m = so68.delta_m()[0]
+    hm_sm2.initial_shape_d = so68.shape_d()[0]
     rtn = hm_sm2.solve(x0=so68.x()[0], x_end=so68.x()[-1])
     if not rtn.success:
         print("Could not get solution for Head method: " + rtn.message)
@@ -53,26 +58,26 @@ def compare_case1100():
     x_ref = so68.x()
     delta_d_ref = so68.delta_d()
     delta_m_ref = so68.delta_m()
-    H_d_ref = so68.H_d()
+    shape_d_ref = so68.shape_d()
     c_f_ref = so68.c_f()
-    U_e_ref = so68.U_e()
+    u_e_ref = so68.u_e()
 
     x = np.linspace(x_ref[0], x_ref[-1], 101)
     delta_d_head_reg = hm_reg.delta_d(x)
     delta_m_head_reg = hm_reg.delta_m(x)
-    H_d_head_reg = hm_reg.H_d(x)
-    c_f_head_reg = 2*hm_sm.tau_w(x, rho)/(rho*hm_reg.U_e(x)**2)
-    V_e_head_reg = hm_reg.V_e(x)
+    shape_d_head_reg = hm_reg.shape_d(x)
+    c_f_head_reg = 2*hm_sm.tau_w(x, rho)/(rho*hm_reg.u_e(x)**2)
+    v_e_head_reg = hm_reg.v_e(x)
     delta_d_head_sm = hm_sm.delta_d(x)
     delta_m_head_sm = hm_sm.delta_m(x)
-    H_d_head_sm = hm_sm.H_d(x)
-    c_f_head_sm = 2*hm_sm.tau_w(x, rho)/(rho*hm_sm.U_e(x)**2)
-    V_e_head_sm = hm_sm.V_e(x)
+    shape_d_head_sm = hm_sm.shape_d(x)
+    c_f_head_sm = 2*hm_sm.tau_w(x, rho)/(rho*hm_sm.u_e(x)**2)
+    v_e_head_sm = hm_sm.v_e(x)
     delta_d_head_sm2 = hm_sm2.delta_d(x)
     delta_m_head_sm2 = hm_sm2.delta_m(x)
-    H_d_head_sm2 = hm_sm2.H_d(x)
-    c_f_head_sm2 = 2*hm_sm2.tau_w(x, rho)/(rho*hm_sm2.U_e(x)**2)
-    V_e_head_sm2 = hm_sm2.V_e(x)
+    shape_d_head_sm2 = hm_sm2.shape_d(x)
+    c_f_head_sm2 = 2*hm_sm2.tau_w(x, rho)/(rho*hm_sm2.u_e(x)**2)
+    v_e_head_sm2 = hm_sm2.v_e(x)
 
     # Plot results
     fig = plt.figure()
@@ -83,14 +88,14 @@ def compare_case1100():
     axis_delta_d_diff = fig.add_subplot(gs[0, 1])
     axis_delta_m = fig.add_subplot(gs[1, 0])
     axis_delta_m_diff = fig.add_subplot(gs[1, 1])
-    axis_H_d = fig.add_subplot(gs[2, 0])
-    axis_H_d_diff = fig.add_subplot(gs[2, 1])
+    axis_shape_d = fig.add_subplot(gs[2, 0])
+    axis_shape_d_diff = fig.add_subplot(gs[2, 1])
     axis_c_f = fig.add_subplot(gs[3, 0])
     axis_c_f_diff = fig.add_subplot(gs[3, 1])
-    axis_U_e = fig.add_subplot(gs[4, 0])
-    axis_U_e_diff = fig.add_subplot(gs[4, 1])
-    axis_dU_edx = fig.add_subplot(gs[5, 0])
-    axis_V_e = fig.add_subplot(gs[5, 1])
+    axis_u_e = fig.add_subplot(gs[4, 0])
+    axis_u_e_diff = fig.add_subplot(gs[4, 1])
+    axis_du_e = fig.add_subplot(gs[5, 0])
+    axis_v_e = fig.add_subplot(gs[5, 1])
 
     ref_color = "black"
     ref_label = "Ludwieg & Tillman"
@@ -150,19 +155,22 @@ def compare_case1100():
     ax.grid(True)
 
     # Displacement shape factor in 2,:
-    ax = axis_H_d
-    ax.plot(x_ref, H_d_ref, color=ref_color, linestyle="", marker="o")
-    ax.plot(x, H_d_head_reg, color=head_reg_color)
-    ax.plot(x, H_d_head_sm, color=head_sm_color)
-    ax.plot(x, H_d_head_sm2, color=head_sm2_color)
+    ax = axis_shape_d
+    ax.plot(x_ref, shape_d_ref, color=ref_color, linestyle="", marker="o")
+    ax.plot(x, shape_d_head_reg, color=head_reg_color)
+    ax.plot(x, shape_d_head_sm, color=head_sm_color)
+    ax.plot(x, shape_d_head_sm2, color=head_sm2_color)
     ax.set_ylim(1, 2)
     ax.set_ylabel(r"$H_d$")
     ax.grid(True)
 
-    ax = axis_H_d_diff
-    ax.plot(x_ref, np.abs(1-hm_reg.H_d(x_ref)/H_d_ref), color=head_reg_color)
-    ax.plot(x_ref, np.abs(1-hm_sm.H_d(x_ref)/H_d_ref), color=head_sm_color)
-    ax.plot(x_ref, np.abs(1-hm_sm2.H_d(x_ref)/H_d_ref), color=head_sm2_color)
+    ax = axis_shape_d_diff
+    ax.plot(x_ref, np.abs(1-hm_reg.shape_d(x_ref)/shape_d_ref),
+            color=head_reg_color)
+    ax.plot(x_ref, np.abs(1-hm_sm.shape_d(x_ref)/shape_d_ref),
+            color=head_sm_color)
+    ax.plot(x_ref, np.abs(1-hm_sm2.shape_d(x_ref)/shape_d_ref),
+            color=head_sm2_color)
     ax.set_ylabel("Relative Difference")
     ax.set_ylim([1e-3,1])
     ax.set_yscale('log')
@@ -179,11 +187,11 @@ def compare_case1100():
     ax.grid(True)
 
     ax = axis_c_f_diff
-    temp = 2*hm_reg.tau_w(x_ref, rho)/(rho*hm_reg.U_e(x_ref)**2)
+    temp = 2*hm_reg.tau_w(x_ref, rho)/(rho*hm_reg.u_e(x_ref)**2)
     ax.plot(x_ref, np.abs(1-temp/c_f_ref), color=head_reg_color)
-    temp = 2*hm_sm.tau_w(x_ref, rho)/(rho*hm_sm.U_e(x_ref)**2)
+    temp = 2*hm_sm.tau_w(x_ref, rho)/(rho*hm_sm.u_e(x_ref)**2)
     ax.plot(x_ref, np.abs(1-temp/c_f_ref), color=head_sm_color)
-    temp = 2*hm_sm2.tau_w(x_ref, rho)/(rho*hm_sm2.U_e(x_ref)**2)
+    temp = 2*hm_sm2.tau_w(x_ref, rho)/(rho*hm_sm2.u_e(x_ref)**2)
     ax.plot(x_ref, np.abs(1-temp/c_f_ref),
             color=head_sm2_color)
     ax.set_ylabel("Relative Difference")
@@ -192,40 +200,40 @@ def compare_case1100():
     ax.grid(True)
 
     # Edge velocity in 4,:
-    ax = axis_U_e
-    ax.plot(x_sm, U_e_sm, color=ref_color, linestyle="", marker="o")
-    ax.plot(x, hm_reg.U_e(x), color=head_reg_color)
-    ax.plot(x, hm_sm.U_e(x), color=head_sm_color)
-    ax.plot(x, hm_sm2.U_e(x), color=head_sm2_color)
+    ax = axis_u_e
+    ax.plot(x_sm, u_e_sm, color=ref_color, linestyle="", marker="o")
+    ax.plot(x, hm_reg.u_e(x), color=head_reg_color)
+    ax.plot(x, hm_sm.u_e(x), color=head_sm_color)
+    ax.plot(x, hm_sm2.u_e(x), color=head_sm2_color)
     ax.set_ylim(20, 35)
     ax.set_xlabel(r"$x$ (m)")
     ax.set_ylabel(r"$U_e$ (m/s)")
     ax.grid(True)
 
-    ax = axis_U_e_diff
-    ax.plot(x_ref, np.abs(1-hm_reg.U_e(x_ref)/U_e_ref), color=head_reg_color)
-    ax.plot(x_ref, np.abs(1-hm_sm.U_e(x_ref)/U_e_ref), color=head_sm_color)
-    ax.plot(x_ref, np.abs(1-hm_sm2.U_e(x_ref)/U_e_ref), color=head_sm2_color)
+    ax = axis_u_e_diff
+    ax.plot(x_ref, np.abs(1-hm_reg.u_e(x_ref)/u_e_ref), color=head_reg_color)
+    ax.plot(x_ref, np.abs(1-hm_sm.u_e(x_ref)/u_e_ref), color=head_sm_color)
+    ax.plot(x_ref, np.abs(1-hm_sm2.u_e(x_ref)/u_e_ref), color=head_sm2_color)
     ax.set_ylabel("Relative Difference")
     ax.set_ylim([1e-3,1])
     ax.set_yscale('log')
     ax.grid(True)
 
     # Transpiration velocity in 5,:
-    ax = axis_dU_edx
-    ax.plot(x_sm, dU_edx_sm, color=ref_color, linestyle="", marker="o")
-    ax.plot(x, hm_reg.dU_edx(x), color=head_reg_color)
-    ax.plot(x, hm_sm.dU_edx(x), color=head_sm_color)
-    ax.plot(x, hm_sm2.dU_edx(x), color=head_sm2_color)
+    ax = axis_du_e
+    ax.plot(x_sm, du_e_sm, color=ref_color, linestyle="", marker="o")
+    ax.plot(x, hm_reg.du_e(x), color=head_reg_color)
+    ax.plot(x, hm_sm.du_e(x), color=head_sm_color)
+    ax.plot(x, hm_sm2.du_e(x), color=head_sm2_color)
     ax.set_ylim(-1, -5)
     ax.set_xlabel(r"$x$ (m)")
     ax.set_ylabel(r"d$U_e/$d$x$ (1/s)")
     ax.grid(True)
 
-    ax = axis_V_e
-    ax.plot(x, V_e_head_reg, color=head_reg_color)
-    ax.plot(x, V_e_head_sm, color=head_sm_color)
-    ax.plot(x, V_e_head_sm2, color=head_sm2_color)
+    ax = axis_v_e
+    ax.plot(x, v_e_head_reg, color=head_reg_color)
+    ax.plot(x, v_e_head_sm, color=head_sm_color)
+    ax.plot(x, v_e_head_sm2, color=head_sm2_color)
     ax.set_ylim(0, 0.4)
     ax.set_xlabel(r"$x$ (m)")
     ax.set_ylabel(r"$V_e$ (m/s)")
@@ -238,6 +246,7 @@ def compare_case1100():
                        head_sm2_label],
                loc="upper center", bbox_to_anchor=(0.45, 0.03), ncol=4,
                borderaxespad=0.1)
+    plt.show()
 
 
 if __name__ == "__main__":
