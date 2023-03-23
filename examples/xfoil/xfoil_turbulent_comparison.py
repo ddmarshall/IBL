@@ -203,7 +203,8 @@ def compare_xfoil_turbulent() -> None:
     ax.grid(True)
 
     ax = axis_shape_d_diff
-    ax.plot(s_ref_visc/c, np.abs(1-hm_visc.shape_d(s_ref_visc)/shape_d_ref_visc),
+    ax.plot(s_ref_visc/c, np.abs(1-hm_visc.shape_d(s_ref_visc)
+                                 / shape_d_ref_visc),
             color=thwaites_visc_color)
     ax.plot(s_ref_inv/c, np.abs(1-hm_inv.shape_d(s_ref_inv)/shape_d_ref_inv),
             color=thwaites_inv_color)

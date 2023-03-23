@@ -10,6 +10,7 @@ flows. It shows similar results to Figures 3.4 to 3.6 in Edland thesis.
 
 # pylint: disable=too-many-locals
 # pylint: disable=too-many-statements
+# pylint: disable=duplicate-code
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.gridspec import GridSpec
