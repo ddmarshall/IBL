@@ -27,7 +27,7 @@ class HeadMethod(IBLMethod):
     """
 
     def __init__(self, nu: float = 1.0, U_e=None, dU_edx=None, d2U_edx2=None,
-                 shape_d_crit: float=2.4) -> None:
+                 shape_d_crit: float = 2.4) -> None:
         super().__init__(nu=nu, u_e=U_e, du_e=dU_edx, d2u_e=d2U_edx2,
                          ic=ManualCondition(np.inf, np.inf, 0))
 
@@ -39,7 +39,7 @@ class HeadMethod(IBLMethod):
         Momentum thickness at start of integration.
         Must be greater than zero.
         """
-        return  self._ic.delta_m()
+        return self._ic.delta_m()
 
     @initial_delta_m.setter
     def initial_delta_m(self, delta_m0: float) -> None:
@@ -277,9 +277,10 @@ class HeadMethod(IBLMethod):
         shape_entrainment = self.shape_entrainment(shape_d)
         shape_entrainment_p = self._shape_entrainment_p(shape_d)
         f_p[0] = 0.5*c_f-delta_m*(2+shape_d)*du_e/u_e
-        f_p[1] = (u_e*self._entrainment_velocity(shape_entrainment) - u_e*f_p[0]*shape_entrainment
-                 - du_e*delta_m*shape_entrainment)/(shape_entrainment_p
-                                                    * u_e*delta_m)
+        f_p[1] = (u_e*self._entrainment_velocity(shape_entrainment)
+                  - u_e*f_p[0]*shape_entrainment
+                  - du_e*delta_m*shape_entrainment)/(shape_entrainment_p
+                                                     * u_e*delta_m)
         return f_p
 
     @staticmethod
@@ -398,13 +399,13 @@ class HeadMethod(IBLMethod):
                             [shape_d_low, shape_d_high])
 
     @staticmethod
-    def _entrainment_velocity(shape_entrainment: InputParam) -> np_type.NDArray:
-        shape_entrainment = np.asarray(shape_entrainment, float)
-        if (shape_entrainment <= 3).any():
-            shape_entrainment[shape_entrainment <= 3] = 3.001
+    def _entrainment_velocity(shape_entr: InputParam) -> np_type.NDArray:
+        shape_entr = np.asarray(shape_entr, float)
+        if (shape_entr <= 3).any():
+            shape_entr[shape_entr <= 3] = 3.001
 #            raise ValueError("Cannot pass entrainment shape factor less than "
 #                             " 3: {}".format(np.amin(H1)))
-        return 0.0306/(shape_entrainment-3)**0.6169
+        return 0.0306/(shape_entr-3)**0.6169
 
 
 class _HeadSeparationEvent(TermEvent):

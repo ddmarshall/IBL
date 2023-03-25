@@ -15,9 +15,9 @@ import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.gridspec import GridSpec
 
-from pyBL.falkner_skan import FalknerSkanSolution
-from pyBL.thwaites_method import ThwaitesMethodLinear
-from pyBL.thwaites_method import ThwaitesMethodNonlinear
+from ibl.analytic import FalknerSkan
+from ibl.thwaites_method import ThwaitesMethodLinear
+from ibl.thwaites_method import ThwaitesMethodNonlinear
 
 
 def compare_stagnation_solution():
@@ -49,7 +49,7 @@ def compare_stagnation_solution():
 
     # Get the solutions for comparisons
     x = np.linspace(1e-3, c, npts)
-    fs = FalknerSkanSolution(U_ref=U_inf, m=m, nu=nu_inf)
+    fs = FalknerSkan(U_ref=U_inf, m=m, nu=nu_inf)
     tml = ThwaitesMethodLinear(nu=nu_inf, U_e=U_e_fun, dU_edx=dU_edx_fun,
                                d2U_edx2=d2U_edx2_fun, data_fits="Spline")
     tml.set_initial_parameters(delta_m0=fs.delta_m(x[0]))
