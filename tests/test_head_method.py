@@ -42,7 +42,9 @@ class TestHeadMethod(unittest.TestCase):
         shape_entrainment_break = HeadMethod.shape_entrainment(shape_d_break)
         shape_entrainment_low = shape_entrainment_break-eps
         shape_entrainment_high = shape_entrainment_break+eps
+        # pylint: disable-next=protected-access
         shape_d_low = float(HeadMethod._shape_d(shape_entrainment_low))
+        # pylint: disable-next=protected-access
         shape_d_high = float(HeadMethod._shape_d(shape_entrainment_high))
         self.assertIsNone(npt.assert_allclose(shape_d_low, shape_d_high))
 
@@ -63,6 +65,7 @@ class TestHeadMethod(unittest.TestCase):
 
         # test H_d can be recoverd from H1 function
         shape_d_ref = shape_d
+        # pylint: disable-next=protected-access
         shape_d = HeadMethod._shape_d(shape_entrainment)
         self.assertIsNone(npt.assert_allclose(shape_d, shape_d_ref))
 
@@ -71,8 +74,10 @@ class TestHeadMethod(unittest.TestCase):
         shape_entrainment_ref = HeadMethod.shape_entrainment(1.1001)
         self.assertIsNone(npt.assert_allclose(shape_entrainment,
                                               shape_entrainment_ref))
-        self.assertIsNone(npt.assert_allclose(HeadMethod._shape_d(3.3),
-                                              HeadMethod._shape_d(3.323)))
+        # pylint: disable-next=protected-access
+        ref = HeadMethod._shape_d(3.3)
+        # pylint: disable-next=protected-access
+        self.assertIsNone(npt.assert_allclose(ref, HeadMethod._shape_d(3.323)))
 
     def test_entrainment_velocity_calculation(self) -> None:
         """Test the entrainment velocity calculations."""
@@ -80,13 +85,17 @@ class TestHeadMethod(unittest.TestCase):
         def fun(shape_entrainment: InputParam) -> InputParam:
             return 0.0306/(shape_entrainment-3)**0.6169
 
+        # pylint: disable-next=protected-access
         shape_entrainment = np.linspace(3.01, 5, 101)
         e_term_ref = fun(shape_entrainment)
+        # pylint: disable-next=protected-access
         e_term = HeadMethod._entrainment_velocity(shape_entrainment)
         self.assertIsNone(npt.assert_allclose(e_term, e_term_ref))
 
         # test invalid values
+        # pylint: disable-next=protected-access
         e_term = HeadMethod._entrainment_velocity(3)
+        # pylint: disable-next=protected-access
         e_term_ref = HeadMethod._entrainment_velocity(3.001)
         self.assertIsNone(npt.assert_allclose(e_term, e_term_ref))
 

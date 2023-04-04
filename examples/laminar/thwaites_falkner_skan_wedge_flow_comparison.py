@@ -21,7 +21,7 @@ from ibl.thwaites_method import ThwaitesMethodNonlinear
 def compare_stagnation_solution():
     """Compare the various solutions to the Falkner-Skan solution."""
     # Set flow parameters
-    U_inf = 10
+    u_inf = 10
     m = 1/3
     nu_inf = 1.45e-5
     rho_inf = 1.2
@@ -29,36 +29,37 @@ def compare_stagnation_solution():
     npts = 201
 
     # Set up the velocity functions
-    def U_e_fun(x):
+    def u_e_fun(x):
         x = np.asarray(x)
-        return U_inf*x**m
+        return u_inf*x**m
 
-    def dU_edx_fun(x):
+    def du_e_fun(x):
         x = np.asarray(x)
         if m == 0:
             return np.zeros_like(x)
-        return m*U_inf*x**(m-1)
+        return m*u_inf*x**(m-1)
 
-    def d2U_edx2_fun(x):
+    def d2u_e_fun(x):
         x = np.asarray(x)
         if m in (0, 1):
             return np.zeros_like(x)
-        return m*(m-1)*U_inf*x**(m-2)
+        return m*(m-1)*u_inf*x**(m-2)
 
     # Get the solutions for comparisons
     x = np.linspace(1e-6, c, npts)
-    fs = FalknerSkan(U_ref=U_inf, m=m, nu=nu_inf)
-    tml = ThwaitesMethodLinear(nu=nu_inf, U_e=U_e_fun, dU_edx=dU_edx_fun,
-                               d2U_edx2=d2U_edx2_fun, data_fits="Spline")
-    tml.set_initial_parameters(delta_m0=fs.delta_m(x[0]))
+    fs = FalknerSkan(beta=0, u_ref=u_inf, nu_ref=nu_inf)
+    fs.m = m
+    tml = ThwaitesMethodLinear(nu=nu_inf, U_e=u_e_fun, dU_edx=du_e_fun,
+                               d2U_edx2=d2u_e_fun, data_fits="Spline")
+    tml.initial_delta_m = fs.delta_m(x[0])
     rtn = tml.solve(x0=x[0], x_end=x[-1])
     if not rtn.success:
         print("Could not get solution for Thwaites method: " + rtn.message)
         return
 
-    tmn = ThwaitesMethodNonlinear(nu=nu_inf, U_e=U_e_fun, dU_edx=dU_edx_fun,
-                                  d2U_edx2=d2U_edx2_fun, data_fits="Spline")
-    tmn.set_initial_parameters(delta_m0=fs.delta_m(x[0]))
+    tmn = ThwaitesMethodNonlinear(nu=nu_inf, U_e=u_e_fun, dU_edx=du_e_fun,
+                                  d2U_edx2=d2u_e_fun, data_fits="Spline")
+    tmn.initial_delta_m = fs.delta_m(x[0])
     rtn = tmn.solve(x0=x[0], x_end=x[-1])
     if not rtn.success:
         print("Could not get solution for Thwaites method: " + rtn.message)
@@ -71,15 +72,15 @@ def compare_stagnation_solution():
     delta_m_exact = fs.delta_m(x)
     delta_m_standard = tml.delta_m(x)
     delta_m_nonlinear = tmn.delta_m(x)
-    c_f_exact = fs.tau_w(x, rho_inf)/(0.5*rho_inf*U_inf**2)
-    c_f_standard = tml.tau_w(x, rho_inf)/(0.5*rho_inf*U_inf**2)
-    c_f_nonlinear = tmn.tau_w(x, rho_inf)/(0.5*rho_inf*U_inf**2)
-    H_d_exact = fs.H_d(x)
-    H_d_standard = tml.H_d(x)
-    H_d_nonlinear = tmn.H_d(x)
-    V_e_exact = fs.V_e(x)
-    V_e_standard = tml.V_e(x)
-    V_e_nonlinear = tmn.V_e(x)
+    c_f_exact = fs.tau_w(x, rho_inf)/(0.5*rho_inf*u_inf**2)
+    c_f_standard = tml.tau_w(x, rho_inf)/(0.5*rho_inf*u_inf**2)
+    c_f_nonlinear = tmn.tau_w(x, rho_inf)/(0.5*rho_inf*u_inf**2)
+    shape_d_exact = fs.shape_d(x)
+    shape_d_standard = tml.shape_d(x)
+    shape_d_nonlinear = tmn.shape_d(x)
+    v_e_exact = fs.v_e(x)
+    v_e_standard = tml.v_e(x)
+    v_e_nonlinear = tmn.v_e(x)
 
     # plot functions
     fig = plt.figure()
@@ -90,12 +91,12 @@ def compare_stagnation_solution():
     axis_delta_d_error = fig.add_subplot(gs[0, 1])
     axis_delta_m = fig.add_subplot(gs[1, 0])
     axis_delta_m_error = fig.add_subplot(gs[1, 1])
-    axis_H_d = fig.add_subplot(gs[2, 0])
-    axis_H_d_error = fig.add_subplot(gs[2, 1])
+    axis_shape_d = fig.add_subplot(gs[2, 0])
+    axis_shape_d_error = fig.add_subplot(gs[2, 1])
     axis_c_f = fig.add_subplot(gs[3, 0])
     axis_c_f_error = fig.add_subplot(gs[3, 1])
-    axis_V_e = fig.add_subplot(gs[4, 0])
-    axis_V_e_error = fig.add_subplot(gs[4, 1])
+    axis_v_e = fig.add_subplot(gs[4, 0])
+    axis_v_e_error = fig.add_subplot(gs[4, 1])
 
     exact_color = "black"
     exact_label = "Blasius"
@@ -146,18 +147,18 @@ def compare_stagnation_solution():
     ax.grid(True)
 
     # Displacement shape factor in 2,:
-    ax = axis_H_d
-    ax.plot(x/c, H_d_exact, color=exact_color)
-    ax.plot(x/c, H_d_standard, color=standard_color)
-    ax.plot(x/c, H_d_nonlinear, color=nonlinear_color)
+    ax = axis_shape_d
+    ax.plot(x/c, shape_d_exact, color=exact_color)
+    ax.plot(x/c, shape_d_standard, color=standard_color)
+    ax.plot(x/c, shape_d_nonlinear, color=nonlinear_color)
     ax.set_ylim(2.2, 2.5)
     ax.set_ylabel(r"$H_d$")
     ax.grid(True)
 
-    ax = axis_H_d_error
-    ax.plot(x/c, np.abs(1-H_d_standard/H_d_exact),
+    ax = axis_shape_d_error
+    ax.plot(x/c, np.abs(1-shape_d_standard/shape_d_exact),
             color=standard_color)
-    ax.plot(x/c, np.abs(1-H_d_nonlinear/H_d_exact),
+    ax.plot(x/c, np.abs(1-shape_d_nonlinear/shape_d_exact),
             color=nonlinear_color)
     ax.set_ylabel("Relative Error")
     ax.set_ylim([1e-4,1])
@@ -184,19 +185,19 @@ def compare_stagnation_solution():
     ax.grid(True)
 
     # Transpiration velocity in 4,:
-    ax = axis_V_e
-    ax.plot(x/c, V_e_exact/U_inf, color=exact_color)
-    ax.plot(x/c, V_e_standard/U_inf, color=standard_color)
-    ax.plot(x/c, V_e_nonlinear/U_inf, color=nonlinear_color)
+    ax = axis_v_e
+    ax.plot(x/c, v_e_exact/u_inf, color=exact_color)
+    ax.plot(x/c, v_e_standard/u_inf, color=standard_color)
+    ax.plot(x/c, v_e_nonlinear/u_inf, color=nonlinear_color)
     ax.set_ylim(0, 0.01)
     ax.set_xlabel(r"$x/c$")
     ax.set_ylabel(r"$V_e/U_\infty$")
     ax.grid(True)
 
-    ax = axis_V_e_error
-    ax.plot(x/c, np.abs(1-V_e_standard/V_e_exact),
+    ax = axis_v_e_error
+    ax.plot(x/c, np.abs(1-v_e_standard/v_e_exact),
             color=standard_color)
-    ax.plot(x/c, np.abs(1-V_e_nonlinear/V_e_exact),
+    ax.plot(x/c, np.abs(1-v_e_nonlinear/v_e_exact),
             color=nonlinear_color)
     ax.set_xlabel(r"$x/c$")
     ax.set_ylabel("Relative Error")

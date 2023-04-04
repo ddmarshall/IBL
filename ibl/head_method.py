@@ -29,7 +29,8 @@ class HeadMethod(IBLMethod):
     def __init__(self, nu: float = 1.0, U_e=None, dU_edx=None, d2U_edx2=None,
                  shape_d_crit: float = 2.4) -> None:
         super().__init__(nu=nu, u_e=U_e, du_e=dU_edx, d2u_e=d2U_edx2,
-                         ic=ManualCondition(np.inf, np.inf, 0))
+                         ic=ManualCondition(delta_d=np.inf, delta_m=np.inf,
+                                            delta_k=0))
 
         self.set_shape_d_critical(shape_d_crit)
 

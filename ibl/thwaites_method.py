@@ -10,14 +10,17 @@ assumption and provides slightly better results in all cases tested.
 """
 
 from abc import abstractmethod
-from typing import Tuple
+from typing import Tuple, cast, Union
+
 import numpy as np
 import numpy.typing as np_type
+
 from scipy.interpolate import CubicSpline
 from scipy.misc import derivative as fd
 
 from ibl.ibl_method import IBLMethod
 from ibl.ibl_method import TermEvent
+from ibl.ibl_method import TermReason
 from ibl.initial_condition import ManualCondition
 
 
@@ -41,29 +44,25 @@ class ThwaitesMethod(IBLMethod):
     #    _model: Collection of functions for S, H, and H'
     def __init__(self, nu: float = 1.0, U_e=None, dU_edx=None, d2U_edx2=None,
                  data_fits="Spline"):
-        super().__init__(nu, U_e, dU_edx, d2U_edx2)
+        super().__init__(nu=nu, u_e=U_e, du_e=dU_edx, d2u_e=d2U_edx2,
+                         ic=ManualCondition(delta_d=0, delta_m=np.inf,
+                                            delta_k=0))
 
         self.set_data_fits(data_fits)
 
-    def set_initial_parameters(self, delta_m0: float) -> None:
+    @property
+    def initial_delta_m(self) -> float:
         """
-        Set the initial conditions for the solver.
-
-        Parameters
-        ----------
-        delta_m0: float
-            Momentum thickness at start location.
-
-        Raises
-        ------
-        ValueError
-            When negative invalid initial conditions
+        Momentum thickness at start of integration.
+        Must be greater than zero.
         """
-        if delta_m0 < 0:
-            raise ValueError("Initial momentum thickness must be positive")
+        return self._ic.delta_m()
 
-        ic = ManualCondition(0.0, delta_m0, 0)
-        self.set_initial_condition(ic)
+    @initial_delta_m.setter
+    def initial_delta_m(self, delta_m0: float) -> None:
+        if delta_m0 <= 0:
+            raise ValueError(f"Invalid initial momentum thickness: {delta_m0}")
+        cast(ManualCondition, self._ic).del_m = delta_m0
 
     def set_data_fits(self, data_fits):
         """
@@ -124,12 +123,13 @@ class ThwaitesMethod(IBLMethod):
                                          "fit functions")
                 elif len(data_fits) == 2:
                     if callable(data_fits[0]) and callable(data_fits[1]):
-                        def Hp_fun(lam):
-                            return fd(self._model.H, lam, 1e-5, n=1, order=3)
+                        def shape_p_fun(lam):
+                            return fd(self._model.shape, lam, 1e-5, n=1,
+                                      order=3)
                         self._model = _ThwaitesFunctions("Custom",
                                                          data_fits[0],
                                                          data_fits[1],
-                                                         Hp_fun,
+                                                         shape_p_fun,
                                                          -np.inf, np.inf)
                     else:
                         raise ValueError("Need to pass callable objects for "
@@ -141,7 +141,7 @@ class ThwaitesMethod(IBLMethod):
                 raise ValueError("Need to pass a 2-tuple for fit functions")
 
         self._set_kill_event(_ThwaitesSeparationEvent(self._calc_lambda,
-                                                      self._model.S))
+                                                      self._model.shear))
 
     def v_e(self, x):
         """
@@ -157,16 +157,16 @@ class ThwaitesMethod(IBLMethod):
         array-like same shape as `x`
             Desired transpiration velocity at the specified locations.
         """
-        U_e = self.u_e(x)
-        dU_edx = self.du_e(x)
+        u_e = self.u_e(x)
+        du_e = self.du_e(x)
         delta_m2_on_nu = self._solution(x)[0]
-        term1 = dU_edx*self.delta_d(x)
+        term1 = du_e*self.delta_d(x)
         term2 = np.sqrt(self._nu/delta_m2_on_nu)
         dsol_dx = self._ode_impl(x, delta_m2_on_nu)
-        term3 = 0.5*U_e*self.shape_d(x)*dsol_dx
-        term4a = self._model.Hp(self._calc_lambda(x, delta_m2_on_nu))
-        term4 = U_e*delta_m2_on_nu*term4a
-        term5 = dU_edx*dsol_dx+self.d2u_e(x)*delta_m2_on_nu
+        term3 = 0.5*u_e*self.shape_d(x)*dsol_dx
+        term4a = self._model.shape_p(self._calc_lambda(x, delta_m2_on_nu))
+        term4 = u_e*delta_m2_on_nu*term4a
+        term5 = du_e*dsol_dx+self.d2u_e(x)*delta_m2_on_nu
         return term1 + term2*(term3+term4*term5)
 
     def delta_d(self, x):
@@ -232,7 +232,7 @@ class ThwaitesMethod(IBLMethod):
             Desired displacement shape factor at the specified locations.
         """
         lam = self._calc_lambda(x, self._solution(x)[0])
-        return self._model.H(lam)
+        return self._model.shape(lam)
 
     def shape_k(self, x):
         """
@@ -267,7 +267,7 @@ class ThwaitesMethod(IBLMethod):
             Desired wall shear stress at the specified locations.
         """
         lam = self._calc_lambda(x, self._solution(x)[0])
-        return rho*self._nu*self.u_e(x)*self._model.S(lam)/self.delta_m(x)
+        return rho*self._nu*self.u_e(x)*self._model.shear(lam)/self.delta_m(x)
 
     def dissipation(self, x, rho):
         """
@@ -300,7 +300,7 @@ class ThwaitesMethod(IBLMethod):
         """
         return np.array([self._ic.delta_m()**2/self._nu]), 1e-8, 1e-11
 
-    def _ode_impl(self, x, F):
+    def _ode_impl(self, x, f):
         """
         Right-hand-side of the ODE representing Thwaites method.
 
@@ -317,7 +317,7 @@ class ThwaitesMethod(IBLMethod):
         array-like same shape as `F`
             The right-hand side of the ODE at the given state.
         """
-        return self._calc_F(x, F)/(1e-3 + self.u_e(x))
+        return self._calc_f(x, f)/(1e-3 + self.u_e(x))
 
     def _calc_lambda(self, x, delta_m2_on_nu):
         r"""
@@ -338,7 +338,7 @@ class ThwaitesMethod(IBLMethod):
         return delta_m2_on_nu*self.du_e(x)
 
     @abstractmethod
-    def _calc_F(self, x, delta_m2_on_nu):
+    def _calc_f(self, x, delta_m2_on_nu):
         """
         Calculate the :math:`F` term in the ODE.
 
@@ -379,7 +379,7 @@ class ThwaitesMethodLinear(ThwaitesMethod):
     using the :class:`IBLMethod` ODE solver.
     """
 
-    def _calc_F(self, x, delta_m2_on_nu):
+    def _calc_f(self, x, delta_m2_on_nu):
         r"""
         Calculate the :math:`F` term in the ODE using the linear approximation.
 
@@ -427,7 +427,7 @@ class ThwaitesMethodNonlinear(ThwaitesMethod):
     using the :class:`IBLMethod` ODE solver.
     """
 
-    def _calc_F(self, x, delta_m2_on_nu):
+    def _calc_f(self, x, delta_m2_on_nu):
         r"""
         Calculate the :math:`F` term in the ODE using the actual relationship.
 
@@ -450,38 +450,39 @@ class ThwaitesMethodNonlinear(ThwaitesMethod):
             The calculated value of :math:`F`
         """
         lam = self._calc_lambda(x, delta_m2_on_nu)
-        return self._model.F(lam)
+        return self._model.f(lam)
 
 
 class _ThwaitesFunctions:
     """Base class for curve fits for Thwaites data."""
 
-    def __init__(self, name, S_fun, H_fun, Hp_fun, lambda_min, lambda_max):
+    def __init__(self, name: str, shear_fun, shape_fun, shape_p_fun,
+                 lambda_min: float, lambda_max: float):
         self._range = [lambda_min, lambda_max]
         self._name = name
-        self._H_fun = H_fun
-        self._Hp_fun = Hp_fun
-        self._S_fun = S_fun
+        self._shape_fun = shape_fun
+        self._shape_p_fun = shape_p_fun
+        self._shear_fun = shear_fun
 
     def range(self):
         """Return a 2-tuple for the start and end of range."""
         return self._range[0], self._range[1]
 
-    def H(self, lam):
-        """Return the H term."""
-        return self._H_fun(self._check_range(lam))
+    def shape(self, lam):
+        """Return the shape factor term."""
+        return self._shape_fun(self._check_range(lam))
 
-    def Hp(self, lam):
-        """Return the H' term."""
-        return self._Hp_fun(self._check_range(lam))
+    def shape_p(self, lam):
+        """Return the derivative of the shape factor term."""
+        return self._shape_p_fun(self._check_range(lam))
 
-    def S(self, lam):
-        """Return the S term."""
-        return self._S_fun(self._check_range(lam))
+    def shear(self, lam):
+        """Return the shear term."""
+        return self._shear_fun(self._check_range(lam))
 
-    def F(self, lam):
+    def f(self, lam):
         """Return the F term."""
-        return 2*(self.S(lam) - lam*(self.H(lam)+2))
+        return 2*(self.shear(lam) - lam*(self.shape(lam)+2))
 
     def get_name(self):
         """Return name of function set."""
@@ -506,45 +507,46 @@ class _ThwaitesFunctionsWhite(_ThwaitesFunctions):
     """Returns White's calculation of Thwaites functions."""
 
     def __init__(self):
-        def S(lam):
+        def shear(lam):
             return pow(lam + 0.09, 0.62)
 
-        def H(lam):
+        def shape(lam):
             z = 0.25 - lam
             return 2 + z*(4.14 + z*(-83.5 + z*(854 + z*(-3337 + z*4576))))
 
-        def Hp(lam):
+        def shape_p(lam):
             z = 0.25 - lam
             return -(4.14 + z*(-2*83.5 + z*(3*854 + z*(-4*3337 + z*5*4576))))
 
-        super().__init__("White", S, H, Hp, -0.09, np.inf)
+        super().__init__("White", shear, shape, shape_p, -0.09, np.inf)
 
 
 class _ThwaitesFunctionsCebeciBradshaw(_ThwaitesFunctions):
     """Returns Cebeci and Bradshaw's calculation of Thwaites functions."""
 
     def __init__(self):
-        def S(lam):
+        def shear(lam):
             return np.piecewise(lam, [lam < 0, lam >= 0],
                                 [lambda lam: (0.22 + 1.402*lam
                                               + 0.018*lam/(0.107 + lam)),
                                  lambda lam: 0.22 + 1.57*lam - 1.8*lam**2])
 
-        def H(lam):
+        def shape(lam):
             # NOTE: C&B's H function is not continuous at lam=0,
             #       so using second interval
             return np.piecewise(lam, [lam < 0, lam >= 0],
                                 [lambda lam: 2.088 + 0.0731/(0.14 + lam),
                                  lambda lam: 2.61 - 3.75*lam + 5.24*lam**2])
 
-        def Hp(lam):
+        def shape_p(lam):
             # NOTE: C&B's H function is not continuous at lam=0,
             #       so using second interval
             return np.piecewise(lam, [lam < 0, lam >= 0],
                                 [lambda lam: -0.0731/(0.14 + lam)**2,
                                  lambda lam: -3.75 + 2*5.24*lam])
 
-        super().__init__("Cebeci and Bradshaw", S, H, Hp, -0.1, 0.1)
+        super().__init__("Cebeci and Bradshaw", shear, shape, shape_p,
+                         -0.1, 0.1)
 
 
 class _ThwaitesFunctionsSpline(_ThwaitesFunctions):
@@ -552,28 +554,29 @@ class _ThwaitesFunctionsSpline(_ThwaitesFunctions):
 
     def __init__(self):
         # Spline fits to Thwaites original data Edland
-        S = CubicSpline(self._tab_lambda, self._tab_S)
-        H = CubicSpline(self._tab_lambda, self._tab_H)
-        Hp = H.derivative()
+        shear = CubicSpline(self._tab_lambda, self._tab_shear)
+        shape = CubicSpline(self._tab_lambda, self._tab_shape)
+        shape_p = shape.derivative()
 
-        super().__init__("Thwaites Splines", S, H, Hp,
+        super().__init__("Thwaites Splines", shear, shape, shape_p,
                          np.min(self._tab_lambda), np.max(self._tab_lambda))
 
     # Tabular data section
-    _tab_F = np.array([0.938, 0.953, 0.956, 0.962, 0.967, 0.969, 0.971, 0.970,
+    _tab_f = np.array([0.938, 0.953, 0.956, 0.962, 0.967, 0.969, 0.971, 0.970,
                        0.963, 0.952, 0.936, 0.919, 0.902, 0.886, 0.854, 0.825,
                        0.797, 0.770, 0.744, 0.691, 0.640, 0.590, 0.539, 0.490,
                        0.440, 0.342, 0.249, 0.156, 0.064,-0.028,-0.138,-0.251,
                       -0.362, -0.702, -1.000])
-    _tab_S = np.array([0.000, 0.011, 0.016, 0.024, 0.030, 0.035, 0.039, 0.049,
-                       0.055, 0.067, 0.076, 0.083, 0.089, 0.094, 0.104, 0.113,
-                       0.122, 0.130, 0.138, 0.153, 0.168, 0.182, 0.195, 0.208,
-                       0.220, 0.244, 0.268, 0.291, 0.313, 0.333, 0.359, 0.382,
-                       0.404, 0.463, 0.500])
-    _tab_H = np.array([3.70, 3.69, 3.66, 3.63, 3.61, 3.59, 3.58, 3.52, 3.47,
-                       3.38, 3.30, 3.23, 3.17, 3.13, 3.05, 2.99, 2.94, 2.90,
-                       2.87, 2.81, 2.75, 2.71, 2.67, 2.64, 2.61, 2.55, 2.49,
-                       2.44, 2.39, 2.34, 2.28, 2.23, 2.18, 2.07, 2.00])
+    _tab_shear = np.array([0.000, 0.011, 0.016, 0.024, 0.030, 0.035, 0.039,
+                           0.049, 0.055, 0.067, 0.076, 0.083, 0.089, 0.094,
+                           0.104, 0.113, 0.122, 0.130, 0.138, 0.153, 0.168,
+                           0.182, 0.195, 0.208, 0.220, 0.244, 0.268, 0.291,
+                           0.313, 0.333, 0.359, 0.382,0.404, 0.463, 0.500])
+    _tab_shape = np.array([3.70, 3.69, 3.66, 3.63, 3.61, 3.59, 3.58, 3.52,
+                           3.47, 3.38, 3.30, 3.23, 3.17, 3.13, 3.05, 2.99,
+                           2.94, 2.90, 2.87, 2.81, 2.75, 2.71, 2.67, 2.64,
+                           2.61, 2.55, 2.49, 2.44, 2.39, 2.34, 2.28, 2.23,
+                           2.18, 2.07, 2.00])
     _tab_lambda = np.array([-0.082,-0.0818,-0.0816,-0.0812,-0.0808,-0.0804,
                             -0.080,-0.079, -0.078, -0.076, -0.074, -0.072,
                             -0.070,-0.068, -0.064, -0.060, -0.056, -0.052,
@@ -594,12 +597,12 @@ class _ThwaitesSeparationEvent(TermEvent):
     # ----------
     #    _calc_lam: Callable that can calculate lambda.
     #    _S_fun: Callable that can calculate the shear function.
-    def __init__(self, calc_lam, S_fun):
+    def __init__(self, calc_lam, shear_fun):
         super().__init__()
         self._calc_lam = calc_lam
-        self._S_fun = S_fun
+        self._shear_fun = shear_fun
 
-    def _call_impl(self, x, F):
+    def _call_impl(self, x: float, f: np_type.NDArray) -> float:
         """
         Help determine if Thwaites method integrator should terminate.
 
@@ -607,9 +610,9 @@ class _ThwaitesSeparationEvent(TermEvent):
 
         Parameters
         ----------
-        x: array-like
+        x : float
             Current x-location of the integration.
-        F: array-like
+        f : numpy.ndarray
             Current step square of momentum thickness divided by the
             kinematic viscosity.
 
@@ -618,7 +621,7 @@ class _ThwaitesSeparationEvent(TermEvent):
         float
             Current value of the shear function.
         """
-        return self._S_fun(self._calc_lam(x, F))
+        return self._shear_fun(self._calc_lam(x, f))
 
-    def event_info(self):
-        return -1, ""
+    def event_info(self) -> Tuple[TermReason, str]:
+        return TermReason.SEPARATED, ""
