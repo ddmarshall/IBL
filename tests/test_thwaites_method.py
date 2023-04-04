@@ -5,7 +5,6 @@ Created on Mon Aug  8 14:09:25 2022
 
 @author: ddmarshall
 """
-# pylint: disable=protected-access
 
 import unittest
 import numpy as np

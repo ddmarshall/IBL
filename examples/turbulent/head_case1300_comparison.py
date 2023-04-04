@@ -7,8 +7,6 @@ This example shows a comparison between Head's method and case 1300 from the
 1968 Stanford Olympics from Luwieg and Tillman.
 """
 
-# pylint: disable=too-many-locals
-# pylint: disable=too-many-statements
 # pylint: disable=duplicate-code
 import numpy as np
 import matplotlib.pyplot as plt

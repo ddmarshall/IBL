@@ -8,9 +8,6 @@ tabular data from Thwaites for the function :math:`F(\lambda)`. It shows
 similar results to Figures 1.2 and 1.3 in Edland thesis.
 """
 
-# pylint: disable=protected-access
-# pylint: disable=too-many-locals
-# pylint: disable=too-many-statements
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.gridspec import GridSpec

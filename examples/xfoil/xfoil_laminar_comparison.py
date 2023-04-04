@@ -8,8 +8,6 @@ results for a NACA 0003 airfoil using the XFoil edge velocity profile. It shows
 similar results to Figures 3.17 to 3.19 in Edland thesis.
 """
 
-# pylint: disable=too-many-locals
-# pylint: disable=too-many-statements
 from pathlib import Path
 
 import numpy as np

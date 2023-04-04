@@ -8,8 +8,6 @@ Falkner-Skan solution to laminar flat plate boundary layer wedge flows at angle
 of pi/4. It shows similar results to Figures 3.7 to 3.9 in Edland thesis.
 """
 
-# pylint: disable=too-many-locals
-# pylint: disable=too-many-statements
 # pylint: disable=duplicate-code
 import numpy as np
 import matplotlib.pyplot as plt

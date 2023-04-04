@@ -22,13 +22,13 @@ class TestStanfordOlympics1968(unittest.TestCase):
         """Test accessing data files."""
         stol = StanfordOlympics1968()
 
-        # pylint: disable=protected-access
+        # pylint: disable-next=protected-access
         self.assertTrue(not stol._get_case_data("xxxx"))
+        # pylint: disable-next=protected-access
         self.assertFalse(not stol._get_case_data("1100"))
 
     def test_station_setters(self) -> None:
         """Test the stations data."""
-        # pylint: disable=too-many-statements
         summary_data = ("0.782  33.90  -2.300  0.276  1.381  1.778   7.307  "
                         "0.00285  0.00276  0.00271  0.181")
         station_summary = ("0.7820  1.280  33.900  0.155000  0.2760  0.3812  "
