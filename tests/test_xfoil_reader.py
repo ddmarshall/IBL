@@ -250,14 +250,13 @@ class TestXFoilDumpReader(unittest.TestCase):
         filename = directory + "/data/xfoil_inviscid_dump.txt"
         xf = XFoilReader(filename)
 
-        buff = np.array([])
-        self.assertIsNone(npt.assert_equal(buff, xf.s_wake()))
-        self.assertIsNone(npt.assert_equal(buff, xf.x_wake()))
-        self.assertIsNone(npt.assert_equal(buff, xf.y_wake()))
-        self.assertIsNone(npt.assert_equal(buff, xf.u_e_wake()))
-        self.assertIsNone(npt.assert_equal(buff, xf.delta_d_wake()))
-        self.assertIsNone(npt.assert_equal(buff, xf.delta_m_wake()))
-        self.assertIsNone(npt.assert_equal(buff, xf.shape_d_wake()))
+        self.assertTrue(xf.s_wake().size == 0)
+        self.assertTrue(xf.x_wake().size == 0)
+        self.assertTrue(xf.y_wake().size == 0)
+        self.assertTrue(xf.u_e_wake().size == 0)
+        self.assertTrue(xf.delta_d_wake().size == 0)
+        self.assertTrue(xf.delta_m_wake().size == 0)
+        self.assertTrue(xf.shape_d_wake().size == 0)
 
     def test_inviscid_element_access(self) -> None:
         """Test accessing inviscid properties at specific point."""
