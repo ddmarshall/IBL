@@ -387,7 +387,7 @@ class IBLMethod(ABC):
             Representation of the first derivative of the edge velocity to be
             used in analysis. The default is `None`.
         d2u_e : None or function-like, optional
-            Representationa of the second derivative of the edge velocity to
+            Representation of the second derivative of the edge velocity to
             be used in analysis. The default is `None`.
 
         Raises
