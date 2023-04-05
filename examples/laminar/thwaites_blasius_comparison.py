@@ -9,15 +9,18 @@ results to Figures 3.1 to 3.3 in Edland thesis.
 """
 
 import numpy as np
+import numpy.typing as npt
+
 import matplotlib.pyplot as plt
 from matplotlib.gridspec import GridSpec
 
 from ibl.analytic import Blasius
 from ibl.thwaites_method import ThwaitesMethodLinear
 from ibl.thwaites_method import ThwaitesMethodNonlinear
+from ibl.typing import InputParam
 
 
-def compare_blasius_solution():
+def compare_blasius_solution() -> None:
     """Compare the various solutions to the Blasius solution."""
     # Set flow parameters
     u_inf = 10
@@ -27,15 +30,15 @@ def compare_blasius_solution():
     npts = 101
 
     # Set up the velocity functions
-    def u_e_fun(x):
+    def u_e_fun(x: InputParam) -> npt.NDArray:
         x = np.asarray(x)
         return u_inf*np.ones_like(x)
 
-    def du_e_fun(x):
+    def du_e_fun(x: InputParam) -> npt.NDArray:
         x = np.asarray(x)
         return np.zeros_like(x)
 
-    def d2u_e_fun(x):
+    def d2u_e_fun(x: InputParam) -> npt.NDArray:
         x = np.asarray(x)
         return np.zeros_like(x)
 
@@ -44,7 +47,7 @@ def compare_blasius_solution():
     bs = Blasius(u_ref=u_inf, nu_ref=nu_inf)
     tml = ThwaitesMethodLinear(nu=nu_inf, U_e=u_e_fun, dU_edx=du_e_fun,
                                d2U_edx2=d2u_e_fun, data_fits="Spline")
-    tml.initial_delta_m = bs.delta_m(x[0])
+    tml.initial_delta_m = float(bs.delta_m(x[0]))
     rtn = tml.solve(x0=x[0], x_end=x[-1])
     if not rtn.success:
         print("Could not get solution for Thwaites method: " + rtn.message)
@@ -52,7 +55,7 @@ def compare_blasius_solution():
 
     tmn = ThwaitesMethodNonlinear(nu=nu_inf, U_e=u_e_fun, dU_edx=du_e_fun,
                                   d2U_edx2=d2u_e_fun, data_fits="Spline")
-    tmn.initial_delta_m = bs.delta_m(x[0])
+    tmn.initial_delta_m = float(bs.delta_m(x[0]))
     rtn = tmn.solve(x0=x[0], x_end=x[-1])
     if not rtn.success:
         print("Could not get solution for Thwaites method: " + rtn.message)

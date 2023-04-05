@@ -15,9 +15,10 @@ from matplotlib.gridspec import GridSpec
 from ibl.thwaites_method import _ThwaitesFunctionsWhite
 from ibl.thwaites_method import _ThwaitesFunctionsCebeciBradshaw
 from ibl.thwaites_method import _ThwaitesFunctionsSpline
+from ibl.typing import InputParam
 
 
-def compare_thwaites_fits():
+def compare_thwaites_fits() -> None:
     """Compare the available fits to Thwaites' data."""
     # Set common plot properties
     plt.rcParams["figure.figsize"] = [8, 5]
@@ -28,7 +29,7 @@ def compare_thwaites_fits():
     cb = _ThwaitesFunctionsCebeciBradshaw()
     spline = _ThwaitesFunctionsSpline()
 
-    def f_linear(lam):
+    def f_linear(lam: InputParam) -> InputParam:
         return 0.45-6*lam
 
     # Plot the various fits

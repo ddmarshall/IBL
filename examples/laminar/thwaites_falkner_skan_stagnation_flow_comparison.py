@@ -10,15 +10,17 @@ flows. It shows similar results to Figures 3.4 to 3.6 in Edland thesis.
 
 # pylint: disable=duplicate-code
 import numpy as np
+import numpy.typing as npt
+
 import matplotlib.pyplot as plt
 from matplotlib.gridspec import GridSpec
 
 from ibl.analytic import FalknerSkan
 from ibl.thwaites_method import ThwaitesMethodLinear
 from ibl.thwaites_method import ThwaitesMethodNonlinear
+from ibl.typing import InputParam
 
-
-def compare_stagnation_solution():
+def compare_stagnation_solution() -> None:
     """Compare the various solutions to the Falkner-Skan solution."""
     # Set flow parameters
     u_inf = 10
@@ -29,17 +31,17 @@ def compare_stagnation_solution():
     npts = 101
 
     # Set up the velocity functions
-    def u_e_fun(x):
+    def u_e_fun(x: InputParam) -> npt.NDArray:
         x = np.asarray(x)
         return u_inf*x**m
 
-    def du_e_fun(x):
+    def du_e_fun(x: InputParam) -> npt.NDArray:
         x = np.asarray(x)
         if m == 0:
             return np.zeros_like(x)
         return m*u_inf*x**(m-1)
 
-    def d2u_e_fun(x):
+    def d2u_e_fun(x: InputParam) -> npt.NDArray:
         x = np.asarray(x)
         if m in (0, 1):
             return np.zeros_like(x)
@@ -51,7 +53,7 @@ def compare_stagnation_solution():
     fs.m = m
     tml = ThwaitesMethodLinear(nu=nu_inf, U_e=u_e_fun, dU_edx=du_e_fun,
                                d2U_edx2=d2u_e_fun, data_fits="Spline")
-    tml.initial_delta_m = fs.delta_m(x[0])
+    tml.initial_delta_m = float(fs.delta_m(x[0]))
     rtn = tml.solve(x0=x[0], x_end=x[-1])
     if not rtn.success:
         print("Could not get solution for Thwaites method: " + rtn.message)
@@ -59,7 +61,7 @@ def compare_stagnation_solution():
 
     tmn = ThwaitesMethodNonlinear(nu=nu_inf, U_e=u_e_fun, dU_edx=du_e_fun,
                                   d2U_edx2=d2u_e_fun, data_fits="Spline")
-    tmn.initial_delta_m = fs.delta_m(x[0])
+    tmn.initial_delta_m = float(fs.delta_m(x[0]))
     rtn = tmn.solve(x0=x[0], x_end=x[-1])
     if not rtn.success:
         print("Could not get solution for Thwaites method: " + rtn.message)
