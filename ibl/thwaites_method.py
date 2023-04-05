@@ -438,7 +438,7 @@ class ThwaitesMethodNonlinear(ThwaitesMethod):
     that can be set.
 
     This class solves the following differential equation using the data fits
-    for the shear function, :math:`S`, and the shape function, :math`H`, to
+    for the shear function, :math:`S`, and the shape function, :math:`H`, to
     capture a more accurate representation of the laminar boundary layer flow
 
     .. math::
@@ -530,14 +530,14 @@ class _ThwaitesFunctionsWhite(_ThwaitesFunctions):
     """Returns White's calculation of Thwaites functions."""
 
     def __init__(self) -> None:
-        def shear(lam: InputParam) -> np_type.NDArray:
+        def shear(lam: InputParam) -> InputParam:
             return pow(lam + 0.09, 0.62)
 
-        def shape(lam):
+        def shape(lam: InputParam) -> InputParam:
             z = 0.25 - lam
             return 2 + z*(4.14 + z*(-83.5 + z*(854 + z*(-3337 + z*4576))))
 
-        def shape_p(lam):
+        def shape_p(lam: InputParam) -> InputParam:
             z = 0.25 - lam
             return -(4.14 + z*(-2*83.5 + z*(3*854 + z*(-4*3337 + z*5*4576))))
 
@@ -548,20 +548,20 @@ class _ThwaitesFunctionsCebeciBradshaw(_ThwaitesFunctions):
     """Returns Cebeci and Bradshaw's calculation of Thwaites functions."""
 
     def __init__(self) -> None:
-        def shear(lam):
+        def shear(lam: InputParam) -> InputParam:
             return np.piecewise(lam, [lam < 0, lam >= 0],
                                 [lambda lam: (0.22 + 1.402*lam
                                               + 0.018*lam/(0.107 + lam)),
                                  lambda lam: 0.22 + 1.57*lam - 1.8*lam**2])
 
-        def shape(lam):
+        def shape(lam: InputParam) -> InputParam:
             # NOTE: C&B's H function is not continuous at lam=0,
             #       so using second interval
             return np.piecewise(lam, [lam < 0, lam >= 0],
                                 [lambda lam: 2.088 + 0.0731/(0.14 + lam),
                                  lambda lam: 2.61 - 3.75*lam + 5.24*lam**2])
 
-        def shape_p(lam):
+        def shape_p(lam: InputParam) -> InputParam:
             # NOTE: C&B's H function is not continuous at lam=0,
             #       so using second interval
             return np.piecewise(lam, [lam < 0, lam >= 0],
