@@ -106,3 +106,4 @@ min-similarity-lines = 12
 [tool.coverage.run]
 branch = true
 command_line = "-m unittest discover --start-directory tests"
+
