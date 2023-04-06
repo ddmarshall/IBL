@@ -271,11 +271,14 @@ class HeadMethod(IBLMethod):
         if (shape_d < 1.11).any():
             shape_d[shape_d < 1.11] = 1.11
         u_e = self.u_e(x)
-        u_e[np.abs(u_e) < 0.001] = 0.001
+        if isinstance(u_e, float):
+            u_e = max(u_e, 0.001)
+        else:
+            u_e[np.abs(u_e) < 0.001] = 0.001
         du_e = self.du_e(x)
         re_delta_m = u_e*delta_m/self._nu
         c_f = c_f_fun(re_delta_m, shape_d)
-        shape_entrainment = self.shape_entrainment(shape_d)
+        shape_entrainment = self._shape_entrainment(shape_d)
         shape_entrainment_p = self._shape_entrainment_p(shape_d)
         f_p[0] = 0.5*c_f-delta_m*(2+shape_d)*du_e/u_e
         f_p[1] = (u_e*self._entrainment_velocity(shape_entrainment)
@@ -285,7 +288,7 @@ class HeadMethod(IBLMethod):
         return f_p
 
     @staticmethod
-    def shape_entrainment(shape_d: InputParam) -> np_type.NDArray:
+    def _shape_entrainment(shape_d: InputParam) -> np_type.NDArray:
         """
         Calculate the entrainment shape factor from displacement shape factor.
 
@@ -393,7 +396,7 @@ class HeadMethod(IBLMethod):
             d = 3.3
             return b + (a/(shape_entrainment - d))**(1/c)
 
-        shape_entrainment_break = HeadMethod.shape_entrainment(1.6)
+        shape_entrainment_break = HeadMethod._shape_entrainment(1.6)
         return np.piecewise(shape_entrainment,
                             [shape_entrainment <= shape_entrainment_break,
                              shape_entrainment > shape_entrainment_break],
