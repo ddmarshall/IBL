@@ -20,6 +20,7 @@ from ibl.thwaites_method import ThwaitesMethodLinear
 from ibl.thwaites_method import ThwaitesMethodNonlinear
 from ibl.typing import InputParam
 
+
 def compare_stagnation_solution() -> None:
     """Compare the various solutions to the Falkner-Skan solution."""
     # Set flow parameters

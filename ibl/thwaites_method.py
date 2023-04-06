@@ -118,11 +118,10 @@ class ThwaitesMethod(IBLMethod):
                 if len(data_fits) == 3:
                     if callable(data_fits[0]) and callable(data_fits[1]) \
                             and callable(data_fits[2]):  # type: ignore [misc]
-                        self._model = _ThwaitesFunctions("Custom",
-                                                         data_fits[0],
-                                                         data_fits[1],
-                                                         data_fits[2],  # type: ignore [misc]
-                                                         -np.inf, np.inf)
+                        self._model = _ThwaitesFunctions(
+                            "Custom", data_fits[0],
+                            data_fits[1], data_fits[2],  # type: ignore [misc]
+                            -np.inf, np.inf)
                     else:
                         raise ValueError("Need to pass callable objects for "
                                          "fit functions")
