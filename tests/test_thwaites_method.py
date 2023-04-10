@@ -1271,6 +1271,189 @@ class TestNonlinearThwaites(unittest.TestCase):
         self.assertIsNone(np_test.assert_allclose(tm.v_e(x), tm_ref.v_e(x),
                                                   atol=0, rtol=1e-2))
 
+    def test_linear_sample_calculations(self) -> None:
+        """Test sample calculations for linear model."""
+        x = np.linspace(1e-3, 2, 20)
+        u_inf = 10
+        m = 0.8
+        nu = 1e-5
+        rho = 1.0
+
+        # Set up the velocity functions
+        def u_e_fun(x: InputParam) -> npt.NDArray:
+            x = np.asarray(x)
+            return u_inf*x**m
+
+        def du_e_fun(x: InputParam) -> npt.NDArray:
+            x = np.asarray(x)
+            return m*u_inf*x**(m-1)
+
+        def d2u_e_fun(x: InputParam) -> npt.NDArray:
+            x = np.asarray(x)
+            return m*(m-1)*u_inf*x**(m-2)
+
+        # Get the solutions for comparisons
+        tm = ThwaitesMethodLinear(nu=nu, U_e=u_e_fun, dU_edx=du_e_fun,
+                                  d2U_edx2=d2u_e_fun, data_fits="Spline")
+        tm.initial_delta_m = 0.00035202829985968135
+        rtn = tm.solve(x0=x[0], x_end=x[-1])
+        self.assertTrue(rtn.success)
+
+        # # print out reference values
+        # print("u_e_ref =", tm.u_e(x))
+        # print("v_e_ref =", tm.v_e(x))
+        # print("delta_d_ref =", tm.delta_d(x))
+        # print("delta_m_ref =", tm.delta_m(x))
+        # print("delta_k_ref =", tm.delta_k(x))
+        # print("shape_d_ref =", tm.shape_d(x))
+        # print("shape_k_ref =", tm.shape_k(x))
+        # print("tau_w_ref =", tm.tau_w(x, rho))
+        # print("dissipation_ref =", tm.dissipation(x, rho))
+
+        # reference data
+        u_e_ref = [0.03981072,   1.66316007,  2.88481910,  3.98513815,
+                   5.01325667,   5.99077748,  6.92976171,  7.83785495,
+                   8.72030922,   9.58093932, 10.42263254, 11.24764450,
+                   12.05778215, 12.85452300, 13.63909583, 14.41253731,
+                   15.17573284, 15.92944665, 16.67434453, 17.41101127]
+        v_e_ref = [0.00177721, 0.00799042, 0.00745885, 0.00716360, 0.00696100,
+                   0.00680771, 0.00668493, 0.00658282, 0.00649561, 0.00641964,
+                   0.00635242, 0.00629222, 0.00623775, 0.00618806, 0.00614241,
+                   0.00610020, 0.00606098, 0.00602437, 0.00599005, 0.00595777]
+        delta_d_ref = [0.00070406, 0.00056696, 0.00060737, 0.00063241,
+                       0.00065082, 0.00066547, 0.00067769, 0.00068821,
+                       0.00069744, 0.00070570, 0.00071317, 0.00071999,
+                       0.00072628, 0.00073211, 0.00073755, 0.00074265,
+                       0.00074746, 0.00075200, 0.00075631, 0.00076041]
+        delta_m_ref = [0.00035203, 0.00023974, 0.00025682, 0.00026741,
+                       0.00027519, 0.00028139, 0.00028656, 0.00029100,
+                       0.00029491, 0.00029840, 0.00030156, 0.00030444,
+                       0.00030710, 0.00030957, 0.00031187, 0.00031402,
+                       0.00031606, 0.00031798, 0.00031980, 0.00032153]
+        delta_k_ref = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+                       0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+        shape_d_ref = [2.0,        2.36496234, 2.36495961, 2.36495859,
+                       2.36495804, 2.36495769, 2.36495745, 2.36495727,
+                       2.36495713, 2.36495702, 2.36495693, 2.36495686,
+                       2.36495679, 2.36495674, 2.36495669, 2.36495665,
+                       2.36495661, 2.36495658, 2.36495655, 2.36495652]
+        shape_k_ref = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+                       0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+        tau_w_ref = [0.00056545, 0.02241128, 0.03628708, 0.04814328,
+                     0.05885081, 0.06877731, 0.07812244, 0.08701012,
+                     0.09552401, 0.10372398, 0.11165477, 0.11935095,
+                     0.12683993, 0.13414390, 0.14128118, 0.14826710,
+                     0.15511467, 0.16183501, 0.16843779, 0.17493143]
+        dissipation_ref = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+                           0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+        self.assertIsNone(np_test.assert_allclose(u_e_ref, tm.u_e(x)))
+        self.assertIsNone(np_test.assert_allclose(v_e_ref, tm.v_e(x),
+                                                  atol=1e-7))
+        self.assertIsNone(np_test.assert_allclose(delta_d_ref, tm.delta_d(x),
+                                                  atol=1e-7))
+        self.assertIsNone(np_test.assert_allclose(delta_m_ref, tm.delta_m(x),
+                                                  atol=1e-7))
+        self.assertIsNone(np_test.assert_allclose(delta_k_ref, tm.delta_k(x)))
+        self.assertIsNone(np_test.assert_allclose(shape_d_ref, tm.shape_d(x)))
+        self.assertIsNone(np_test.assert_allclose(shape_k_ref, tm.shape_k(x)))
+        self.assertIsNone(np_test.assert_allclose(tau_w_ref, tm.tau_w(x, rho),
+                                                  atol=1e-7))
+        self.assertIsNone(np_test.assert_allclose(dissipation_ref,
+                                                  tm.dissipation(x, rho)))
+
+    def test_nonlinear_sample_calculations(self) -> None:
+        """Test sample calculations for linear model."""
+        x = np.linspace(1e-3, 2, 20)
+        u_inf = 10
+        m = 0.8
+        nu = 1e-5
+        rho = 1.0
+
+        # Set up the velocity functions
+        def u_e_fun(x: InputParam) -> npt.NDArray:
+            x = np.asarray(x)
+            return u_inf*x**m
+
+        def du_e_fun(x: InputParam) -> npt.NDArray:
+            x = np.asarray(x)
+            return m*u_inf*x**(m-1)
+
+        def d2u_e_fun(x: InputParam) -> npt.NDArray:
+            x = np.asarray(x)
+            return m*(m-1)*u_inf*x**(m-2)
+
+        # Get the solutions for comparisons
+        tm = ThwaitesMethodNonlinear(nu=nu, U_e=u_e_fun, dU_edx=du_e_fun,
+                                     d2U_edx2=d2u_e_fun, data_fits="Spline")
+        tm.initial_delta_m = 0.00035202829985968135
+        rtn = tm.solve(x0=x[0], x_end=x[-1])
+        self.assertTrue(rtn.success)
+
+        # # print out reference values
+        # print("u_e_ref =", tm.u_e(x))
+        # print("v_e_ref =", tm.v_e(x))
+        # print("delta_d_ref =", tm.delta_d(x))
+        # print("delta_m_ref =", tm.delta_m(x))
+        # print("delta_k_ref =", tm.delta_k(x))
+        # print("shape_d_ref =", tm.shape_d(x))
+        # print("shape_k_ref =", tm.shape_k(x))
+        # print("tau_w_ref =", tm.tau_w(x, rho))
+        # print("dissipation_ref =", tm.dissipation(x, rho))
+
+        # reference data
+        u_e_ref = [0.03981072,   1.66316007,  2.88481910,  3.98513815,
+                   5.01325667,   5.99077748,  6.92976171,  7.83785495,
+                   8.72030922,   9.58093932, 10.42263254, 11.24764450,
+                   12.05778215, 12.85452300, 13.63909583, 14.41253731,
+                   15.17573284, 15.92944665, 16.67434453, 17.41101127]
+        v_e_ref = [-0.00100243, 0.00798703, 0.00745569, 0.00716056, 
+                   +0.00695805, 0.00680483, 0.00668210, 0.00658003,
+                   +0.00649286, 0.00641692, 0.00634973, 0.00628956,
+                   +0.00623511, 0.00618544, 0.00613980, 0.00609762,
+                   +0.00605842, 0.00602182, 0.00598752, 0.00595525]
+        delta_d_ref = [0.00070406, 0.00056672, 0.00060712, 0.00063214,
+                       0.00065054, 0.00066519, 0.00067741, 0.00068791,
+                       0.00069715, 0.00070540, 0.00071286, 0.00071968,
+                       0.00072597, 0.0007318,  0.00073724, 0.00074234,
+                       0.00074714, 0.00075168, 0.00075599, 0.00076009]
+        delta_m_ref = [0.00035203, 0.00023961, 0.00025669, 0.00026727,
+                       0.00027505, 0.00028124, 0.00028641, 0.00029085,
+                       0.00029475, 0.00029824, 0.00030140, 0.00030428,
+                       0.00030694, 0.00030940, 0.00031170, 0.00031386,
+                       0.00031589, 0.00031781, 0.00031963, 0.00032136]
+        delta_k_ref = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+                       0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+        shape_d_ref = [2.0,        2.36519737, 2.36519455, 2.36519349,
+                       2.36519292, 2.36519256, 2.36519231, 2.36519213,
+                       2.36519198, 2.36519187, 2.36519178, 2.36519170,
+                       2.36519163, 2.36519158, 2.36519153, 2.36519148,
+                       2.36519144, 2.36519141, 2.36519138, 2.36519135]
+        shape_k_ref = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+                       0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+        tau_w_ref = [0.00056545, 0.02241657, 0.03629563, 0.04815464,
+                     0.05886469, 0.06879352, 0.07814085, 0.08703063,
+                     0.09554652, 0.10374842, 0.11168109, 0.11937908,
+                     0.12686982, 0.13417552, 0.14131448, 0.14830205,
+                     0.15515122, 0.16187316, 0.16847749, 0.17497266]
+        dissipation_ref = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+                           0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+
+        self.assertIsNone(np_test.assert_allclose(u_e_ref, tm.u_e(x)))
+        self.assertIsNone(np_test.assert_allclose(v_e_ref, tm.v_e(x),
+                                                  atol=1e-7))
+        self.assertIsNone(np_test.assert_allclose(delta_d_ref, tm.delta_d(x),
+                                                  atol=1e-7))
+        self.assertIsNone(np_test.assert_allclose(delta_m_ref, tm.delta_m(x),
+                                                  atol=1e-7))
+        self.assertIsNone(np_test.assert_allclose(delta_k_ref, tm.delta_k(x)))
+        self.assertIsNone(np_test.assert_allclose(shape_d_ref, tm.shape_d(x)))
+        self.assertIsNone(np_test.assert_allclose(shape_k_ref, tm.shape_k(x)))
+        self.assertIsNone(np_test.assert_allclose(tau_w_ref, tm.tau_w(x, rho),
+                                                  atol=1e-7))
+        self.assertIsNone(np_test.assert_allclose(dissipation_ref,
+                                                  tm.dissipation(x, rho)))
+
 
 if __name__ == "__main__":
     unittest.main(verbosity=1)
