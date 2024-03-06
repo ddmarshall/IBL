@@ -101,6 +101,17 @@ max-line-length = 79
 [tool.pylint.similarities]
 min-similarity-lines = 12
 
+
+# Pyright settings
+[tool.pyright]
+include=[
+    "ibl",
+    "examples",
+    "tests"
+]
+reportInvalidTypeForm = false
+
+
 # Coverage.py settings
 [tool.coverage.run]
 branch = true
