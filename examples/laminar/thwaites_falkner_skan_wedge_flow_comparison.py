@@ -102,7 +102,7 @@ def compare_stagnation_solution() -> None:
     axis_v_e_error = fig.add_subplot(gs[4, 1])
 
     exact_color = "black"
-    exact_label = "Blasius"
+    exact_label = "Falkner-Skan"
     standard_color = "green"
     standard_label = "Standard"
     nonlinear_color = "red"
