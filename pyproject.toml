@@ -53,13 +53,12 @@ tests = [
 
 # Setuptools settings
 [tool.setuptools]
-packages=["ibl"]
 include-package-data = true
 
-[tools.setuptools.packages.find]
+[tool.setuptools.packages.find]
 where = ["ibl"]
 
-[tools.setuptools.package-data]
+[tool.setuptools.package-data]
 stanford_olympics = ["*.txt"]
 
 
@@ -106,4 +105,3 @@ min-similarity-lines = 12
 [tool.coverage.run]
 branch = true
 command_line = "-m unittest discover --start-directory tests"
-
