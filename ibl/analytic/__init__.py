@@ -7,3 +7,4 @@ equations.
 
 # incompressible boundary layers
 from ._blasius import Blasius
+from ._falkner_skan import FalknerSkan
