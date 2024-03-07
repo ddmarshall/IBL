@@ -474,8 +474,8 @@ class Blasius:
         diss_term = 0.5*(alpha+2*beta)*self.eta_k()
         return rho_ref*self.nu_ref*self._g(x)*self.u_e(x)**2*diss_term
 
-    def set_solution_parameters(self, eta_inf: Optional[float],
-                                f_pp0: Optional[float]) -> None:
+    def set_solution_parameters(self, eta_inf: Optional[float] = None,
+                                f_pp0: Optional[float] = None) -> None:
         """
         Set the solver parameters to override the default values.
 
