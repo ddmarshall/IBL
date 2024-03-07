@@ -60,7 +60,7 @@ class Blasius:
 
         # special case if no values are provided then use the hard-coded values
         # that the solver would converge to.
-        if (f_pp0 is None) and (eta_inf is None):
+        if (self._get_beta() == 0) and (f_pp0 is None) and (eta_inf is None):
             eta_inf = self._eta_inf_default
             f_pp0 = self._f_pp0_default
 
