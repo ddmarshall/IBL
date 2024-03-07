@@ -16,6 +16,7 @@ class TestFalknerSkan(unittest.TestCase):
 
     # Tabluated data from White (2011)
     # Note that there are errors in the data:
+    #    * beta = -0.1988 beta = -0.19883785
     #    * beta = -0.18 @ eta = 5.0
     #    * CASE 2
     eta_ref = np.array([0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0,
@@ -52,7 +53,9 @@ class TestFalknerSkan(unittest.TestCase):
                          0.99879, 0.99940, 0.99972, 0.99987, 0.99995, 0.99998,
                          0.99999, 1.00000, 1.00000, 1.00000]])
     # Note: beta_ref[0] is different than White because of rounding
-    beta_ref = np.array([-0.198837734, -0.18, 0, 0.3, 1.0, 2.0])
+    eta_inf_ref = np.array([8.2571417, 7.9263214, 7.1451323, 6.7517934,
+                            6.0672747, 5.6670098])
+    beta_ref = np.array([-0.19883785, -0.18, 0, 0.3, 1.0, 2.0])
     f_pp0_ref = np.array([0, 0.12864, 0.46960, 0.77476, 1.23259, 1.68722])
     eta_d_ref = np.array([2.35885, 1.87157, 1.21678, 0.91099, 0.64790,
                           0.49743])
@@ -71,35 +74,39 @@ class TestFalknerSkan(unittest.TestCase):
         # test the default values
         self.assertEqual(sol.u_ref, 100.0)
         self.assertAlmostEqual(sol.nu_ref, 1e-5)
-        self.assertAlmostEqual(sol.f_pp0, 0.46959998713136886)
-        self.assertEqual(sol.eta_inf, 10.0)
+        self.assertAlmostEqual(sol.f_pp0, self.f_pp0_ref[test_idx])
+        self.assertAlmostEqual(sol.eta_inf, self.eta_inf_ref[test_idx])
         self.assertEqual(sol.beta, self.beta_ref[test_idx])
         self.assertEqual(sol.m,
                          self.beta_ref[test_idx]/(2-self.beta_ref[test_idx]))
 
         # test manually setting values
-        sol.beta = self.beta_ref[test_idx]
+        sol.reset_beta(beta=self.beta_ref[test_idx])
         self.assertEqual(sol.beta, self.beta_ref[test_idx])
-        sol.beta = 0.2
+        sol.reset_beta(beta=0.2)
         self.assertEqual(sol.beta, 0.2)
         self.assertAlmostEqual(sol.m, 1.0/9.0)
-        sol.m = 1.0
+        sol.reset_m(m=1.0)
         self.assertEqual(sol.beta, 1.0)
         self.assertEqual(sol.m, 1.0)
-        sol.beta = 2.0
+        sol.reset_beta(beta=2.0)
         self.assertEqual(sol.beta, 2.0)
         self.assertEqual(sol.m, np.inf)
-        sol.m = np.inf
+        sol.reset_m(m=np.inf)
         self.assertEqual(sol.beta, 2.0)
         self.assertEqual(sol.m, np.inf)
-        sol2 = FalknerSkan(beta=0.3, u_ref=10.0, nu_ref=1e-5, eta_inf=8.0)
+        test_idx = 3
+        sol2 = FalknerSkan(beta=self.beta_ref[test_idx], u_ref=10.0,
+                           nu_ref=1e-5, eta_inf=8.0)
         self.assertEqual(sol2.eta_inf, 8.0)
+        self.assertAlmostEqual(sol2.f_pp0, self.f_pp0_ref[test_idx],
+                               delta=1e-5)
 
         # test setting bad values
         with self.assertRaises(ValueError):
             FalknerSkan(beta=3.0, u_ref=10.0, nu_ref=1e-5)
         with self.assertRaises(ValueError):
-            sol.beta = -1.0
+            sol.reset_beta(beta=-1.0)
 
     def test_beta_solutions(self) -> None:
         """Test the cases from White table."""
@@ -114,16 +121,19 @@ class TestFalknerSkan(unittest.TestCase):
                 sol = FalknerSkan(beta=self.beta_ref[idx], u_ref=u_inf,
                                   nu_ref=nu)
 
+                # Test the solved boundary condition
+                self.assertIsNone(np_test.assert_allclose(sol.f_pp0,
+                                                          self.f_pp0_ref[idx],
+                                                          atol=3e-5))
+
                 # Test the solution for f'
                 self.assertIsNone(
                     np_test.assert_allclose(sol.f_p(self.eta_ref),
                                             self.f_p_ref[idx,:],
                                             atol=6e-5))
 
-                # Test the solved boundary condition
-                self.assertIsNone(np_test.assert_allclose(sol.f_pp0,
-                                                          self.f_pp0_ref[idx],
-                                                          atol=3e-5))
+                # test the eta_inf
+                self.assertAlmostEqual(sol.eta_inf, self.eta_inf_ref[idx])
 
                 # Test the boundary layer values
                 #
@@ -189,7 +199,18 @@ class TestFalknerSkan(unittest.TestCase):
                         return sol.f_pp(eta)**2
                     diss_ref = rho*nu*u_e**2*g*quadrature(diss_fun, 0, 10)[0]
                     diss = sol.dissipation(x, rho)
-                    self.assertIsNone(np_test.assert_allclose(diss, diss_ref))
+                    self.assertIsNone(np_test.assert_allclose(diss, diss_ref,
+                                                              atol=1e-6))
+
+    def test_problem_values(self) -> None:
+        """Test values against Asaithambi (1997) results."""
+        beta_test = [-0.1988,  -0.18,    -0.15,    -0.12,    -0.1,
+                     0.0,        0.5,      1.0,      2.0]
+        f_pp0_test = [0.005218, 0.128636, 0.216362, 0.281761, 0.319270,
+                      0.469600, 0.927680, 1.232588, 1.687218]
+        for beta, f_pp0 in zip(beta_test, f_pp0_test):
+            fs = FalknerSkan(beta=beta, u_ref=1, nu_ref=1)
+            self.assertAlmostEqual(fs.f_pp0, f_pp0, delta=1e-6)
 
 
 if __name__ == "__main__":

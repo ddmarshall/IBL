@@ -76,8 +76,8 @@ class FalknerSkan(Blasius):
             return np.inf
         return beta/(2*alpha-beta)
 
-    def reset_beta(self, beta: float, eta_inf: Optional[float],
-                   f_pp0: Optional[float]) -> None:
+    def reset_beta(self, beta: float, eta_inf: Optional[float] = None,
+                   f_pp0: Optional[float] = None) -> None:
         """
         Set beta and the solver parameters to override the default values.
 
@@ -89,7 +89,7 @@ class FalknerSkan(Blasius):
         Parameters
         ----------
         beta : float
-            Inviscid wedge angle parameter. Must be in range [-0.19884, 2).
+            Inviscid wedge angle parameter. Must be in range [-0.19884, 2].
         eta_inf : Optional[float]
             Maximum similarity coordinate. Must be positive.
         f_pp0 : Optional[float]
@@ -102,17 +102,17 @@ class FalknerSkan(Blasius):
             If invalid value is passed in.
         """
         # Error checking
-        if (beta < -0.19884) or (beta >= 2):
+        if (beta < -0.19884) or (beta > 2):
             raise ValueError("Invalid wedge angle parameter: "
                              f"{beta}")
+        self._beta = beta
 
         self.set_solution_parameters(f_pp0=f_pp0, eta_inf=eta_inf)
 
-    def reset_edge_velocity_parameter(self, m: float,
-                                      eta_inf: Optional[float],
-                                      f_pp0: Optional[float]) -> None:
+    def reset_m(self, m: float, eta_inf: Optional[float] = None,
+                f_pp0: Optional[float] = None) -> None:
         """
-        Set edge velocity param and solver params to override default values.
+        Set m and solver parameters to override default values.
 
         If None is passed in to either parameter then that parameter is solved
         for, otherwise the value passed in will be used as is. This can cause
@@ -153,59 +153,3 @@ class FalknerSkan(Blasius):
             Wall angle term.
         """
         return self.beta
-
-    # def _find_fpp0(self, eta_inf: float) -> float:
-    #     """
-    #     Find the appropriate initial condition for ODE.
-
-    #     Parameters
-    #     ----------
-    #     eta_inf : Maximum similarity coordinate. Must be positive.
-
-    #     Returns
-    #     -------
-    #     float
-    #         Appropriate initial condition for ODE.
-    #     """
-    #     def fun(fpp0: float) -> float:
-    #         class BCEvent:
-    #             """Bounday condition event to terminate ODE solver."""
-
-    #             def __init__(self) -> None:
-    #                 self.terminal = True
-
-    #             def __call__(self, x: float, f: npt.NDArray) -> float:
-    #                 return f[1] - 1.01
-
-    #         f0 = [0, 0, fpp0]
-    #         rtn = solve_ivp(fun=self._ode_fun,
-    #                         t_span=[0, eta_inf], y0=f0,
-    #                         method="RK45", dense_output=False,
-    #                         events=BCEvent(), rtol=1e-8, atol=1e-11)
-    #         if not rtn.success:
-    #             raise ValueError("Could not find boundary condition")
-
-    #         val = 1-rtn.y[1, -1]
-    #         # # hack to get beta at separation to work
-    #         # if (m < 0) and (-2e-6 < val < 0):
-    #         #     val = 0
-    #         return val
-
-    #     # This Pade approximation is based on fitting values from White (2011)
-    #     def calc_fpp0(beta: float) -> float:
-    #         a = np.array([0.469600, 3.817635, 7.570524, 1.249101])
-    #         b = np.array([5.430058, 4.203534])
-    #         num = a[0] + a[1]*beta + a[2]*beta**2 + a[3]*beta**3
-    #         den = 1 + b[0]*beta + b[1]*beta**2
-    #         return num/den
-
-    #     if self.beta < 0:
-    #         x0 = calc_fpp0(self.beta)
-    #         x1 = calc_fpp0(self.beta + 1e-3)
-    #     else:
-    #         x0 = calc_fpp0(self.beta - 1e-3)
-    #         x1 = calc_fpp0(self.beta)
-    #     sol = root_scalar(fun, x0=x0, x1=x1)
-    #     if not sol.converged:
-    #         raise ValueError("Root finded could not find boundary condition")
-    #     return sol.root
