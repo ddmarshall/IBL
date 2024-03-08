@@ -134,10 +134,11 @@ class FalknerSkan(Blasius):
         ValueError
             If invalid value is passed in.
         """
+        alpha = self._get_alpha()
         if m == np.inf:
-            beta = 2.0
+            beta = 2.0*alpha
         else:
-            beta = 2*m/(1+m)
+            beta = 2*alpha*m/(1+m)
 
         self.reset_beta(beta=beta, eta_inf=eta_inf, f_pp0=f_pp0)
 
