@@ -54,9 +54,10 @@ tests = [
 # Setuptools settings
 [tool.setuptools]
 include-package-data = true
+packages = ["ibl"]
 
-[tool.setuptools.packages.find]
-where = ["ibl"]
+# [tool.setuptools.packages.find]
+# where = ["ibl"]
 
 [tool.setuptools.package-data]
 stanford_olympics = ["*.txt"]
