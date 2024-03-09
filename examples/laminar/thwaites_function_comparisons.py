@@ -14,6 +14,7 @@ from matplotlib.gridspec import GridSpec
 
 from ibl.thwaites_method import _ThwaitesFunctionsWhite
 from ibl.thwaites_method import _ThwaitesFunctionsCebeciBradshaw
+from ibl.thwaites_method import _ThwaitesFunctionsDrela
 from ibl.thwaites_method import _ThwaitesFunctionsSpline
 from ibl.typing import InputParam
 
@@ -27,6 +28,7 @@ def compare_thwaites_fits() -> None:
     # Create the various fit models
     white = _ThwaitesFunctionsWhite()
     cb = _ThwaitesFunctionsCebeciBradshaw()
+    drela = _ThwaitesFunctionsDrela()
     spline = _ThwaitesFunctionsSpline()
 
     def f_linear(lam: InputParam) -> InputParam:
@@ -42,6 +44,8 @@ def compare_thwaites_fits() -> None:
                                np.minimum(white.range()[1], lambda_max), npts)
     cb_lambda = np.linspace(np.maximum(cb.range()[0], lambda_min),
                             np.minimum(cb.range()[1], lambda_max), npts)
+    drela_lambda = np.linspace(np.maximum(drela.range()[0], lambda_min),
+                               np.minimum(drela.range()[1], lambda_max), npts)
     spline_lambda = np.linspace(np.maximum(spline.range()[0], lambda_min),
                                 np.minimum(spline.range()[1], lambda_max),
                                 npts)
@@ -50,6 +54,7 @@ def compare_thwaites_fits() -> None:
     linear_f = f_linear(linear_lambda)
     white_f = white.f(white_lambda)
     cb_f = cb.f(cb_lambda)
+    drela_f = drela.f(drela_lambda)
     spline_f = spline.f(spline_lambda)
 
     # extract the original Thwaites tabular data for comparisons
@@ -72,6 +77,7 @@ def compare_thwaites_fits() -> None:
     ax.plot(linear_lambda, linear_f, color="green", label=r"Linear")
     ax.plot(white_lambda, white_f, color="red", label=r"White")
     ax.plot(cb_lambda, cb_f, color="orange", label=r"Cebeci & Bradshaw")
+    ax.plot(drela_lambda, drela_f, color="blue", label=r"Drela")
     ax.plot(spline_lambda, spline_f, color="purple", label=r"Spline")
     ax.set_xlabel(r"$\lambda$")
     ax.set_ylabel(r"$F\left(\lambda\right)$")
@@ -88,6 +94,9 @@ def compare_thwaites_fits() -> None:
                                     lambda_zoom_max, npts)
     cb_lambda_zoom = np.linspace(np.maximum(cb.range()[0], lambda_zoom_min),
                                  lambda_zoom_max, npts)
+    drela_lambda_zoom = np.linspace(np.maximum(drela.range()[0],
+                                               lambda_zoom_min),
+                                    lambda_zoom_max, npts)
     spline_lambda_zoom = np.linspace(np.maximum(spline.range()[0],
                                                 lambda_zoom_min),
                                      lambda_zoom_max, npts)
@@ -96,6 +105,7 @@ def compare_thwaites_fits() -> None:
     linear_f_zoom = f_linear(linear_lambda_zoom)
     white_f_zoom = white.f(white_lambda_zoom)
     cb_f_zoom = cb.f(cb_lambda_zoom)
+    drela_f_zoom = drela.f(drela_lambda_zoom)
     spline_f_zoom = spline.f(spline_lambda_zoom)
 
     # extract the zoomed original Thwaites tabular data for comparisons
@@ -110,6 +120,7 @@ def compare_thwaites_fits() -> None:
     ax.plot(white_lambda_zoom, white_f_zoom, color="red", label=r"White")
     ax.plot(cb_lambda_zoom, cb_f_zoom, color="orange",
             label=r"Cebeci & Bradshaw")
+    ax.plot(drela_lambda_zoom, drela_f_zoom, color="blue", label=r"Drela")
     ax.plot(spline_lambda_zoom, spline_f_zoom, color="purple",
             label=r"Spline")
     ax.set_xlabel(r"$\lambda$")
@@ -132,6 +143,11 @@ def compare_thwaites_fits() -> None:
                                                        >= cb.range()[0])
                                                       & (tab_lambda
                                                          <= cb.range()[1])])
+    drela_lambda_error = tab_lambda[(tab_lambda >= drela.range()[0])
+                                    & (tab_lambda <= drela.range()[1])]
+    drela_error = np.abs(1 - cb.f(drela_lambda_error)
+                         / tab_f[(tab_lambda >= drela.range()[0])
+                                 & (tab_lambda <= drela.range()[1])])
     spline_error = np.abs(1 - spline.f(tab_lambda)/tab_f)
 
     # Show relative errors
@@ -140,6 +156,7 @@ def compare_thwaites_fits() -> None:
     ax.plot(tab_lambda, white_error, color="red", label=r"White")
     ax.plot(cb_lambda_error, cb_error, color="orange",
             label=r"Cebeci & Bradshaw")
+    ax.plot(tab_lambda, drela_error, color="blue", label=r"Drela")
     ax.plot(tab_lambda, spline_error, color="purple", label=r"Spline")
     ax.set_xlabel(r"$\lambda$")
     ax.set_ylabel("Relative Error")

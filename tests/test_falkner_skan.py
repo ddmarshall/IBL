@@ -212,6 +212,62 @@ class TestFalknerSkan(unittest.TestCase):
             fs = FalknerSkan(beta=beta, u_ref=1, nu_ref=1)
             self.assertAlmostEqual(fs.f_pp0, f_pp0, delta=1e-6)
 
+    def test_drela_comparison(self) -> None:
+        """Test values against what Drela (2014) lists in Table 4.1."""
+        m_test = [2.0, 1.0, 0.6, 0.3, 0.1, 0.0, -0.05, -0.08, -0.09042860905]
+        dis_thick_ref = [0.47648, 0.64790, 0.79760, 1.01961, 1.34787, 1.72080,
+                         2.11777, 2.67173, 3.49786]
+        mom_thick_ref = [0.21775, 0.29235, 0.35483, 0.44196, 0.55660, 0.66412,
+                         0.75148, 0.82973, 0.86814]
+        dis_shape_ref = [2.18820, 2.21622, 2.24783, 2.30702, 2.42161, 2.59109,
+                         2.81815, 3.22000, 4.02916]
+        kin_shape_ref = [1.63101, 1.62575, 1.62006, 1.61009, 1.59308, 1.57259,
+                         1.55196, 1.52916, 1.51509]
+        shear_term_ref = [1.71507, 1.23259, 0.97532, 0.72574, 0.49657, 0.33206,
+                          0.21348, 0.10155, 0.00000]
+        diss_term_ref = [0.97666, 0.71292, 0.57484, 0.44474, 0.33251, 0.26109,
+                         0.21867, 0.19031, 0.18014]
+        lam_term_ref = [0.09483, 0.08546, 0.07554, 0.05860, 0.03098, 0.00000,
+                        -0.02824, -0.05508, -0.06815]
+        s_term_ref = [0.37345, 0.36034, 0.34608, 0.32075, 0.27639, 0.22053,
+                      0.16043, 0.08426, 0.00022]
+        f_term_ref = [-0.04742, 0.00000, 0.05036, 0.13672, 0.27882, 0.44105,
+                      0.59294, 0.74351, 0.82179]
+
+        tol = [8e-6, 1e-5, 8e-6, 8e-6, 2e-5, 2e-5, 3e-5, 7e-5, 3e-4]
+        fs = FalknerSkan(beta=0.0, u_ref=1, nu_ref=1)
+        for idx, m in enumerate(m_test):
+            with self.subTest(i=idx):
+                fs.reset_m(m=m)
+                beta = fs.beta
+                eta_m = fs.eta_m()
+                eta_d = fs.eta_d()
+                eta_k = fs.eta_k()
+                fw_pp = fs.f_pp0
+
+                # s-free calculations
+                self.assertAlmostEqual(dis_thick_ref[idx],
+                                       eta_d*np.sqrt(2/(1+m)), delta=tol[idx])
+                self.assertAlmostEqual(mom_thick_ref[idx],
+                                       eta_m*np.sqrt(2/(1+m)), delta=tol[idx])
+                self.assertAlmostEqual(dis_shape_ref[idx], eta_d/eta_m,
+                                       delta=tol[idx])
+                self.assertAlmostEqual(kin_shape_ref[idx], eta_k/eta_m,
+                                       delta=tol[idx])
+                self.assertAlmostEqual(shear_term_ref[idx],
+                                       fw_pp*np.sqrt((m+1)/2), delta=tol[idx])
+                self.assertAlmostEqual(diss_term_ref[idx],
+                                       np.sqrt(0.5/(1+m))*0.5*(5*m+1)*eta_k,
+                                       delta=tol[idx])
+                self.assertAlmostEqual(lam_term_ref[idx], beta*eta_m**2,
+                                       delta=tol[idx])
+                self.assertAlmostEqual(s_term_ref[idx], eta_m*fw_pp,
+                                       delta=tol[idx])
+                self.assertAlmostEqual(f_term_ref[idx],
+                                       2*(eta_m*fw_pp
+                                          - (eta_d/eta_m + 2)*beta*eta_m**2),
+                                       delta=tol[idx])
+
 
 if __name__ == "__main__":
     unittest.main(verbosity=1)

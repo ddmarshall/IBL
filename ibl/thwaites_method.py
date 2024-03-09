@@ -571,6 +571,22 @@ class _ThwaitesFunctionsCebeciBradshaw(_ThwaitesFunctions):
                          -0.1, 0.1)
 
 
+class _ThwaitesFunctionsDrela(_ThwaitesFunctions):
+    """Returns Drela's calculation of Thwaites functions."""
+
+    def __init__(self) -> None:
+        def shear(lam: InputParam) -> InputParam:
+            return 0.220 + 1.52*lam - 5*lam**3 - 0.072*lam**2/(lam+0.18)**2
+
+        def shape(lam: InputParam) -> InputParam:
+            return 2.61 - 4.1*lam + 14*lam**3 + 0.56*lam**2/(lam+0.18)**2
+
+        def shape_p(lam: InputParam) -> InputParam:
+            return -4.1 + 42*lam**2 + 0.2016*lam/(lam+0.18)**3
+
+        super().__init__("Drela", shear, shape, shape_p, -0.09, np.inf)
+
+
 class _ThwaitesFunctionsSpline(_ThwaitesFunctions):
     """Returns cubic splines of Thwaites tables based on Edland 2021."""
 
