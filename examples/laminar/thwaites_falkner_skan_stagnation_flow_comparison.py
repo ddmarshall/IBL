@@ -51,7 +51,7 @@ def compare_stagnation_solution() -> None:
     # Get the solutions for comparisons
     x = np.linspace(1e-3, c, npts)
     fs = FalknerSkan(beta=0, u_ref=u_inf, nu_ref=nu_inf)
-    fs.m = m
+    fs.reset_m(m=m)
     tml = ThwaitesMethodLinear(nu=nu_inf, U_e=u_e_fun, dU_edx=du_e_fun,
                                d2U_edx2=d2u_e_fun, data_fits="Spline")
     tml.initial_delta_m = float(fs.delta_m(x[0]))
@@ -116,7 +116,7 @@ def compare_stagnation_solution() -> None:
                              label=standard_label)
     nonlinear_curve = ax.plot(x/c, delta_d_nonlinear/c, color=nonlinear_color,
                               label=nonlinear_label)
-    ax.set_ylim(0.00036, 0.00046)
+    ax.set_ylim(0.00026, 0.00046)
     ax.set_ylabel(r"$\delta_d/c$")
     ax.grid(True)
 

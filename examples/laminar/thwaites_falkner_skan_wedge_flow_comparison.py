@@ -51,7 +51,7 @@ def compare_stagnation_solution() -> None:
     # Get the solutions for comparisons
     x = np.linspace(1e-6, c, npts)
     fs = FalknerSkan(beta=0, u_ref=u_inf, nu_ref=nu_inf)
-    fs.m = m
+    fs.reset_m(m=m)
     tml = ThwaitesMethodLinear(nu=nu_inf, U_e=u_e_fun, dU_edx=du_e_fun,
                                d2U_edx2=d2u_e_fun, data_fits="Spline")
     tml.initial_delta_m = float(fs.delta_m(x[0]))
