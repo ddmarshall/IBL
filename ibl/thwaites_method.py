@@ -43,6 +43,11 @@ class ThwaitesMethod(IBLMethod):
     initial momentum thickness is needed along with the kinematic viscosity.
     Thwaites' original algorithm relied upon tabulated data for the analysis,
     and there are few different ways of modeling that data in this class.
+
+    Note that modern references uses values different from the original tabular
+    data in Thwaites original paper, including White (1991, 2005) and Drela
+    (2014) without explanation. This implementation uses the modern values
+    since that is the data that the associated models fit to.
     """
 
     # Attributes
@@ -590,6 +595,55 @@ class _ThwaitesFunctionsDrela(_ThwaitesFunctions):
 class _ThwaitesFunctionsSpline(_ThwaitesFunctions):
     """Returns cubic splines of Thwaites tables based on Edland 2021."""
 
+    # Tabular data section
+    _tab_shear = np.array([0.000, 0.015, 0.027, 0.038, 0.056, 0.072,
+                           0.085, 0.095, 0.104, 0.113, 0.122, 0.130,
+                           0.138, 0.153, 0.168, 0.195, 0.220, 0.244,
+                           0.268, 0.291, 0.313, 0.333, 0.359, 0.382,
+                           0.404, 0.463, 0.500])
+    _tab_shape = np.array([3.55, 3.49, 3.44, 3.39, 3.30, 3.22,
+                           3.15, 3.09, 3.04, 2.99, 2.94, 2.90,
+                           2.87, 2.81, 2.75, 2.67, 2.61, 2.55,
+                           2.49, 2.44, 2.39, 2.34, 2.28, 2.23,
+                           2.18, 2.07, 2.00])
+    _tab_lambda = np.array([-0.090, -0.088, -0.086, -0.084, -0.080, -0.076,
+                            -0.072, -0.068, -0.064, -0.060, -0.056, -0.052,
+                            -0.048, -0.040, -0.032, -0.016, +0.000, +0.016,
+                            +0.032, +0.048, +0.064, +0.080, +0.100, +0.120,
+                            +0.140, +0.200, +0.250])
+    _tab_f = np.array([+0.999, +0.9960, +0.990, +0.982, +0.960, +0.937,
+                       +0.912, +0.8822, +0.853, +0.825, +0.797, +0.770,
+                       +0.744, +0.6910, +0.640, +0.539, +0.440, +0.342,
+                       +0.249, +0.1560, +0.064, -0.028, -0.138, -0.251,
+                       -0.362, -0.7020, -1.000])
+
+    # Original data from Thwaites paper
+    _tab_f_orig = np.array([+0.938, +0.953, +0.956, +0.962, +0.967,
+                            +0.969, +0.971, +0.970, +0.963, +0.952,
+                            +0.936, +0.919, +0.902, +0.886, +0.854,
+                            +0.825, +0.797, +0.770, +0.744, +0.691,
+                            +0.640, +0.590, +0.539, +0.490, +0.440,
+                            +0.342, +0.249, +0.156, +0.064, -0.028,
+                            -0.138, -0.251, -0.362, -0.702, -1.000])
+    _tab_shear_orig = np.array([0.000, 0.011, 0.016, 0.024, 0.030, 0.035,
+                                0.039, 0.049, 0.055, 0.067, 0.076, 0.083,
+                                0.089, 0.094, 0.104, 0.113, 0.122, 0.130,
+                                0.138, 0.153, 0.168, 0.182, 0.195, 0.208,
+                                0.220, 0.244, 0.268, 0.291, 0.313, 0.333,
+                                0.359, 0.382, 0.404, 0.463, 0.500])
+    _tab_shape_orig = np.array([3.70, 3.69, 3.66, 3.63, 3.61, 3.59, 3.58,
+                                3.52, 3.47, 3.38, 3.30, 3.23, 3.17, 3.13,
+                                3.05, 2.99, 2.94, 2.90, 2.87, 2.81, 2.75,
+                                2.71, 2.67, 2.64, 2.61, 2.55, 2.49, 2.44,
+                                2.39, 2.34, 2.28, 2.23, 2.18, 2.07, 2.00])
+    _tab_lambda_orig = np.array([-0.0820, -0.0818, -0.0816, -0.0812, -0.0808,
+                                 -0.0804, -0.0800, -0.0790, -0.0780, -0.0760,
+                                 -0.0740, -0.0720, -0.0700, -0.0680, -0.0640,
+                                 -0.0600, -0.0560, -0.0520, -0.0480, -0.0400,
+                                 -0.0320, -0.0240, -0.0160, -0.0080, +0.0000,
+                                 +0.0160, +0.0320, +0.0480, +0.0640, +0.0800,
+                                 +0.1000, +0.1200, +0.1400, +0.2000, +0.2500])
+
     def __init__(self) -> None:
         # Spline fits to Thwaites original data Edland
         shear = CubicSpline(self._tab_lambda, self._tab_shear)
@@ -599,28 +653,25 @@ class _ThwaitesFunctionsSpline(_ThwaitesFunctions):
         super().__init__("Thwaites Splines", shear, shape, shape_p,
                          np.min(self._tab_lambda), np.max(self._tab_lambda))
 
-    # Tabular data section
-    _tab_f = np.array([0.938, 0.953, 0.956, 0.962, 0.967, 0.969, 0.971, 0.970,
-                       0.963, 0.952, 0.936, 0.919, 0.902, 0.886, 0.854, 0.825,
-                       0.797, 0.770, 0.744, 0.691, 0.640, 0.590, 0.539, 0.490,
-                       0.440, 0.342, 0.249, 0.156, 0.064,-0.028,-0.138,-0.251,
-                      -0.362, -0.702, -1.000])
-    _tab_shear = np.array([0.000, 0.011, 0.016, 0.024, 0.030, 0.035, 0.039,
-                           0.049, 0.055, 0.067, 0.076, 0.083, 0.089, 0.094,
-                           0.104, 0.113, 0.122, 0.130, 0.138, 0.153, 0.168,
-                           0.182, 0.195, 0.208, 0.220, 0.244, 0.268, 0.291,
-                           0.313, 0.333, 0.359, 0.382,0.404, 0.463, 0.500])
-    _tab_shape = np.array([3.70, 3.69, 3.66, 3.63, 3.61, 3.59, 3.58, 3.52,
-                           3.47, 3.38, 3.30, 3.23, 3.17, 3.13, 3.05, 2.99,
-                           2.94, 2.90, 2.87, 2.81, 2.75, 2.71, 2.67, 2.64,
-                           2.61, 2.55, 2.49, 2.44, 2.39, 2.34, 2.28, 2.23,
-                           2.18, 2.07, 2.00])
-    _tab_lambda = np.array([-0.082,-0.0818,-0.0816,-0.0812,-0.0808,-0.0804,
-                            -0.080,-0.079, -0.078, -0.076, -0.074, -0.072,
-                            -0.070,-0.068, -0.064, -0.060, -0.056, -0.052,
-                            -0.048,-0.040, -0.032, -0.024, -0.016, -0.008,
-                            +0.000, 0.016,  0.032,  0.048,  0.064,  0.080,
-                            +0.10,  0.12,   0.14,   0.20,   0.25])
+    @property
+    def shear_values(self) -> np_type.NDArray:
+        """Tabular values for the shear term."""
+        return self._tab_shear
+
+    @property
+    def shape_values(self) -> np_type.NDArray:
+        """Tabular values for the shape term."""
+        return self._tab_shape
+
+    @property
+    def lambda_values(self) -> np_type.NDArray:
+        """Tabular values for the lambda term."""
+        return self._tab_lambda
+
+    @property
+    def f_values(self) -> np_type.NDArray:
+        """Tabular values for the F term."""
+        return self._tab_f
 
 
 class _ThwaitesSeparationEvent(TermEvent):

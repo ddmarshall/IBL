@@ -37,14 +37,11 @@ def compare_shape_d() -> None:
     axis_f = fig.add_subplot(gs[2, 0])
 
     # extract the original Thwaites tabular data for comparisons
-    # pylint: disable-next=protected-access
-    lam = _ThwaitesFunctionsSpline._tab_lambda
-    # pylint: disable-next=protected-access
-    shape = _ThwaitesFunctionsSpline._tab_shape
-    # pylint: disable-next=protected-access
-    shear = _ThwaitesFunctionsSpline._tab_shear
-    # pylint: disable-next=protected-access
-    f = _ThwaitesFunctionsSpline._tab_f
+    model = _ThwaitesFunctionsSpline()
+    lam = model.lambda_values
+    shape = model.shape_values
+    shear = model.shear_values
+    f = model.f_values
     axis_shape.plot(lam, shape, marker="o", linestyle="",
                     color="black", label="Thwaites")
     axis_shear.plot(lam, shear, marker="o", linestyle="",
