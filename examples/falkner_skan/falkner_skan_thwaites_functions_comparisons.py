@@ -37,11 +37,7 @@ def compare_shape_d() -> None:
     axis_f = fig.add_subplot(gs[2, 0])
 
     # extract the original Thwaites tabular data for comparisons
-    model = _ThwaitesFunctionsSpline()
-    lam = model.lambda_values
-    shape = model.shape_values
-    shear = model.shear_values
-    f = model.f_values
+    lam, shape, shear, f = get_thwaites_tabular_data()
     axis_shape.plot(lam, shape, marker="o", linestyle="",
                     color="black", label="Thwaites")
     axis_shear.plot(lam, shear, marker="o", linestyle="",
@@ -141,6 +137,13 @@ def calculate_thwaites_values(lambda_min: float, lambda_max: float, npts: int,
     f = model.f(lam)
 
     return lam, shape, shear, f
+
+
+def get_thwaites_tabular_data() -> Tuple[npt.NDArray, npt.NDArray, npt.NDArray,
+                                         npt.NDArray]:
+    model = _ThwaitesFunctionsSpline()
+    return (model.lambda_values, model.shape_values, model.shear_values,
+            model.f_values)
 
 
 if __name__ == "__main__":
