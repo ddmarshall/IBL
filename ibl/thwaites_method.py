@@ -115,6 +115,8 @@ class ThwaitesMethod(IBLMethod):
                 self._model = _ThwaitesFunctionsWhite()
             elif data_fits == "Cebeci-Bradshaw":
                 self._model = _ThwaitesFunctionsCebeciBradshaw()
+            elif data_fits == "Drela":
+                self._model = _ThwaitesFunctionsDrela()
             else:
                 raise ValueError("Unknown fitting function name: ", data_fits)
         else:
