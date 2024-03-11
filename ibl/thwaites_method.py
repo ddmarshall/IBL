@@ -16,7 +16,6 @@ import numpy as np
 import numpy.typing as np_type
 
 from scipy.interpolate import CubicSpline
-from scipy.misc import derivative as fd
 
 from ibl.ibl_method import IBLMethod
 from ibl.ibl_method import TermEvent
@@ -134,9 +133,13 @@ class ThwaitesMethod(IBLMethod):
                                          "fit functions")
                 elif len(data_fits) == 2:
                     if callable(data_fits[0]) and callable(data_fits[1]):
+                        # create finite difference approximation to derivative
                         def shape_p_fun(lam: InputParam) -> np_type.NDArray:
-                            return fd(self._model.shape, lam, 1e-5, n=1,
-                                      order=3)
+                            fun = self._model.shape
+                            xo = lam
+                            dx = 1e-5
+                            return ((fun(xo-2*dx) - fun(xo+2*dx))/12
+                                    - 2*(fun(xo-dx) - fun(xo+dx))/3)/dx
                         self._model = _ThwaitesFunctions("Custom",
                                                          data_fits[0],
                                                          data_fits[1],

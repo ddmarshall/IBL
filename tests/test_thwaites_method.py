@@ -13,11 +13,15 @@ import numpy as np
 import numpy.typing as npt
 import numpy.testing as np_test
 
-from scipy.misc import derivative as fd
-
 from ibl.thwaites_method import ThwaitesMethodLinear
 from ibl.thwaites_method import ThwaitesMethodNonlinear
 from ibl.typing import InputParam
+
+
+def fd_1f(fun: Callable, xo: InputParam, dx: float) -> InputParam:
+    """Use finite differences to approximate the derivative."""
+    return ((fun(xo-2*dx) - fun(xo+2*dx))/12
+            - 2*(fun(xo-dx) - fun(xo+dx))/3)/dx
 
 
 class ThwaitesLinearAnalytic:
@@ -34,7 +38,7 @@ class ThwaitesLinearAnalytic:
 
     def v_e(self, x: InputParam) -> npt.NDArray:
         """Return the transpiration velocity."""
-        ddelta_ddx = fd(self.delta_d, x, 1e-5, n=1, order=3)
+        ddelta_ddx = fd_1f(self.delta_d, x, 1e-5)
         return self.u_ref*x**self.m*(self.m*self.delta_d(x)/x+ddelta_ddx)
 
     def delta_d(self, x: InputParam) -> npt.NDArray:
