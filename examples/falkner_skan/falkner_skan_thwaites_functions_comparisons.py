@@ -102,7 +102,7 @@ def calculate_falkner_skan_values(m: npt.NDArray) -> Tuple[npt.NDArray,
     """Calculate the Falkner-Skan value for the comparison"""
     fs = FalknerSkan(beta=0, u_ref=1, nu_ref=1)
 
-    it = np.nditer([m, None, None, None, None])
+    it = np.nditer([m, None, None, None, None])  # type: ignore[arg-type]
     with it:
         for m_val, lam_val, shape_val, s_val, f_val in it:
             fs.reset_m(m=float(m_val))
@@ -141,6 +141,7 @@ def calculate_thwaites_values(lambda_min: float, lambda_max: float, npts: int,
 
 def get_thwaites_tabular_data() -> Tuple[npt.NDArray, npt.NDArray, npt.NDArray,
                                          npt.NDArray]:
+    """Return the Thwaites tabular data."""
     model = _ThwaitesFunctionsSpline()
     return (model.lambda_values, model.shape_values, model.shear_values,
             model.f_values)
