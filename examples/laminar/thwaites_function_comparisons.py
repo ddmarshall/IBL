@@ -129,7 +129,6 @@ def compare_thwaites_fits() -> None:
     plt.show()
 
 
-
 def f_linear(lam: npt.NDArray) -> npt.NDArray:
     """Linear form of F function."""
     return 0.45-6*lam

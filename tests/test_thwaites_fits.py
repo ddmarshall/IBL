@@ -20,6 +20,7 @@ def fd_1f(fun: Callable, xo: InputParam, dx: float) -> InputParam:
     return ((fun(xo-2*dx) - fun(xo+2*dx))/12
             - 2*(fun(xo-dx) - fun(xo+dx))/3)/dx
 
+
 class TestCurveFits(unittest.TestCase):
     """Class to test various functions and curve fits for Thwaites method"""
 
@@ -227,7 +228,7 @@ class TestCurveFits(unittest.TestCase):
 
         # test S function
         def shear_fun(lam: InputParam) -> InputParam:
-            return 0.220 + 1.52*lam -5*lam**3 - 0.072*lam**2/(lam + 0.18)**2
+            return 0.220 + 1.52*lam - 5*lam**3 - 0.072*lam**2/(lam + 0.18)**2
 
         # do loop in case hard coded functions cannot take vectors
         shear = np.zeros_like(lam)
