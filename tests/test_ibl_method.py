@@ -106,7 +106,7 @@ class IBLMethodTest(IBLMethod):
     """Generic class to test the concrete methods in IBLMethod"""
 
     def __init__(self, u_e=None, du_e=None, d2u_e=None,
-                 x_kill: Optional[float] = None):
+                 x_kill: Optional[float] = None) -> None:
         # setup base class
         super().__init__(nu=1, u_e=u_e, du_e=du_e, d2u_e=d2u_e)
         self.y0 = np.array([0])

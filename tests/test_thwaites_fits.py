@@ -6,8 +6,6 @@ from typing import Callable
 import numpy as np
 import numpy.testing as np_test
 
-# from scipy.misc import derivative as fd
-
 from ibl.thwaites_method import _ThwaitesFunctionsWhite
 from ibl.thwaites_method import _ThwaitesFunctionsCebeciBradshaw
 from ibl.thwaites_method import _ThwaitesFunctionsDrela
