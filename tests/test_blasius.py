@@ -14,7 +14,7 @@ from ibl.analytic import Blasius
 class TestBlasius(unittest.TestCase):
     """Class to test the Blasius class."""
 
-    # Tabluated data from White (2011) using eta_inf=10 and f_pp0=0.46960
+    # Tabluated data from White (2011) using eta_inf=10 and fw_pp=0.46960
     # Note that there are errors in the LSD in:
     #    * f at eta = (4.0, 4.2, 4.6, 5.2)
     #    * f' at eta = (1.2, 5.2)
@@ -57,12 +57,12 @@ class TestBlasius(unittest.TestCase):
     def test_setters(self) -> None:
         """Test the setters."""
         sol = Blasius(u_ref=100.0, nu_ref=1e-5, eta_inf=self.eta_inf_ref,
-                      f_pp0=self.f_pp_ref[0])
+                      fw_pp=self.f_pp_ref[0])
 
         # test the default values
         self.assertEqual(sol.u_ref, 100.0)
         self.assertAlmostEqual(sol.nu_ref, 1e-5)
-        self.assertAlmostEqual(sol.f_pp0, self.f_pp_ref[0])
+        self.assertAlmostEqual(sol.fw_pp, self.f_pp_ref[0])
         self.assertEqual(sol.eta_inf, self.eta_inf_ref)
 
         # test manually setting values
@@ -70,8 +70,8 @@ class TestBlasius(unittest.TestCase):
         sol.nu_ref = 2.e-5
         self.assertEqual(sol.u_ref, 12.0)
         self.assertAlmostEqual(sol.nu_ref, 2e-5)
-        sol.set_solution_parameters(eta_inf=8.0, f_pp0=0.469)
-        self.assertAlmostEqual(sol.f_pp0, 0.469)
+        sol.set_solution_parameters(eta_inf=8.0, fw_pp=0.469)
+        self.assertAlmostEqual(sol.fw_pp, 0.469)
         self.assertAlmostEqual(sol.eta_inf, 8.0)
 
         # test setting bad values
@@ -82,7 +82,7 @@ class TestBlasius(unittest.TestCase):
         with self.assertRaises(ValueError):
             sol.set_solution_parameters(eta_inf=-1.0)
         with self.assertRaises(ValueError):
-            sol.set_solution_parameters(f_pp0=-1.0)
+            sol.set_solution_parameters(fw_pp=-1.0)
 
         # simulate could not find solution but continuing
         sol._f = None  # pylint: disable=protected-access
@@ -92,21 +92,17 @@ class TestBlasius(unittest.TestCase):
             sol.f_p(0.0)
         with self.assertRaises(ValueError):
             sol.f_pp(0.0)
-        with self.assertRaises(ValueError):
-            sol.eta_k()
-        self.assertEqual(sol.f_pp0, np.inf)
+        self.assertEqual(sol.fw_pp, np.inf)
 
     def test_basic_solution(self) -> None:
         """Test the calculation of the basic solution."""
         u_inf = 10
         nu = 1e-5
-        # pylint: disable-next=protected-access
-        eta_inf_ref = Blasius._eta_inf_default
-        # pylint: disable-next=protected-access
-        f_pp0_ref = Blasius._f_pp0_default
 
         # using default values
         sol = Blasius(u_ref=u_inf, nu_ref=nu)
+        eta_inf_ref = sol.eta_inf_default
+        fw_pp_ref = sol.fw_pp_default
 
         # test the solution for f, f', and f''
         self.assertIsNone(np_test.assert_allclose(sol.f(self.eta_ref),
@@ -115,11 +111,11 @@ class TestBlasius(unittest.TestCase):
                                                   self.f_p_ref, atol=1e-5))
         self.assertIsNone(np_test.assert_allclose(sol.f_pp(self.eta_ref),
                                                   self.f_pp_ref, atol=1e-5))
-        self.assertAlmostEqual(sol.f_pp0, f_pp0_ref)
+        self.assertAlmostEqual(sol.fw_pp, fw_pp_ref)
         self.assertAlmostEqual(sol.eta_inf, eta_inf_ref)
 
-        # setting f_pp0 and solving for eta_inf
-        sol = Blasius(u_ref=u_inf, nu_ref=nu, f_pp0=f_pp0_ref)
+        # setting fw_pp and solving for eta_inf
+        sol = Blasius(u_ref=u_inf, nu_ref=nu, fw_pp=fw_pp_ref)
 
         # test the solution for f, f', and f''
         # Note: eta_inf is very sensitive, so only get limited convergence
@@ -129,10 +125,10 @@ class TestBlasius(unittest.TestCase):
                                                   self.f_p_ref, atol=1e-5))
         self.assertIsNone(np_test.assert_allclose(sol.f_pp(self.eta_ref),
                                                   self.f_pp_ref, atol=1e-5))
-        self.assertAlmostEqual(sol.f_pp0, f_pp0_ref)
+        self.assertAlmostEqual(sol.fw_pp, fw_pp_ref)
         self.assertAlmostEqual(sol.eta_inf, eta_inf_ref, delta=3e-3)
 
-        # setting eta_inf and solving for f_pp0
+        # setting eta_inf and solving for fw_pp
         sol = Blasius(u_ref=u_inf, nu_ref=nu, eta_inf=eta_inf_ref)
 
         # test the solution for f, f', and f''
@@ -142,12 +138,12 @@ class TestBlasius(unittest.TestCase):
                                                   self.f_p_ref, atol=1e-5))
         self.assertIsNone(np_test.assert_allclose(sol.f_pp(self.eta_ref),
                                                   self.f_pp_ref, atol=1e-5))
-        self.assertAlmostEqual(sol.f_pp0, f_pp0_ref)
+        self.assertAlmostEqual(sol.fw_pp, fw_pp_ref)
         self.assertAlmostEqual(sol.eta_inf, eta_inf_ref)
 
-        # solving for eta_inf and f_pp0
+        # solving for eta_inf and fw_pp
         sol = Blasius(u_ref=u_inf, nu_ref=nu)
-        sol.set_solution_parameters(eta_inf=None, f_pp0=None)
+        sol.set_solution_parameters(eta_inf=None, fw_pp=None)
 
         # test the solution for f, f', and f''
         self.assertIsNone(np_test.assert_allclose(sol.f(self.eta_ref),
@@ -156,7 +152,7 @@ class TestBlasius(unittest.TestCase):
                                                   self.f_p_ref, atol=1e-5))
         self.assertIsNone(np_test.assert_allclose(sol.f_pp(self.eta_ref),
                                                   self.f_pp_ref, atol=1e-5))
-        self.assertAlmostEqual(sol.f_pp0, f_pp0_ref)
+        self.assertAlmostEqual(sol.fw_pp, fw_pp_ref)
         self.assertAlmostEqual(sol.eta_inf, eta_inf_ref)
 
     def test_eta_boundary_layer_parameters(self) -> None:
@@ -164,7 +160,7 @@ class TestBlasius(unittest.TestCase):
         u_inf = 10
         nu = 1e-5
         sol = Blasius(u_ref=u_inf, nu_ref=nu, eta_inf=self.eta_inf_ref,
-                      f_pp0=self.f_pp_ref[0])
+                      fw_pp=self.f_pp_ref[0])
 
         # Test the values in terms of eta
         #
@@ -179,13 +175,13 @@ class TestBlasius(unittest.TestCase):
         # print(f"eta_k = {eta_k_ref:.10f}")
 
         # displacement thickness
-        self.assertAlmostEqual(sol.eta_d(), self.eta_d_ref, places=5)
+        self.assertAlmostEqual(sol.eta_d, self.eta_d_ref, places=5)
         # momentum thickness
-        self.assertAlmostEqual(sol.eta_m(), self.eta_m_ref)
+        self.assertAlmostEqual(sol.eta_m, self.eta_m_ref)
         # # shear thickness
-        self.assertAlmostEqual(sol.eta_s(), self.eta_s_ref, places=1)
+        self.assertAlmostEqual(sol.eta_s, self.eta_s_ref, places=1)
         # kinetic energy thickness
-        self.assertAlmostEqual(sol.eta_k(), self.eta_k_ref, delta=5e-7)
+        self.assertAlmostEqual(sol.eta_k, self.eta_k_ref, delta=5e-7)
 
     def test_x_boundary_layer_parameters(self) -> None:
         """Test the reporting of the boundary layer parameters in x."""
@@ -193,7 +189,7 @@ class TestBlasius(unittest.TestCase):
         nu = 1e-5
         rho = 1
         sol = Blasius(u_ref=u_inf, nu_ref=nu, eta_inf=self.eta_inf_ref,
-                      f_pp0=self.f_pp_ref[0])
+                      fw_pp=self.f_pp_ref[0])
         # Test the values in terms of x
         #
         x = np.linspace(0.2, 2, 101)
@@ -258,7 +254,7 @@ class TestBlasius(unittest.TestCase):
         u_inf = 10
         nu = 1e-5
         sol = Blasius(u_ref=u_inf, nu_ref=nu, eta_inf=self.eta_inf_ref,
-                      f_pp0=self.f_pp_ref[0])
+                      fw_pp=self.f_pp_ref[0])
 
         # Test the values in terms of x,y
         x0 = 0.4

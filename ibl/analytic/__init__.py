@@ -5,6 +5,7 @@ This package provides a variety of analytic solutions to the boundary layer
 equations.
 """
 
-# incompressible boundary layers
+# 2D incompressible boundary layers
+from ._analytic_2d_base import Analytic2dSimilarityIncompressible
 from ._blasius import Blasius
 from ._falkner_skan import FalknerSkan
