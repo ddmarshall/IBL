@@ -30,14 +30,10 @@ class TestNonlinearThwaites(unittest.TestCase):
             return u_ref*x**m
 
         def du_e_fun(x: InputParam) -> InputParam:
-            if m == 0:
-                return np.zeros_like(x)
-            return m*u_ref*x**(m-1)
+            return np.zeros_like(x)
 
         def d2u_e_fun(x: InputParam) -> InputParam:
-            if m in (0, 1):
-                return np.zeros_like(x)
-            return m*(m-1)*u_ref*x**(m-2)
+            return np.zeros_like(x)
 
         # test creating with own functions for S, H, H'
         def shear_fun(lam: InputParam) -> InputParam:
@@ -102,14 +98,10 @@ class TestNonlinearThwaites(unittest.TestCase):
             return u_ref*x**m
 
         def du_e_fun(x: InputParam) -> InputParam:
-            if m == 0:
-                return np.zeros_like(x)
-            return m*u_ref*x**(m-1)
+            return np.zeros_like(x)
 
         def d2u_e_fun(x: InputParam) -> InputParam:
-            if m in (0, 1):
-                return np.zeros_like(x)
-            return m*(m-1)*u_ref*x**(m-2)
+            return np.zeros_like(x)
 
         # test models
         models = ["Spline", "White", "Cebeci-Bradshaw", "Drela"]
@@ -159,13 +151,9 @@ class TestNonlinearThwaites(unittest.TestCase):
             return u_ref*x**m
 
         def du_e_fun(x: InputParam) -> InputParam:
-            if m == 0:
-                return np.zeros_like(x)
             return m*u_ref*x**(m-1)
 
         def d2u_e_fun(x: InputParam) -> InputParam:
-            if m in (0, 1):
-                return np.zeros_like(x)
             return m*(m-1)*u_ref*x**(m-2)
 
         # test models
@@ -217,13 +205,9 @@ class TestNonlinearThwaites(unittest.TestCase):
             return u_ref*x**m
 
         def du_e_fun(x: InputParam) -> InputParam:
-            if m == 0:
-                return np.zeros_like(x)
             return m*u_ref*x**(m-1)
 
         def d2u_e_fun(x: InputParam) -> InputParam:
-            if m in (0, 1):
-                return np.zeros_like(x)
             return m*(m-1)*u_ref*x**(m-2)
 
         # test models
@@ -275,14 +259,10 @@ class TestNonlinearThwaites(unittest.TestCase):
             return u_ref*x**m
 
         def du_e_fun(x: InputParam) -> InputParam:
-            if m == 0:
-                return np.zeros_like(x)
             return m*u_ref*x**(m-1)
 
         def d2u_e_fun(x: InputParam) -> InputParam:
-            if m in (0, 1):
-                return np.zeros_like(x)
-            return m*(m-1)*u_ref*x**(m-2)
+            return np.zeros_like(x)
 
         # test models
         models = ["Spline", "White", "Cebeci-Bradshaw", "Drela"]

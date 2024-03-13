@@ -79,6 +79,10 @@ class TestBlasius(unittest.TestCase):
             sol.u_ref = 0.0
         with self.assertRaises(ValueError):
             sol.nu_ref = 0.0
+        with self.assertRaises(ValueError):
+            sol.set_solution_parameters(eta_inf=-1.0)
+        with self.assertRaises(ValueError):
+            sol.set_solution_parameters(f_pp0=-1.0)
 
         # simulate could not find solution but continuing
         sol._f = None  # pylint: disable=protected-access
