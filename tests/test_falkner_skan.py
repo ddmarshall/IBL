@@ -56,7 +56,7 @@ class TestFalknerSkan(unittest.TestCase):
     eta_inf_ref = np.array([8.2571417, 7.9263214, 7.1451323, 6.7517934,
                             6.0672747, 5.6670098])
     beta_ref = np.array([-0.19883785, -0.18, 0, 0.3, 1.0, 2.0])
-    f_pp0_ref = np.array([0, 0.12864, 0.46960, 0.77476, 1.23259, 1.68722])
+    fw_pp_ref = np.array([0, 0.12864, 0.46960, 0.77476, 1.23259, 1.68722])
     eta_d_ref = np.array([2.35885, 1.87157, 1.21678, 0.91099, 0.64790,
                           0.49743])
     eta_m_ref = np.array([0.58544, 0.56771, 0.46960, 0.38574, 0.29235,
@@ -74,7 +74,7 @@ class TestFalknerSkan(unittest.TestCase):
         # test the default values
         self.assertEqual(sol.u_ref, 100.0)
         self.assertAlmostEqual(sol.nu_ref, 1e-5)
-        self.assertAlmostEqual(sol.f_pp0, self.f_pp0_ref[test_idx])
+        self.assertAlmostEqual(sol.fw_pp, self.fw_pp_ref[test_idx])
         self.assertAlmostEqual(sol.eta_inf, self.eta_inf_ref[test_idx])
         self.assertEqual(sol.beta, self.beta_ref[test_idx])
         self.assertEqual(sol.m,
@@ -99,7 +99,7 @@ class TestFalknerSkan(unittest.TestCase):
         sol2 = FalknerSkan(beta=self.beta_ref[test_idx], u_ref=10.0,
                            nu_ref=1e-5, eta_inf=8.0)
         self.assertEqual(sol2.eta_inf, 8.0)
-        self.assertAlmostEqual(sol2.f_pp0, self.f_pp0_ref[test_idx],
+        self.assertAlmostEqual(sol2.fw_pp, self.fw_pp_ref[test_idx],
                                delta=1e-5)
 
         # test setting bad values
@@ -122,8 +122,8 @@ class TestFalknerSkan(unittest.TestCase):
                                   nu_ref=nu)
 
                 # Test the solved boundary condition
-                self.assertIsNone(np_test.assert_allclose(sol.f_pp0,
-                                                          self.f_pp0_ref[idx],
+                self.assertIsNone(np_test.assert_allclose(sol.fw_pp,
+                                                          self.fw_pp_ref[idx],
                                                           atol=3e-5))
 
                 # Test the solution for f'
@@ -144,16 +144,16 @@ class TestFalknerSkan(unittest.TestCase):
                 # print(f"eta_k = {eta_k_ref:.10f}")
 
                 # similarity terms
-                self.assertIsNone(np_test.assert_allclose(sol.eta_d(),
+                self.assertIsNone(np_test.assert_allclose(sol.eta_d,
                                                           self.eta_d_ref[idx],
                                                           rtol=6e-5))
-                self.assertIsNone(np_test.assert_allclose(sol.eta_m(),
+                self.assertIsNone(np_test.assert_allclose(sol.eta_m,
                                                           self.eta_m_ref[idx],
                                                           rtol=3e-5))
-                self.assertIsNone(np_test.assert_allclose(sol.eta_s(),
+                self.assertIsNone(np_test.assert_allclose(sol.eta_s,
                                                           self.eta_s_ref[idx],
                                                           atol=0.003))
-                self.assertIsNone(np_test.assert_allclose(sol.eta_k(),
+                self.assertIsNone(np_test.assert_allclose(sol.eta_k,
                                                           self.eta_k_ref[idx],
                                                           rtol=8e-6))
 
@@ -188,7 +188,7 @@ class TestFalknerSkan(unittest.TestCase):
                                                               rtol=2e-5))
 
                     # test wall shear stress
-                    tau_w_ref = rho*nu*u_e*g*self.f_pp0_ref[idx]
+                    tau_w_ref = rho*nu*u_e*g*self.fw_pp_ref[idx]
                     self.assertIsNone(
                         np_test.assert_allclose(sol.tau_w(x, rho), tau_w_ref,
                                                 atol=5e-6))
@@ -206,11 +206,11 @@ class TestFalknerSkan(unittest.TestCase):
         """Test values against Asaithambi (1997) results."""
         beta_test = [-0.1988,  -0.18,    -0.15,    -0.12,    -0.1,
                      0.0,        0.5,      1.0,      2.0]
-        f_pp0_test = [0.005218, 0.128636, 0.216362, 0.281761, 0.319270,
+        fw_pp_test = [0.005218, 0.128636, 0.216362, 0.281761, 0.319270,
                       0.469600, 0.927680, 1.232588, 1.687218]
-        for beta, f_pp0 in zip(beta_test, f_pp0_test):
+        for beta, fw_pp in zip(beta_test, fw_pp_test):
             fs = FalknerSkan(beta=beta, u_ref=1, nu_ref=1)
-            self.assertAlmostEqual(fs.f_pp0, f_pp0, delta=1e-6)
+            self.assertAlmostEqual(fs.fw_pp, fw_pp, delta=1e-6)
 
     def test_drela_comparison(self) -> None:
         """Test values against what Drela (2014) lists in Table 4.1."""
@@ -240,10 +240,10 @@ class TestFalknerSkan(unittest.TestCase):
             with self.subTest(i=idx):
                 fs.reset_m(m=m)
                 beta = fs.beta
-                eta_m = fs.eta_m()
-                eta_d = fs.eta_d()
-                eta_k = fs.eta_k()
-                fw_pp = fs.f_pp0
+                eta_m = fs.eta_m
+                eta_d = fs.eta_d
+                eta_k = fs.eta_k
+                fw_pp = fs.fw_pp
 
                 # s-free calculations
                 self.assertAlmostEqual(dis_thick_ref[idx],

@@ -10,11 +10,12 @@ from typing import Optional
 
 import numpy as np
 
-from ._blasius import Blasius
+from ibl.typing import InputParam
+from ibl.analytic import Analytic2dSimilarityIncompressible
 
 
 
-class FalknerSkan(Blasius):
+class FalknerSkan(Analytic2dSimilarityIncompressible):
     """
     Solution to Falkner-Skan equation.
 
@@ -29,16 +30,10 @@ class FalknerSkan(Blasius):
 
     Attributes
     ----------
-    u_ref : float
-        Reference velocity.
-    nu_ref : float
-        Reference kinematic viscosity.
     beta : float
         Inviscid wedge angle parameter. Must be in range [-0.19884, 2].
-    fpp0 : float
-        Initial condition for PDE solution.
-    eta_inf : float
-        Value for the end of the PDE integration.
+    m : float
+        Inviscid edge velocity parameter. Must be greater than 
 
     Raises
     ------
@@ -47,16 +42,15 @@ class FalknerSkan(Blasius):
     """
 
     def __init__(self, beta: float, u_ref: float, nu_ref: float,
-                 f_pp0: Optional[float] = None,
+                 fw_pp: Optional[float] = None,
                  eta_inf: Optional[float] = None) -> None:
         # need to get the class in default state
         if (beta < -0.19884) or (beta > 2):
             raise ValueError(f"Invalid inviscid wedge angle parameter: {beta}")
-        self._beta = beta
 
         # initialize base class
-        super().__init__(u_ref=u_ref, nu_ref=nu_ref, f_pp0=f_pp0,
-                         eta_inf=eta_inf)
+        super().__init__(u_ref=u_ref, nu_ref=nu_ref, alpha=1.0, beta=beta,
+                         gamma=1.0, fw_pp=fw_pp, eta_inf=eta_inf)
 
     @property
     def beta(self) -> float:
@@ -70,14 +64,12 @@ class FalknerSkan(Blasius):
         """
         Edge velocity profile parameter.
         """
-        alpha = self._get_alpha()
-        beta = self.beta
-        if beta == 2.0:
+        if self.beta == 2.0:
             return np.inf
-        return beta/(2*alpha-beta)
+        return self.beta/(2 - self.beta)
 
     def reset_beta(self, beta: float, eta_inf: Optional[float] = None,
-                   f_pp0: Optional[float] = None) -> None:
+                   fw_pp: Optional[float] = None) -> None:
         """
         Set beta and the solver parameters to override the default values.
 
@@ -92,7 +84,7 @@ class FalknerSkan(Blasius):
             Inviscid wedge angle parameter. Must be in range [-0.19884, 2].
         eta_inf : Optional[float]
             Maximum similarity coordinate. Must be positive.
-        f_pp0 : Optional[float]
+        fw_pp : Optional[float]
             Initial condition used for ODE solution. Default value is found as
             part of the ODE solution process. Must be positive.
 
@@ -107,10 +99,10 @@ class FalknerSkan(Blasius):
                              f"{beta}")
         self._beta = beta
 
-        self.set_solution_parameters(f_pp0=f_pp0, eta_inf=eta_inf)
+        self.set_solution_parameters(fw_pp=fw_pp, eta_inf=eta_inf)
 
     def reset_m(self, m: float, eta_inf: Optional[float] = None,
-                f_pp0: Optional[float] = None) -> None:
+                fw_pp: Optional[float] = None) -> None:
         """
         Set m and solver parameters to override default values.
 
@@ -122,10 +114,11 @@ class FalknerSkan(Blasius):
         Parameters
         ----------
         m : float
-            Inviscid wedge angle parameter. Must be in range [-0.19884, 2).
+            Inviscid wedge angle parameter. Must be greater than approximately
+            -0.0904295
         eta_inf : Optional[float]
             Maximum similarity coordinate. Must be positive.
-        f_pp0 : Optional[float]
+        fw_pp : Optional[float]
             Initial condition used for ODE solution. Default value is found as
             part of the ODE solution process. Must be positive.
 
@@ -134,23 +127,25 @@ class FalknerSkan(Blasius):
         ValueError
             If invalid value is passed in.
         """
-        alpha = self._get_alpha()
         if m == np.inf:
-            beta = 2.0*alpha
+            beta = 2.0
         else:
-            beta = 2*alpha*m/(1+m)
+            beta = 2*m/(1+m)
 
-        self.reset_beta(beta=beta, eta_inf=eta_inf, f_pp0=f_pp0)
+        self.reset_beta(beta=beta, eta_inf=eta_inf, fw_pp=fw_pp)
 
-    def _get_beta(self) -> float:
+    def _g(self, x: InputParam) -> InputParam:
         """
-        Return the wall angle term in PDE.
+        Calculates the transformation parameter.
 
-        For the Blasius solution the wall angle is always 0.0.
+        Parameters
+        ----------
+        x : numpy.ndarray
+            Streamwise location of points of interest.
 
         Returns
         -------
-        float
-            Wall angle term.
+        numpy.ndarray
+            Transformation parameter at points of interest.
         """
-        return self.beta
+        return np.sqrt(self.u_e(x)/((2 - self.beta)*self.nu_ref*x))

@@ -475,16 +475,13 @@ class Analytic2dSimilarityIncompressible(ABC):
 
         self._calculate_solution(fw_pp=fw_pp, eta_inf=eta_inf)
 
-        if self._f is None:
-            raise ValueError("No solution was found.")
-
         # calculate the invariant thickness now that have solution
         self._eta_d = float(self.eta_inf-self.f(self.eta_inf))
         self._eta_m = (self.fw_pp
                        - self._beta*self.eta_d)/(self._alpha+self._beta)
 
         def k_fun(eta: float) -> float:
-            return 2*np.prod(self._f(eta), axis=0)
+            return 2*self.f(eta)*self.f_p(eta)*self.f_pp(eta)
 
         self._eta_k = quadrature(k_fun, 0, self.eta_inf)[0]
 
