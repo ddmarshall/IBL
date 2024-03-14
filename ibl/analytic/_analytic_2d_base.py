@@ -481,9 +481,9 @@ class Analytic2dSimilarityIncompressible(ABC):
                        - self._beta*self.eta_d)/(self._alpha+self._beta)
 
         def k_fun(eta: float) -> float:
-            return 2*self.f(eta)*self.f_p(eta)*self.f_pp(eta)
+            return float(2*self.f(eta)*self.f_p(eta)*self.f_pp(eta))
 
-        self._eta_k = quadrature(k_fun, 0, self.eta_inf)[0]
+        self._eta_k = quadrature(k_fun, 0, self.eta_inf, vec_func=False)[0]
 
         def s_fun(eta: float) -> float:
             return float(0.99-self.f_p(eta))
