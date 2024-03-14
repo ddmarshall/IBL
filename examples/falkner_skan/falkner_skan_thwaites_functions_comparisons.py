@@ -107,8 +107,8 @@ def calculate_falkner_skan_values(m: npt.NDArray) -> Tuple[npt.NDArray,
         for m_val, lam_val, shape_val, s_val, f_val in it:
             fs.reset_m(m=float(m_val))
             beta = fs.beta
-            eta_d = fs.eta_d()
-            eta_m = fs.eta_m()
+            eta_d = fs.eta_d
+            eta_m = fs.eta_m
             fpp_w = fs.fw_pp
             shape_d = eta_d/eta_m
             lam = beta*eta_m**2
