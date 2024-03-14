@@ -11,8 +11,8 @@ from typing import Optional
 import numpy as np
 
 from ibl.typing import InputParam
-from ibl.analytic import Analytic2dSimilarityIncompressible
 
+from ._analytic_2d_base import Analytic2dSimilarityIncompressible
 
 
 class FalknerSkan(Analytic2dSimilarityIncompressible):

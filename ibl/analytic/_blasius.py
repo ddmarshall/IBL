@@ -10,8 +10,9 @@ from typing import Optional
 
 import numpy as np
 
-from ibl.analytic import Analytic2dSimilarityIncompressible
 from ibl.typing import InputParam
+
+from ._analytic_2d_base import Analytic2dSimilarityIncompressible
 
 
 class Blasius(Analytic2dSimilarityIncompressible):
