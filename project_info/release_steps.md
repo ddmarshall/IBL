@@ -1,5 +1,5 @@
 # Release Steps
-This document is intented to provide the actions that are needed to prepare a release.
+This document is intended to provide the actions that are needed to prepare a release.
 
 ## Pre-Release Actions
 When it is determined that all features and fixes have been included into the `develop` branch these steps should be taken.
