@@ -57,19 +57,16 @@ python -m unittest discover --start-directory tests
 ```
 
 ### Static Code Analysis
-To perform static code analysis, there are two tools that are in use, `pylint` and `pycodestyle`.
-The following command can be used for `pycodestyle`
-> `pycodestyle --statistics ibl tests examples`
+To perform static code analysis, the tool `pylint` is used.
+The following command can be used for `pylint` is
+```
+pylint ibl tests examples
+```
 
-The results from this are a general, high-level analysis of the code and typically identifies issues that need to be addressed.
-
-Similarly, the command for `pylint` is
-> `pylint ibl tests examples`
-
-This provides a more in-depth analysis of the quality of the code.
-The aim is to address as many of these messages as possible.
-However, it is sometimes unavoidable to adhere to some of the pythonic code readability guidelines.
-These situations should be avoided whenever possible.
+This provides an in-depth analysis of the quality of the code.
+The aim is to address all of the issues identified without using an ignore statement.
+On rare ocassions it might be necessary to ingore a message associated with a line.
+Ignoring entire files should be avoided.
 
 ### Code Coverage
 The aim of the testing is to have tests covering 100% of the library code, but that is sometimes difficult to achieve.
