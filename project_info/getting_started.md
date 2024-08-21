@@ -65,12 +65,12 @@ pylint ibl tests examples
 
 This provides an in-depth analysis of the quality of the code.
 The aim is to address all of the issues identified without using an ignore statement.
-On rare ocassions it might be necessary to ingore a message associated with a line.
+On rare occasions it might be necessary to ignore a message associated with a line.
 Ignoring entire files should be avoided.
 
 ### Code Coverage
 The aim of the testing is to have tests covering 100% of the library code, but that is sometimes difficult to achieve.
-Especially when there are errors that are hard to replicate but should be handled. Dadddss is 
+Especially when there are errors that are hard to replicate but should be handled.
 To collect the default code coverage data for the project use the following command:
 ```
 python -m coverage run
@@ -107,6 +107,15 @@ If only a specific directory or file is to be checked that the path (and filenam
 ```
 mypy ./examples
 ```
+
+#### BasedPyright Support
+Support for [BasedPyright](https://docs.basedpyright.com/), a fork of [pyright](https://microsoft.github.io/pyright), is being introduced.
+This is to improve the integration of type checking in VSCodium with the BasedPyright extension, however the command line version of BasedPyright can also be used with the following command:
+```
+basedpyright
+```
+
+This tool (like other static type checkers) have problems with `numpy` and `scipy` so there could be spurious errors reported.
 
 ### Continuous-Integration Testing
 Several tests/checks are run on commits to the GitHub repository, via GitHub workflow, to alert the developers of any problems that might be introduced by the commit.

@@ -85,13 +85,14 @@ class TestBlasius(unittest.TestCase):
             sol.set_solution_parameters(fw_pp=-1.0)
 
         # simulate could not find solution but continuing
-        sol._f = None  # pylint: disable=protected-access
+        # pylint: disable-next=protected-access
+        sol._f = None  # pyright: ignore[reportPrivateUsage]
         with self.assertRaises(ValueError):
-            sol.f(0.0)
+            _ = sol.f(0.0)
         with self.assertRaises(ValueError):
-            sol.f_p(0.0)
+            _ = sol.f_p(0.0)
         with self.assertRaises(ValueError):
-            sol.f_pp(0.0)
+            _ = sol.f_pp(0.0)
         self.assertEqual(sol.fw_pp, np.inf)
 
     def test_basic_solution(self) -> None:
@@ -200,8 +201,11 @@ class TestBlasius(unittest.TestCase):
 
         # test the transformation function
         g_ref = np.sqrt(0.5*u_inf/(nu*x))
-        # pylint: disable-next=protected-access
-        self.assertIsNone(np_test.assert_allclose(sol._g(x), g_ref))
+        self.assertIsNone(np_test.assert_allclose(
+            # pylint: disable-next=protected-access
+            sol._g(x),  # pyright: ignore[reportPrivateUsage]
+            g_ref)
+            )
 
         # test the transpiration velocity
         v_e_ref = nu*g_ref*np.sqrt(2)*self.v_e_term
@@ -289,4 +293,4 @@ class TestBlasius(unittest.TestCase):
 
 
 if __name__ == "__main__":
-    unittest.main(verbosity=1)
+    _ = unittest.main(verbosity=1)
