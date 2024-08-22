@@ -1,5 +1,8 @@
 """Module to test the Blasius solution functionality."""
 
+# pyright: reportPrivateUsage=false
+# pylint: disable=protected-access
+
 from typing import Union
 
 import unittest
@@ -85,8 +88,7 @@ class TestBlasius(unittest.TestCase):
             sol.set_solution_parameters(fw_pp=-1.0)
 
         # simulate could not find solution but continuing
-        # pylint: disable-next=protected-access
-        sol._f = None  # pyright: ignore[reportPrivateUsage]
+        sol._f = None
         with self.assertRaises(ValueError):
             _ = sol.f(0.0)
         with self.assertRaises(ValueError):
@@ -201,11 +203,7 @@ class TestBlasius(unittest.TestCase):
 
         # test the transformation function
         g_ref = np.sqrt(0.5*u_inf/(nu*x))
-        self.assertIsNone(np_test.assert_allclose(
-            # pylint: disable-next=protected-access
-            sol._g(x),  # pyright: ignore[reportPrivateUsage]
-            g_ref)
-            )
+        self.assertIsNone(np_test.assert_allclose(sol._g(x),g_ref))
 
         # test the transpiration velocity
         v_e_ref = nu*g_ref*np.sqrt(2)*self.v_e_term
