@@ -3,7 +3,6 @@
 # pyright: reportPrivateUsage=false
 # pylint: disable=protected-access
 
-
 import unittest
 import numpy as np
 import numpy.testing as np_test
