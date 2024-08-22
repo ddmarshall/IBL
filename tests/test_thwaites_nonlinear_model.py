@@ -80,9 +80,9 @@ class TestNonlinearThwaites(unittest.TestCase):
 
         # test creating with invalid name
         with self.assertRaises(ValueError):
-            ThwaitesMethodNonlinear(nu=nu, U_e=u_e_fun, dU_edx=du_e_fun,
-                                    d2U_edx2=d2u_e_fun,
-                                    data_fits="My Own")
+            _ = ThwaitesMethodNonlinear(nu=nu, U_e=u_e_fun, dU_edx=du_e_fun,
+                                        d2U_edx2=d2u_e_fun,
+                                        data_fits="My Own")
 
     def test_blaisus_case(self) -> None:
         """Test the flat plate case."""
@@ -394,4 +394,4 @@ class TestNonlinearThwaites(unittest.TestCase):
 
 
 if __name__ == "__main__":
-    unittest.main(verbosity=1)
+    _ = unittest.main(verbosity=1)

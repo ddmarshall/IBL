@@ -1,11 +1,4 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
-Created on Sat Oct  1 22:22:24 2022
-
-@author: ddmarshall
-"""
-
+"""Module to test the initial condition functionality."""
 
 import unittest
 import numpy as np
@@ -64,4 +57,4 @@ class TestInitialConditions(unittest.TestCase):
 
 
 if __name__ == "__main__":
-    unittest.main(verbosity=1)
+    _ = unittest.main(verbosity=1)

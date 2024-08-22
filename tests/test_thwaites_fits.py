@@ -318,4 +318,4 @@ class TestCurveFits(unittest.TestCase):
 
 
 if __name__ == "__main__":
-    unittest.main(verbosity=1)
+    _ = unittest.main(verbosity=1)

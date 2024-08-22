@@ -1,11 +1,4 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
-Created on Tue Aug 30 06:21:08 2022
-
-@author: ddmarshall
-"""
-
+"""Test XFoil reader class."""
 
 from os.path import abspath, dirname
 import unittest
@@ -138,11 +131,11 @@ class TestXFoilDumpReader(unittest.TestCase):
         self.assertEqual(xf.lower_count(), 0)
         self.assertEqual(xf.wake_count(), 0)
         with self.assertRaises(IndexError):
-            xf.upper(0)
+            _ = xf.upper(0)
         with self.assertRaises(IndexError):
-            xf.lower(0)
+            _ = xf.lower(0)
         with self.assertRaises(IndexError):
-            xf.wake(0)
+            _ = xf.wake(0)
 
     def test_case_inviscid(self) -> None:
         """Test importing an inviscid case."""
@@ -528,4 +521,4 @@ class TestXFoilDumpReader(unittest.TestCase):
 
 
 if __name__ == "__main__":
-    unittest.main(verbosity=1)
+    _ = unittest.main(verbosity=1)

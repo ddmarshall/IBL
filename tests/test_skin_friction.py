@@ -1,10 +1,4 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
-Created on Wed Aug 24 11:51:34 2022
-
-@author: ddmarshall
-"""
+"""Module to test the Head method functionality."""
 
 import unittest
 import numpy as np
@@ -97,4 +91,4 @@ class TestSkinFrictionCalculations(unittest.TestCase):
 
 
 if __name__ == "__main__":
-    unittest.main(verbosity=1)
+    _ = unittest.main(verbosity=1)
