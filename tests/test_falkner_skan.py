@@ -104,7 +104,7 @@ class TestFalknerSkan(unittest.TestCase):
 
         # test setting bad values
         with self.assertRaises(ValueError):
-            FalknerSkan(beta=3.0, u_ref=10.0, nu_ref=1e-5)
+            _ = FalknerSkan(beta=3.0, u_ref=10.0, nu_ref=1e-5)
         with self.assertRaises(ValueError):
             sol.reset_beta(beta=-1.0)
 
@@ -270,4 +270,4 @@ class TestFalknerSkan(unittest.TestCase):
 
 
 if __name__ == "__main__":
-    unittest.main(verbosity=1)
+    _ = unittest.main(verbosity=1)
