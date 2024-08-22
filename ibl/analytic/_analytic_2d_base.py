@@ -609,11 +609,13 @@ class Analytic2dSimilarityIncompressible(ABC):
             if eta_inf is None:
                 eta_inf_curr = 1.01*eta_inf_prev
 
+            fw_pp_curr = 0.0
             while not eta_inf_converged and (j < j_max):
                 # find fw_pp for this eta_inf
                 i=0
                 fw_pp_converged = False
                 fw_pp_curr = fw_pp_prev
+                f2_curr = 0.0
                 if fw_pp is None:
                     fw_pp_curr = 1.01*fw_pp_prev
                 while not fw_pp_converged and (i < i_max):
