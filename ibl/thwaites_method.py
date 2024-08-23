@@ -10,7 +10,7 @@ assumption and provides slightly better results in all cases tested.
 """
 
 from abc import abstractmethod
-from typing import Tuple, cast, Union, Callable
+from typing_extensions import override
 
 import numpy as np
 import numpy.typing as np_type
@@ -157,6 +157,7 @@ class ThwaitesMethod(IBLMethod):
         self._set_kill_event(_ThwaitesSeparationEvent(self._calc_lambda,
                                                       self._model.shear))
 
+    @override
     def v_e(self, x: InputParam) -> np_type.NDArray:
         """
         Calculate the transpiration velocity.
@@ -186,6 +187,7 @@ class ThwaitesMethod(IBLMethod):
         term5 = du_e*dsol_dx+self.d2u_e(x)*delta_m2_on_nu
         return term1 + term2*(term3+term4*term5)
 
+    @override
     def delta_d(self, x: InputParam) -> np_type.NDArray:
         """
         Calculate the displacement thickness.
@@ -202,6 +204,7 @@ class ThwaitesMethod(IBLMethod):
         """
         return self.delta_m(x)*self.shape_d(x)
 
+    @override
     def delta_m(self, x: InputParam) -> np_type.NDArray:
         """
         Calculate the momentum thickness.
@@ -221,6 +224,7 @@ class ThwaitesMethod(IBLMethod):
 
         return np.sqrt(self._solution(x)[0]*self._nu)
 
+    @override
     def delta_k(self, x: InputParam) -> np_type.NDArray:
         """
         Calculate the kinetic energy thickness.
@@ -237,6 +241,7 @@ class ThwaitesMethod(IBLMethod):
         """
         return np.zeros_like(x)
 
+    @override
     def shape_d(self, x: InputParam) -> np_type.NDArray:
         """
         Calculate the displacement shape factor.
@@ -257,6 +262,7 @@ class ThwaitesMethod(IBLMethod):
         lam = self._calc_lambda(x, self._solution(x)[0])
         return self._model.shape(lam)
 
+    @override
     def shape_k(self, x: InputParam) -> np_type.NDArray:
         """
         Calculate the kinetic energy shape factor.
@@ -273,6 +279,7 @@ class ThwaitesMethod(IBLMethod):
         """
         return self.delta_k(x)/self.delta_m(x)
 
+    @override
     def tau_w(self, x: InputParam, rho: float) -> np_type.NDArray:
         """
         Calculate the wall shear stress.
@@ -295,6 +302,7 @@ class ThwaitesMethod(IBLMethod):
         lam = self._calc_lambda(x, self._solution(x)[0])
         return rho*self._nu*self.u_e(x)*self._model.shear(lam)/self.delta_m(x)
 
+    @override
     def dissipation(self, x: InputParam, rho: float) -> np_type.NDArray:
         """
         Calculate the dissipation integral.
@@ -313,6 +321,7 @@ class ThwaitesMethod(IBLMethod):
         """
         return np.zeros_like(x)
 
+    @override
     def _ode_setup(self) -> Tuple[np_type.NDArray, float, float]:
         """
         Set the solver specific parameters.
@@ -326,6 +335,7 @@ class ThwaitesMethod(IBLMethod):
         """
         return np.array([self._ic.delta_m()**2/self._nu]), 1e-8, 1e-11
 
+    @override
     def _ode_impl(self, x: np_type.NDArray,
                   f: np_type.NDArray) -> np_type.NDArray:
         """
@@ -408,6 +418,7 @@ class ThwaitesMethodLinear(ThwaitesMethod):
     using the :class:`IBLMethod` ODE solver.
     """
 
+    @override
     def _calc_f(self, x: np_type.NDArray,
                 delta_m2_on_nu: np_type.NDArray) -> np_type.NDArray:
         r"""
@@ -457,6 +468,7 @@ class ThwaitesMethodNonlinear(ThwaitesMethod):
     using the :class:`IBLMethod` ODE solver.
     """
 
+    @override
     def _calc_f(self, x: np_type.NDArray,
                 delta_m2_on_nu: np_type.NDArray) -> np_type.NDArray:
         r"""
@@ -696,6 +708,7 @@ class _ThwaitesSeparationEvent(TermEvent):
         self._calc_lam = calc_lam
         self._shear_fun = shear_fun
 
+    @override
     def _call_impl(self, x: float, f: np_type.NDArray) -> float:
         """
         Help determine if Thwaites method integrator should terminate.
@@ -717,5 +730,6 @@ class _ThwaitesSeparationEvent(TermEvent):
         """
         return self._shear_fun(self._calc_lam(x, f))
 
+    @override
     def event_info(self) -> Tuple[TermReason, str]:
         return TermReason.SEPARATED, ""

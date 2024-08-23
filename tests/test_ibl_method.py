@@ -8,7 +8,7 @@ Created on Tue Aug  9 17:26:49 2022
 
 
 import unittest
-from typing import Tuple, Optional
+from typing_extensions import override
 
 import numpy as np
 import numpy.testing as npt
@@ -56,6 +56,7 @@ class _TestTermEvent(TermEvent):
         self._x_kill = x_kill
         super().__init__()
 
+    @override
     def _call_impl(self, x: float, f: InputParam) -> float:
         """
         Information used to determine if IBL test integrator should terminate.
@@ -79,6 +80,7 @@ class _TestTermEvent(TermEvent):
         _ = f
         return x - self._x_kill
 
+    @override
     def event_info(self) -> Tuple[TermReason, str]:
         """
         Return information about the purpose of this event.
@@ -115,6 +117,7 @@ class IBLMethodTest(IBLMethod):
         if x_kill is not None:
             self._set_kill_event(_TestTermEvent(x_kill))
 
+    @override
     def _ode_setup(self) -> Tuple[np_type.NDArray, Optional[float],
                                   Optional[float]]:
         """
@@ -131,6 +134,7 @@ class IBLMethodTest(IBLMethod):
         """
         return self.y0, None, None
 
+    @override
     def _ode_impl(self, x: np_type.NDArray,
                   f: np_type.NDArray) -> np_type.NDArray:
         """
@@ -151,6 +155,7 @@ class IBLMethodTest(IBLMethod):
         _ = f
         return x
 
+    @override
     def v_e(self, x: InputParam) -> np_type.NDArray:
         """
         Calculate the transpiration velocity.
@@ -167,6 +172,7 @@ class IBLMethodTest(IBLMethod):
         """
         return np.zeros_like(x)
 
+    @override
     def delta_d(self, x: InputParam) -> np_type.NDArray:
         """
         Calculate the displacement thickness.
@@ -183,6 +189,7 @@ class IBLMethodTest(IBLMethod):
         """
         return np.zeros_like(x)
 
+    @override
     def delta_m(self, x: InputParam) -> np_type.NDArray:
         """
         Calculate the momentum thickness.
@@ -199,6 +206,7 @@ class IBLMethodTest(IBLMethod):
         """
         return np.zeros_like(x)
 
+    @override
     def delta_k(self, x: InputParam) -> np_type.NDArray:
         """
         Calculate the kinetic energy thickness.
@@ -215,6 +223,7 @@ class IBLMethodTest(IBLMethod):
         """
         return np.zeros_like(x)
 
+    @override
     def shape_d(self, x: InputParam) -> np_type.NDArray:
         """
         Calculate the displacement shape factor.
@@ -231,6 +240,7 @@ class IBLMethodTest(IBLMethod):
         """
         return np.zeros_like(x)
 
+    @override
     def shape_k(self, x: InputParam) -> np_type.NDArray:
         """
         Calculate the kinetic energy shape factor.
@@ -247,6 +257,7 @@ class IBLMethodTest(IBLMethod):
         """
         return np.zeros_like(x)
 
+    @override
     def tau_w(self, x: InputParam, rho: float) -> np_type.NDArray:
         """
         Calculate the wall shear stress.
@@ -266,6 +277,7 @@ class IBLMethodTest(IBLMethod):
         _ = rho
         return np.zeros_like(x)
 
+    @override
     def dissipation(self, x: InputParam, rho: float) -> np_type.NDArray:
         """
         Calculate the dissipation integral.
@@ -293,6 +305,7 @@ class IBLMethodTestTransition(TermEvent):
         self._f_kill = f_kill
         super().__init__()
 
+    @override
     def _call_impl(self, x: float, f: np_type.NDArray) -> float:
         """
         Information used to determine if IBL test integrator should terminate.
@@ -317,6 +330,7 @@ class IBLMethodTestTransition(TermEvent):
         _ = x
         return f[0] - self._f_kill
 
+    @override
     def event_info(self) -> Tuple[TermReason, str]:
         """
         Return information about the purpose of this event.

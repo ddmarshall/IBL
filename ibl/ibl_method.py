@@ -15,7 +15,7 @@ All integral boundary layer method classes return an instance of
 from abc import ABC, abstractmethod
 from enum import IntEnum, auto
 
-from typing import Union, Tuple, Callable, List, Optional
+from typing_extensions import override
 
 import numpy as np
 import numpy.typing as np_type
@@ -34,6 +34,7 @@ class TermReason(IntEnum):
     Reasons for the integration process to complete.
     """
 
+    @override
     def __str__(self) -> str:
         text = {TermReason.REACHED_END: "Completed",
                 TermReason.SEPARATED: "Separated",
@@ -126,6 +127,7 @@ class IntegrationResult:
         """
         return self._success
 
+    @override
     def __str__(self) -> str:
         """
         Return a readable presentation of instance.
