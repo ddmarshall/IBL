@@ -130,7 +130,7 @@ class ThwaitesMethod(IBLMethod):
                             -np.inf, np.inf)
                     else:
                         raise ValueError("Need to pass callable objects for "
-                                         "fit functions")
+                                         + "fit functions")
                 elif len(data_fits) == 2:
                     if callable(data_fits[0]) and callable(data_fits[1]):
                         # create finite difference approximation to derivative
@@ -147,10 +147,10 @@ class ThwaitesMethod(IBLMethod):
                                                          -np.inf, np.inf)
                     else:
                         raise ValueError("Need to pass callable objects for "
-                                         "fit functions")
+                                         + "fit functions")
                 else:
                     raise ValueError("Need to pass two or three callable "
-                                     "objects for fit functions")
+                                     + "objects for fit functions")
             else:
                 raise ValueError("Need to pass a 2-tuple for fit functions")
 

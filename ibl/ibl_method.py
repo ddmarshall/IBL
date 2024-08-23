@@ -464,23 +464,23 @@ class IBLMethod(ABC):
                 #   for building splines
                 if x_pts.ndim != 1:
                     raise ValueError("First element of u_e 2-tuple must be 1D "
-                                     "vector of distances")
+                                     + "vector of distances")
                 if u_e_pts.ndim != 1:
                     raise ValueError("Second element of u_e 2-tuple must be "
-                                     "1D vector of Velocities")
+                                     + "1D vector of Velocities")
                 if npts != u_e_pts.shape[0]:
                     raise ValueError("Vectors in u_e 2-tuple must be of same "
-                                     "length")
+                                     + "length")
                 if npts < 2:
                     raise ValueError("Must pass at least two points for edge "
-                                     "velocity")
+                                     + "velocity")
 
                 u_e_spline = PchipInterpolator(x_pts, u_e_pts)
                 self.set_velocity(u_e_spline)
             else:
                 # otherwise unknown velocity input
                 raise ValueError(f"Don't know how to use {u_e} to initialize "
-                                 "velocity")
+                                 + "velocity")
 
     def solve(self, x0: float, x_end: float,
               term_event: Optional[Union[TermEvent, List[TermEvent]]] = None
