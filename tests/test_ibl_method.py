@@ -1,13 +1,7 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
-Created on Tue Aug  9 17:26:49 2022
-
-@author: ddmarshall
-"""
-
+"""Module to test the base IBL functionality."""
 
 import unittest
+from typing import Tuple, Optional, Any
 from typing_extensions import override
 
 import numpy as np
@@ -107,7 +101,7 @@ class _TestTermEvent(TermEvent):
 class IBLMethodTest(IBLMethod):
     """Generic class to test the concrete methods in IBLMethod"""
 
-    def __init__(self, u_e=None, du_e=None, d2u_e=None,
+    def __init__(self, u_e: Any = None, du_e: Any = None, d2u_e:Any = None,
                  x_kill: Optional[float] = None) -> None:
         # setup base class
         super().__init__(nu=1, u_e=u_e, du_e=du_e, d2u_e=d2u_e)
@@ -465,9 +459,19 @@ class TestEdgeVelocity(unittest.TestCase):
         # create test class with all three functions
         u_inf = 10
         m = 0.75
-        iblb = IBLMethodTest(u_e=lambda x: self.u_e_fun(x, u_inf, m),
-                             du_e=lambda x: self.du_e_fun(x, u_inf, m),
-                             d2u_e=lambda x: self.d2u_e_fun(x, u_inf, m))
+        def u_e_fun(x: InputParam) -> InputParam:
+            return self.u_e_fun(x, u_inf, m)
+
+
+        def du_e_fun(x: InputParam) -> InputParam:
+            return self.du_e_fun(x, u_inf, m)
+
+
+        def d2u_e_fun(x: InputParam) -> InputParam:
+            return self.d2u_e_fun(x, u_inf, m)
+
+
+        iblb = IBLMethodTest(u_e=u_e_fun, du_e=du_e_fun, d2u_e=d2u_e_fun)
 
         x = np.linspace(0.1, 5, 21)
         u_e_ref = self.u_e_fun(x, u_inf, m)
@@ -480,8 +484,7 @@ class TestEdgeVelocity(unittest.TestCase):
         # create test class with two functions
         u_inf = 10
         m = 0.75
-        iblb = IBLMethodTest(u_e=lambda x: self.u_e_fun(x, u_inf, m),
-                             du_e=lambda x: self.du_e_fun(x, u_inf, m))
+        iblb = IBLMethodTest(u_e=u_e_fun, du_e=du_e_fun)
 
         x = np.linspace(0.1, 5, 21)
         u_e_ref = self.u_e_fun(x, u_inf, m)
@@ -494,7 +497,7 @@ class TestEdgeVelocity(unittest.TestCase):
         # create test class with one function
         u_inf = 10
         m = 0.75
-        iblb = IBLMethodTest(u_e=lambda x: self.u_e_fun(x, u_inf, m))
+        iblb = IBLMethodTest(u_e=u_e_fun)
 
         x = np.linspace(0.1, 5, 21)
         u_e_ref = self.u_e_fun(x, u_inf, m)
@@ -614,20 +617,31 @@ class TestEdgeVelocity(unittest.TestCase):
         m = 0.75
         iblb = IBLMethodTest()
         x = np.linspace(0.1, 5, 21)
-        u_e_ref = self.u_e_fun(x, u_inf, m)
-        du_e_ref = self.du_e_fun(x, u_inf, m)
-        d2u_e_ref = self.d2u_e_fun(x, u_inf, m)
+
+        def u_e_fun(x: InputParam) -> InputParam:
+            return self.u_e_fun(x, u_inf, m)
+
+
+        def du_e_fun(x: InputParam) -> InputParam:
+            return self.du_e_fun(x, u_inf, m)
+
+
+        def d2u_e_fun(x: InputParam) -> InputParam:
+            return self.d2u_e_fun(x, u_inf, m)
+
+
+        u_e_ref = u_e_fun(x)
+        du_e_ref = du_e_fun(x)
+        d2u_e_ref = d2u_e_fun(x)
 
         with self.assertRaises(ValueError):
-            iblb.u_e(x)
+            _ = iblb.u_e(x)
         with self.assertRaises(ValueError):
-            iblb.du_e(x)
+            _ = iblb.du_e(x)
         with self.assertRaises(ValueError):
-            iblb.d2u_e(x)
+            _ = iblb.d2u_e(x)
 
-        iblb.set_velocity(u_e=lambda x: self.u_e_fun(x, u_inf, m),
-                          du_e=lambda x: self.du_e_fun(x, u_inf, m),
-                          d2u_e=lambda x: self.d2u_e_fun(x, u_inf, m))
+        iblb.set_velocity(u_e=u_e_fun, du_e=du_e_fun, d2u_e=d2u_e_fun)
         self.assertIsNone(npt.assert_allclose(iblb.u_e(x), u_e_ref))
         self.assertIsNone(npt.assert_allclose(iblb.du_e(x), du_e_ref))
         self.assertIsNone(npt.assert_allclose(iblb.d2u_e(x), d2u_e_ref))
@@ -637,8 +651,12 @@ class TestEdgeVelocity(unittest.TestCase):
         u_inf = 10
         m = 1
         x_kill = 3
-        iblb = IBLMethodTest(u_e=lambda x: self.u_e_fun(x, u_inf, m),
-                             x_kill=x_kill)
+
+        def u_e_fun(x: InputParam) -> InputParam:
+            return self.u_e_fun(x, u_inf, m)
+
+
+        iblb = IBLMethodTest(u_e=u_e_fun, x_kill=x_kill)
 
         # test setting viscosity
         iblb.nu = 1e-5

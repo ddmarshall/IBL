@@ -10,6 +10,7 @@ assumption and provides slightly better results in all cases tested.
 """
 
 from abc import abstractmethod
+from typing import Tuple, cast, Union, Callable, Optional, Any
 from typing_extensions import override
 
 import numpy as np
@@ -51,7 +52,8 @@ class ThwaitesMethod(IBLMethod):
 
     # Attributes
     #    _model: Collection of functions for S, H, and H'
-    def __init__(self, nu: float = 1.0, U_e=None, dU_edx=None, d2U_edx2=None,
+    def __init__(self, nu: float = 1.0, U_e: Optional[Any] = None,
+                 dU_edx: Optional[Any] = None, d2U_edx2: Optional[Any] = None,
                  data_fits:_DataFits = "Spline") -> None:
         super().__init__(nu=nu, u_e=U_e, du_e=dU_edx, d2u_e=d2U_edx2,
                          ic=ManualCondition(delta_d=0, delta_m=np.inf,

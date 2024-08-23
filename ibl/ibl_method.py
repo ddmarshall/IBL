@@ -15,6 +15,7 @@ All integral boundary layer method classes return an instance of
 from abc import ABC, abstractmethod
 from enum import IntEnum, auto
 
+from typing import Union, Tuple, Callable, List, Optional, Any
 from typing_extensions import override
 
 import numpy as np
@@ -323,7 +324,8 @@ class IBLMethod(ABC):
     # _solution : vector of callables
     #     Piecewise polynomials representing the state variables from the ODE
     #     solution.
-    def __init__(self, nu: float, u_e=None, du_e=None, d2u_e=None,
+    def __init__(self, nu: float, u_e: Optional[Any] = None,
+                 du_e: Optional[Any] = None, d2u_e: Optional[Any] = None,
                  ic: Optional[InitialCondition] = None):
         self._nu = 1e-5
         self._ic: InitialCondition = FalknerSkanStagCondition(0, nu)
@@ -374,7 +376,8 @@ class IBLMethod(ABC):
         """
         self._ic = ic
 
-    def set_velocity(self, u_e, du_e=None, d2u_e=None) -> None:
+    def set_velocity(self, u_e: Any, du_e: Optional[Any] =None,
+                     d2u_e: Optional[Any] = None) -> None:
         """
         Set the edge velocity relations.
 
@@ -405,7 +408,7 @@ class IBLMethod(ABC):
             if du_e is None:
                 if d2u_e is not None:
                     raise ValueError("Can only pass second derivative if "
-                                     "first derivative was specified")
+                                     + "first derivative was specified")
 
                 # if U_e has derivative method then use it
                 if (hasattr(u_e, "derivative")
@@ -446,14 +449,16 @@ class IBLMethod(ABC):
             if len(du_e) == 2:
                 x_pts = np.asarray(du_e[0])
                 du_e_pts = np.asarray(du_e[1])
-                self._du_e = PchipInterpolator(x_pts, du_e_pts)
-                self._u_e = self._du_e.antiderivative()
-                self._u_e.c[-1, :] = self._u_e.c[-1, :] + u_e
-                self._d2u_e = self._du_e.derivative()
+                pchip = PchipInterpolator(x_pts, du_e_pts)
+                self._du_e = pchip
+                pchipa = pchip.antiderivative()
+                pchipa.c[-1, :] = pchipa.c[-1, :] + u_e
+                self._u_e = pchipa
+                self._d2u_e = pchip.derivative()
             else:
                 # otherwise unknown velocity input
                 raise ValueError(f"Don't know how to use {du_e} to "
-                                 "initialize velocity derivative")
+                                 + "initialize velocity derivative")
         else:
             # if is 2-tuple then assume x, U_e pairs to build spline
             if len(u_e) == 2:
@@ -647,13 +652,10 @@ class IBLMethod(ABC):
             Way of child classes to automatically add kill events to the ODE
             solver.
         """
-        if self._kill_events is None:
-            self._set_kill_event(ke)
+        if isinstance(ke, TermEvent):
+            self._kill_events.append(ke)
         else:
-            if isinstance(ke, TermEvent):
-                self._kill_events.append(ke)
-            else:
-                self._kill_events += ke
+            self._kill_events += ke
 
     def _set_kill_event(self, ke: Union[TermEvent, List[TermEvent]]) -> None:
         """
