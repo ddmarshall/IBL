@@ -1,5 +1,7 @@
 """Test Thwaites linear models."""
-# pylint: disable=duplicate-code
+
+# pylint: disable=duplicate-code,protected-access
+# pyright: reportPrivateUsage=false
 
 import unittest
 
@@ -7,10 +9,11 @@ import numpy as np
 import numpy.typing as npt
 import numpy.testing as np_test
 
-from _thwaites_linear_analytic import ThwaitesLinearAnalytic
-
 from ibl.thwaites_method import ThwaitesMethodLinear
 from ibl.typing import InputParam
+
+# pylint: disable-next=relative-beyond-top-level
+from ._thwaites_linear_analytic import ThwaitesLinearAnalytic
 
 
 class TestLinearThwaites(unittest.TestCase):
@@ -107,8 +110,8 @@ class TestLinearThwaites(unittest.TestCase):
                 tm = ThwaitesMethodLinear(nu=nu, U_e=u_e_fun, dU_edx=du_e_fun,
                                           d2U_edx2=d2u_e_fun, data_fits=model)
 
-                tm_shape = tm._model.shape  # pylint: disable=protected-access
-                tm_shear = tm._model.shear  # pylint: disable=protected-access
+                tm_shape = tm._model.shape
+                tm_shear = tm._model.shear
                 tm_ref = ThwaitesLinearAnalytic(u_ref, m, nu, tm_shape,
                                                 tm_shear)
                 tm.initial_delta_m = float(tm_ref.delta_m(x[0]))
@@ -157,8 +160,8 @@ class TestLinearThwaites(unittest.TestCase):
             with self.subTest(i=idx):
                 tm = ThwaitesMethodLinear(nu=nu, U_e=u_e_fun, dU_edx=du_e_fun,
                                           d2U_edx2=d2u_e_fun, data_fits=model)
-                tm_shape = tm._model.shape  # pylint: disable=protected-access
-                tm_shear = tm._model.shear  # pylint: disable=protected-access
+                tm_shape = tm._model.shape
+                tm_shear = tm._model.shear
                 tm_ref = ThwaitesLinearAnalytic(u_ref, m, nu, tm_shape,
                                                 tm_shear)
                 tm.initial_delta_m = float(tm_ref.delta_m(x[0]))
@@ -208,8 +211,8 @@ class TestLinearThwaites(unittest.TestCase):
             with self.subTest(i=idx):
                 tm = ThwaitesMethodLinear(nu=nu, U_e=u_e_fun, dU_edx=du_e_fun,
                                           d2U_edx2=d2u_e_fun, data_fits=model)
-                tm_shape = tm._model.shape  # pylint: disable=protected-access
-                tm_shear = tm._model.shear  # pylint: disable=protected-access
+                tm_shape = tm._model.shape
+                tm_shear = tm._model.shear
                 tm_ref = ThwaitesLinearAnalytic(u_ref, m, nu, tm_shape,
                                                 tm_shear)
                 tm.initial_delta_m = float(tm_ref.delta_m(x[0]))
@@ -259,8 +262,8 @@ class TestLinearThwaites(unittest.TestCase):
             with self.subTest(i=idx):
                 tm = ThwaitesMethodLinear(nu=nu, U_e=u_e_fun, dU_edx=du_e_fun,
                                           d2U_edx2=d2u_e_fun, data_fits=model)
-                tm_shape = tm._model.shape  # pylint: disable=protected-access
-                tm_shear = tm._model.shear  # pylint: disable=protected-access
+                tm_shape = tm._model.shape
+                tm_shear = tm._model.shear
                 tm_ref = ThwaitesLinearAnalytic(u_ref, m, nu, tm_shape,
                                                 tm_shear)
                 tm.initial_delta_m = float(tm_ref.delta_m(x[0]))

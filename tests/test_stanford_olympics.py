@@ -1,10 +1,7 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
-Created on Wed Aug 24 17:38:44 2022
+"""Module to test the Stanford Olympics functionality."""
 
-@author: ddmarshall
-"""
+# pyright: reportPrivateUsage=false
+# pylint: disable=protected-access
 
 import unittest
 import numpy as np
@@ -22,9 +19,7 @@ class TestStanfordOlympics1968(unittest.TestCase):
         """Test accessing data files."""
         stol = StanfordOlympics1968()
 
-        # pylint: disable-next=protected-access
         self.assertTrue(not stol._get_case_data("xxxx"))
-        # pylint: disable-next=protected-access
         self.assertFalse(not stol._get_case_data("1100"))
 
     def test_station_setters(self) -> None:

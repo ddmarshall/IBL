@@ -1,4 +1,5 @@
 # pylint: skip-file
+# pyright: reportUntypedNamedTuple=false
 
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
