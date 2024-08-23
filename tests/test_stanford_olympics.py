@@ -22,6 +22,7 @@ class TestStanfordOlympics1968(unittest.TestCase):
         self.assertTrue(not stol._get_case_data("xxxx"))
         self.assertFalse(not stol._get_case_data("1100"))
 
+    # pylint: disable=too-many-statements
     def test_station_setters(self) -> None:
         """Test the stations data."""
         summary_data = ("0.782  33.90  -2.300  0.276  1.381  1.778   7.307  "
@@ -102,6 +103,7 @@ class TestStanfordOlympics1968(unittest.TestCase):
         sd.u_defect = np.ones_like(sd.u_defect)
         with self.assertRaises(ValueError):
             sd.u_defect = -np.ones_like(sd.u_defect)
+    # pylint: enable=too-many-statements
 
     def test_station_data(self) -> None:
         """Test the stations data."""
