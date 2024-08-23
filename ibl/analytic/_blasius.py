@@ -7,6 +7,7 @@ layer equations.
 
 
 from typing import Optional
+from typing_extensions import override
 
 import numpy as np
 
@@ -66,6 +67,7 @@ class Blasius(Analytic2dSimilarityIncompressible):
         """Default value for the eta_inf."""
         return self._eta_inf_default
 
+    @override
     def _g(self, x: InputParam) -> InputParam:
         """
         Calculates the transformation parameter.

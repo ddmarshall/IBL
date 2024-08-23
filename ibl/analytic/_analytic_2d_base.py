@@ -468,10 +468,10 @@ class Analytic2dSimilarityIncompressible(ABC):
         # Error checking
         if (eta_inf is not None) and (eta_inf <= 0):
             raise ValueError("Invalid maximum similarity parameter: "
-                             f"{eta_inf}")
+                             + f"{eta_inf}")
         if (fw_pp is not None) and (fw_pp <= 0):
             raise ValueError("Invalid solution initial condition value: "
-                            f"{fw_pp}")
+                             + f"{fw_pp}")
 
         self._calculate_solution(fw_pp=fw_pp, eta_inf=eta_inf)
 
@@ -596,9 +596,9 @@ class Analytic2dSimilarityIncompressible(ABC):
                     return rtn.y[1,-1], rtn.y[2,-1]
 
                 raise ValueError("Initial conditions for solver, "
-                                    f"f\'\'(0)={fw_pp:.6f} and "
-                                    f"eta_inf={eta_inf:.6f}, did not "
-                                    "produce converged solution.")
+                                 + f"f\'\'(0)={fw_pp:.6f} and "
+                                 + f"eta_inf={eta_inf:.6f}, did not "
+                                 + "produce converged solution.")
 
 
             # initialize the solution process
@@ -678,9 +678,9 @@ class Analytic2dSimilarityIncompressible(ABC):
         else:
             self._f = None
             raise ValueError("Initial conditions for solver, "
-                                f"f\'\'(0)={fw_pp_curr:.6f} and "
-                                f"eta_inf={eta_inf_curr:.6f}, did not produce "
-                                "converged solution.")
+                             + f"f\'\'(0)={fw_pp_curr:.6f} and "
+                             + f"eta_inf={eta_inf_curr:.6f}, did not produce "
+                             + "converged solution.")
 
     @abstractmethod
     def _g(self, x: InputParam) -> InputParam:

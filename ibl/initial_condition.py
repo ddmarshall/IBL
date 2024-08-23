@@ -11,6 +11,7 @@ classes.
 """
 
 from abc import ABC, abstractmethod
+from typing_extensions import override
 
 import numpy as np
 
@@ -126,6 +127,7 @@ class FalknerSkanStagCondition(InitialCondition):
         self._shape_k = 1.6257
         self._eta_m = 0.29235
 
+    @override
     def shape_d(self) -> float:
         """
         Return the displacement shape factor for this initial condition.
@@ -137,6 +139,7 @@ class FalknerSkanStagCondition(InitialCondition):
         """
         return self._shape_d
 
+    @override
     def shape_k(self) -> float:
         """
         Return the kinetic energy shape factor for this initial condition.
@@ -148,6 +151,7 @@ class FalknerSkanStagCondition(InitialCondition):
         """
         return self._shape_k
 
+    @override
     def delta_d(self) -> float:
         """
         Return the displacement thickness for this initial condition.
@@ -159,6 +163,7 @@ class FalknerSkanStagCondition(InitialCondition):
         """
         return self.delta_m()*self.shape_d()
 
+    @override
     def delta_m(self) -> float:
         """
         Return the momentum thickness for this initial condition.
@@ -171,6 +176,7 @@ class FalknerSkanStagCondition(InitialCondition):
         return np.sqrt(self.nu*self._eta_m*self._fpp0
                        / ((self._shape_d+2)*self.du_e))
 
+    @override
     def delta_k(self) -> float:
         """
         Return the kinetic energy thickness for this initial condition.
@@ -206,6 +212,7 @@ class ManualCondition(InitialCondition):
         self.del_m = delta_m
         self.del_k = delta_k
 
+    @override
     def shape_d(self) -> float:
         """
         Return the displacement shape factor for this initial condition.
@@ -217,6 +224,7 @@ class ManualCondition(InitialCondition):
         """
         return self.del_d/self.del_m
 
+    @override
     def shape_k(self) -> float:
         """
         Return the kinetic energy shape factor for this initial condition.
@@ -228,6 +236,7 @@ class ManualCondition(InitialCondition):
         """
         return self.del_k/self.del_m
 
+    @override
     def delta_d(self) -> float:
         """
         Return the displacement thickness for this initial condition.
@@ -239,6 +248,7 @@ class ManualCondition(InitialCondition):
         """
         return self.del_d
 
+    @override
     def delta_m(self) -> float:
         """
         Return the momentum thickness for this initial condition.
@@ -250,6 +260,7 @@ class ManualCondition(InitialCondition):
         """
         return self.del_m
 
+    @override
     def delta_k(self) -> float:
         """
         Return the kinetic energy thickness for this initial condition.

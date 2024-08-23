@@ -5,7 +5,8 @@ This module contains the necessary classes and data for the implementation of
 Head's two equation integral boundary layer method.
 """
 
-from typing import Tuple, cast
+from typing import Tuple, cast, Optional, Any
+from typing_extensions import override
 
 import numpy as np
 import numpy.typing as np_type
@@ -26,7 +27,8 @@ class HeadMethod(IBLMethod):
     velocity profile and other configuration information.
     """
 
-    def __init__(self, nu: float = 1.0, U_e=None, dU_edx=None, d2U_edx2=None,
+    def __init__(self, nu: float = 1.0, U_e: Optional[Any] = None,
+                 dU_edx: Optional[Any] = None, d2U_edx2: Optional[Any] = None,
                  shape_d_crit: float = 2.4) -> None:
         super().__init__(nu=nu, u_e=U_e, du_e=dU_edx, d2u_e=d2U_edx2,
                          ic=ManualCondition(delta_d=np.inf, delta_m=np.inf,
@@ -79,6 +81,7 @@ class HeadMethod(IBLMethod):
         """
         self._set_kill_event(_HeadSeparationEvent(shape_d_crit))
 
+    @override
     def v_e(self, x: InputParam) -> np_type.NDArray:
         """
         Calculate the transpiration velocity.
@@ -103,6 +106,7 @@ class HeadMethod(IBLMethod):
         delta_m = self.delta_m(x)
         return du_e*shape_d*delta_m + u_e*y_p[1]*delta_m + u_e*shape_d*y_p[0]
 
+    @override
     def delta_d(self, x: InputParam) -> np_type.NDArray:
         """
         Calculate the displacement thickness.
@@ -119,6 +123,7 @@ class HeadMethod(IBLMethod):
         """
         return self.delta_m(x)*self.shape_d(x)
 
+    @override
     def delta_m(self, x: InputParam) -> np_type.NDArray:
         """
         Calculate the momentum thickness.
@@ -138,6 +143,7 @@ class HeadMethod(IBLMethod):
 
         return self._solution(x)[0]
 
+    @override
     def delta_k(self, x: InputParam) -> np_type.NDArray:
         """
         Calculate the kinetic energy thickness.
@@ -154,6 +160,7 @@ class HeadMethod(IBLMethod):
         """
         return np.zeros_like(x)
 
+    @override
     def shape_d(self, x: InputParam) -> np_type.NDArray:
         """
         Calculate the displacement shape factor.
@@ -173,6 +180,7 @@ class HeadMethod(IBLMethod):
 
         return self._solution(x)[1]
 
+    @override
     def shape_k(self, x: InputParam) -> np_type.NDArray:
         """
         Calculate the kinetic energy shape factor.
@@ -189,6 +197,7 @@ class HeadMethod(IBLMethod):
         """
         return self.delta_k(x)/self.delta_m(x)
 
+    @override
     def tau_w(self, x: InputParam, rho: float) -> np_type.NDArray:
         """
         Calculate the wall shear stress.
@@ -216,6 +225,7 @@ class HeadMethod(IBLMethod):
         c_f = c_f_fun(re_delta_m, shape_d)
         return 0.5*rho*u_e**2*c_f
 
+    @override
     def dissipation(self, x: InputParam, rho: float) -> np_type.NDArray:
         """
         Calculate the dissipation integral.
@@ -234,6 +244,7 @@ class HeadMethod(IBLMethod):
         """
         return np.zeros_like(x)
 
+    @override
     def _ode_setup(self) -> Tuple[np_type.NDArray, float, float]:
         """
         Set the solver specific parameters.
@@ -247,7 +258,8 @@ class HeadMethod(IBLMethod):
         """
         return np.array([self._ic.delta_m(), self._ic.shape_d()]), 1e-8, 1e-11
 
-    def _ode_impl(self, x: np_type.NDArray,
+    @override
+    def _ode_impl(self, x: InputParam,
                   f: np_type.NDArray) -> np_type.NDArray:
         """
         Right-hand-side of the ODE representing Thwaites method.
@@ -436,6 +448,7 @@ class _HeadSeparationEvent(TermEvent):
         super().__init__()
         self._shape_d_crit = shape_d_crit
 
+    @override
     def _call_impl(self, x: float, f: np_type.NDArray) -> float:
         """
         Determine if Head method integrator should terminate.
@@ -459,5 +472,6 @@ class _HeadSeparationEvent(TermEvent):
         """
         return self._shape_d_crit - f[1]
 
+    @override
     def event_info(self) -> Tuple[TermReason, str]:
         return TermReason.SEPARATED, ""
