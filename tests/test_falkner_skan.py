@@ -114,7 +114,7 @@ class TestFalknerSkan(unittest.TestCase):
         nu = 1e-5
         rho = 1
 
-        FunType = Union[float, npt.NDArray]
+        FunType = Union[float, np.floating, npt.NDArray]
 
         for idx in range(0, 6):
             with self.subTest(i=idx):

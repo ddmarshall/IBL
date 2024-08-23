@@ -243,7 +243,7 @@ class TestBlasius(unittest.TestCase):
                                                   tau_w_ref))
 
         # test dissipation
-        FunType = Union[float, npt.NDArray]
+        FunType = Union[float, np.floating, npt.NDArray]
 
         def diss_fun(eta: FunType) -> FunType:
             return sol.f_pp(eta)**2
