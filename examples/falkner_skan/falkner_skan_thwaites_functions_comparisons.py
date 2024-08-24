@@ -61,7 +61,7 @@ def compare_shape_d() -> None:
     models = [_ThwaitesFunctionsWhite(), _ThwaitesFunctionsCebeciBradshaw(),
               _ThwaitesFunctionsDrela(), _ThwaitesFunctionsSpline()]
     colors = ["red", "orange", "green", "purple"]
-    labels = ["White", "Cebeci & Bradshaw", "drela", "Spline"]
+    labels = ["White", "Cebeci & Bradshaw", "Drela", "Spline"]
 
     for model, color, label in zip(models, colors, labels):
         lam, shape, shear, f = calculate_thwaites_values(lambda_min,
