@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 r"""
 Comparing approximations to Thwaites' tabular data.
 
@@ -7,6 +5,9 @@ This example shows a comparison between the various approximations to the
 tabular data from Thwaites for the function :math:`F(\lambda)`. It shows
 similar results to Figures 1.2 and 1.3 in Edland thesis.
 """
+
+# pyright: reportPrivateUsage=false
+# pylint: disable=protected-access
 
 from typing import Tuple
 
@@ -120,8 +121,8 @@ def compare_thwaites_fits() -> None:
     # Show relative errors
     axis_err.set_xlabel(r"$\lambda$")
     axis_err.set_ylabel("Relative Error")
-    axis_err.set_xlim([-0.10, 0.25])
-    axis_err.set_ylim([.00001,1])
+    axis_err.set_xlim((-0.10, 0.25))
+    axis_err.set_ylim((.00001,1))
     axis_err.set_yscale("log")
     axis_err.grid(True)
     axis_err.legend()

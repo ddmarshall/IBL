@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 """
 Comparing Head's method solution against XFoil case.
 
@@ -71,7 +69,7 @@ def compare_xfoil_turbulent() -> None:
         s_sep_visc = rtn.x_end
 
     hm_inv = HeadMethod(nu=nu_inf, U_e=[s_ref, u_e_inv])
-    delta_m0 = np.sqrt(0.075*nu_inf/hm_inv.du_e(s[0]))  # Moran's method
+    delta_m0 = float(np.sqrt(0.075*nu_inf/hm_inv.du_e(s[0])))  # Moran's method
     shape_d0 = 2.35  # Thwaites method predicts this value for stagnation flow
     hm_inv.initial_delta_m = delta_m0
     hm_inv.initial_shape_d = shape_d0
@@ -167,7 +165,7 @@ def compare_xfoil_turbulent() -> None:
     ax.plot(s_ref_inv/c, np.abs(1-hm_inv.delta_d(s_ref_inv)/delta_d_ref_inv),
             color=thwaites_inv_color)
     ax.set_ylabel("Relative Difference")
-    ax.set_ylim([1e-3,1])
+    ax.set_ylim((1e-3,1))
     ax.set_yscale('log')
     ax.grid(True)
 
@@ -187,7 +185,7 @@ def compare_xfoil_turbulent() -> None:
     ax.plot(s_ref_inv/c, np.abs(1-hm_inv.delta_m(s_ref_inv)/delta_m_ref_inv),
             color=thwaites_inv_color)
     ax.set_ylabel("Relative Difference")
-    ax.set_ylim([1e-4,1])
+    ax.set_ylim((1e-4,1))
     ax.set_yscale('log')
     ax.grid(True)
 
@@ -207,7 +205,7 @@ def compare_xfoil_turbulent() -> None:
     ax.plot(s_ref_inv/c, np.abs(1-hm_inv.shape_d(s_ref_inv)/shape_d_ref_inv),
             color=thwaites_inv_color)
     ax.set_ylabel("Relative Difference")
-    ax.set_ylim([1e-3,1])
+    ax.set_ylim((1e-3,1))
     ax.set_yscale('log')
     ax.grid(True)
 
@@ -230,7 +228,7 @@ def compare_xfoil_turbulent() -> None:
                                     rho_inf)/(rho_inf*u_inf**2)/c_f_ref_inv),
             color=thwaites_inv_color)
     ax.set_ylabel("Relative Difference")
-    ax.set_ylim([1e-3,1])
+    ax.set_ylim((1e-3,1))
     ax.set_yscale('log')
     ax.grid(True)
 

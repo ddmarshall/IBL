@@ -1,10 +1,12 @@
-r"""
+"""
 Comparing Thwaites' tabular data approximations to Falkner-Skan values.
 
 This example shows a comparison between the tabular data from Thwaites (1949)
 and the equivalent values from Falkner-Skan solution.
 """
 
+# pyright: reportPrivateUsage=false
+# pylint: disable=protected-access
 
 from typing import Tuple
 

@@ -108,7 +108,7 @@ def compare_blasius_solution() -> None:
     axis_delta_d[0].grid(True)
 
     axis_delta_d[1].set_ylabel("Relative Error")
-    axis_delta_d[1].set_ylim([1e-4,1])
+    axis_delta_d[1].set_ylim((1e-4,1))
     axis_delta_d[1].set_yscale('log')
     axis_delta_d[1].grid(True)
 
@@ -118,7 +118,7 @@ def compare_blasius_solution() -> None:
     axis_delta_m[0].grid(True)
 
     axis_delta_m[1].set_ylabel("Relative Error")
-    axis_delta_m[1].set_ylim([1e-4,1])
+    axis_delta_m[1].set_ylim((1e-4,1))
     axis_delta_m[1].set_yscale('log')
     axis_delta_m[1].grid(True)
 
@@ -128,7 +128,7 @@ def compare_blasius_solution() -> None:
     axis_shape_d[0].grid(True)
 
     axis_shape_d[1].set_ylabel("Relative Error")
-    axis_shape_d[1].set_ylim([1e-4,1])
+    axis_shape_d[1].set_ylim((1e-4,1))
     axis_shape_d[1].set_yscale('log')
     axis_shape_d[1].grid(True)
 
@@ -138,7 +138,7 @@ def compare_blasius_solution() -> None:
     axis_c_f[0].grid(True)
 
     axis_c_f[1].set_ylabel("Relative Error")
-    axis_c_f[1].set_ylim([1e-4,1])
+    axis_c_f[1].set_ylim((1e-4,1))
     axis_c_f[1].set_yscale('log')
     axis_c_f[1].grid(True)
 
@@ -150,7 +150,7 @@ def compare_blasius_solution() -> None:
 
     axis_v_e[1].set_xlabel(r"$x/c$")
     axis_v_e[1].set_ylabel("Relative Error")
-    axis_v_e[1].set_ylim([1e-4,1])
+    axis_v_e[1].set_ylim((1e-4,1))
     axis_v_e[1].set_yscale('log')
     axis_v_e[1].grid(True)
 

@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 """
 Comparing Head's method solution for strong adverse pressure gradient case.
 
@@ -125,7 +123,7 @@ def compare_case1200() -> None:
     ax.plot(x_ref, np.abs(1-hm_sm2.delta_d(x_ref)/delta_d_ref),
             color=head_sm2_color)
     ax.set_ylabel("Relative Difference")
-    ax.set_ylim([1e-3,1])
+    ax.set_ylim((1e-3,1))
     ax.set_yscale('log')
     ax.grid(True)
 
@@ -147,7 +145,7 @@ def compare_case1200() -> None:
     ax.plot(x_ref, np.abs(1-hm_sm2.delta_m(x_ref)/delta_m_ref),
             color=head_sm2_color)
     ax.set_ylabel("Relative Difference")
-    ax.set_ylim([1e-3,1])
+    ax.set_ylim((1e-3,1))
     ax.set_yscale('log')
     ax.grid(True)
 
@@ -169,7 +167,7 @@ def compare_case1200() -> None:
     ax.plot(x_ref, np.abs(1-hm_sm2.shape_d(x_ref)/shape_d_ref),
             color=head_sm2_color)
     ax.set_ylabel("Relative Difference")
-    ax.set_ylim([1e-3,1])
+    ax.set_ylim((1e-3,1))
     ax.set_yscale('log')
     ax.grid(True)
 
@@ -191,7 +189,7 @@ def compare_case1200() -> None:
     temp = 2*hm_sm2.tau_w(x_ref, rho)/(rho*hm_sm2.u_e(x_ref)**2)
     ax.plot(x_ref, np.abs(1-temp/c_f_ref), color=head_sm2_color)
     ax.set_ylabel("Relative Difference")
-    ax.set_ylim([1e-3,1])
+    ax.set_ylim((1e-3,1))
     ax.set_yscale('log')
     ax.grid(True)
 
@@ -211,7 +209,7 @@ def compare_case1200() -> None:
     ax.plot(x_ref, np.abs(1-hm_sm.u_e(x_ref)/u_e_ref), color=head_sm_color)
     ax.plot(x_ref, np.abs(1-hm_sm2.u_e(x_ref)/u_e_ref), color=head_sm2_color)
     ax.set_ylabel("Relative Difference")
-    ax.set_ylim([1e-3,1])
+    ax.set_ylim((1e-3,1))
     ax.set_yscale('log')
     ax.grid(True)
 

@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 """
 Comparing Thwaites' method solution against XFoil case.
 
@@ -161,7 +159,7 @@ def compare_xfoil_laminar() -> None:
     ax.plot(s_ref_inv/c, np.abs(1-tm_inv.delta_d(s_ref_inv)/delta_d_ref_inv),
             color=thwaites_inv_color)
     ax.set_ylabel("Relative Difference")
-    ax.set_ylim([1e-3,1])
+    ax.set_ylim((1e-3,1))
     ax.set_yscale('log')
     ax.grid(True)
 
@@ -181,7 +179,7 @@ def compare_xfoil_laminar() -> None:
     ax.plot(s_ref_inv/c, np.abs(1-tm_inv.delta_m(s_ref_inv)/delta_m_ref_inv),
             color=thwaites_inv_color)
     ax.set_ylabel("Relative Difference")
-    ax.set_ylim([1e-5,1])
+    ax.set_ylim((1e-5,1))
     ax.set_yscale('log')
     ax.grid(True)
 
@@ -201,7 +199,7 @@ def compare_xfoil_laminar() -> None:
     ax.plot(s_ref_inv/c, np.abs(1-tm_inv.shape_d(s_ref_inv)/shape_d_ref_inv),
             color=thwaites_inv_color)
     ax.set_ylabel("Relative Difference")
-    ax.set_ylim([1e-3,1])
+    ax.set_ylim((1e-3,1))
     ax.set_yscale('log')
     ax.grid(True)
 
@@ -223,7 +221,7 @@ def compare_xfoil_laminar() -> None:
                                     rho_inf)/(rho_inf*u_inf**2)/c_f_ref_inv),
             color=thwaites_inv_color)
     ax.set_ylabel("Relative Difference")
-    ax.set_ylim([1e-4,1])
+    ax.set_ylim((1e-4,1))
     ax.set_yscale('log')
     ax.grid(True)
 
