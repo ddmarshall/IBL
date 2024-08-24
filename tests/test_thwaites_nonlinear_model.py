@@ -9,7 +9,8 @@ import numpy as np
 import numpy.typing as npt
 import numpy.testing as np_test
 
-from _thwaites_linear_analytic import ThwaitesLinearAnalytic
+# pylint: disable-next=line-too-long
+from _thwaites_linear_analytic import ThwaitesLinearAnalytic  # pyright: ignore[reportImplicitRelativeImport]
 
 from ibl.thwaites_method import ThwaitesMethodNonlinear
 from ibl.typing import InputParam
