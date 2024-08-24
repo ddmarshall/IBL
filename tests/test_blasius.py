@@ -9,7 +9,7 @@ import unittest
 import numpy as np
 import numpy.typing as npt
 import numpy.testing as np_test
-from scipy.integrate import quadrature
+from scipy.integrate import quad
 
 from ibl.analytic import Blasius
 
@@ -247,7 +247,7 @@ class TestBlasius(unittest.TestCase):
 
         def diss_fun(eta: FunType) -> FunType:
             return sol.f_pp(eta)**2
-        diss_ref = rho*nu*u_inf**2*g_ref*quadrature(diss_fun, 0, 10)[0]
+        diss_ref = rho*nu*u_inf**2*g_ref*quad(diss_fun, 0, 10)[0]
         self.assertIsNone(np_test.assert_allclose(sol.dissipation(x, rho),
                                                   diss_ref))
 

@@ -12,7 +12,7 @@ from typing import Optional, Tuple
 import numpy as np
 import numpy.typing as npt
 from scipy.integrate import solve_ivp
-from scipy.integrate import quadrature
+from scipy.integrate import quad
 from scipy.optimize import root_scalar
 
 from ibl.typing import InputParam, SolutionFunc
@@ -483,7 +483,7 @@ class Analytic2dSimilarityIncompressible(ABC):
         def k_fun(eta: float) -> float:
             return float(2*self.f(eta)*self.f_p(eta)*self.f_pp(eta))
 
-        self._eta_k = quadrature(k_fun, 0, self.eta_inf, vec_func=False)[0]
+        self._eta_k = quad(k_fun, 0, self.eta_inf)[0]
 
         def s_fun(eta: float) -> float:
             return float(0.99-self.f_p(eta))

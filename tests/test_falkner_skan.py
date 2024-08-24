@@ -6,7 +6,7 @@ import unittest
 import numpy as np
 import numpy.typing as npt
 import numpy.testing as np_test
-from scipy.integrate import quadrature
+from scipy.integrate import quad
 
 from ibl.analytic import FalknerSkan
 
@@ -197,7 +197,7 @@ class TestFalknerSkan(unittest.TestCase):
                     def diss_fun(eta: FunType) -> FunType:
                         # pylint: disable-next=cell-var-from-loop
                         return sol.f_pp(eta)**2
-                    diss_ref = rho*nu*u_e**2*g*quadrature(diss_fun, 0, 10)[0]
+                    diss_ref = rho*nu*u_e**2*g*quad(diss_fun, 0, 10)[0]
                     diss = sol.dissipation(x, rho)
                     self.assertIsNone(np_test.assert_allclose(diss, diss_ref,
                                                               atol=1e-6))
