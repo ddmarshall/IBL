@@ -9,11 +9,10 @@ import numpy as np
 import numpy.typing as npt
 import numpy.testing as np_test
 
+from _thwaites_linear_analytic import ThwaitesLinearAnalytic
+
 from ibl.thwaites_method import ThwaitesMethodNonlinear
 from ibl.typing import InputParam
-
-# pylint: disable-next=relative-beyond-top-level
-from ._thwaites_linear_analytic import ThwaitesLinearAnalytic
 
 
 class TestNonlinearThwaites(unittest.TestCase):
