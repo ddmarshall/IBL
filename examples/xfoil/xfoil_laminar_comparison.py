@@ -148,122 +148,127 @@ def compare_xfoil_laminar() -> None:
     thwaites_inv_curve = ax.plot(s_inv/c, delta_d_inv/c,
                                  color=thwaites_inv_color,
                                  label=thwaites_inv_label)
-    ax.set_ylim(0, 0.06)
-    ax.set_ylabel(r"$\delta_d/c$")
+    _ = ax.set_ylim(0, 0.06)
+    _ = ax.set_ylabel(r"$\delta_d/c$")
     ax.grid(True)
 
     ax = axis_delta_d_diff
-    ax.plot(s_ref_visc/c,
-            np.abs(1-tm_visc.delta_d(s_ref_visc)/delta_d_ref_visc),
-            color=thwaites_visc_color)
-    ax.plot(s_ref_inv/c, np.abs(1-tm_inv.delta_d(s_ref_inv)/delta_d_ref_inv),
-            color=thwaites_inv_color)
-    ax.set_ylabel("Relative Difference")
-    ax.set_ylim((1e-3,1))
+    _ = ax.plot(s_ref_visc/c,
+                np.abs(1-tm_visc.delta_d(s_ref_visc)/delta_d_ref_visc),
+                color=thwaites_visc_color)
+    _ = ax.plot(s_ref_inv/c,
+                np.abs(1-tm_inv.delta_d(s_ref_inv)/delta_d_ref_inv),
+                color=thwaites_inv_color)
+    _ = ax.set_ylabel("Relative Difference")
+    _ = ax.set_ylim((1e-3,1))
     ax.set_yscale('log')
     ax.grid(True)
 
     # Momentum thickness in 1,:
     ax = axis_delta_m
-    ax.plot(s_ref/c, delta_m_ref/c, color=ref_color)
-    ax.plot(s_visc/c, delta_m_visc/c, color=thwaites_visc_color)
-    ax.plot(s_inv/c, delta_m_inv/c, color=thwaites_inv_color)
-    ax.set_ylim(0, 0.025)
-    ax.set_ylabel(r"$\delta_m/c$")
+    _ = ax.plot(s_ref/c, delta_m_ref/c, color=ref_color)
+    _ = ax.plot(s_visc/c, delta_m_visc/c, color=thwaites_visc_color)
+    _ = ax.plot(s_inv/c, delta_m_inv/c, color=thwaites_inv_color)
+    _ = ax.set_ylim(0, 0.025)
+    _ = ax.set_ylabel(r"$\delta_m/c$")
     ax.grid(True)
 
     ax = axis_delta_m_diff
-    ax.plot(s_ref_visc/c,
-            np.abs(1-tm_visc.delta_m(s_ref_visc)/delta_m_ref_visc),
-            color=thwaites_visc_color)
-    ax.plot(s_ref_inv/c, np.abs(1-tm_inv.delta_m(s_ref_inv)/delta_m_ref_inv),
-            color=thwaites_inv_color)
-    ax.set_ylabel("Relative Difference")
-    ax.set_ylim((1e-5,1))
+    _ = ax.plot(s_ref_visc/c,
+                np.abs(1-tm_visc.delta_m(s_ref_visc)/delta_m_ref_visc),
+                color=thwaites_visc_color)
+    _ = ax.plot(s_ref_inv/c,
+                np.abs(1-tm_inv.delta_m(s_ref_inv)/delta_m_ref_inv),
+                color=thwaites_inv_color)
+    _ = ax.set_ylabel("Relative Difference")
+    _ = ax.set_ylim((1e-5,1))
     ax.set_yscale('log')
     ax.grid(True)
 
     # Displacement shape factor in 2,:
     ax = axis_shape_d
-    ax.plot(s_ref/c, shape_d_ref, color=ref_color)
-    ax.plot(s_visc/c, shape_d_visc, color=thwaites_visc_color)
-    ax.plot(s_inv/c, shape_d_inv, color=thwaites_inv_color)
-    ax.set_ylim(2.2, 3)
-    ax.set_ylabel(r"$H_d$")
+    _ = ax.plot(s_ref/c, shape_d_ref, color=ref_color)
+    _ = ax.plot(s_visc/c, shape_d_visc, color=thwaites_visc_color)
+    _ = ax.plot(s_inv/c, shape_d_inv, color=thwaites_inv_color)
+    _ = ax.set_ylim(2.2, 3)
+    _ = ax.set_ylabel(r"$H_d$")
     ax.grid(True)
 
     ax = axis_shape_d_diff
-    ax.plot(s_ref_visc/c, np.abs(1-tm_visc.shape_d(s_ref_visc)
-                                 / shape_d_ref_visc),
-            color=thwaites_visc_color)
-    ax.plot(s_ref_inv/c, np.abs(1-tm_inv.shape_d(s_ref_inv)/shape_d_ref_inv),
-            color=thwaites_inv_color)
-    ax.set_ylabel("Relative Difference")
-    ax.set_ylim((1e-3,1))
+    _ = ax.plot(s_ref_visc/c,
+                np.abs(1-tm_visc.shape_d(s_ref_visc)/shape_d_ref_visc),
+                color=thwaites_visc_color)
+    _ = ax.plot(s_ref_inv/c,
+                np.abs(1-tm_inv.shape_d(s_ref_inv)/shape_d_ref_inv),
+                color=thwaites_inv_color)
+    _ = ax.set_ylabel("Relative Difference")
+    _ = ax.set_ylim((1e-3,1))
     ax.set_yscale('log')
     ax.grid(True)
 
     # Skin friction coefficient in 3,:
     ax = axis_c_f
-    ax.plot(s_ref/c, c_f_ref, color=ref_color)
-    ax.plot(s_visc/c, c_f_visc, color=thwaites_visc_color)
-    ax.plot(s_inv/c, c_f_inv, color=thwaites_inv_color)
-    ax.set_ylabel(r"$c_f$")
+    _ = ax.plot(s_ref/c, c_f_ref, color=ref_color)
+    _ = ax.plot(s_visc/c, c_f_visc, color=thwaites_visc_color)
+    _ = ax.plot(s_inv/c, c_f_inv, color=thwaites_inv_color)
+    _ = ax.set_ylabel(r"$c_f$")
     ax.grid(True)
 
     ax = axis_c_f_diff
-    ax.plot(s_ref_visc/c,
-            np.abs(1-2*tm_visc.tau_w(s_ref_visc,
-                                     rho_inf)/(rho_inf*u_inf**2)/c_f_ref_visc),
-            color=thwaites_visc_color)
-    ax.plot(s_ref_inv/c,
-            np.abs(1-2*tm_inv.tau_w(s_ref_inv,
-                                    rho_inf)/(rho_inf*u_inf**2)/c_f_ref_inv),
-            color=thwaites_inv_color)
-    ax.set_ylabel("Relative Difference")
-    ax.set_ylim((1e-4,1))
+    _ = ax.plot(s_ref_visc/c,
+                np.abs(1-2*tm_visc.tau_w(s_ref_visc,
+                                         rho_inf)/(rho_inf
+                                                   *u_inf**2)/c_f_ref_visc),
+                color=thwaites_visc_color)
+    _ = ax.plot(s_ref_inv/c,
+                np.abs(1-2*tm_inv.tau_w(s_ref_inv,
+                                        rho_inf)/(rho_inf
+                                                  *u_inf**2)/c_f_ref_inv),
+                color=thwaites_inv_color)
+    _ = ax.set_ylabel("Relative Difference")
+    _ = ax.set_ylim((1e-4,1))
     ax.set_yscale('log')
     ax.grid(True)
 
     # Edge velocity in 4,:
     ax = axis_u_e
-    ax.plot(s_ref/c, u_e_visc/u_inf, color=thwaites_visc_color)
-    ax.plot(s_ref/c, u_e_inv/u_inf, color=thwaites_inv_color)
-    ax.set_ylim(0, 1.1)
-    ax.set_ylabel(r"$U_e/U_\infty$")
+    _ = ax.plot(s_ref/c, u_e_visc/u_inf, color=thwaites_visc_color)
+    _ = ax.plot(s_ref/c, u_e_inv/u_inf, color=thwaites_inv_color)
+    _ = ax.set_ylim(0, 1.1)
+    _ = ax.set_ylabel(r"$U_e/U_\infty$")
     ax.grid(True)
 
     ax = axis_du_e
-    ax.plot(s_visc/c, du_e_visc, color=thwaites_visc_color)
-    ax.plot(s_inv/c, du_e_inv, color=thwaites_inv_color)
-    ax.set_ylim(-2, 0.5)
-    ax.set_xlabel(r"$x/c$")
-    ax.set_ylabel(r"d$U_e/$d$x$ (1/s)")
+    _ = ax.plot(s_visc/c, du_e_visc, color=thwaites_visc_color)
+    _ = ax.plot(s_inv/c, du_e_inv, color=thwaites_inv_color)
+    _ = ax.set_ylim(-2, 0.5)
+    _ = ax.set_xlabel(r"$x/c$")
+    _ = ax.set_ylabel(r"d$U_e/$d$x$ (1/s)")
     ax.grid(True)
 
     # Transpiration velocity in 5,:
     ax = axis_d2u_e
-    ax.plot(s_visc/c, d2u_e_visc, color=thwaites_visc_color)
-    ax.plot(s_inv/c, d2u_e_inv, color=thwaites_inv_color)
-    ax.set_ylim(-5, 5)
-    ax.set_xlabel(r"$x/c$")
-    ax.set_ylabel(r"d$^2U_e/$d$x^2$ (1/(m$\cdot$s)")
+    _ = ax.plot(s_visc/c, d2u_e_visc, color=thwaites_visc_color)
+    _ = ax.plot(s_inv/c, d2u_e_inv, color=thwaites_inv_color)
+    _ = ax.set_ylim(-5, 5)
+    _ = ax.set_xlabel(r"$x/c$")
+    _ = ax.set_ylabel(r"d$^2U_e/$d$x^2$ (1/(m$\cdot$s)")
     ax.grid(True)
 
     ax = axis_v_e
-    ax.plot(s_visc/c, v_e_visc/u_inf, color=thwaites_visc_color)
-    ax.plot(s_inv/c, v_e_inv/u_inf, color=thwaites_inv_color)
-    ax.set_ylim(0, 0.1)
-    ax.set_xlabel(r"$x/c$")
-    ax.set_ylabel(r"$V_e/U_e$")
+    _ = ax.plot(s_visc/c, v_e_visc/u_inf, color=thwaites_visc_color)
+    _ = ax.plot(s_inv/c, v_e_inv/u_inf, color=thwaites_inv_color)
+    _ = ax.set_ylim(0, 0.1)
+    _ = ax.set_xlabel(r"$x/c$")
+    _ = ax.set_ylabel(r"$V_e/U_e$")
     ax.grid(True)
 
     fig.subplots_adjust(bottom=0.075, wspace=0.5)
-    fig.legend(handles=[ref_curve[0], thwaites_visc_curve[0],
-                        thwaites_inv_curve[0]],
-               labels=[ref_label, thwaites_visc_label, thwaites_inv_label],
-               loc="upper center", bbox_to_anchor=(0.45, 0.03), ncol=4,
-               borderaxespad=0.1)
+    _ = fig.legend(handles=[ref_curve[0], thwaites_visc_curve[0],
+                            thwaites_inv_curve[0]],
+                   labels=[ref_label, thwaites_visc_label, thwaites_inv_label],
+                   loc="upper center", bbox_to_anchor=(0.45, 0.03), ncol=4,
+                   borderaxespad=0.1)
     plt.show()
 
 

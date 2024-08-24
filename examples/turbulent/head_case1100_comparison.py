@@ -112,136 +112,139 @@ def compare_case1100() -> None:
                             label=head_sm_label)
     head_sm2_curve = ax.plot(x, delta_d_head_sm2, color=head_sm2_color,
                              label=head_sm2_label)
-    ax.set_ylim(0, 0.05)
-    ax.set_ylabel(r"$\delta_d$ (m)")
+    _ = ax.set_ylim((0, 0.05))
+    _ = ax.set_ylabel(r"$\delta_d$ (m)")
     ax.grid(True)
 
     ax = axis_delta_d_diff
-    ax.plot(x_ref, np.abs(1-hm_reg.delta_d(x_ref)/delta_d_ref),
-            color=head_reg_color)
-    ax.plot(x_ref, np.abs(1-hm_sm.delta_d(x_ref)/delta_d_ref),
-            color=head_sm_color)
-    ax.plot(x_ref, np.abs(1-hm_sm2.delta_d(x_ref)/delta_d_ref),
-            color=head_sm2_color)
-    ax.set_ylabel("Relative Difference")
-    ax.set_ylim((1e-3,1))
+    _ = ax.plot(x_ref, np.abs(1-hm_reg.delta_d(x_ref)/delta_d_ref),
+                color=head_reg_color)
+    _ = ax.plot(x_ref, np.abs(1-hm_sm.delta_d(x_ref)/delta_d_ref),
+                color=head_sm_color)
+    _ = ax.plot(x_ref, np.abs(1-hm_sm2.delta_d(x_ref)/delta_d_ref),
+                color=head_sm2_color)
+    _ = ax.set_ylabel("Relative Difference")
+    _ = ax.set_ylim((1e-3,1))
     ax.set_yscale('log')
     ax.grid(True)
 
     # Momentum thickness in 1,:
     ax = axis_delta_m
-    ax.plot(x_ref, delta_m_ref, color=ref_color, linestyle="", marker="o")
-    ax.plot(x, delta_m_head_reg, color=head_reg_color)
-    ax.plot(x, delta_m_head_sm, color=head_sm_color)
-    ax.plot(x, delta_m_head_sm2, color=head_sm2_color)
-    ax.set_ylim(0, 0.03)
-    ax.set_ylabel(r"$\delta_m$ (m)")
+    _ = ax.plot(x_ref, delta_m_ref, color=ref_color, linestyle="", marker="o")
+    _ = ax.plot(x, delta_m_head_reg, color=head_reg_color)
+    _ = ax.plot(x, delta_m_head_sm, color=head_sm_color)
+    _ = ax.plot(x, delta_m_head_sm2, color=head_sm2_color)
+    _ = ax.set_ylim((0, 0.03))
+    _ = ax.set_ylabel(r"$\delta_m$ (m)")
     ax.grid(True)
 
     ax = axis_delta_m_diff
-    ax.plot(x_ref, np.abs(1-hm_reg.delta_m(x_ref)/delta_m_ref),
-            color=head_reg_color)
-    ax.plot(x_ref, np.abs(1-hm_sm.delta_m(x_ref)/delta_m_ref),
-            color=head_sm_color)
-    ax.plot(x_ref, np.abs(1-hm_sm2.delta_m(x_ref)/delta_m_ref),
-            color=head_sm2_color)
-    ax.set_ylabel("Relative Difference")
-    ax.set_ylim((1e-3,1))
+    _ = ax.plot(x_ref, np.abs(1-hm_reg.delta_m(x_ref)/delta_m_ref),
+                color=head_reg_color)
+    _ = ax.plot(x_ref, np.abs(1-hm_sm.delta_m(x_ref)/delta_m_ref),
+                color=head_sm_color)
+    _ = ax.plot(x_ref, np.abs(1-hm_sm2.delta_m(x_ref)/delta_m_ref),
+                color=head_sm2_color)
+    _ = ax.set_ylabel("Relative Difference")
+    _ = ax.set_ylim((1e-3,1))
     ax.set_yscale('log')
     ax.grid(True)
 
     # Displacement shape factor in 2,:
     ax = axis_shape_d
-    ax.plot(x_ref, shape_d_ref, color=ref_color, linestyle="", marker="o")
-    ax.plot(x, shape_d_head_reg, color=head_reg_color)
-    ax.plot(x, shape_d_head_sm, color=head_sm_color)
-    ax.plot(x, shape_d_head_sm2, color=head_sm2_color)
-    ax.set_ylim(1, 2)
-    ax.set_ylabel(r"$H_d$")
+    _ = ax.plot(x_ref, shape_d_ref, color=ref_color, linestyle="", marker="o")
+    _ = ax.plot(x, shape_d_head_reg, color=head_reg_color)
+    _ = ax.plot(x, shape_d_head_sm, color=head_sm_color)
+    _ = ax.plot(x, shape_d_head_sm2, color=head_sm2_color)
+    _ = ax.set_ylim((1, 2))
+    _ = ax.set_ylabel(r"$H_d$")
     ax.grid(True)
 
     ax = axis_shape_d_diff
-    ax.plot(x_ref, np.abs(1-hm_reg.shape_d(x_ref)/shape_d_ref),
-            color=head_reg_color)
-    ax.plot(x_ref, np.abs(1-hm_sm.shape_d(x_ref)/shape_d_ref),
-            color=head_sm_color)
-    ax.plot(x_ref, np.abs(1-hm_sm2.shape_d(x_ref)/shape_d_ref),
-            color=head_sm2_color)
-    ax.set_ylabel("Relative Difference")
-    ax.set_ylim((1e-3,1))
+    _ = ax.plot(x_ref, np.abs(1-hm_reg.shape_d(x_ref)/shape_d_ref),
+                color=head_reg_color)
+    _ = ax.plot(x_ref, np.abs(1-hm_sm.shape_d(x_ref)/shape_d_ref),
+                color=head_sm_color)
+    _ = ax.plot(x_ref, np.abs(1-hm_sm2.shape_d(x_ref)/shape_d_ref),
+                color=head_sm2_color)
+    _ = ax.set_ylabel("Relative Difference")
+    _ = ax.set_ylim((1e-3,1))
     ax.set_yscale('log')
     ax.grid(True)
 
     # Skin friction coefficient in 3,:
     ax = axis_c_f
-    ax.plot(x_ref, c_f_ref, color=ref_color, linestyle="", marker="o")
-    ax.plot(x, c_f_head_reg, color=head_reg_color)
-    ax.plot(x, c_f_head_sm, color=head_sm_color)
-    ax.plot(x, c_f_head_sm2, color=head_sm2_color)
-    ax.set_ylim(0, 0.003)
-    ax.set_ylabel(r"$c_f$")
+    _ = ax.plot(x_ref, c_f_ref, color=ref_color, linestyle="", marker="o")
+    _ = ax.plot(x, c_f_head_reg, color=head_reg_color)
+    _ = ax.plot(x, c_f_head_sm, color=head_sm_color)
+    _ = ax.plot(x, c_f_head_sm2, color=head_sm2_color)
+    _ = ax.set_ylim((0, 0.003))
+    _ = ax.set_ylabel(r"$c_f$")
     ax.grid(True)
 
     ax = axis_c_f_diff
     temp = 2*hm_reg.tau_w(x_ref, rho)/(rho*hm_reg.u_e(x_ref)**2)
-    ax.plot(x_ref, np.abs(1-temp/c_f_ref), color=head_reg_color)
+    _ = ax.plot(x_ref, np.abs(1-temp/c_f_ref), color=head_reg_color)
     temp = 2*hm_sm.tau_w(x_ref, rho)/(rho*hm_sm.u_e(x_ref)**2)
-    ax.plot(x_ref, np.abs(1-temp/c_f_ref), color=head_sm_color)
+    _ = ax.plot(x_ref, np.abs(1-temp/c_f_ref), color=head_sm_color)
     temp = 2*hm_sm2.tau_w(x_ref, rho)/(rho*hm_sm2.u_e(x_ref)**2)
-    ax.plot(x_ref, np.abs(1-temp/c_f_ref),
-            color=head_sm2_color)
-    ax.set_ylabel("Relative Difference")
-    ax.set_ylim((1e-3,1))
+    _ = ax.plot(x_ref, np.abs(1-temp/c_f_ref),
+                color=head_sm2_color)
+    _ = ax.set_ylabel("Relative Difference")
+    _ = ax.set_ylim((1e-3,1))
     ax.set_yscale('log')
     ax.grid(True)
 
     # Edge velocity in 4,:
     ax = axis_u_e
-    ax.plot(x_sm, u_e_sm, color=ref_color, linestyle="", marker="o")
-    ax.plot(x, hm_reg.u_e(x), color=head_reg_color)
-    ax.plot(x, hm_sm.u_e(x), color=head_sm_color)
-    ax.plot(x, hm_sm2.u_e(x), color=head_sm2_color)
-    ax.set_ylim(20, 35)
-    ax.set_xlabel(r"$x$ (m)")
-    ax.set_ylabel(r"$U_e$ (m/s)")
+    _ = ax.plot(x_sm, u_e_sm, color=ref_color, linestyle="", marker="o")
+    _ = ax.plot(x, hm_reg.u_e(x), color=head_reg_color)
+    _ = ax.plot(x, hm_sm.u_e(x), color=head_sm_color)
+    _ = ax.plot(x, hm_sm2.u_e(x), color=head_sm2_color)
+    _ = ax.set_ylim((20, 35))
+    _ = ax.set_xlabel(r"$x$ (m)")
+    _ = ax.set_ylabel(r"$U_e$ (m/s)")
     ax.grid(True)
 
     ax = axis_u_e_diff
-    ax.plot(x_ref, np.abs(1-hm_reg.u_e(x_ref)/u_e_ref), color=head_reg_color)
-    ax.plot(x_ref, np.abs(1-hm_sm.u_e(x_ref)/u_e_ref), color=head_sm_color)
-    ax.plot(x_ref, np.abs(1-hm_sm2.u_e(x_ref)/u_e_ref), color=head_sm2_color)
-    ax.set_ylabel("Relative Difference")
-    ax.set_ylim((1e-3,1))
+    _ = ax.plot(x_ref, np.abs(1-hm_reg.u_e(x_ref)/u_e_ref),
+                color=head_reg_color)
+    _ = ax.plot(x_ref, np.abs(1-hm_sm.u_e(x_ref)/u_e_ref),
+                color=head_sm_color)
+    _ = ax.plot(x_ref, np.abs(1-hm_sm2.u_e(x_ref)/u_e_ref),
+                color=head_sm2_color)
+    _ = ax.set_ylabel("Relative Difference")
+    _ = ax.set_ylim((1e-3,1))
     ax.set_yscale('log')
     ax.grid(True)
 
     # Transpiration velocity in 5,:
     ax = axis_du_e
-    ax.plot(x_sm, du_e_sm, color=ref_color, linestyle="", marker="o")
-    ax.plot(x, hm_reg.du_e(x), color=head_reg_color)
-    ax.plot(x, hm_sm.du_e(x), color=head_sm_color)
-    ax.plot(x, hm_sm2.du_e(x), color=head_sm2_color)
-    ax.set_ylim(-1, -5)
-    ax.set_xlabel(r"$x$ (m)")
-    ax.set_ylabel(r"d$U_e/$d$x$ (1/s)")
+    _ = ax.plot(x_sm, du_e_sm, color=ref_color, linestyle="", marker="o")
+    _ = ax.plot(x, hm_reg.du_e(x), color=head_reg_color)
+    _ = ax.plot(x, hm_sm.du_e(x), color=head_sm_color)
+    _ = ax.plot(x, hm_sm2.du_e(x), color=head_sm2_color)
+    _ = ax.set_ylim((-1, -5))
+    _ = ax.set_xlabel(r"$x$ (m)")
+    _ = ax.set_ylabel(r"d$U_e/$d$x$ (1/s)")
     ax.grid(True)
 
     ax = axis_v_e
-    ax.plot(x, v_e_head_reg, color=head_reg_color)
-    ax.plot(x, v_e_head_sm, color=head_sm_color)
-    ax.plot(x, v_e_head_sm2, color=head_sm2_color)
-    ax.set_ylim(0, 0.4)
-    ax.set_xlabel(r"$x$ (m)")
-    ax.set_ylabel(r"$V_e$ (m/s)")
+    _ = ax.plot(x, v_e_head_reg, color=head_reg_color)
+    _ = ax.plot(x, v_e_head_sm, color=head_sm_color)
+    _ = ax.plot(x, v_e_head_sm2, color=head_sm2_color)
+    _ = ax.set_ylim((0, 0.4))
+    _ = ax.set_xlabel(r"$x$ (m)")
+    _ = ax.set_ylabel(r"$V_e$ (m/s)")
     ax.grid(True)
 
     fig.subplots_adjust(bottom=0.075, wspace=0.5)
-    fig.legend(handles=[ref_curve[0], head_reg_curve[0], head_sm_curve[0],
-                        head_sm2_curve[0]],
-               labels=[ref_label, head_reg_label, head_sm_label,
-                       head_sm2_label],
-               loc="upper center", bbox_to_anchor=(0.45, 0.03), ncol=4,
-               borderaxespad=0.1)
+    _ = fig.legend(handles=[ref_curve[0], head_reg_curve[0], head_sm_curve[0],
+                            head_sm2_curve[0]],
+                   labels=[ref_label, head_reg_label, head_sm_label,
+                           head_sm2_label],
+                   loc="upper center", bbox_to_anchor=(0.45, 0.03), ncol=4,
+                   borderaxespad=0.1)
     plt.show()
 
 

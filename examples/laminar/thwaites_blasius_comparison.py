@@ -64,10 +64,10 @@ def compare_blasius_solution() -> None:
     exact_color = "black"
     curve_handles = [axis_delta_d[0].plot(x/c, delta_d_exact/c,
                                           color=exact_color)[0]]
-    axis_delta_m[0].plot(x/c, delta_m_exact/c, color=exact_color)
-    axis_shape_d[0].plot(x/c, shape_d_exact, color=exact_color)
-    axis_c_f[0].plot(x/c, c_f_exact, color=exact_color)
-    axis_v_e[0].plot(x/c, v_e_exact/u_inf, color=exact_color)
+    _ = axis_delta_m[0].plot(x/c, delta_m_exact/c, color=exact_color)
+    _ = axis_shape_d[0].plot(x/c, shape_d_exact, color=exact_color)
+    _ = axis_c_f[0].plot(x/c, c_f_exact, color=exact_color)
+    _ = axis_v_e[0].plot(x/c, v_e_exact/u_inf, color=exact_color)
 
     # create the various models
     colors = ["green", "red"]
@@ -92,71 +92,74 @@ def compare_blasius_solution() -> None:
 
         curve_handles.append(axis_delta_d[0].plot(x/c, delta_d/c,
                                                   color=color)[0])
-        axis_delta_d[1].plot(x/c, np.abs(1-delta_d/delta_d_exact), color=color)
-        axis_delta_m[0].plot(x/c, delta_m/c, color=color)
-        axis_delta_m[1].plot(x/c, np.abs(1-delta_m/delta_m_exact), color=color)
-        axis_shape_d[0].plot(x/c, shape_d, color=color)
-        axis_shape_d[1].plot(x/c, np.abs(1-shape_d/shape_d_exact), color=color)
-        axis_c_f[0].plot(x/c, c_f, color=color)
-        axis_c_f[1].plot(x/c, np.abs(1-c_f/c_f_exact), color=color)
-        axis_v_e[0].plot(x/c, v_e/u_inf, color=color)
-        axis_v_e[1].plot(x/c, np.abs(1-v_e/v_e_exact), color=color)
+        _ = axis_delta_d[1].plot(x/c, np.abs(1-delta_d/delta_d_exact),
+                                 color=color)
+        _ = axis_delta_m[0].plot(x/c, delta_m/c, color=color)
+        _ = axis_delta_m[1].plot(x/c, np.abs(1-delta_m/delta_m_exact),
+                                 color=color)
+        _ = axis_shape_d[0].plot(x/c, shape_d, color=color)
+        _ = axis_shape_d[1].plot(x/c, np.abs(1-shape_d/shape_d_exact),
+                                 color=color)
+        _ = axis_c_f[0].plot(x/c, c_f, color=color)
+        _ = axis_c_f[1].plot(x/c, np.abs(1-c_f/c_f_exact), color=color)
+        _ = axis_v_e[0].plot(x/c, v_e/u_inf, color=color)
+        _ = axis_v_e[1].plot(x/c, np.abs(1-v_e/v_e_exact), color=color)
 
     # Displacement thickness in 0,:
-    axis_delta_d[0].set_ylim(0, 0.0015)
-    axis_delta_d[0].set_ylabel(r"$\delta_d/c$")
+    _ = axis_delta_d[0].set_ylim((0, 0.0015))
+    _ = axis_delta_d[0].set_ylabel(r"$\delta_d/c$")
     axis_delta_d[0].grid(True)
 
-    axis_delta_d[1].set_ylabel("Relative Error")
-    axis_delta_d[1].set_ylim((1e-4,1))
+    _ = axis_delta_d[1].set_ylabel("Relative Error")
+    _ = axis_delta_d[1].set_ylim((1e-4,1))
     axis_delta_d[1].set_yscale('log')
     axis_delta_d[1].grid(True)
 
     # Momentum thickness in 1,:
-    axis_delta_m[0].set_ylim(0, 0.0006)
-    axis_delta_m[0].set_ylabel(r"$\delta_m/c$")
+    _ = axis_delta_m[0].set_ylim(0, 0.0006)
+    _ = axis_delta_m[0].set_ylabel(r"$\delta_m/c$")
     axis_delta_m[0].grid(True)
 
-    axis_delta_m[1].set_ylabel("Relative Error")
-    axis_delta_m[1].set_ylim((1e-4,1))
+    _ = axis_delta_m[1].set_ylabel("Relative Error")
+    _ = axis_delta_m[1].set_ylim((1e-4,1))
     axis_delta_m[1].set_yscale('log')
     axis_delta_m[1].grid(True)
 
     # Displacement shape factor in 2,:
-    axis_shape_d[0].set_ylim(2.5, 2.7)
-    axis_shape_d[0].set_ylabel(r"$H_d$")
+    _ = axis_shape_d[0].set_ylim((2.5, 2.7))
+    _ = axis_shape_d[0].set_ylabel(r"$H_d$")
     axis_shape_d[0].grid(True)
 
-    axis_shape_d[1].set_ylabel("Relative Error")
-    axis_shape_d[1].set_ylim((1e-4,1))
+    _ = axis_shape_d[1].set_ylabel("Relative Error")
+    _ = axis_shape_d[1].set_ylim((1e-4,1))
     axis_shape_d[1].set_yscale('log')
     axis_shape_d[1].grid(True)
 
     # Skin friction coefficient in 3,:
-    axis_c_f[0].set_ylim(0, 0.01)
-    axis_c_f[0].set_ylabel(r"$c_f$")
+    _ = axis_c_f[0].set_ylim((0, 0.01))
+    _ = axis_c_f[0].set_ylabel(r"$c_f$")
     axis_c_f[0].grid(True)
 
-    axis_c_f[1].set_ylabel("Relative Error")
-    axis_c_f[1].set_ylim((1e-4,1))
+    _ = axis_c_f[1].set_ylabel("Relative Error")
+    _ = axis_c_f[1].set_ylim((1e-4,1))
     axis_c_f[1].set_yscale('log')
     axis_c_f[1].grid(True)
 
     # Transpiration velocity in 4,:
-    axis_v_e[0].set_ylim(0, 0.01)
-    axis_v_e[0].set_xlabel(r"$x/c$")
-    axis_v_e[0].set_ylabel(r"$V_e/U_\infty$")
+    _ = axis_v_e[0].set_ylim((0, 0.01))
+    _ = axis_v_e[0].set_xlabel(r"$x/c$")
+    _ = axis_v_e[0].set_ylabel(r"$V_e/U_\infty$")
     axis_v_e[0].grid(True)
 
-    axis_v_e[1].set_xlabel(r"$x/c$")
-    axis_v_e[1].set_ylabel("Relative Error")
-    axis_v_e[1].set_ylim((1e-4,1))
+    _ = axis_v_e[1].set_xlabel(r"$x/c$")
+    _ = axis_v_e[1].set_ylabel("Relative Error")
+    _ = axis_v_e[1].set_ylim((1e-4,1))
     axis_v_e[1].set_yscale('log')
     axis_v_e[1].grid(True)
 
-    fig.subplots_adjust(bottom=0.075, wspace=0.5)
-    fig.legend(handles=curve_handles, labels=labels, loc="upper center",
-               bbox_to_anchor=(0.45, 0.03), ncol=3, borderaxespad=0.1)
+    _ = fig.subplots_adjust(bottom=0.075, wspace=0.5)
+    _ = fig.legend(handles=curve_handles, labels=labels, loc="upper center",
+                   bbox_to_anchor=(0.45, 0.03), ncol=3, borderaxespad=0.1)
     plt.show()
 
 

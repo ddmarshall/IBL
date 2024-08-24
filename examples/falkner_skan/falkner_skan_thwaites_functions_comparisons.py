@@ -40,22 +40,22 @@ def compare_shape_d() -> None:
 
     # extract the original Thwaites tabular data for comparisons
     lam, shape, shear, f = get_thwaites_tabular_data()
-    axis_shape.plot(lam, shape, marker="o", linestyle="",
+    _ = axis_shape.plot(lam, shape, marker="o", linestyle="",
+                        color="black", label="Thwaites")
+    _ = axis_shear.plot(lam, shear, marker="o", linestyle="",
+                        color="black", label="Thwaites")
+    _ = axis_f.plot(lam, f, marker="o", linestyle="",
                     color="black", label="Thwaites")
-    axis_shear.plot(lam, shear, marker="o", linestyle="",
-                    color="black", label="Thwaites")
-    axis_f.plot(lam, f, marker="o", linestyle="",
-                color="black", label="Thwaites")
 
     # get the m values to needed to calculate the Falkner-Skan values
     m = np.array([2.0, 1.0, 0.6, 0.3, 0.1, 0.0, -0.05, -0.08, -0.09042860905])
     lam, shape, shear, f = calculate_falkner_skan_values(m)
-    axis_shape.plot(lam, shape, marker="o", linestyle="",
+    _ = axis_shape.plot(lam, shape, marker="o", linestyle="",
+                        color="cyan", label="Falkner-Skan")
+    _ = axis_shear.plot(lam, shear, marker="o", linestyle="",
+                        color="cyan", label="Falkner-Skan")
+    _ = axis_f.plot(lam, f, marker="o", linestyle="",
                     color="cyan", label="Falkner-Skan")
-    axis_shear.plot(lam, shear, marker="o", linestyle="",
-                    color="cyan", label="Falkner-Skan")
-    axis_f.plot(lam, f, marker="o", linestyle="",
-                color="cyan", label="Falkner-Skan")
 
     # Create the various fit models
     lambda_min = -0.1
@@ -69,30 +69,30 @@ def compare_shape_d() -> None:
         lam, shape, shear, f = calculate_thwaites_values(lambda_min,
                                                          lambda_max,
                                                          npts, model)
-        axis_shape.plot(lam, shape, color=color, label=label)
-        axis_shear.plot(lam, shear, color=color, label=label)
-        axis_f.plot(lam, f, color=color, label=label)
+        _ = axis_shape.plot(lam, shape, color=color, label=label)
+        _ = axis_shear.plot(lam, shear, color=color, label=label)
+        _ = axis_f.plot(lam, f, color=color, label=label)
 
     # Plot functions compared to the Thwaites tabulated values
     ax = axis_shape
-    ax.set_xlabel(r"$\lambda$")
-    ax.set_ylabel(r"$H\left(\lambda\right)$")
+    _ = ax.set_xlabel(r"$\lambda$")
+    _ = ax.set_ylabel(r"$H\left(\lambda\right)$")
     ax.grid(True)
-    ax.legend()
+    _ = ax.legend()
 
     # plot the shear function
     ax = axis_shear
-    ax.set_xlabel(r"$\lambda$")
-    ax.set_ylabel(r"$S\left(\lambda\right)$")
+    _ = ax.set_xlabel(r"$\lambda$")
+    _ = ax.set_ylabel(r"$S\left(\lambda\right)$")
     ax.grid(True)
-    ax.legend()
+    _ = ax.legend()
 
     # plot the f function
     ax = axis_f
-    ax.set_xlabel(r"$\lambda$")
-    ax.set_ylabel(r"$F\left(\lambda\right)$")
+    _ = ax.set_xlabel(r"$\lambda$")
+    _ = ax.set_ylabel(r"$F\left(\lambda\right)$")
     ax.grid(True)
-    ax.legend()
+    _ = ax.legend()
 
     plt.show()
 
