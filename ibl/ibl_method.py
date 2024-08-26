@@ -23,7 +23,6 @@ import numpy.typing as np_type
 
 from scipy.interpolate import PchipInterpolator
 from scipy.integrate import solve_ivp
-from scipy.misc import derivative as fd
 
 from ibl.initial_condition import InitialCondition
 from ibl.initial_condition import FalknerSkanStagCondition
@@ -400,6 +399,16 @@ class IBLMethod(ABC):
         ValueError
             When configuration parameter is invalid (see message).
         """
+        def fd_1f(fun: Callable, xo: InputParam, dx: float) -> InputParam:
+            """Use finite differences to approximate the derivative."""
+            return ((fun(xo-2*dx) - fun(xo+2*dx))/12
+                    - 2*(fun(xo-dx) - fun(xo+dx))/3)/dx
+        def fd_2f(fun: Callable, xo: InputParam, dx: float) -> InputParam:
+            """Use finite differences to approximate the derivative."""
+            return (-(fun(xo-2*dx) + fun(xo+2*dx))/12
+                    -2.5*(fun(xo))
+                    +4*(fun(xo-dx) + fun(xo+dx))/3)/(dx**2)
+
         # check if U_e is callable
         if callable(u_e):
             self._u_e = u_e
@@ -417,10 +426,18 @@ class IBLMethod(ABC):
                     self._d2u_e = u_e.derivative(2)
                 else:
                     # FIX: This is depricated in scipy
-                    self._du_e = lambda x: fd(self._u_e, x, 1e-4, n=1,
-                                              order=3)
-                    self._d2u_e = lambda x: fd(self._u_e, x, 1e-4, n=2,
-                                               order=3)
+                    def du_e_fun(x:InputParam) -> InputParam:
+                        # pylint: disable-next=line-too-long
+                        return fd_1f(self._u_e, xo=x, dx=1e-4)  #pyright: ignore[reportArgumentType]
+
+
+                    def d2u_e_fun(x:InputParam) -> InputParam:
+                        # pylint: disable-next=line-too-long
+                        return fd_2f(self._u_e, xo=x, dx=1e-4)  #pyright: ignore[reportArgumentType]
+
+
+                    self._du_e = du_e_fun
+                    self._d2u_e = d2u_e_fun
             else:
                 if not callable(du_e):
                     raise ValueError("Must pass in callable object for first "
@@ -434,9 +451,12 @@ class IBLMethod(ABC):
                             and callable(getattr(du_e, "derivative"))):
                         self._d2u_e = du_e.derivative()
                     else:
-                        # FIX: This is depricated in scipy
-                        self._d2u_e = lambda x: fd(self._du_e, x, 1e-5,
-                                                   n=1, order=3)
+                        def d2u_e_fun(x: InputParam) -> InputParam:
+                            # pylint: disable-next=line-too-long
+                            return fd_1f(self._du_e, xo=x, dx=1e-5)  #pyright: ignore[reportArgumentType]
+
+
+                        self._d2u_e = d2u_e_fun
                 else:
                     if not callable(du_e):
                         raise ValueError("Must pass in callable object for "
