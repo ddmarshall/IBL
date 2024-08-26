@@ -327,7 +327,7 @@ class IBLMethod(ABC):
     def __init__(self, nu: float, u_e: Optional[Any] = None,
                  du_e: Optional[Any] = None, d2u_e: Optional[Any] = None,
                  ic: Optional[InitialCondition] = None):
-        self._nu = 1e-5
+        self._nu = nu
         self._ic: InitialCondition = FalknerSkanStagCondition(0, nu)
 
         # set the velocity terms
