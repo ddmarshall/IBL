@@ -188,7 +188,7 @@ def compare_xfoil_turbulent() -> None:
                 color=thwaites_inv_color)
     _ = ax.set_ylabel("Relative Difference")
     _ = ax.set_ylim((1e-4,1))
-    _ = ax.set_yscale('log')
+    ax.set_yscale('log')
     ax.grid(True)
 
     # Displacement shape factor in 2,:
