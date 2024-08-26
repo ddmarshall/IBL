@@ -5,8 +5,8 @@ from typing import Tuple, Optional, Any
 from typing_extensions import override
 
 import numpy as np
-import numpy.testing as npt
-import numpy.typing as np_type
+import numpy.typing as npt
+import numpy.testing as np_type
 
 from scipy.interpolate import PchipInterpolator
 
@@ -112,14 +112,14 @@ class IBLMethodTest(IBLMethod):
             self._set_kill_event(_TestTermEvent(x_kill))
 
     @override
-    def _ode_setup(self) -> Tuple[np_type.NDArray, Optional[float],
+    def _ode_setup(self) -> Tuple[npt.NDArray, Optional[float],
                                   Optional[float]]:
         """
         Set the solver specific parameters.
 
         Returns
         -------
-        np_type.NDArray
+        numpy.ndarray
             IBL initialization array.
         Optional[float]
             Relative tolerance for ODE solver.
@@ -129,8 +129,8 @@ class IBLMethodTest(IBLMethod):
         return self.y0, None, None
 
     @override
-    def _ode_impl(self, x: np_type.NDArray,
-                  f: np_type.NDArray) -> np_type.NDArray:
+    def _ode_impl(self, x: npt.NDArray,
+                  f: npt.NDArray) -> npt.NDArray:
         """
         This is the derivatives of the ODEs that are to be solved
 
@@ -150,7 +150,7 @@ class IBLMethodTest(IBLMethod):
         return x
 
     @override
-    def v_e(self, x: InputParam) -> np_type.NDArray:
+    def v_e(self, x: InputParam) -> npt.NDArray:
         """
         Calculate the transpiration velocity.
 
@@ -167,7 +167,7 @@ class IBLMethodTest(IBLMethod):
         return np.zeros_like(x)
 
     @override
-    def delta_d(self, x: InputParam) -> np_type.NDArray:
+    def delta_d(self, x: InputParam) -> npt.NDArray:
         """
         Calculate the displacement thickness.
 
@@ -184,7 +184,7 @@ class IBLMethodTest(IBLMethod):
         return np.zeros_like(x)
 
     @override
-    def delta_m(self, x: InputParam) -> np_type.NDArray:
+    def delta_m(self, x: InputParam) -> npt.NDArray:
         """
         Calculate the momentum thickness.
 
@@ -201,7 +201,7 @@ class IBLMethodTest(IBLMethod):
         return np.zeros_like(x)
 
     @override
-    def delta_k(self, x: InputParam) -> np_type.NDArray:
+    def delta_k(self, x: InputParam) -> npt.NDArray:
         """
         Calculate the kinetic energy thickness.
 
@@ -218,7 +218,7 @@ class IBLMethodTest(IBLMethod):
         return np.zeros_like(x)
 
     @override
-    def shape_d(self, x: InputParam) -> np_type.NDArray:
+    def shape_d(self, x: InputParam) -> npt.NDArray:
         """
         Calculate the displacement shape factor.
 
@@ -235,7 +235,7 @@ class IBLMethodTest(IBLMethod):
         return np.zeros_like(x)
 
     @override
-    def shape_k(self, x: InputParam) -> np_type.NDArray:
+    def shape_k(self, x: InputParam) -> npt.NDArray:
         """
         Calculate the kinetic energy shape factor.
 
@@ -252,7 +252,7 @@ class IBLMethodTest(IBLMethod):
         return np.zeros_like(x)
 
     @override
-    def tau_w(self, x: InputParam, rho: float) -> np_type.NDArray:
+    def tau_w(self, x: InputParam, rho: float) -> npt.NDArray:
         """
         Calculate the wall shear stress.
 
@@ -272,7 +272,7 @@ class IBLMethodTest(IBLMethod):
         return np.zeros_like(x)
 
     @override
-    def dissipation(self, x: InputParam, rho: float) -> np_type.NDArray:
+    def dissipation(self, x: InputParam, rho: float) -> npt.NDArray:
         """
         Calculate the dissipation integral.
 
@@ -300,7 +300,7 @@ class IBLMethodTestTransition(TermEvent):
         super().__init__()
 
     @override
-    def _call_impl(self, x: float, f: np_type.NDArray) -> float:
+    def _call_impl(self, x: float, f: npt.NDArray) -> float:
         """
         Information used to determine if IBL test integrator should terminate.
 
@@ -353,7 +353,7 @@ class TestEdgeVelocity(unittest.TestCase):
 
     # define the edge velocity functions
     @staticmethod
-    def u_e_fun(x: InputParam, u_ref: float, m: float) -> np_type.NDArray:
+    def u_e_fun(x: InputParam, u_ref: float, m: float) -> npt.NDArray:
         """
         Return edge velocity.
 
@@ -377,7 +377,7 @@ class TestEdgeVelocity(unittest.TestCase):
         return u_ref*x**m
 
     @staticmethod
-    def du_e_fun(x: InputParam, u_ref: float, m: float) -> np_type.NDArray:
+    def du_e_fun(x: InputParam, u_ref: float, m: float) -> npt.NDArray:
         """
         Return the streamwise derivative of edge velocity.
 
@@ -403,7 +403,7 @@ class TestEdgeVelocity(unittest.TestCase):
         return m*u_ref*x**(m-1)
 
     @staticmethod
-    def d2u_e_fun(x: InputParam, u_ref: float, m: float) -> np_type.NDArray:
+    def d2u_e_fun(x: InputParam, u_ref: float, m: float) -> npt.NDArray:
         """
         Return the streamwise second derivative of edge velocity.
 
@@ -429,7 +429,7 @@ class TestEdgeVelocity(unittest.TestCase):
         return m*(m-1)*u_ref*x**(m-2)
 
     @staticmethod
-    def d3u_e_fun(x: InputParam, u_ref: float, m: float) -> np_type.NDArray:
+    def d3u_e_fun(x: InputParam, u_ref: float, m: float) -> npt.NDArray:
         """
         Return the streamwise third derivative of edge velocity.
 
@@ -477,9 +477,9 @@ class TestEdgeVelocity(unittest.TestCase):
         u_e_ref = self.u_e_fun(x, u_inf, m)
         du_e_ref = self.du_e_fun(x, u_inf, m)
         d2u_e_ref = self.d2u_e_fun(x, u_inf, m)
-        self.assertIsNone(npt.assert_allclose(iblb.u_e(x), u_e_ref))
-        self.assertIsNone(npt.assert_allclose(iblb.du_e(x), du_e_ref))
-        self.assertIsNone(npt.assert_allclose(iblb.d2u_e(x), d2u_e_ref))
+        self.assertIsNone(np_type.assert_allclose(iblb.u_e(x), u_e_ref))
+        self.assertIsNone(np_type.assert_allclose(iblb.du_e(x), du_e_ref))
+        self.assertIsNone(np_type.assert_allclose(iblb.d2u_e(x), d2u_e_ref))
 
         # create test class with two functions
         u_inf = 10
@@ -490,9 +490,9 @@ class TestEdgeVelocity(unittest.TestCase):
         u_e_ref = self.u_e_fun(x, u_inf, m)
         du_e_ref = self.du_e_fun(x, u_inf, m)
         d2u_e_ref = self.d2u_e_fun(x, u_inf, m)
-        self.assertIsNone(npt.assert_allclose(iblb.u_e(x), u_e_ref))
-        self.assertIsNone(npt.assert_allclose(iblb.du_e(x), du_e_ref))
-        self.assertIsNone(npt.assert_allclose(iblb.d2u_e(x), d2u_e_ref))
+        self.assertIsNone(np_type.assert_allclose(iblb.u_e(x), u_e_ref))
+        self.assertIsNone(np_type.assert_allclose(iblb.du_e(x), du_e_ref))
+        self.assertIsNone(np_type.assert_allclose(iblb.d2u_e(x), d2u_e_ref))
 
         # create test class with one function
         u_inf = 10
@@ -503,11 +503,11 @@ class TestEdgeVelocity(unittest.TestCase):
         u_e_ref = self.u_e_fun(x, u_inf, m)
         du_e_ref = self.du_e_fun(x, u_inf, m)
         d2u_e_ref = self.d2u_e_fun(x, u_inf, m)
-        self.assertIsNone(npt.assert_allclose(iblb.u_e(x), u_e_ref))
-        self.assertIsNone(npt.assert_allclose(iblb.du_e(x), du_e_ref))
+        self.assertIsNone(np_type.assert_allclose(iblb.u_e(x), u_e_ref))
+        self.assertIsNone(np_type.assert_allclose(iblb.du_e(x), du_e_ref))
         # NOTE: second derivative has slightly larger errors
-        self.assertIsNone(npt.assert_allclose(iblb.d2u_e(x), d2u_e_ref,
-                                              rtol=1e-5, atol=0))
+        self.assertIsNone(np_type.assert_allclose(iblb.d2u_e(x), d2u_e_ref,
+                                                  rtol=1e-5, atol=0))
 
     def test_setting_velocity_splines(self) -> None:
         """Test setting the velocity with splines."""
@@ -524,9 +524,9 @@ class TestEdgeVelocity(unittest.TestCase):
         u_e_ref = u_e(x)
         du_e_ref = du_e(x)
         d2u_e_ref = d2u_e(x)
-        self.assertIsNone(npt.assert_allclose(iblb.u_e(x), u_e_ref))
-        self.assertIsNone(npt.assert_allclose(iblb.du_e(x), du_e_ref))
-        self.assertIsNone(npt.assert_allclose(iblb.d2u_e(x), d2u_e_ref))
+        self.assertIsNone(np_type.assert_allclose(iblb.u_e(x), u_e_ref))
+        self.assertIsNone(np_type.assert_allclose(iblb.du_e(x), du_e_ref))
+        self.assertIsNone(np_type.assert_allclose(iblb.d2u_e(x), d2u_e_ref))
 
         # set the edge velocity derivative spline
         x_sample = np.linspace(0.1, 5, 8)
@@ -542,9 +542,9 @@ class TestEdgeVelocity(unittest.TestCase):
         u_e_ref = u_e(x)
         du_e_ref = du_e(x)
         d2u_e_ref = d2u_e(x)
-        self.assertIsNone(npt.assert_allclose(iblb.u_e(x), u_e_ref))
-        self.assertIsNone(npt.assert_allclose(iblb.du_e(x), du_e_ref))
-        self.assertIsNone(npt.assert_allclose(iblb.d2u_e(x), d2u_e_ref))
+        self.assertIsNone(np_type.assert_allclose(iblb.u_e(x), u_e_ref))
+        self.assertIsNone(np_type.assert_allclose(iblb.du_e(x), du_e_ref))
+        self.assertIsNone(np_type.assert_allclose(iblb.d2u_e(x), d2u_e_ref))
 
         # set the edge velocity second derivative spline
         x_sample = np.linspace(0.1, 5, 8)
@@ -561,9 +561,9 @@ class TestEdgeVelocity(unittest.TestCase):
         u_e_ref = u_e(x)
         du_e_ref = du_e(x)
         d2u_e_ref = d2u_e(x)
-        self.assertIsNone(npt.assert_allclose(iblb.u_e(x), u_e_ref))
-        self.assertIsNone(npt.assert_allclose(iblb.du_e(x), du_e_ref))
-        self.assertIsNone(npt.assert_allclose(iblb.d2u_e(x), d2u_e_ref))
+        self.assertIsNone(np_type.assert_allclose(iblb.u_e(x), u_e_ref))
+        self.assertIsNone(np_type.assert_allclose(iblb.du_e(x), du_e_ref))
+        self.assertIsNone(np_type.assert_allclose(iblb.d2u_e(x), d2u_e_ref))
 
     def test_setting_velocity_points(self) -> None:
         """Test setting velocity from points."""
@@ -582,9 +582,9 @@ class TestEdgeVelocity(unittest.TestCase):
         u_e_ref = u_e_spline(x)
         du_e_ref = du_e_spline(x)
         d2u_e_ref = d2u_e_spline(x)
-        self.assertIsNone(npt.assert_allclose(iblb.u_e(x), u_e_ref))
-        self.assertIsNone(npt.assert_allclose(iblb.du_e(x), du_e_ref))
-        self.assertIsNone(npt.assert_allclose(iblb.d2u_e(x), d2u_e_ref))
+        self.assertIsNone(np_type.assert_allclose(iblb.u_e(x), u_e_ref))
+        self.assertIsNone(np_type.assert_allclose(iblb.du_e(x), du_e_ref))
+        self.assertIsNone(np_type.assert_allclose(iblb.d2u_e(x), d2u_e_ref))
 
     def test_setting_velocity_derivative_points(self) -> None:
         """Test setting velocity derivative from points."""
@@ -606,9 +606,9 @@ class TestEdgeVelocity(unittest.TestCase):
         u_e_ref = u_e_spline(x)
         du_e_ref = du_e_spline(x)
         d2u_e_ref = d2u_e_spline(x)
-        self.assertIsNone(npt.assert_allclose(iblb.u_e(x), u_e_ref))
-        self.assertIsNone(npt.assert_allclose(iblb.du_e(x), du_e_ref))
-        self.assertIsNone(npt.assert_allclose(iblb.d2u_e(x), d2u_e_ref))
+        self.assertIsNone(np_type.assert_allclose(iblb.u_e(x), u_e_ref))
+        self.assertIsNone(np_type.assert_allclose(iblb.du_e(x), du_e_ref))
+        self.assertIsNone(np_type.assert_allclose(iblb.d2u_e(x), d2u_e_ref))
 
     def test_delay_setting_velocity(self) -> None:
         """Test setting the velocity after class creation."""
@@ -642,9 +642,9 @@ class TestEdgeVelocity(unittest.TestCase):
             _ = iblb.d2u_e(x)
 
         iblb.set_velocity(u_e=u_e_fun, du_e=du_e_fun, d2u_e=d2u_e_fun)
-        self.assertIsNone(npt.assert_allclose(iblb.u_e(x), u_e_ref))
-        self.assertIsNone(npt.assert_allclose(iblb.du_e(x), du_e_ref))
-        self.assertIsNone(npt.assert_allclose(iblb.d2u_e(x), d2u_e_ref))
+        self.assertIsNone(np_type.assert_allclose(iblb.u_e(x), u_e_ref))
+        self.assertIsNone(np_type.assert_allclose(iblb.du_e(x), du_e_ref))
+        self.assertIsNone(np_type.assert_allclose(iblb.d2u_e(x), d2u_e_ref))
 
     def test_terminating_solver(self) -> None:
         """Test early termination of solver."""
@@ -669,7 +669,7 @@ class TestEdgeVelocity(unittest.TestCase):
         # NOTE: No need to set the velocity terms because they are not used in
         #       this basic implementation.
         # NOTE: This solves the simple differential equation y'=x
-        def ref_fun(x: InputParam) -> np_type.NDArray:
+        def ref_fun(x: InputParam) -> npt.NDArray:
             return np.array([0.5*x**2+1])
 
         x_start = 1
@@ -680,7 +680,7 @@ class TestEdgeVelocity(unittest.TestCase):
         self.assertEqual(rtn.status, 0)
         self.assertEqual(rtn.message, "Completed")
         self.assertEqual(rtn.x_end, x_end)
-        self.assertIsNone(npt.assert_allclose(rtn.f_end, ref_fun(x_end)))
+        self.assertIsNone(np_type.assert_allclose(rtn.f_end, ref_fun(x_end)))
 
         # stop because solver terminated early
         x_start = 1
@@ -691,7 +691,7 @@ class TestEdgeVelocity(unittest.TestCase):
         self.assertEqual(rtn.status, TermReason.SEPARATED)
         self.assertEqual(rtn.message, "Separated")
         self.assertEqual(rtn.x_end, x_kill)
-        self.assertIsNone(npt.assert_allclose(rtn.f_end, ref_fun(x_kill)))
+        self.assertIsNone(np_type.assert_allclose(rtn.f_end, ref_fun(x_kill)))
 
         # stop because external trigger
         x_start = 1
@@ -705,7 +705,7 @@ class TestEdgeVelocity(unittest.TestCase):
         self.assertEqual(rtn.status, TermReason.TRANSITIONED)
         self.assertEqual(rtn.message, "Transition")
         self.assertEqual(rtn.x_end, x_trans)
-        self.assertIsNone(npt.assert_allclose(rtn.f_end, y_trans))
+        self.assertIsNone(np_type.assert_allclose(rtn.f_end, y_trans))
 
 
 if __name__ == "__main__":

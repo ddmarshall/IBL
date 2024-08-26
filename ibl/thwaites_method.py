@@ -14,7 +14,7 @@ from typing import Tuple, cast, Union, Callable, Optional, Any
 from typing_extensions import override
 
 import numpy as np
-import numpy.typing as np_type
+import numpy.typing as npt
 
 from scipy.interpolate import CubicSpline
 
@@ -136,7 +136,7 @@ class ThwaitesMethod(IBLMethod):
                 elif len(data_fits) == 2:
                     if callable(data_fits[0]) and callable(data_fits[1]):
                         # create finite difference approximation to derivative
-                        def shape_p_fun(lam: InputParam) -> np_type.NDArray:
+                        def shape_p_fun(lam: InputParam) -> npt.NDArray:
                             fun = self._model.shape
                             xo = lam
                             dx = 1e-5
@@ -160,7 +160,7 @@ class ThwaitesMethod(IBLMethod):
                                                       self._model.shear))
 
     @override
-    def v_e(self, x: InputParam) -> np_type.NDArray:
+    def v_e(self, x: InputParam) -> npt.NDArray:
         """
         Calculate the transpiration velocity.
 
@@ -190,7 +190,7 @@ class ThwaitesMethod(IBLMethod):
         return term1 + term2*(term3+term4*term5)
 
     @override
-    def delta_d(self, x: InputParam) -> np_type.NDArray:
+    def delta_d(self, x: InputParam) -> npt.NDArray:
         """
         Calculate the displacement thickness.
 
@@ -207,7 +207,7 @@ class ThwaitesMethod(IBLMethod):
         return self.delta_m(x)*self.shape_d(x)
 
     @override
-    def delta_m(self, x: InputParam) -> np_type.NDArray:
+    def delta_m(self, x: InputParam) -> npt.NDArray:
         """
         Calculate the momentum thickness.
 
@@ -227,7 +227,7 @@ class ThwaitesMethod(IBLMethod):
         return np.sqrt(self._solution(x)[0]*self._nu)
 
     @override
-    def delta_k(self, x: InputParam) -> np_type.NDArray:
+    def delta_k(self, x: InputParam) -> npt.NDArray:
         """
         Calculate the kinetic energy thickness.
 
@@ -244,7 +244,7 @@ class ThwaitesMethod(IBLMethod):
         return np.zeros_like(x)
 
     @override
-    def shape_d(self, x: InputParam) -> np_type.NDArray:
+    def shape_d(self, x: InputParam) -> npt.NDArray:
         """
         Calculate the displacement shape factor.
 
@@ -265,7 +265,7 @@ class ThwaitesMethod(IBLMethod):
         return self._model.shape(lam)
 
     @override
-    def shape_k(self, x: InputParam) -> np_type.NDArray:
+    def shape_k(self, x: InputParam) -> npt.NDArray:
         """
         Calculate the kinetic energy shape factor.
 
@@ -282,7 +282,7 @@ class ThwaitesMethod(IBLMethod):
         return self.delta_k(x)/self.delta_m(x)
 
     @override
-    def tau_w(self, x: InputParam, rho: float) -> np_type.NDArray:
+    def tau_w(self, x: InputParam, rho: float) -> npt.NDArray:
         """
         Calculate the wall shear stress.
 
@@ -305,7 +305,7 @@ class ThwaitesMethod(IBLMethod):
         return rho*self._nu*self.u_e(x)*self._model.shear(lam)/self.delta_m(x)
 
     @override
-    def dissipation(self, x: InputParam, rho: float) -> np_type.NDArray:
+    def dissipation(self, x: InputParam, rho: float) -> npt.NDArray:
         """
         Calculate the dissipation integral.
 
@@ -324,7 +324,7 @@ class ThwaitesMethod(IBLMethod):
         return np.zeros_like(x)
 
     @override
-    def _ode_setup(self) -> Tuple[np_type.NDArray, float, float]:
+    def _ode_setup(self) -> Tuple[npt.NDArray, float, float]:
         """
         Set the solver specific parameters.
 
@@ -338,8 +338,8 @@ class ThwaitesMethod(IBLMethod):
         return np.array([self._ic.delta_m()**2/self._nu]), 1e-8, 1e-11
 
     @override
-    def _ode_impl(self, x: np_type.NDArray,
-                  f: np_type.NDArray) -> np_type.NDArray:
+    def _ode_impl(self, x: npt.NDArray,
+                  f: npt.NDArray) -> npt.NDArray:
         """
         Right-hand-side of the ODE representing Thwaites method.
 
@@ -359,7 +359,7 @@ class ThwaitesMethod(IBLMethod):
         return self._calc_f(x, f)/(1e-3 + self.u_e(x))
 
     def _calc_lambda(self, x: InputParam,
-                     delta_m2_on_nu: np_type.NDArray) -> np_type.NDArray:
+                     delta_m2_on_nu: npt.NDArray) -> npt.NDArray:
         r"""
         Calculate the :math:`\lambda` term needed in Thwaites' method.
 
@@ -378,8 +378,8 @@ class ThwaitesMethod(IBLMethod):
         return delta_m2_on_nu*self.du_e(x)
 
     @abstractmethod
-    def _calc_f(self, x: np_type.NDArray,
-                delta_m2_on_nu: np_type.NDArray) -> np_type.NDArray:
+    def _calc_f(self, x: npt.NDArray,
+                delta_m2_on_nu: npt.NDArray) -> npt.NDArray:
         """
         Calculate the :math:`F` term in the ODE.
 
@@ -421,8 +421,8 @@ class ThwaitesMethodLinear(ThwaitesMethod):
     """
 
     @override
-    def _calc_f(self, x: np_type.NDArray,
-                delta_m2_on_nu: np_type.NDArray) -> np_type.NDArray:
+    def _calc_f(self, x: npt.NDArray,
+                delta_m2_on_nu: npt.NDArray) -> npt.NDArray:
         r"""
         Calculate the :math:`F` term in the ODE using the linear approximation.
 
@@ -471,8 +471,8 @@ class ThwaitesMethodNonlinear(ThwaitesMethod):
     """
 
     @override
-    def _calc_f(self, x: np_type.NDArray,
-                delta_m2_on_nu: np_type.NDArray) -> np_type.NDArray:
+    def _calc_f(self, x: npt.NDArray,
+                delta_m2_on_nu: npt.NDArray) -> npt.NDArray:
         r"""
         Calculate the :math:`F` term in the ODE using the actual relationship.
 
@@ -514,19 +514,19 @@ class _ThwaitesFunctions:
         """Return a 2-tuple for the start and end of range."""
         return self._range[0], self._range[1]
 
-    def shape(self, lam: InputParam) -> np_type.NDArray:
+    def shape(self, lam: InputParam) -> npt.NDArray:
         """Return the shape factor term."""
         return self._shape_fun(self._check_range(lam))
 
-    def shape_p(self, lam: InputParam) -> np_type.NDArray:
+    def shape_p(self, lam: InputParam) -> npt.NDArray:
         """Return the derivative of the shape factor term."""
         return self._shape_p_fun(self._check_range(lam))
 
-    def shear(self, lam: InputParam) -> np_type.NDArray:
+    def shear(self, lam: InputParam) -> npt.NDArray:
         """Return the shear term."""
         return self._shear_fun(self._check_range(lam))
 
-    def f(self, lam: InputParam) -> np_type.NDArray:
+    def f(self, lam: InputParam) -> npt.NDArray:
         """Return the F term."""
         return 2*(self.shear(lam) - lam*(self.shape(lam)+2))
 
@@ -673,22 +673,22 @@ class _ThwaitesFunctionsSpline(_ThwaitesFunctions):
                          np.min(self._tab_lambda), np.max(self._tab_lambda))
 
     @property
-    def shear_values(self) -> np_type.NDArray:
+    def shear_values(self) -> npt.NDArray:
         """Tabular values for the shear term."""
         return self._tab_shear
 
     @property
-    def shape_values(self) -> np_type.NDArray:
+    def shape_values(self) -> npt.NDArray:
         """Tabular values for the shape term."""
         return self._tab_shape
 
     @property
-    def lambda_values(self) -> np_type.NDArray:
+    def lambda_values(self) -> npt.NDArray:
         """Tabular values for the lambda term."""
         return self._tab_lambda
 
     @property
-    def f_values(self) -> np_type.NDArray:
+    def f_values(self) -> npt.NDArray:
         """Tabular values for the F term."""
         return self._tab_f
 
@@ -711,7 +711,7 @@ class _ThwaitesSeparationEvent(TermEvent):
         self._shear_fun = shear_fun
 
     @override
-    def _call_impl(self, x: float, f: np_type.NDArray) -> float:
+    def _call_impl(self, x: float, f: npt.NDArray) -> float:
         """
         Help determine if Thwaites method integrator should terminate.
 

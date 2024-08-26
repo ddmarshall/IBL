@@ -19,7 +19,7 @@ from typing import Union, Tuple, Callable, List, Optional, Any
 from typing_extensions import override
 
 import numpy as np
-import numpy.typing as np_type
+import numpy.typing as npt
 
 from scipy.interpolate import PchipInterpolator
 from scipy.integrate import solve_ivp
@@ -173,7 +173,7 @@ class TermEvent(ABC):
         # integration should terminate
         self.terminal = True
 
-    def __call__(self, x: float, f: np_type.NDArray) -> float:
+    def __call__(self, x: float, f: npt.NDArray) -> float:
         """
         Determine if integration should terminate.
 
@@ -214,7 +214,7 @@ class TermEvent(ABC):
         """
 
     @abstractmethod
-    def _call_impl(self, x: float, f: np_type.NDArray) -> float:
+    def _call_impl(self, x: float, f: npt.NDArray) -> float:
         """
         Information used to determine if IBL integrator should terminate.
 
@@ -593,7 +593,7 @@ class IBLMethod(ABC):
         return IntegrationResult(x_end=x_end, f_end=f_end, status=status,
                                  message=message, success=rtn.success)
 
-    def u_e(self, x: InputParam) -> np_type.NDArray:
+    def u_e(self, x: InputParam) -> npt.NDArray:
         """
         Return the inviscid edge velocity at specified location(s).
 
@@ -616,7 +616,7 @@ class IBLMethod(ABC):
             raise ValueError("u_e was not set")
         return self._u_e(x)
 
-    def du_e(self, x: InputParam) -> np_type.NDArray:
+    def du_e(self, x: InputParam) -> npt.NDArray:
         """
         Streamwise derivative of inviscid edge velocity at location(s).
 
@@ -639,7 +639,7 @@ class IBLMethod(ABC):
             raise ValueError("du_e was not set")
         return self._du_e(x)
 
-    def d2u_e(self, x: InputParam) -> np_type.NDArray:
+    def d2u_e(self, x: InputParam) -> npt.NDArray:
         """
         Streamwise second derivative of inviscid edge velocity at location(s).
 
@@ -693,7 +693,7 @@ class IBLMethod(ABC):
             self._kill_events = ke
 
     @abstractmethod
-    def v_e(self, x: InputParam) -> np_type.NDArray:
+    def v_e(self, x: InputParam) -> npt.NDArray:
         """
         Calculate the transpiration velocity.
 
@@ -709,7 +709,7 @@ class IBLMethod(ABC):
         """
 
     @abstractmethod
-    def delta_d(self, x: InputParam) -> np_type.NDArray:
+    def delta_d(self, x: InputParam) -> npt.NDArray:
         """
         Calculate the displacement thickness.
 
@@ -725,7 +725,7 @@ class IBLMethod(ABC):
         """
 
     @abstractmethod
-    def delta_m(self, x: InputParam) -> np_type.NDArray:
+    def delta_m(self, x: InputParam) -> npt.NDArray:
         """
         Calculate the momentum thickness.
 
@@ -741,7 +741,7 @@ class IBLMethod(ABC):
         """
 
     @abstractmethod
-    def delta_k(self, x: InputParam) -> np_type.NDArray:
+    def delta_k(self, x: InputParam) -> npt.NDArray:
         """
         Calculate the kinetic energy thickness.
 
@@ -757,7 +757,7 @@ class IBLMethod(ABC):
         """
 
     @abstractmethod
-    def shape_d(self, x: InputParam) -> np_type.NDArray:
+    def shape_d(self, x: InputParam) -> npt.NDArray:
         """
         Calculate the displacement shape factor.
 
@@ -773,7 +773,7 @@ class IBLMethod(ABC):
         """
 
     @abstractmethod
-    def shape_k(self, x: InputParam) -> np_type.NDArray:
+    def shape_k(self, x: InputParam) -> npt.NDArray:
         """
         Calculate the kinetic energy shape factor.
 
@@ -789,7 +789,7 @@ class IBLMethod(ABC):
         """
 
     @abstractmethod
-    def tau_w(self, x: InputParam, rho: float) -> np_type.NDArray:
+    def tau_w(self, x: InputParam, rho: float) -> npt.NDArray:
         """
         Calculate the wall shear stress.
 
@@ -807,7 +807,7 @@ class IBLMethod(ABC):
         """
 
     @abstractmethod
-    def dissipation(self, x: InputParam, rho: float) -> np_type.NDArray:
+    def dissipation(self, x: InputParam, rho: float) -> npt.NDArray:
         """
         Calculate the dissipation integral.
 
@@ -825,14 +825,14 @@ class IBLMethod(ABC):
         """
 
     @abstractmethod
-    def _ode_setup(self) -> Tuple[np_type.NDArray, Optional[float],
+    def _ode_setup(self) -> Tuple[npt.NDArray, Optional[float],
                                   Optional[float]]:
         """
         Set the solver specific parameters.
 
         Returns
         -------
-        np_type.NDArray
+        numpy.ndarray
             IBL initialization array.
         Optional[float]
             Relative tolerance for ODE solver.
@@ -841,8 +841,8 @@ class IBLMethod(ABC):
         """
 
     @abstractmethod
-    def _ode_impl(self, x: np_type.NDArray,
-                  f: np_type.NDArray) -> np_type.NDArray:
+    def _ode_impl(self, x: npt.NDArray,
+                  f: npt.NDArray) -> npt.NDArray:
         """
         Right-hand-side of the ODE representing Thwaites method.
 

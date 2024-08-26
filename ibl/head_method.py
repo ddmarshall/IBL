@@ -9,7 +9,7 @@ from typing import Tuple, cast, Optional, Any
 from typing_extensions import override
 
 import numpy as np
-import numpy.typing as np_type
+import numpy.typing as npt
 
 from ibl.ibl_method import IBLMethod
 from ibl.ibl_method import TermReason
@@ -82,7 +82,7 @@ class HeadMethod(IBLMethod):
         self._set_kill_event(_HeadSeparationEvent(shape_d_crit))
 
     @override
-    def v_e(self, x: InputParam) -> np_type.NDArray:
+    def v_e(self, x: InputParam) -> npt.NDArray:
         """
         Calculate the transpiration velocity.
 
@@ -107,7 +107,7 @@ class HeadMethod(IBLMethod):
         return du_e*shape_d*delta_m + u_e*y_p[1]*delta_m + u_e*shape_d*y_p[0]
 
     @override
-    def delta_d(self, x: InputParam) -> np_type.NDArray:
+    def delta_d(self, x: InputParam) -> npt.NDArray:
         """
         Calculate the displacement thickness.
 
@@ -124,7 +124,7 @@ class HeadMethod(IBLMethod):
         return self.delta_m(x)*self.shape_d(x)
 
     @override
-    def delta_m(self, x: InputParam) -> np_type.NDArray:
+    def delta_m(self, x: InputParam) -> npt.NDArray:
         """
         Calculate the momentum thickness.
 
@@ -144,7 +144,7 @@ class HeadMethod(IBLMethod):
         return self._solution(x)[0]
 
     @override
-    def delta_k(self, x: InputParam) -> np_type.NDArray:
+    def delta_k(self, x: InputParam) -> npt.NDArray:
         """
         Calculate the kinetic energy thickness.
 
@@ -161,7 +161,7 @@ class HeadMethod(IBLMethod):
         return np.zeros_like(x)
 
     @override
-    def shape_d(self, x: InputParam) -> np_type.NDArray:
+    def shape_d(self, x: InputParam) -> npt.NDArray:
         """
         Calculate the displacement shape factor.
 
@@ -181,7 +181,7 @@ class HeadMethod(IBLMethod):
         return self._solution(x)[1]
 
     @override
-    def shape_k(self, x: InputParam) -> np_type.NDArray:
+    def shape_k(self, x: InputParam) -> npt.NDArray:
         """
         Calculate the kinetic energy shape factor.
 
@@ -198,7 +198,7 @@ class HeadMethod(IBLMethod):
         return self.delta_k(x)/self.delta_m(x)
 
     @override
-    def tau_w(self, x: InputParam, rho: float) -> np_type.NDArray:
+    def tau_w(self, x: InputParam, rho: float) -> npt.NDArray:
         """
         Calculate the wall shear stress.
 
@@ -226,7 +226,7 @@ class HeadMethod(IBLMethod):
         return 0.5*rho*u_e**2*c_f
 
     @override
-    def dissipation(self, x: InputParam, rho: float) -> np_type.NDArray:
+    def dissipation(self, x: InputParam, rho: float) -> npt.NDArray:
         """
         Calculate the dissipation integral.
 
@@ -245,7 +245,7 @@ class HeadMethod(IBLMethod):
         return np.zeros_like(x)
 
     @override
-    def _ode_setup(self) -> Tuple[np_type.NDArray, float, float]:
+    def _ode_setup(self) -> Tuple[npt.NDArray, float, float]:
         """
         Set the solver specific parameters.
 
@@ -260,7 +260,7 @@ class HeadMethod(IBLMethod):
 
     @override
     def _ode_impl(self, x: InputParam,
-                  f: np_type.NDArray) -> np_type.NDArray:
+                  f: npt.NDArray) -> npt.NDArray:
         """
         Right-hand-side of the ODE representing Thwaites method.
 
@@ -300,7 +300,7 @@ class HeadMethod(IBLMethod):
         return f_p
 
     @staticmethod
-    def _shape_entrainment(shape_d: InputParam) -> np_type.NDArray:
+    def _shape_entrainment(shape_d: InputParam) -> npt.NDArray:
         """
         Calculate the entrainment shape factor from displacement shape factor.
 
@@ -338,7 +338,7 @@ class HeadMethod(IBLMethod):
                             [shape_entrainment_low, shape_entrainment_high])
 
     @staticmethod
-    def _shape_entrainment_p(shape_d: InputParam) -> np_type.NDArray:
+    def _shape_entrainment_p(shape_d: InputParam) -> npt.NDArray:
         """
         Calculate the derivative of the shape entrainment factor.
 
@@ -374,7 +374,7 @@ class HeadMethod(IBLMethod):
                             [shape_entrainment_low, shape_entrainment_high])
 
     @staticmethod
-    def _shape_d(shape_entrainment: InputParam) -> np_type.NDArray:
+    def _shape_d(shape_entrainment: InputParam) -> npt.NDArray:
         """
         Calculate the displacement shape factor from entrainment shape factor.
 
@@ -415,7 +415,7 @@ class HeadMethod(IBLMethod):
                             [shape_d_low, shape_d_high])
 
     @staticmethod
-    def _entrainment_velocity(shape_entr: InputParam) -> np_type.NDArray:
+    def _entrainment_velocity(shape_entr: InputParam) -> npt.NDArray:
         shape_entr = np.asarray(shape_entr, float)
         if (shape_entr <= 3).any():
             shape_entr[shape_entr <= 3] = 3.001
@@ -449,7 +449,7 @@ class _HeadSeparationEvent(TermEvent):
         self._shape_d_crit = shape_d_crit
 
     @override
-    def _call_impl(self, x: float, f: np_type.NDArray) -> float:
+    def _call_impl(self, x: float, f: npt.NDArray) -> float:
         """
         Determine if Head method integrator should terminate.
 
