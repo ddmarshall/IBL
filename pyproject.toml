@@ -81,7 +81,6 @@ files = [
 [[tool.mypy.overrides]]
 module = [
     "scipy.*",
-    "matplotlib.*"
 ]
 ignore_missing_imports = true
 
@@ -147,4 +146,3 @@ exclude_also = [
     "@(abc\\.)?abstractmethod",
 ]
 ignore_errors = true
-
