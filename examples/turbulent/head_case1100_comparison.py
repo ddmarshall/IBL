@@ -6,6 +6,8 @@ This example shows a comparison between Head's method and case 1100 from the
 Figures 3.10 to 3.16 in Edland thesis.
 """
 
+# pylint: disable=too-many-statements,too-many-locals
+
 # pylint: disable=duplicate-code
 import numpy as np
 import matplotlib.pyplot as plt

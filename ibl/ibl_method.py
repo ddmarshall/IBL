@@ -12,6 +12,8 @@ All integral boundary layer method classes return an instance of
 :class:`IBLResult` when the solver has completed.
 """
 
+# pylint: disable=too-many-branches, too-many-statements
+
 from abc import ABC, abstractmethod
 from enum import IntEnum, auto
 

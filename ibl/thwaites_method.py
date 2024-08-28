@@ -9,6 +9,8 @@ assumption that the ODE to be solved fits a linear relationship, and
 assumption and provides slightly better results in all cases tested.
 """
 
+# pylint: disable=too-many-branches
+
 from abc import abstractmethod
 from typing import Tuple, cast, Union, Callable, Optional, Any
 from typing_extensions import override
