@@ -9,7 +9,7 @@ All integral boundary layer method classes should inherit from
 :class:`IBLMethod`.
 
 All integral boundary layer method classes return an instance of
-:class:`IBLResult` when the solver has completed.
+:class:`IntegrationResult` when the solver has completed.
 """
 
 # pylint: disable=too-many-branches, too-many-statements
@@ -525,13 +525,13 @@ class IBLMethod(ABC):
             Location to start integration.
         x_end : float
             Location to end integration.
-        term_event : List based on :class:`IBLTermEvent`, optional
+        term_event : List based on :class:`TermEvent`, optional
             User events that can terminate the integration process before the
             end location of the integration is reached. The default is `None`.
 
         Returns
         -------
-        IBLResult
+        IntegrationResult
             Information associated with the integration process.
 
         Raises
