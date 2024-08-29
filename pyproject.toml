@@ -32,7 +32,8 @@ classifiers = [
 ]
 dependencies = [
     "numpy==1.24",
-    "scipy==1.12"
+    "scipy==1.12",
+    "typing_extensions==4.12"
 ]
 
 [project.urls]
@@ -80,7 +81,6 @@ files = [
 [[tool.mypy.overrides]]
 module = [
     "scipy.*",
-    "matplotlib.*"
 ]
 ignore_missing_imports = true
 
@@ -146,4 +146,3 @@ exclude_also = [
     "@(abc\\.)?abstractmethod",
 ]
 ignore_errors = true
-

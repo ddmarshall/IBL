@@ -7,6 +7,7 @@ layer equations.
 
 
 from typing import Optional
+from typing_extensions import override
 
 import numpy as np
 
@@ -96,7 +97,7 @@ class FalknerSkan(Analytic2dSimilarityIncompressible):
         # Error checking
         if (beta < -0.19884) or (beta > 2):
             raise ValueError("Invalid wedge angle parameter: "
-                             f"{beta}")
+                             + f"{beta}")
         self._beta = beta
 
         self.set_solution_parameters(fw_pp=fw_pp, eta_inf=eta_inf)
@@ -134,6 +135,7 @@ class FalknerSkan(Analytic2dSimilarityIncompressible):
 
         self.reset_beta(beta=beta, eta_inf=eta_inf, fw_pp=fw_pp)
 
+    @override
     def _g(self, x: InputParam) -> InputParam:
         """
         Calculates the transformation parameter.

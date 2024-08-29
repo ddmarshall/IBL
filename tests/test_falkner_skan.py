@@ -6,7 +6,7 @@ import unittest
 import numpy as np
 import numpy.typing as npt
 import numpy.testing as np_test
-from scipy.integrate import quadrature
+from scipy.integrate import quad
 
 from ibl.analytic import FalknerSkan
 
@@ -104,7 +104,7 @@ class TestFalknerSkan(unittest.TestCase):
 
         # test setting bad values
         with self.assertRaises(ValueError):
-            FalknerSkan(beta=3.0, u_ref=10.0, nu_ref=1e-5)
+            _ = FalknerSkan(beta=3.0, u_ref=10.0, nu_ref=1e-5)
         with self.assertRaises(ValueError):
             sol.reset_beta(beta=-1.0)
 
@@ -114,7 +114,7 @@ class TestFalknerSkan(unittest.TestCase):
         nu = 1e-5
         rho = 1
 
-        FunType = Union[float, npt.NDArray]
+        FunType = Union[float, np.floating, npt.NDArray]
 
         for idx in range(0, 6):
             with self.subTest(i=idx):
@@ -197,7 +197,7 @@ class TestFalknerSkan(unittest.TestCase):
                     def diss_fun(eta: FunType) -> FunType:
                         # pylint: disable-next=cell-var-from-loop
                         return sol.f_pp(eta)**2
-                    diss_ref = rho*nu*u_e**2*g*quadrature(diss_fun, 0, 10)[0]
+                    diss_ref = rho*nu*u_e**2*g*quad(diss_fun, 0, 10)[0]
                     diss = sol.dissipation(x, rho)
                     self.assertIsNone(np_test.assert_allclose(diss, diss_ref,
                                                               atol=1e-6))
@@ -270,4 +270,4 @@ class TestFalknerSkan(unittest.TestCase):
 
 
 if __name__ == "__main__":
-    unittest.main(verbosity=1)
+    _ = unittest.main(verbosity=1)

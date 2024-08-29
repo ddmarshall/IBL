@@ -12,7 +12,7 @@ from typing import Optional, Tuple
 import numpy as np
 import numpy.typing as npt
 from scipy.integrate import solve_ivp
-from scipy.integrate import quadrature
+from scipy.integrate import quad
 from scipy.optimize import root_scalar
 
 from ibl.typing import InputParam, SolutionFunc
@@ -468,10 +468,10 @@ class Analytic2dSimilarityIncompressible(ABC):
         # Error checking
         if (eta_inf is not None) and (eta_inf <= 0):
             raise ValueError("Invalid maximum similarity parameter: "
-                             f"{eta_inf}")
+                             + f"{eta_inf}")
         if (fw_pp is not None) and (fw_pp <= 0):
             raise ValueError("Invalid solution initial condition value: "
-                            f"{fw_pp}")
+                             + f"{fw_pp}")
 
         self._calculate_solution(fw_pp=fw_pp, eta_inf=eta_inf)
 
@@ -483,7 +483,7 @@ class Analytic2dSimilarityIncompressible(ABC):
         def k_fun(eta: float) -> float:
             return float(2*self.f(eta)*self.f_p(eta)*self.f_pp(eta))
 
-        self._eta_k = quadrature(k_fun, 0, self.eta_inf, vec_func=False)[0]
+        self._eta_k = quad(k_fun, 0, self.eta_inf)[0]
 
         def s_fun(eta: float) -> float:
             return float(0.99-self.f_p(eta))
@@ -596,9 +596,9 @@ class Analytic2dSimilarityIncompressible(ABC):
                     return rtn.y[1,-1], rtn.y[2,-1]
 
                 raise ValueError("Initial conditions for solver, "
-                                    f"f\'\'(0)={fw_pp:.6f} and "
-                                    f"eta_inf={eta_inf:.6f}, did not "
-                                    "produce converged solution.")
+                                 + f"f\'\'(0)={fw_pp:.6f} and "
+                                 + f"eta_inf={eta_inf:.6f}, did not "
+                                 + "produce converged solution.")
 
 
             # initialize the solution process
@@ -609,11 +609,13 @@ class Analytic2dSimilarityIncompressible(ABC):
             if eta_inf is None:
                 eta_inf_curr = 1.01*eta_inf_prev
 
+            fw_pp_curr = 0.0
             while not eta_inf_converged and (j < j_max):
                 # find fw_pp for this eta_inf
                 i=0
                 fw_pp_converged = False
                 fw_pp_curr = fw_pp_prev
+                f2_curr = 0.0
                 if fw_pp is None:
                     fw_pp_curr = 1.01*fw_pp_prev
                 while not fw_pp_converged and (i < i_max):
@@ -676,9 +678,9 @@ class Analytic2dSimilarityIncompressible(ABC):
         else:
             self._f = None
             raise ValueError("Initial conditions for solver, "
-                                f"f\'\'(0)={fw_pp_curr:.6f} and "
-                                f"eta_inf={eta_inf_curr:.6f}, did not produce "
-                                "converged solution.")
+                             + f"f\'\'(0)={fw_pp_curr:.6f} and "
+                             + f"eta_inf={eta_inf_curr:.6f}, did not produce "
+                             + "converged solution.")
 
     @abstractmethod
     def _g(self, x: InputParam) -> InputParam:

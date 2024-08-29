@@ -1,14 +1,8 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
-Created on Wed Aug 24 11:51:34 2022
-
-@author: ddmarshall
-"""
+"""Module to test the Head method functionality."""
 
 import unittest
 import numpy as np
-import numpy.testing as npt
+import numpy.testing as np_test
 
 from ibl.skin_friction import ludwieg_tillman
 from ibl.skin_friction import felsch
@@ -32,7 +26,7 @@ class TestSkinFrictionCalculations(unittest.TestCase):
         shape_d = np.linspace(shape_d_range[0], shape_d_range[-1])
         c_f_ref = fun(re_delta_m, shape_d)
         c_f = ludwieg_tillman(re_delta_m, shape_d)
-        self.assertIsNone(npt.assert_allclose(c_f_ref, c_f))
+        self.assertIsNone(np_test.assert_allclose(c_f_ref, c_f))
 
         # calculate range of Reynolds number
         re_delta_m = np.logspace(np.log10(re_delta_m_range[0]),
@@ -40,7 +34,7 @@ class TestSkinFrictionCalculations(unittest.TestCase):
         shape_d = np.average(shape_d_range)
         c_f_ref = fun(re_delta_m, shape_d)
         c_f = ludwieg_tillman(re_delta_m, shape_d)
-        self.assertIsNone(npt.assert_allclose(c_f_ref, c_f))
+        self.assertIsNone(np_test.assert_allclose(c_f_ref, c_f))
 
     def test_felsch(self) -> None:
         """Test the Felsch function."""
@@ -56,7 +50,7 @@ class TestSkinFrictionCalculations(unittest.TestCase):
         shape_d = np.linspace(shape_d_range[0], shape_d_range[-1])
         c_f_ref = fun(re_delta_m, shape_d)
         c_f = felsch(re_delta_m, shape_d)
-        self.assertIsNone(npt.assert_allclose(c_f_ref, c_f))
+        self.assertIsNone(np_test.assert_allclose(c_f_ref, c_f))
 
         # calculate range of Reynolds number
         re_delta_m = np.logspace(np.log10(re_delta_m_range[0]),
@@ -64,12 +58,13 @@ class TestSkinFrictionCalculations(unittest.TestCase):
         shape_d = np.average(shape_d_range)
         c_f_ref = fun(re_delta_m, shape_d)
         c_f = felsch(re_delta_m, shape_d)
-        self.assertIsNone(npt.assert_allclose(c_f_ref, c_f))
+        self.assertIsNone(np_test.assert_allclose(c_f_ref, c_f))
 
         # check case when separated
         c_f_ref = 0
         c_f = felsch(1e4, 3)
-        self.assertIsNone(npt.assert_allclose(c_f_ref, c_f, rtol=0, atol=1e-7))
+        self.assertIsNone(np_test.assert_allclose(c_f_ref, c_f, rtol=0,
+                                                  atol=1e-7))
 
     def test_white(self) -> None:
         """Test the White function."""
@@ -85,7 +80,7 @@ class TestSkinFrictionCalculations(unittest.TestCase):
         shape_d = np.linspace(shape_d_range[0], shape_d_range[-1])
         c_f_ref = fun(re_delta_m, shape_d)
         c_f = white(re_delta_m, shape_d)
-        self.assertIsNone(npt.assert_allclose(c_f_ref, c_f))
+        self.assertIsNone(np_test.assert_allclose(c_f_ref, c_f))
 
         # calculate range of Reynolds number
         re_delta_m = np.logspace(np.log10(re_delta_m_range[0]),
@@ -93,8 +88,8 @@ class TestSkinFrictionCalculations(unittest.TestCase):
         shape_d = np.average(shape_d_range)
         c_f_ref = fun(re_delta_m, shape_d)
         c_f = white(re_delta_m, shape_d)
-        self.assertIsNone(npt.assert_allclose(c_f_ref, c_f))
+        self.assertIsNone(np_test.assert_allclose(c_f_ref, c_f))
 
 
 if __name__ == "__main__":
-    unittest.main(verbosity=1)
+    _ = unittest.main(verbosity=1)

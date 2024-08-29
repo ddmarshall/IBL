@@ -1,5 +1,7 @@
 """Test Thwaites linear models."""
-# pylint: disable=duplicate-code
+
+# pylint: disable=duplicate-code,protected-access
+# pyright: reportPrivateUsage=false
 
 import unittest
 
@@ -7,7 +9,8 @@ import numpy as np
 import numpy.typing as npt
 import numpy.testing as np_test
 
-from _thwaites_linear_analytic import ThwaitesLinearAnalytic
+# pylint: disable-next=line-too-long
+from _thwaites_linear_analytic import ThwaitesLinearAnalytic  #pyright: ignore[reportImplicitRelativeImport]
 
 from ibl.thwaites_method import ThwaitesMethodLinear
 from ibl.typing import InputParam
@@ -78,8 +81,8 @@ class TestLinearThwaites(unittest.TestCase):
 
         # test creating with invalid name
         with self.assertRaises(ValueError):
-            ThwaitesMethodLinear(nu=nu, U_e=u_e_fun, dU_edx=du_e_fun,
-                                 d2U_edx2=d2u_e_fun, data_fits="My Own")
+            _ = ThwaitesMethodLinear(nu=nu, U_e=u_e_fun, dU_edx=du_e_fun,
+                                     d2U_edx2=d2u_e_fun, data_fits="My Own")
 
     def test_blaisus_case(self) -> None:
         """Test the flat plate case."""
@@ -107,8 +110,8 @@ class TestLinearThwaites(unittest.TestCase):
                 tm = ThwaitesMethodLinear(nu=nu, U_e=u_e_fun, dU_edx=du_e_fun,
                                           d2U_edx2=d2u_e_fun, data_fits=model)
 
-                tm_shape = tm._model.shape  # pylint: disable=protected-access
-                tm_shear = tm._model.shear  # pylint: disable=protected-access
+                tm_shape = tm._model.shape
+                tm_shear = tm._model.shear
                 tm_ref = ThwaitesLinearAnalytic(u_ref, m, nu, tm_shape,
                                                 tm_shear)
                 tm.initial_delta_m = float(tm_ref.delta_m(x[0]))
@@ -157,8 +160,8 @@ class TestLinearThwaites(unittest.TestCase):
             with self.subTest(i=idx):
                 tm = ThwaitesMethodLinear(nu=nu, U_e=u_e_fun, dU_edx=du_e_fun,
                                           d2U_edx2=d2u_e_fun, data_fits=model)
-                tm_shape = tm._model.shape  # pylint: disable=protected-access
-                tm_shear = tm._model.shear  # pylint: disable=protected-access
+                tm_shape = tm._model.shape
+                tm_shear = tm._model.shear
                 tm_ref = ThwaitesLinearAnalytic(u_ref, m, nu, tm_shape,
                                                 tm_shear)
                 tm.initial_delta_m = float(tm_ref.delta_m(x[0]))
@@ -208,8 +211,8 @@ class TestLinearThwaites(unittest.TestCase):
             with self.subTest(i=idx):
                 tm = ThwaitesMethodLinear(nu=nu, U_e=u_e_fun, dU_edx=du_e_fun,
                                           d2U_edx2=d2u_e_fun, data_fits=model)
-                tm_shape = tm._model.shape  # pylint: disable=protected-access
-                tm_shear = tm._model.shear  # pylint: disable=protected-access
+                tm_shape = tm._model.shape
+                tm_shear = tm._model.shear
                 tm_ref = ThwaitesLinearAnalytic(u_ref, m, nu, tm_shape,
                                                 tm_shear)
                 tm.initial_delta_m = float(tm_ref.delta_m(x[0]))
@@ -259,8 +262,8 @@ class TestLinearThwaites(unittest.TestCase):
             with self.subTest(i=idx):
                 tm = ThwaitesMethodLinear(nu=nu, U_e=u_e_fun, dU_edx=du_e_fun,
                                           d2U_edx2=d2u_e_fun, data_fits=model)
-                tm_shape = tm._model.shape  # pylint: disable=protected-access
-                tm_shear = tm._model.shear  # pylint: disable=protected-access
+                tm_shape = tm._model.shape
+                tm_shear = tm._model.shear
                 tm_ref = ThwaitesLinearAnalytic(u_ref, m, nu, tm_shape,
                                                 tm_shear)
                 tm.initial_delta_m = float(tm_ref.delta_m(x[0]))
@@ -374,4 +377,4 @@ class TestLinearThwaites(unittest.TestCase):
 
 
 if __name__ == "__main__":
-    unittest.main(verbosity=1)
+    _ = unittest.main(verbosity=1)

@@ -1,17 +1,10 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
-Created on Tue Aug 30 06:21:08 2022
-
-@author: ddmarshall
-"""
-
+"""Test XFoil reader class."""
 
 from os.path import abspath, dirname
 import unittest
 
 import numpy as np
-import numpy.testing as npt
+import numpy.testing as np_test
 
 from ibl.reference import XFoilReader
 from ibl.reference import XFoilAirfoilData
@@ -138,11 +131,11 @@ class TestXFoilDumpReader(unittest.TestCase):
         self.assertEqual(xf.lower_count(), 0)
         self.assertEqual(xf.wake_count(), 0)
         with self.assertRaises(IndexError):
-            xf.upper(0)
+            _ = xf.upper(0)
         with self.assertRaises(IndexError):
-            xf.lower(0)
+            _ = xf.lower(0)
         with self.assertRaises(IndexError):
-            xf.wake(0)
+            _ = xf.wake(0)
 
     def test_case_inviscid(self) -> None:
         """Test importing an inviscid case."""
@@ -176,34 +169,35 @@ class TestXFoilDumpReader(unittest.TestCase):
         # test point info
         buff = [0.0, 0.000695, 0.092695, 0.196925, 0.301285, 0.392635,
                 0.497055, 0.601495, 0.692885, 0.797335, 0.901785, 1.001785]
-        self.assertIsNone(npt.assert_allclose(buff, xf.s_upper()))
+        self.assertIsNone(np_test.assert_allclose(buff, xf.s_upper()))
         buff = [0.0, 0.00024, 0.09114, 0.19533, 0.29968, 0.39103, 0.49545,
                 0.59987, 0.69123, 0.79565, 0.90005, 1.0]
-        self.assertIsNone(npt.assert_allclose(buff, xf.x_upper()))
+        self.assertIsNone(np_test.assert_allclose(buff, xf.x_upper()))
         buff = [0.0, 0.00069, 0.01132, 0.01427, 0.015, 0.01459, 0.01331,
                 0.01141, 0.00937, 0.00668, 0.00362, 0.00031]
-        self.assertIsNone(npt.assert_allclose(buff, xf.y_upper()))
+        self.assertIsNone(np_test.assert_allclose(buff, xf.y_upper()))
         buff = [0.0, 0.72574, 1.05098, 1.04538, 1.03909, 1.03339, 1.02688,
                 1.02041, 1.01457, 1.00702, 0.9962, 0.92497]
-        self.assertIsNone(npt.assert_allclose(buff, xf.u_e_upper()))
+        self.assertIsNone(np_test.assert_allclose(buff, xf.u_e_upper()))
         buff = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
-        self.assertIsNone(npt.assert_allclose(buff, xf.delta_d_upper()))
+        self.assertIsNone(np_test.assert_allclose(buff, xf.delta_d_upper()))
         buff = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
-        self.assertIsNone(npt.assert_allclose(buff, xf.delta_m_upper()))
+        self.assertIsNone(np_test.assert_allclose(buff, xf.delta_m_upper()))
         buff = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
-        self.assertIsNone(npt.assert_allclose(buff, xf.delta_k_upper()))
+        self.assertIsNone(np_test.assert_allclose(buff, xf.delta_k_upper()))
         buff = [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]
-        self.assertIsNone(npt.assert_allclose(buff, xf.shape_d_upper()))
+        self.assertIsNone(np_test.assert_allclose(buff, xf.shape_d_upper()))
         buff = [2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0]
-        self.assertIsNone(npt.assert_allclose(buff, xf.shape_k_upper()))
+        self.assertIsNone(np_test.assert_allclose(buff, xf.shape_k_upper()))
         buff = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
-        self.assertIsNone(npt.assert_allclose(buff, xf.c_f_upper()))
+        self.assertIsNone(np_test.assert_allclose(buff, xf.c_f_upper()))
         buff = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
-        self.assertIsNone(npt.assert_allclose(buff, xf.mass_defect_upper()))
+        self.assertIsNone(np_test.assert_allclose(buff,
+                                                  xf.mass_defect_upper()))
         buff = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
-        self.assertIsNone(npt.assert_allclose(buff, xf.mom_defect_upper()))
+        self.assertIsNone(np_test.assert_allclose(buff, xf.mom_defect_upper()))
         buff = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
-        self.assertIsNone(npt.assert_allclose(buff, xf.ke_defect_upper()))
+        self.assertIsNone(np_test.assert_allclose(buff, xf.ke_defect_upper()))
 
     def test_inviscid_lower(self) -> None:
         """Test accessing airfoil wake from inviscid case."""
@@ -214,34 +208,35 @@ class TestXFoilDumpReader(unittest.TestCase):
 
         buff = [0, 0.000695, 0.105705, 0.209965, 0.301285, 0.405685, 0.510105,
                 0.601485, 0.705935, 0.810385, 0.901775, 1.001775]
-        self.assertIsNone(npt.assert_allclose(buff, xf.s_lower()))
+        self.assertIsNone(np_test.assert_allclose(buff, xf.s_lower()))
         buff = [0.0, 0.00024, 0.10414, 0.20837, 0.29968, 0.40408, 0.5085,
                 0.59987, 0.70429, 0.8087, 0.90005, 1.0]
-        self.assertIsNone(npt.assert_allclose(buff, xf.x_lower()))
+        self.assertIsNone(np_test.assert_allclose(buff, xf.x_lower()))
         buff = [0.0, -0.00069, -0.01188, -0.01446, -0.015, -0.01447, -0.0131,
                 -0.01141, -0.00906, -0.00632, -0.00362, -0.00031]
-        self.assertIsNone(npt.assert_allclose(buff, xf.y_lower()))
+        self.assertIsNone(np_test.assert_allclose(buff, xf.y_lower()))
         buff = [0.0, 0.72574, 1.05034, 1.04462, 1.03909, 1.03258, 1.02607,
                 1.02041, 1.0137, 1.00594, 0.9962, 0.92497]
-        self.assertIsNone(npt.assert_allclose(buff, xf.u_e_lower()))
+        self.assertIsNone(np_test.assert_allclose(buff, xf.u_e_lower()))
         buff = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
-        self.assertIsNone(npt.assert_allclose(buff, xf.delta_d_lower()))
+        self.assertIsNone(np_test.assert_allclose(buff, xf.delta_d_lower()))
         buff = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
-        self.assertIsNone(npt.assert_allclose(buff, xf.delta_m_lower()))
+        self.assertIsNone(np_test.assert_allclose(buff, xf.delta_m_lower()))
         buff = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
-        self.assertIsNone(npt.assert_allclose(buff, xf.delta_k_lower()))
+        self.assertIsNone(np_test.assert_allclose(buff, xf.delta_k_lower()))
         buff = [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]
-        self.assertIsNone(npt.assert_allclose(buff, xf.shape_d_lower()))
+        self.assertIsNone(np_test.assert_allclose(buff, xf.shape_d_lower()))
         buff = [2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0]
-        self.assertIsNone(npt.assert_allclose(buff, xf.shape_k_lower()))
+        self.assertIsNone(np_test.assert_allclose(buff, xf.shape_k_lower()))
         buff = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
-        self.assertIsNone(npt.assert_allclose(buff, xf.c_f_lower()))
+        self.assertIsNone(np_test.assert_allclose(buff, xf.c_f_lower()))
         buff = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
-        self.assertIsNone(npt.assert_allclose(buff, xf.mass_defect_lower()))
+        self.assertIsNone(np_test.assert_allclose(buff,
+                                                  xf.mass_defect_lower()))
         buff = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
-        self.assertIsNone(npt.assert_allclose(buff, xf.mom_defect_lower()))
+        self.assertIsNone(np_test.assert_allclose(buff, xf.mom_defect_lower()))
         buff = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
-        self.assertIsNone(npt.assert_allclose(buff, xf.ke_defect_lower()))
+        self.assertIsNone(np_test.assert_allclose(buff, xf.ke_defect_lower()))
 
     def test_inviscid_wake(self) -> None:
         """Test accessing airfoil wake from inviscid case."""
@@ -335,44 +330,45 @@ class TestXFoilDumpReader(unittest.TestCase):
 
         buff = [0.0, 0.000695, 0.092695, 0.196925, 0.301285, 0.392635,
                 0.497055, 0.601495, 0.692885, 0.797335, 0.901785, 1.001785]
-        self.assertIsNone(npt.assert_allclose(buff, xf.s_upper()))
+        self.assertIsNone(np_test.assert_allclose(buff, xf.s_upper()))
         buff = [0.0, 0.00024, 0.09114, 0.19533, 0.29968, 0.39103, 0.49545,
                 0.59987, 0.69123, 0.79565, 0.90005, 1.0]
-        self.assertIsNone(npt.assert_allclose(buff, xf.x_upper()))
+        self.assertIsNone(np_test.assert_allclose(buff, xf.x_upper()))
         buff = [0.0, 0.00069, 0.01132, 0.01427, 0.015, 0.01459, 0.01331,
                 0.01141, 0.00937, 0.00668, 0.00362, 0.00031]
-        self.assertIsNone(npt.assert_allclose(buff, xf.y_upper()))
+        self.assertIsNone(np_test.assert_allclose(buff, xf.y_upper()))
         buff = [0.0, 0.4447, 1.06059, 1.05732, 1.05267, 1.0485, 1.04388,
                 1.03951, 1.03593, 1.03207, 1.02842, 1.02513]
-        self.assertIsNone(npt.assert_allclose(buff,xf.u_e_upper()))
+        self.assertIsNone(np_test.assert_allclose(buff,xf.u_e_upper()))
         buff = [0.000811, 0.000811, 0.015435, 0.023266, 0.029346, 0.033966,
                 0.038734, 0.043102, 0.04667, 0.050523, 0.054191, 0.05753]
-        self.assertIsNone(npt.assert_allclose(buff, xf.delta_d_upper()))
+        self.assertIsNone(np_test.assert_allclose(buff, xf.delta_d_upper()))
         buff = [0.000364, 0.000364, 0.006013, 0.009, 0.011294, 0.013019,
                 0.014787, 0.016399, 0.017711, 0.019121, 0.020455, 0.021671]
-        self.assertIsNone(npt.assert_allclose(buff, xf.delta_m_upper()))
+        self.assertIsNone(np_test.assert_allclose(buff, xf.delta_m_upper()))
         buff = [0.0005900804, 0.0005900804, 0.0094879127, 0.0141849,
                 0.0177857912, 0.0204906041, 0.0232584723, 0.0257808679,
                 0.0278328365, 0.0300352668, 0.032118441, 0.0339346189]
-        self.assertIsNone(npt.assert_allclose(buff, xf.delta_k_upper()))
+        self.assertIsNone(np_test.assert_allclose(buff, xf.delta_k_upper()))
         buff = [2.2295, 2.2295, 2.5668, 2.585, 2.5984, 2.6089, 2.6194, 2.6284,
                 2.6352, 2.6423, 2.6493, 2.6548]
-        self.assertIsNone(npt.assert_allclose(buff, xf.shape_d_upper()))
+        self.assertIsNone(np_test.assert_allclose(buff, xf.shape_d_upper()))
         buff = [1.6211, 1.6211, 1.5779, 1.5761, 1.5748, 1.5739, 1.5729,
                 1.5721, 1.5715, 1.5708, 1.5702, 1.5659]
-        self.assertIsNone(npt.assert_allclose(buff, xf.shape_k_upper()))
+        self.assertIsNone(np_test.assert_allclose(buff, xf.shape_k_upper()))
         buff = [0.8771445, 0.877145, 0.078378, 0.050783, 0.039477, 0.033566,
                 0.02895, 0.025638, 0.023409, 0.021365, 0.019684, 0.018362]
-        self.assertIsNone(npt.assert_allclose(buff, xf.c_f_upper()))
+        self.assertIsNone(np_test.assert_allclose(buff, xf.c_f_upper()))
         buff = [0.00036, 0.00036, 0.01637, 0.0246, 0.03089, 0.03561, 0.04043,
                 0.04481, 0.04835, 0.05214, 0.05573, 0.05898]
-        self.assertIsNone(npt.assert_allclose(buff, xf.mass_defect_upper()))
+        self.assertIsNone(np_test.assert_allclose(buff,
+                                                  xf.mass_defect_upper()))
         buff = [7e-05, 7e-05, 0.00676, 0.01006, 0.01251, 0.01431, 0.01611,
                 0.01772, 0.01901, 0.02037, 0.02163, 0.02277]
-        self.assertIsNone(npt.assert_allclose(buff, xf.mom_defect_upper()))
+        self.assertIsNone(np_test.assert_allclose(buff, xf.mom_defect_upper()))
         buff = [5e-05, 5e-05, 0.01132, 0.01677, 0.02075, 0.02362, 0.02646,
                 0.02896, 0.03094, 0.03302, 0.03494, 0.03656]
-        self.assertIsNone(npt.assert_allclose(buff, xf.ke_defect_upper()))
+        self.assertIsNone(np_test.assert_allclose(buff, xf.ke_defect_upper()))
 
     def test_viscous_lower(self) -> None:
         """Test getting lower airfoil info from viscous case."""
@@ -382,44 +378,45 @@ class TestXFoilDumpReader(unittest.TestCase):
 
         buff = [0, 0.000695, 0.105705, 0.209965, 0.301285, 0.405685, 0.510105,
                 0.601485, 0.705935, 0.810385, 0.901775, 1.001775]
-        self.assertIsNone(npt.assert_allclose(buff, xf.s_lower()))
+        self.assertIsNone(np_test.assert_allclose(buff, xf.s_lower()))
         buff = [0.0, 0.00024, 0.10414, 0.20837, 0.29968, 0.40408, 0.5085,
                 0.59987, 0.70429, 0.8087, 0.90005, 1.0]
-        self.assertIsNone(npt.assert_allclose(buff, xf.x_lower()))
+        self.assertIsNone(np_test.assert_allclose(buff, xf.x_lower()))
         buff = [0.0, -0.00069, -0.01188, -0.01446, -0.015, -0.01447, -0.0131,
                 -0.01141, -0.00906, -0.00632, -0.00362, -0.00031]
-        self.assertIsNone(npt.assert_allclose(buff, xf.y_lower()))
+        self.assertIsNone(np_test.assert_allclose(buff, xf.y_lower()))
         buff = [0.0, 0.4447, 1.06044, 1.05676, 1.05267, 1.04791, 1.04332,
                 1.03951, 1.03543, 1.03161, 1.02842, 1.02513]
-        self.assertIsNone(npt.assert_allclose(buff, xf.u_e_lower()))
+        self.assertIsNone(np_test.assert_allclose(buff, xf.u_e_lower()))
         buff = [0.000811, 0.000811, 0.016586, 0.024091, 0.029346, 0.034589,
                 0.0393, 0.043102, 0.047164, 0.05099, 0.054191, 0.05753]
-        self.assertIsNone(npt.assert_allclose(buff, xf.delta_d_lower()))
+        self.assertIsNone(np_test.assert_allclose(buff, xf.delta_d_lower()))
         buff = [0.000364, 0.000364, 0.006454, 0.009313, 0.011294, 0.013251,
                 0.014996, 0.016399, 0.017892, 0.019292, 0.020455, 0.021671]
-        self.assertIsNone(npt.assert_allclose(buff, xf.delta_m_lower()))
+        self.assertIsNone(np_test.assert_allclose(buff, xf.delta_m_lower()))
         buff = [0.0005900804, 0.0005900804, 0.0101818304, 0.014677288,
                 0.0177857912, 0.0208530987, 0.0235857088, 0.0257808679,
                 0.0281154888, 0.0303038736, 0.032118441, 0.0339346189]
-        self.assertIsNone(npt.assert_allclose(buff, xf.delta_k_lower()))
+        self.assertIsNone(np_test.assert_allclose(buff, xf.delta_k_lower()))
         buff = [2.2295, 2.2295, 2.5699, 2.5868, 2.5984, 2.6103, 2.6206,
                 2.6284, 2.6361, 2.6431, 2.6493, 2.6548]
-        self.assertIsNone(npt.assert_allclose(buff, xf.shape_d_lower()))
+        self.assertIsNone(np_test.assert_allclose(buff, xf.shape_d_lower()))
         buff = [1.6211, 1.6211, 1.5776, 1.576, 1.5748, 1.5737, 1.5728, 1.5721,
                 1.5714, 1.5708, 1.5702, 1.5659]
-        self.assertIsNone(npt.assert_allclose(buff, xf.shape_k_lower()))
+        self.assertIsNone(np_test.assert_allclose(buff, xf.shape_k_lower()))
         buff = [0.8771445, 0.877144, 0.072669, 0.048918, 0.039477, 0.03289,
                 0.028478, 0.025638, 0.023129, 0.021137, 0.019684, 0.018362]
-        self.assertIsNone(npt.assert_allclose(buff, xf.c_f_lower()))
+        self.assertIsNone(np_test.assert_allclose(buff, xf.c_f_lower()))
         buff = [0.00036, 0.00036, 0.01759, 0.02546, 0.03089, 0.03625, 0.041,
                 0.04481, 0.04884, 0.0526, 0.05573, 0.05898]
-        self.assertIsNone(npt.assert_allclose(buff, xf.mass_defect_lower()))
+        self.assertIsNone(np_test.assert_allclose(buff,
+                                                  xf.mass_defect_lower()))
         buff = [7e-05, 7e-05, 0.00726, 0.0104, 0.01251, 0.01455, 0.01632,
                 0.01772, 0.01918, 0.02053, 0.02163, 0.02277]
-        self.assertIsNone(npt.assert_allclose(buff, xf.mom_defect_lower()))
+        self.assertIsNone(np_test.assert_allclose(buff, xf.mom_defect_lower()))
         buff = [5e-05, 5e-05, 0.01214, 0.01732, 0.02075, 0.024, 0.02679,
                 0.02896, 0.03121, 0.03327, 0.03494, 0.03656]
-        self.assertIsNone(npt.assert_allclose(buff, xf.ke_defect_lower()))
+        self.assertIsNone(np_test.assert_allclose(buff, xf.ke_defect_lower()))
 
     def test_viscous_wake(self) -> None:
         """Test getting airfoil wake info from viscous case."""
@@ -429,23 +426,23 @@ class TestXFoilDumpReader(unittest.TestCase):
 
         buff = [0.0, 0.11471, 0.19813, 0.32026, 0.43176, 0.49908, 0.76089,
                 0.9999]
-        self.assertIsNone(npt.assert_allclose(buff, xf.s_wake()))
+        self.assertIsNone(np_test.assert_allclose(buff, xf.s_wake()))
         buff = [1.0001, 1.11481, 1.19822, 1.32036, 1.43186, 1.49918, 1.76099,
                 2.0]
-        self.assertIsNone(npt.assert_allclose(buff, xf.x_wake()))
+        self.assertIsNone(np_test.assert_allclose(buff, xf.x_wake()))
         buff = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
-        self.assertIsNone(npt.assert_allclose(buff, xf.y_wake()))
+        self.assertIsNone(np_test.assert_allclose(buff, xf.y_wake()))
         buff = [1.02513, 1.0147, 1.0081, 0.99912, 0.99122, 0.98638, 0.96382,
                 0.92209]
-        self.assertIsNone(npt.assert_allclose(buff, xf.u_e_wake()))
+        self.assertIsNone(np_test.assert_allclose(buff, xf.u_e_wake()))
         buff = [0.11569, 0.115166, 0.114388, 0.113283, 0.112767, 0.11289,
                 0.120079, 0.173472]
-        self.assertIsNone(npt.assert_allclose(buff, xf.delta_d_wake()))
+        self.assertIsNone(np_test.assert_allclose(buff, xf.delta_d_wake()))
         buff = [0.043341, 0.04543, 0.046781, 0.048653, 0.050336, 0.051386,
                 0.056558, 0.068368]
-        self.assertIsNone(npt.assert_allclose(buff, xf.delta_m_wake()))
+        self.assertIsNone(np_test.assert_allclose(buff, xf.delta_m_wake()))
         buff = [2.6693, 2.535, 2.4452, 2.3284, 2.2403, 2.1969, 2.1231, 2.5373]
-        self.assertIsNone(npt.assert_allclose(buff, xf.shape_d_wake()))
+        self.assertIsNone(np_test.assert_allclose(buff, xf.shape_d_wake()))
 
     def test_viscous_element_access(self) -> None:
         """Test accessing viscous properties at specific point."""
@@ -528,4 +525,4 @@ class TestXFoilDumpReader(unittest.TestCase):
 
 
 if __name__ == "__main__":
-    unittest.main(verbosity=1)
+    _ = unittest.main(verbosity=1)

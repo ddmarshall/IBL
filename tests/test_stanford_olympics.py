@@ -1,10 +1,7 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
-Created on Wed Aug 24 17:38:44 2022
+"""Module to test the Stanford Olympics functionality."""
 
-@author: ddmarshall
-"""
+# pyright: reportPrivateUsage=false
+# pylint: disable=protected-access
 
 import unittest
 import numpy as np
@@ -22,11 +19,10 @@ class TestStanfordOlympics1968(unittest.TestCase):
         """Test accessing data files."""
         stol = StanfordOlympics1968()
 
-        # pylint: disable-next=protected-access
         self.assertTrue(not stol._get_case_data("xxxx"))
-        # pylint: disable-next=protected-access
         self.assertFalse(not stol._get_case_data("1100"))
 
+    # pylint: disable=too-many-statements
     def test_station_setters(self) -> None:
         """Test the stations data."""
         summary_data = ("0.782  33.90  -2.300  0.276  1.381  1.778   7.307  "
@@ -107,6 +103,7 @@ class TestStanfordOlympics1968(unittest.TestCase):
         sd.u_defect = np.ones_like(sd.u_defect)
         with self.assertRaises(ValueError):
             sd.u_defect = -np.ones_like(sd.u_defect)
+    # pylint: enable=too-many-statements
 
     def test_station_data(self) -> None:
         """Test the stations data."""
@@ -345,31 +342,31 @@ class TestStanfordOlympics1968(unittest.TestCase):
 
         # loading case will raise an exception if data doesn't match
         try:
-            StanfordOlympics1968("1100")
+            _ = StanfordOlympics1968("1100")
         except ValueError as e:
             print(f"{e} for case 1100")
             raised = True
         self.assertFalse(raised)
         try:
-            StanfordOlympics1968("1200")
+            _ = StanfordOlympics1968("1200")
         except ValueError as e:
             print(f"{e} for case 1200")
             raised = True
         self.assertFalse(raised)
         try:
-            StanfordOlympics1968("1300")
+            _ = StanfordOlympics1968("1300")
         except ValueError as e:
             print(f"{e} for case 1300")
             raised = True
         self.assertFalse(raised)
         try:
-            StanfordOlympics1968("2200")
+            _ = StanfordOlympics1968("2200")
         except ValueError as e:
             print(f"{e} for case 2200")
             raised = True
         self.assertFalse(raised)
         try:
-            StanfordOlympics1968("2300")
+            _ = StanfordOlympics1968("2300")
         except ValueError as e:
             print(f"{e} for case 2300")
             raised = True
@@ -377,4 +374,4 @@ class TestStanfordOlympics1968(unittest.TestCase):
 
 
 if __name__ == "__main__":
-    unittest.main(verbosity=1)
+    _ = unittest.main(verbosity=1)

@@ -1,5 +1,8 @@
 """Tests Thwaites curve fits."""
 
+# pyright: reportPrivateUsage=false
+# pylint: disable=protected-access
+
 import unittest
 from typing import Callable
 
@@ -71,18 +74,18 @@ class TestCurveFits(unittest.TestCase):
         spline = _ThwaitesFunctionsSpline()
 
         # test the range of lambda
-        lam_min = spline._tab_lambda[0]  # pylint: disable=protected-access
-        lam_max = spline._tab_lambda[-1]  # pylint: disable=protected-access
+        lam_min = spline._tab_lambda[0]
+        lam_max = spline._tab_lambda[-1]
         self.assertIsNone(np_test.assert_allclose(lam_min,
                                                   np.min(self.lam_ref)))
         self.assertIsNone(np_test.assert_allclose(lam_max,
                                                   np.max(self.lam_ref)))
 
         # test the tabular values
-        lam = spline._tab_lambda  # pylint: disable=protected-access
-        shape = spline._tab_shape  # pylint: disable=protected-access
-        shear = spline._tab_shear  # pylint: disable=protected-access
-        f = spline._tab_f  # pylint: disable=protected-access
+        lam = spline._tab_lambda
+        shape = spline._tab_shape
+        shear = spline._tab_shear
+        f = spline._tab_f
         self.assertIsNone(np_test.assert_allclose(self.lam_ref, lam))
         self.assertIsNone(np_test.assert_allclose(self.shape_ref, shape))
         self.assertIsNone(np_test.assert_allclose(self.shear_ref, shear))
@@ -318,4 +321,4 @@ class TestCurveFits(unittest.TestCase):
 
 
 if __name__ == "__main__":
-    unittest.main(verbosity=1)
+    _ = unittest.main(verbosity=1)

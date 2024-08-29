@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 r"""
 Comparing approximations to Thwaites' tabular data.
 
@@ -7,6 +5,9 @@ This example shows a comparison between the various approximations to the
 tabular data from Thwaites for the function :math:`F(\lambda)`. It shows
 similar results to Figures 1.2 and 1.3 in Edland thesis.
 """
+
+# pyright: reportPrivateUsage=false
+# pylint: disable=protected-access
 
 from typing import Tuple
 
@@ -49,26 +50,26 @@ def compare_thwaites_fits() -> None:
     # plot the reference Thwaites tabular data for comparisons
     lam, f = get_thwaites_table_data(lambda_min=lambda_min,
                                      lambda_max=lambda_max)
-    axis_plot.plot(lam, f, marker='o', linestyle='', color="black",
-                   label="Thwaites Original")
+    _ = axis_plot.plot(lam, f, marker='o', linestyle='', color="black",
+                       label="Thwaites Original")
 
     # plot the linear fit
     lam = np.linspace(lambda_min, lambda_max, npts)
     f = f_linear(lam)
-    axis_plot.plot(lam, f, color="green", label="Linear")
+    _ = axis_plot.plot(lam, f, color="green", label="Linear")
 
     # plot the models
     for model, color, label in zip(models, colors, labels):
         lam, f = calculate_thwaites_values(lambda_min=lambda_min,
                                            lambda_max=lambda_max, npts=npts,
                                            model=model)
-        axis_plot.plot(lam, f, color=color, label=label)
+        _ = axis_plot.plot(lam, f, color=color, label=label)
 
     # Plot functions compared to the Thwaites tabulated values
-    axis_plot.set_xlabel(r"$\lambda$")
-    axis_plot.set_ylabel(r"$F\left(\lambda\right)$")
+    _ = axis_plot.set_xlabel(r"$\lambda$")
+    _ = axis_plot.set_ylabel(r"$F\left(\lambda\right)$")
     axis_plot.grid(True)
-    axis_plot.legend()
+    _ = axis_plot.legend()
 
     # Zoom in on separation region of previous plot
     lambda_zoom_max = -0.05
@@ -76,26 +77,26 @@ def compare_thwaites_fits() -> None:
     # extract the zoomed original Thwaites tabular data for comparisons
     lam, f = get_thwaites_table_data(lambda_min=lambda_min,
                                      lambda_max=lambda_zoom_max)
-    axis_zoom.plot(lam, f, marker='o', linestyle='',
-                   color="black", label="Thwaites Original")
+    _ = axis_zoom.plot(lam, f, marker='o', linestyle='',
+                       color="black", label="Thwaites Original")
 
     # plot the linear fit
     lam = np.linspace(lambda_min, lambda_zoom_max, npts)
     f = f_linear(lam)
-    axis_zoom.plot(lam, f, color="green", label="Linear")
+    _ = axis_zoom.plot(lam, f, color="green", label="Linear")
 
     # plot the models
     for model, color, label in zip(models, colors, labels):
         lam, f = calculate_thwaites_values(lambda_min=lambda_min,
                                            lambda_max=lambda_zoom_max,
                                            npts=npts, model=model)
-        axis_zoom.plot(lam, f, color=color, label=label)
+        _ = axis_zoom.plot(lam, f, color=color, label=label)
 
     # Plot the zoomed in region
-    axis_zoom.set_xlabel(r"$\lambda$")
-    axis_zoom.set_ylabel(r"$F\left(\lambda\right)$")
+    _ = axis_zoom.set_xlabel(r"$\lambda$")
+    _ = axis_zoom.set_ylabel(r"$F\left(\lambda\right)$")
     axis_zoom.grid(True)
-    axis_zoom.legend()
+    _ = axis_zoom.legend()
 
     # Calculate the errors between tabular data and fits
     #
@@ -110,21 +111,21 @@ def compare_thwaites_fits() -> None:
 
     # plot the linear fit
     f_err = np.abs(1 - f_linear(lam_ref)/f_ref)
-    axis_err.plot(lam_ref, f_err, color="green", label="Linear")
+    _ = axis_err.plot(lam_ref, f_err, color="green", label="Linear")
 
     # plot the models
     for model, color, label in zip(models, colors, labels):
         f_err = np.abs(1 - model.f(lam_ref)/f_ref)
-        axis_err.plot(lam_ref, f_err, color=color, label=label)
+        _ = axis_err.plot(lam_ref, f_err, color=color, label=label)
 
     # Show relative errors
-    axis_err.set_xlabel(r"$\lambda$")
-    axis_err.set_ylabel("Relative Error")
-    axis_err.set_xlim([-0.10, 0.25])
-    axis_err.set_ylim([.00001,1])
+    _ = axis_err.set_xlabel(r"$\lambda$")
+    _ = axis_err.set_ylabel("Relative Error")
+    _ = axis_err.set_xlim((-0.10, 0.25))
+    _ = axis_err.set_ylim((.00001,1))
     axis_err.set_yscale("log")
     axis_err.grid(True)
-    axis_err.legend()
+    _ = axis_err.legend()
 
     plt.show()
 

@@ -9,20 +9,22 @@ All integral boundary layer method classes should inherit from
 :class:`IBLMethod`.
 
 All integral boundary layer method classes return an instance of
-:class:`IBLResult` when the solver has completed.
+:class:`IntegrationResult` when the solver has completed.
 """
+
+# pylint: disable=too-many-branches, too-many-statements
 
 from abc import ABC, abstractmethod
 from enum import IntEnum, auto
 
-from typing import Union, Tuple, Callable, List, Optional
+from typing import Union, Tuple, Callable, List, Optional, Any
+from typing_extensions import override
 
 import numpy as np
-import numpy.typing as np_type
+import numpy.typing as npt
 
 from scipy.interpolate import PchipInterpolator
 from scipy.integrate import solve_ivp
-from scipy.misc import derivative as fd
 
 from ibl.initial_condition import InitialCondition
 from ibl.initial_condition import FalknerSkanStagCondition
@@ -34,6 +36,7 @@ class TermReason(IntEnum):
     Reasons for the integration process to complete.
     """
 
+    @override
     def __str__(self) -> str:
         text = {TermReason.REACHED_END: "Completed",
                 TermReason.SEPARATED: "Separated",
@@ -126,6 +129,7 @@ class IntegrationResult:
         """
         return self._success
 
+    @override
     def __str__(self) -> str:
         """
         Return a readable presentation of instance.
@@ -171,7 +175,7 @@ class TermEvent(ABC):
         # integration should terminate
         self.terminal = True
 
-    def __call__(self, x: float, f: np_type.NDArray) -> float:
+    def __call__(self, x: float, f: npt.NDArray) -> float:
         """
         Determine if integration should terminate.
 
@@ -212,7 +216,7 @@ class TermEvent(ABC):
         """
 
     @abstractmethod
-    def _call_impl(self, x: float, f: np_type.NDArray) -> float:
+    def _call_impl(self, x: float, f: npt.NDArray) -> float:
         """
         Information used to determine if IBL integrator should terminate.
 
@@ -321,9 +325,10 @@ class IBLMethod(ABC):
     # _solution : vector of callables
     #     Piecewise polynomials representing the state variables from the ODE
     #     solution.
-    def __init__(self, nu: float, u_e=None, du_e=None, d2u_e=None,
+    def __init__(self, nu: float, u_e: Optional[Any] = None,
+                 du_e: Optional[Any] = None, d2u_e: Optional[Any] = None,
                  ic: Optional[InitialCondition] = None):
-        self._nu = 1e-5
+        self._nu = nu
         self._ic: InitialCondition = FalknerSkanStagCondition(0, nu)
 
         # set the velocity terms
@@ -372,7 +377,8 @@ class IBLMethod(ABC):
         """
         self._ic = ic
 
-    def set_velocity(self, u_e, du_e=None, d2u_e=None) -> None:
+    def set_velocity(self, u_e: Any, du_e: Optional[Any] =None,
+                     d2u_e: Optional[Any] = None) -> None:
         """
         Set the edge velocity relations.
 
@@ -395,6 +401,16 @@ class IBLMethod(ABC):
         ValueError
             When configuration parameter is invalid (see message).
         """
+        def fd_1f(fun: Callable, xo: InputParam, dx: float) -> InputParam:
+            """Use finite differences to approximate the derivative."""
+            return ((fun(xo-2*dx) - fun(xo+2*dx))/12
+                    - 2*(fun(xo-dx) - fun(xo+dx))/3)/dx
+        def fd_2f(fun: Callable, xo: InputParam, dx: float) -> InputParam:
+            """Use finite differences to approximate the derivative."""
+            return (-(fun(xo-2*dx) + fun(xo+2*dx))/12
+                    -2.5*(fun(xo))
+                    +4*(fun(xo-dx) + fun(xo+dx))/3)/(dx**2)
+
         # check if U_e is callable
         if callable(u_e):
             self._u_e = u_e
@@ -403,7 +419,7 @@ class IBLMethod(ABC):
             if du_e is None:
                 if d2u_e is not None:
                     raise ValueError("Can only pass second derivative if "
-                                     "first derivative was specified")
+                                     + "first derivative was specified")
 
                 # if U_e has derivative method then use it
                 if (hasattr(u_e, "derivative")
@@ -412,10 +428,18 @@ class IBLMethod(ABC):
                     self._d2u_e = u_e.derivative(2)
                 else:
                     # FIX: This is depricated in scipy
-                    self._du_e = lambda x: fd(self._u_e, x, 1e-4, n=1,
-                                              order=3)
-                    self._d2u_e = lambda x: fd(self._u_e, x, 1e-4, n=2,
-                                               order=3)
+                    def du_e_fun(x:InputParam) -> InputParam:
+                        # pylint: disable-next=line-too-long
+                        return fd_1f(self._u_e, xo=x, dx=1e-4)  #pyright: ignore[reportArgumentType]
+
+
+                    def d2u_e_fun(x:InputParam) -> InputParam:
+                        # pylint: disable-next=line-too-long
+                        return fd_2f(self._u_e, xo=x, dx=1e-4)  #pyright: ignore[reportArgumentType]
+
+
+                    self._du_e = du_e_fun
+                    self._d2u_e = d2u_e_fun
             else:
                 if not callable(du_e):
                     raise ValueError("Must pass in callable object for first "
@@ -429,9 +453,12 @@ class IBLMethod(ABC):
                             and callable(getattr(du_e, "derivative"))):
                         self._d2u_e = du_e.derivative()
                     else:
-                        # FIX: This is depricated in scipy
-                        self._d2u_e = lambda x: fd(self._du_e, x, 1e-5,
-                                                   n=1, order=3)
+                        def d2u_e_fun(x: InputParam) -> InputParam:
+                            # pylint: disable-next=line-too-long
+                            return fd_1f(self._du_e, xo=x, dx=1e-5)  #pyright: ignore[reportArgumentType]
+
+
+                        self._d2u_e = d2u_e_fun
                 else:
                     if not callable(du_e):
                         raise ValueError("Must pass in callable object for "
@@ -444,14 +471,16 @@ class IBLMethod(ABC):
             if len(du_e) == 2:
                 x_pts = np.asarray(du_e[0])
                 du_e_pts = np.asarray(du_e[1])
-                self._du_e = PchipInterpolator(x_pts, du_e_pts)
-                self._u_e = self._du_e.antiderivative()
-                self._u_e.c[-1, :] = self._u_e.c[-1, :] + u_e
-                self._d2u_e = self._du_e.derivative()
+                pchip = PchipInterpolator(x_pts, du_e_pts)
+                self._du_e = pchip
+                pchipa = pchip.antiderivative()
+                pchipa.c[-1, :] = pchipa.c[-1, :] + u_e
+                self._u_e = pchipa
+                self._d2u_e = pchip.derivative()
             else:
                 # otherwise unknown velocity input
                 raise ValueError(f"Don't know how to use {du_e} to "
-                                 "initialize velocity derivative")
+                                 + "initialize velocity derivative")
         else:
             # if is 2-tuple then assume x, U_e pairs to build spline
             if len(u_e) == 2:
@@ -462,23 +491,23 @@ class IBLMethod(ABC):
                 #   for building splines
                 if x_pts.ndim != 1:
                     raise ValueError("First element of u_e 2-tuple must be 1D "
-                                     "vector of distances")
+                                     + "vector of distances")
                 if u_e_pts.ndim != 1:
                     raise ValueError("Second element of u_e 2-tuple must be "
-                                     "1D vector of Velocities")
+                                     + "1D vector of Velocities")
                 if npts != u_e_pts.shape[0]:
                     raise ValueError("Vectors in u_e 2-tuple must be of same "
-                                     "length")
+                                     + "length")
                 if npts < 2:
                     raise ValueError("Must pass at least two points for edge "
-                                     "velocity")
+                                     + "velocity")
 
                 u_e_spline = PchipInterpolator(x_pts, u_e_pts)
                 self.set_velocity(u_e_spline)
             else:
                 # otherwise unknown velocity input
                 raise ValueError(f"Don't know how to use {u_e} to initialize "
-                                 "velocity")
+                                 + "velocity")
 
     def solve(self, x0: float, x_end: float,
               term_event: Optional[Union[TermEvent, List[TermEvent]]] = None
@@ -496,13 +525,13 @@ class IBLMethod(ABC):
             Location to start integration.
         x_end : float
             Location to end integration.
-        term_event : List based on :class:`IBLTermEvent`, optional
+        term_event : List based on :class:`TermEvent`, optional
             User events that can terminate the integration process before the
             end location of the integration is reached. The default is `None`.
 
         Returns
         -------
-        IBLResult
+        IntegrationResult
             Information associated with the integration process.
 
         Raises
@@ -566,7 +595,7 @@ class IBLMethod(ABC):
         return IntegrationResult(x_end=x_end, f_end=f_end, status=status,
                                  message=message, success=rtn.success)
 
-    def u_e(self, x: InputParam) -> np_type.NDArray:
+    def u_e(self, x: InputParam) -> npt.NDArray:
         """
         Return the inviscid edge velocity at specified location(s).
 
@@ -589,7 +618,7 @@ class IBLMethod(ABC):
             raise ValueError("u_e was not set")
         return self._u_e(x)
 
-    def du_e(self, x: InputParam) -> np_type.NDArray:
+    def du_e(self, x: InputParam) -> npt.NDArray:
         """
         Streamwise derivative of inviscid edge velocity at location(s).
 
@@ -612,7 +641,7 @@ class IBLMethod(ABC):
             raise ValueError("du_e was not set")
         return self._du_e(x)
 
-    def d2u_e(self, x: InputParam) -> np_type.NDArray:
+    def d2u_e(self, x: InputParam) -> npt.NDArray:
         """
         Streamwise second derivative of inviscid edge velocity at location(s).
 
@@ -645,13 +674,10 @@ class IBLMethod(ABC):
             Way of child classes to automatically add kill events to the ODE
             solver.
         """
-        if self._kill_events is None:
-            self._set_kill_event(ke)
+        if isinstance(ke, TermEvent):
+            self._kill_events.append(ke)
         else:
-            if isinstance(ke, TermEvent):
-                self._kill_events.append(ke)
-            else:
-                self._kill_events += ke
+            self._kill_events += ke
 
     def _set_kill_event(self, ke: Union[TermEvent, List[TermEvent]]) -> None:
         """
@@ -669,7 +695,7 @@ class IBLMethod(ABC):
             self._kill_events = ke
 
     @abstractmethod
-    def v_e(self, x: InputParam) -> np_type.NDArray:
+    def v_e(self, x: InputParam) -> npt.NDArray:
         """
         Calculate the transpiration velocity.
 
@@ -685,7 +711,7 @@ class IBLMethod(ABC):
         """
 
     @abstractmethod
-    def delta_d(self, x: InputParam) -> np_type.NDArray:
+    def delta_d(self, x: InputParam) -> npt.NDArray:
         """
         Calculate the displacement thickness.
 
@@ -701,7 +727,7 @@ class IBLMethod(ABC):
         """
 
     @abstractmethod
-    def delta_m(self, x: InputParam) -> np_type.NDArray:
+    def delta_m(self, x: InputParam) -> npt.NDArray:
         """
         Calculate the momentum thickness.
 
@@ -717,7 +743,7 @@ class IBLMethod(ABC):
         """
 
     @abstractmethod
-    def delta_k(self, x: InputParam) -> np_type.NDArray:
+    def delta_k(self, x: InputParam) -> npt.NDArray:
         """
         Calculate the kinetic energy thickness.
 
@@ -733,7 +759,7 @@ class IBLMethod(ABC):
         """
 
     @abstractmethod
-    def shape_d(self, x: InputParam) -> np_type.NDArray:
+    def shape_d(self, x: InputParam) -> npt.NDArray:
         """
         Calculate the displacement shape factor.
 
@@ -749,7 +775,7 @@ class IBLMethod(ABC):
         """
 
     @abstractmethod
-    def shape_k(self, x: InputParam) -> np_type.NDArray:
+    def shape_k(self, x: InputParam) -> npt.NDArray:
         """
         Calculate the kinetic energy shape factor.
 
@@ -765,7 +791,7 @@ class IBLMethod(ABC):
         """
 
     @abstractmethod
-    def tau_w(self, x: InputParam, rho: float) -> np_type.NDArray:
+    def tau_w(self, x: InputParam, rho: float) -> npt.NDArray:
         """
         Calculate the wall shear stress.
 
@@ -783,7 +809,7 @@ class IBLMethod(ABC):
         """
 
     @abstractmethod
-    def dissipation(self, x: InputParam, rho: float) -> np_type.NDArray:
+    def dissipation(self, x: InputParam, rho: float) -> npt.NDArray:
         """
         Calculate the dissipation integral.
 
@@ -801,14 +827,14 @@ class IBLMethod(ABC):
         """
 
     @abstractmethod
-    def _ode_setup(self) -> Tuple[np_type.NDArray, Optional[float],
+    def _ode_setup(self) -> Tuple[npt.NDArray, Optional[float],
                                   Optional[float]]:
         """
         Set the solver specific parameters.
 
         Returns
         -------
-        np_type.NDArray
+        numpy.ndarray
             IBL initialization array.
         Optional[float]
             Relative tolerance for ODE solver.
@@ -817,8 +843,8 @@ class IBLMethod(ABC):
         """
 
     @abstractmethod
-    def _ode_impl(self, x: np_type.NDArray,
-                  f: np_type.NDArray) -> np_type.NDArray:
+    def _ode_impl(self, x: npt.NDArray,
+                  f: npt.NDArray) -> npt.NDArray:
         """
         Right-hand-side of the ODE representing Thwaites method.
 

@@ -37,13 +37,13 @@ def compare_skin_friction_relations() -> None:
     plt.rcParams['figure.figsize'] = [8, 5]
     colors = ["green", "orange", "blue", "purple", "red", "cyan"]
 
-    plt.figure()
+    _ = plt.figure()
     for i, _ in enumerate(shape_d):
-        plt.plot(re_delta_m, c_f_lt[i, :], linestyle="-", color=colors[i])
-        plt.plot(re_delta_m, c_f_f[i, :], linestyle="--",  color=colors[i])
-        plt.plot(re_delta_m, c_f_w[i, :], linestyle=":", color=colors[i])
-    plt.xlabel(r"Re$_{\lambda_d}$")
-    plt.ylabel(r"$c_f$")
+        _ = plt.plot(re_delta_m, c_f_lt[i, :], linestyle="-", color=colors[i])
+        _ = plt.plot(re_delta_m, c_f_f[i, :], linestyle="--",  color=colors[i])
+        _ = plt.plot(re_delta_m, c_f_w[i, :], linestyle=":", color=colors[i])
+    _ = plt.xlabel(r"Re$_{\lambda_d}$")
+    _ = plt.ylabel(r"$c_f$")
     plt.xscale('log')
     plt.yscale('log')
     plt.grid(True)
