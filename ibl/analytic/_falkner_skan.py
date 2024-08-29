@@ -29,13 +29,6 @@ class FalknerSkan(Analytic2dSimilarityIncompressible):
     boundary layer. Both integrated and point properties can be obtained from
     the similarity coordinate or from the corresponding Cartesian coordinates.
 
-    Attributes
-    ----------
-    beta : float
-        Inviscid wedge angle parameter. Must be in range [-0.19884, 2].
-    m : float
-        Inviscid edge velocity parameter. Must be greater than 
-
     Raises
     ------
     ValueError

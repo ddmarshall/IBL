@@ -32,17 +32,6 @@ class Analytic2dSimilarityIncompressible(ABC):
     integrated and point properties can be obtained from the similarity
     coordinate or from the corresponding Cartesian coordinates.
 
-    Attributes
-    ----------
-    u_ref : float
-        Reference velocity.
-    nu_ref : float
-        Reference kinematic viscosity.
-    fw_pp : float
-        Initial condition for PDE solution.
-    eta_inf : float
-        Value for the end of the PDE integration.
-
     Raises
     ------
     ValueError

@@ -29,13 +29,6 @@ class Blasius(Analytic2dSimilarityIncompressible):
     integrated and point properties can be obtained from the similarity
     coordinate or from the corresponding Cartesian coordinates.
 
-    Attributes
-    ----------
-    eta_inf_default : float
-        Default value for eta_inf if no value is provided.
-    fw_pp_default : float
-        Default value for f\'\'(0) condition for PDE solution.
-
     Raises
     ------
     ValueError
@@ -59,7 +52,7 @@ class Blasius(Analytic2dSimilarityIncompressible):
 
     @property
     def fw_pp_default(self) -> float:
-        """Default value for the f_pp at the wall."""
+        """Default value for f\'\'(0) condition for PDE solution at wall."""
         return self._fw_pp_default
 
     @property
