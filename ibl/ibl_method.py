@@ -47,14 +47,17 @@ class TermReason(IntEnum):
             return_text = "Invalid Termination Code"
         return return_text
 
-    #: Integration completed at given end point.
     REACHED_END = 0
-    #: Integration ended early because boundary layer separated.
+    """Integration completed at given end point."""
+
     SEPARATED = auto()
-    #: Integration ended early because laminar boundary layer transitioned.
+    """Integration ended early because boundary layer separated."""
+
     TRANSITIONED = auto()
-    #: Integration ended early for unknown reason.
+    """Integration ended early because laminar boundary layer transitioned."""
+
     UNKNOWN = auto()
+    """Integration ended early for unknown reason."""
 
 
 class IntegrationResult:
@@ -204,7 +207,7 @@ class TermEvent(ABC):
         Returns
         -------
         TermReason
-            Value indicating reason this event would terminate integration
+            Value indicating reason this event would terminate integration.
         str
             Extra information associated with reason for termination.
 
