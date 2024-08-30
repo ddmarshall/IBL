@@ -90,6 +90,7 @@ The main contributors to this project are:
 Version History
 ---------------
 
+* 0.6.0.dev - Interface changes
 * 0.5.6 - Refactored reference data and analytic results classes and updated tests
 * 0.5.5 - Improved project infrastructure
 * 0.5.4 - Minor documentation updates
