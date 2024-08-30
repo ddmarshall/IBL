@@ -10,7 +10,7 @@ build-backend = "setuptools.build_meta"
 # See this for settings: https://packaging.python.org/en/latest/specifications/declaring-project-metadata/
 [project]
 name = "IBL"
-version = "0.6.dev"
+version = "0.5.6"
 authors = [
     {name = "David D. Marshall", email = "ddmarshall@gmail.com"},
     {name = "Malachi Edland"},

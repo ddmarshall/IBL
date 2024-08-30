@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ibl &mdash; IBL 0.5.6 documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../_static/documentation_options.js?v=e6638a06"></script>
+        <script src="../../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="ibl.analytic" href="ibl.analytic.html" />
+    <link rel="prev" title="ibl" href="../modules.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: white" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            IBL
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../index.html">Home</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../examples/index.html">Examples</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../modules.html">API</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">ibl</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="ibl.analytic.html">ibl.analytic</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ibl.head_method.html">ibl.head_method</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ibl.ibl_method.html">ibl.ibl_method</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ibl.initial_condition.html">ibl.initial_condition</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ibl.reference.html">ibl.reference</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ibl.skin_friction.html">ibl.skin_friction</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ibl.thwaites_method.html">ibl.thwaites_method</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ibl.typing.html">ibl.typing</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../developers/index.html">Developer Resources</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/ddmarshall/IBL">Project</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://ddmarshall.github.io/IBL">Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../license/index.html">License</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: white" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">IBL</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../modules.html">ibl</a></li>
+      <li class="breadcrumb-item active">ibl</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-ibl">
+<span id="ibl"></span><h1>ibl<a class="headerlink" href="#module-ibl" title="Link to this heading"></a></h1>
+<p>Python implementation of integral boundary layer methods.</p>
+<p>This package is an implementation of integral boundary layer methods.</p>
+<p class="rubric">Modules</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="ibl.analytic.html#module-ibl.analytic" title="ibl.analytic"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ibl.analytic</span></code></a></p></td>
+<td><p>Provides analytic solutions to boundary layer flows.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="ibl.head_method.html#module-ibl.head_method" title="ibl.head_method"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ibl.head_method</span></code></a></p></td>
+<td><p>Implementation of Head's method.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="ibl.ibl_method.html#module-ibl.ibl_method" title="ibl.ibl_method"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ibl.ibl_method</span></code></a></p></td>
+<td><p>All base classes and data for integral boundary layer method classes.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="ibl.initial_condition.html#module-ibl.initial_condition" title="ibl.initial_condition"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ibl.initial_condition</span></code></a></p></td>
+<td><p>Classes and data for set initial conditions of IBL methods.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="ibl.reference.html#module-ibl.reference" title="ibl.reference"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ibl.reference</span></code></a></p></td>
+<td><p>Provides reference data for boundary layer flows comparisons.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="ibl.skin_friction.html#module-ibl.skin_friction" title="ibl.skin_friction"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ibl.skin_friction</span></code></a></p></td>
+<td><p>Functions to calculate skin friction coefficient for turbulent boundary layers.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="ibl.thwaites_method.html#module-ibl.thwaites_method" title="ibl.thwaites_method"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ibl.thwaites_method</span></code></a></p></td>
+<td><p>Implementations of Thwaites' method.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="ibl.typing.html#module-ibl.typing" title="ibl.typing"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ibl.typing</span></code></a></p></td>
+<td><p>Typing information neeeded for use with this library.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../modules.html" class="btn btn-neutral float-left" title="ibl" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="ibl.analytic.html" class="btn btn-neutral float-right" title="ibl.analytic" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023-2024, David D. Marshall.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

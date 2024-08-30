@@ -17,7 +17,7 @@ sys.path.insert(0, os.path.abspath('../ibl'))
 project = 'IBL'
 copyright = '2023-2024, David D. Marshall'
 author = 'David D. Marshall'
-release = '0.5.6.dev'
+release = '0.5.6'
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration

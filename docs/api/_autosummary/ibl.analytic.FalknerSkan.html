@@ -1,0 +1,719 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ibl.analytic.FalknerSkan &mdash; IBL 0.5.6 documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../_static/documentation_options.js?v=e6638a06"></script>
+        <script src="../../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="ibl.analytic.Analytic2dSimilarityIncompressible" href="ibl.analytic.Analytic2dSimilarityIncompressible.html" />
+    <link rel="prev" title="ibl.analytic.Blasius" href="ibl.analytic.Blasius.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: white" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            IBL
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../index.html">Home</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../examples/index.html">Examples</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../modules.html">API</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="ibl.html">ibl</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="ibl.analytic.html">ibl.analytic</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="ibl.analytic.Blasius.html">ibl.analytic.Blasius</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">ibl.analytic.FalknerSkan</a></li>
+<li class="toctree-l4"><a class="reference internal" href="ibl.analytic.Analytic2dSimilarityIncompressible.html">ibl.analytic.Analytic2dSimilarityIncompressible</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="ibl.head_method.html">ibl.head_method</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ibl.ibl_method.html">ibl.ibl_method</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ibl.initial_condition.html">ibl.initial_condition</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ibl.reference.html">ibl.reference</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ibl.skin_friction.html">ibl.skin_friction</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ibl.thwaites_method.html">ibl.thwaites_method</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ibl.typing.html">ibl.typing</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../developers/index.html">Developer Resources</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/ddmarshall/IBL">Project</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://ddmarshall.github.io/IBL">Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../license/index.html">License</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: white" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">IBL</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../modules.html">ibl</a></li>
+          <li class="breadcrumb-item"><a href="ibl.html">ibl</a></li>
+          <li class="breadcrumb-item"><a href="ibl.analytic.html">ibl.analytic</a></li>
+      <li class="breadcrumb-item active">ibl.analytic.FalknerSkan</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="ibl-analytic-falknerskan">
+<h1>ibl.analytic.FalknerSkan<a class="headerlink" href="#ibl-analytic-falknerskan" title="Link to this heading"></a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="ibl.analytic.FalknerSkan">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ibl.analytic.</span></span><span class="sig-name descname"><span class="pre">FalknerSkan</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">beta</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">u_ref</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nu_ref</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fw_pp</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eta_inf</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ibl.analytic.FalknerSkan" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="ibl.analytic.Analytic2dSimilarityIncompressible.html#ibl.analytic.Analytic2dSimilarityIncompressible" title="ibl.analytic._analytic_2d_base.Analytic2dSimilarityIncompressible"><code class="xref py py-class docutils literal notranslate"><span class="pre">Analytic2dSimilarityIncompressible</span></code></a></p>
+<p>Solution to Falkner-Skan equation.</p>
+<p>This class represents the solution to the Falkner-Skan equation. It needs
+to perform a search for the appropriate initial condition during the
+initialization.</p>
+<p>Once the solution is obtained, the dense output from the ODE integrator is
+used to report back a wide variety of parameters associated with the
+boundary layer. Both integrated and point properties can be obtained from
+the similarity coordinate or from the corresponding Cartesian coordinates.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>ValueError</strong> – If properties are being set outside of the valid range.</p>
+</dd>
+<dt class="field-even">Parameters<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>beta</strong> (<em>float</em>)</p></li>
+<li><p><strong>u_ref</strong> (<em>float</em>)</p></li>
+<li><p><strong>nu_ref</strong> (<em>float</em>)</p></li>
+<li><p><strong>fw_pp</strong> (<em>float</em><em> | </em><em>None</em>)</p></li>
+<li><p><strong>eta_inf</strong> (<em>float</em><em> | </em><em>None</em>)</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="ibl.analytic.FalknerSkan.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">beta</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">u_ref</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nu_ref</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fw_pp</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eta_inf</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ibl.analytic.FalknerSkan.__init__" title="Link to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>beta</strong> (<em>float</em>)</p></li>
+<li><p><strong>u_ref</strong> (<em>float</em>)</p></li>
+<li><p><strong>nu_ref</strong> (<em>float</em>)</p></li>
+<li><p><strong>fw_pp</strong> (<em>float</em><em> | </em><em>None</em>)</p></li>
+<li><p><strong>eta_inf</strong> (<em>float</em><em> | </em><em>None</em>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><em>None</em></p>
+</dd>
+</dl>
+</dd></dl>
+
+<p class="rubric">Methods</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#ibl.analytic.FalknerSkan.__init__" title="ibl.analytic.FalknerSkan.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>(beta, u_ref, nu_ref[, fw_pp, eta_inf])</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#ibl.analytic.FalknerSkan.delta_d" title="ibl.analytic.FalknerSkan.delta_d"><code class="xref py py-obj docutils literal notranslate"><span class="pre">delta_d</span></code></a>(x)</p></td>
+<td><p>Calculate the displacement thickness.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#ibl.analytic.FalknerSkan.delta_k" title="ibl.analytic.FalknerSkan.delta_k"><code class="xref py py-obj docutils literal notranslate"><span class="pre">delta_k</span></code></a>(x)</p></td>
+<td><p>Calculate the kinetic energy thickness.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#ibl.analytic.FalknerSkan.delta_m" title="ibl.analytic.FalknerSkan.delta_m"><code class="xref py py-obj docutils literal notranslate"><span class="pre">delta_m</span></code></a>(x)</p></td>
+<td><p>Calculate the momentum thickness.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#ibl.analytic.FalknerSkan.delta_s" title="ibl.analytic.FalknerSkan.delta_s"><code class="xref py py-obj docutils literal notranslate"><span class="pre">delta_s</span></code></a>(x)</p></td>
+<td><p>Calculate the shear thickness.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#ibl.analytic.FalknerSkan.dissipation" title="ibl.analytic.FalknerSkan.dissipation"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dissipation</span></code></a>(x, rho_ref)</p></td>
+<td><p>Calculate the dissipation integral.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#ibl.analytic.FalknerSkan.eta" title="ibl.analytic.FalknerSkan.eta"><code class="xref py py-obj docutils literal notranslate"><span class="pre">eta</span></code></a>(x, y)</p></td>
+<td><p>Return the similarity coordinate corresponding to coordinates.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#ibl.analytic.FalknerSkan.f" title="ibl.analytic.FalknerSkan.f"><code class="xref py py-obj docutils literal notranslate"><span class="pre">f</span></code></a>(eta)</p></td>
+<td><p>Return the non-dimensional stream function from the solution.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#ibl.analytic.FalknerSkan.f_p" title="ibl.analytic.FalknerSkan.f_p"><code class="xref py py-obj docutils literal notranslate"><span class="pre">f_p</span></code></a>(eta)</p></td>
+<td><p>Return the non-dimensional velocity from the solution.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#ibl.analytic.FalknerSkan.f_pp" title="ibl.analytic.FalknerSkan.f_pp"><code class="xref py py-obj docutils literal notranslate"><span class="pre">f_pp</span></code></a>(eta)</p></td>
+<td><p>Return the derivative of the non-dimensional velocity from solution.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#ibl.analytic.FalknerSkan.reset_beta" title="ibl.analytic.FalknerSkan.reset_beta"><code class="xref py py-obj docutils literal notranslate"><span class="pre">reset_beta</span></code></a>(beta[, eta_inf, fw_pp])</p></td>
+<td><p>Set beta and the solver parameters to override the default values.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#ibl.analytic.FalknerSkan.reset_m" title="ibl.analytic.FalknerSkan.reset_m"><code class="xref py py-obj docutils literal notranslate"><span class="pre">reset_m</span></code></a>(m[, eta_inf, fw_pp])</p></td>
+<td><p>Set m and solver parameters to override default values.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#ibl.analytic.FalknerSkan.set_solution_parameters" title="ibl.analytic.FalknerSkan.set_solution_parameters"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_solution_parameters</span></code></a>([eta_inf, fw_pp])</p></td>
+<td><p>Set the solver parameters to override the default values.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#ibl.analytic.FalknerSkan.shape_d" title="ibl.analytic.FalknerSkan.shape_d"><code class="xref py py-obj docutils literal notranslate"><span class="pre">shape_d</span></code></a>(x)</p></td>
+<td><p>Calculate the displacement shape factor.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#ibl.analytic.FalknerSkan.shape_k" title="ibl.analytic.FalknerSkan.shape_k"><code class="xref py py-obj docutils literal notranslate"><span class="pre">shape_k</span></code></a>(x)</p></td>
+<td><p>Calculate the kinetic energy shape factor.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#ibl.analytic.FalknerSkan.tau_w" title="ibl.analytic.FalknerSkan.tau_w"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tau_w</span></code></a>(x, rho_ref)</p></td>
+<td><p>Calculate the wall shear stress.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#ibl.analytic.FalknerSkan.u" title="ibl.analytic.FalknerSkan.u"><code class="xref py py-obj docutils literal notranslate"><span class="pre">u</span></code></a>(x, y)</p></td>
+<td><p>Return the x-velocity that corresponds to the Cartesian coordinates.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#ibl.analytic.FalknerSkan.u_e" title="ibl.analytic.FalknerSkan.u_e"><code class="xref py py-obj docutils literal notranslate"><span class="pre">u_e</span></code></a>(x)</p></td>
+<td><p>Return the inviscid edge velocity at specified locations.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#ibl.analytic.FalknerSkan.v" title="ibl.analytic.FalknerSkan.v"><code class="xref py py-obj docutils literal notranslate"><span class="pre">v</span></code></a>(x, y)</p></td>
+<td><p>Return the y-velocity that corresponds to the Cartesian coordinates.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#ibl.analytic.FalknerSkan.v_e" title="ibl.analytic.FalknerSkan.v_e"><code class="xref py py-obj docutils literal notranslate"><span class="pre">v_e</span></code></a>(x)</p></td>
+<td><p>Calculate the transpiration velocity.</p></td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Attributes</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#ibl.analytic.FalknerSkan.beta" title="ibl.analytic.FalknerSkan.beta"><code class="xref py py-obj docutils literal notranslate"><span class="pre">beta</span></code></a></p></td>
+<td><p>Inviscid wedge angle parameter.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#ibl.analytic.FalknerSkan.eta_d" title="ibl.analytic.FalknerSkan.eta_d"><code class="xref py py-obj docutils literal notranslate"><span class="pre">eta_d</span></code></a></p></td>
+<td><p>The displacement thickness in similarity coordinates.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#ibl.analytic.FalknerSkan.eta_inf" title="ibl.analytic.FalknerSkan.eta_inf"><code class="xref py py-obj docutils literal notranslate"><span class="pre">eta_inf</span></code></a></p></td>
+<td><p>Maximum similarity coordinate.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#ibl.analytic.FalknerSkan.eta_k" title="ibl.analytic.FalknerSkan.eta_k"><code class="xref py py-obj docutils literal notranslate"><span class="pre">eta_k</span></code></a></p></td>
+<td><p>The kinetic energy thickness in similarity coordinates.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#ibl.analytic.FalknerSkan.eta_m" title="ibl.analytic.FalknerSkan.eta_m"><code class="xref py py-obj docutils literal notranslate"><span class="pre">eta_m</span></code></a></p></td>
+<td><p>The momentum thickness in similarity coordinates.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#ibl.analytic.FalknerSkan.eta_s" title="ibl.analytic.FalknerSkan.eta_s"><code class="xref py py-obj docutils literal notranslate"><span class="pre">eta_s</span></code></a></p></td>
+<td><p>The shear thickness in similarity coordinates.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#ibl.analytic.FalknerSkan.fw_pp" title="ibl.analytic.FalknerSkan.fw_pp"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fw_pp</span></code></a></p></td>
+<td><p>Initial condition used for ODE solution.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#ibl.analytic.FalknerSkan.m" title="ibl.analytic.FalknerSkan.m"><code class="xref py py-obj docutils literal notranslate"><span class="pre">m</span></code></a></p></td>
+<td><p>Edge velocity profile parameter.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#ibl.analytic.FalknerSkan.nu_ref" title="ibl.analytic.FalknerSkan.nu_ref"><code class="xref py py-obj docutils literal notranslate"><span class="pre">nu_ref</span></code></a></p></td>
+<td><p>Reference kinematic viscosity used in non-dimensionalization.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#ibl.analytic.FalknerSkan.u_ref" title="ibl.analytic.FalknerSkan.u_ref"><code class="xref py py-obj docutils literal notranslate"><span class="pre">u_ref</span></code></a></p></td>
+<td><p>Reference velocity used in non-dimensionalization.</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py property">
+<dt class="sig sig-object py" id="ibl.analytic.FalknerSkan.beta">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">beta</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#ibl.analytic.FalknerSkan.beta" title="Link to this definition"></a></dt>
+<dd><p>Inviscid wedge angle parameter. Must be in range [-0.19884, 2].</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="ibl.analytic.FalknerSkan.m">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">m</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#ibl.analytic.FalknerSkan.m" title="Link to this definition"></a></dt>
+<dd><p>Edge velocity profile parameter.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ibl.analytic.FalknerSkan.reset_beta">
+<span class="sig-name descname"><span class="pre">reset_beta</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">beta</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eta_inf</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fw_pp</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ibl.analytic.FalknerSkan.reset_beta" title="Link to this definition"></a></dt>
+<dd><p>Set beta and the solver parameters to override the default values.</p>
+<p>If None is passed in to either parameter then that parameter is solved
+for, otherwise the value passed in will be used as is. This can cause
+instability and should only be used for circumstances that require the
+use of specific values.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>beta</strong> (<em>float</em>) – Inviscid wedge angle parameter. Must be in range [-0.19884, 2].</p></li>
+<li><p><strong>eta_inf</strong> (<em>Optional</em><em>[</em><em>float</em><em>]</em>) – Maximum similarity coordinate. Must be positive.</p></li>
+<li><p><strong>fw_pp</strong> (<em>Optional</em><em>[</em><em>float</em><em>]</em>) – Initial condition used for ODE solution. Default value is found as
+part of the ODE solution process. Must be positive.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ValueError</strong> – If invalid value is passed in.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>None</em></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ibl.analytic.FalknerSkan.reset_m">
+<span class="sig-name descname"><span class="pre">reset_m</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">m</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eta_inf</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fw_pp</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ibl.analytic.FalknerSkan.reset_m" title="Link to this definition"></a></dt>
+<dd><p>Set m and solver parameters to override default values.</p>
+<p>If None is passed in to either parameter then that parameter is solved
+for, otherwise the value passed in will be used as is. This can cause
+instability and should only be used for circumstances that require the
+use of specific values.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>m</strong> (<em>float</em>) – Inviscid wedge angle parameter. Must be greater than approximately
+-0.0904295</p></li>
+<li><p><strong>eta_inf</strong> (<em>Optional</em><em>[</em><em>float</em><em>]</em>) – Maximum similarity coordinate. Must be positive.</p></li>
+<li><p><strong>fw_pp</strong> (<em>Optional</em><em>[</em><em>float</em><em>]</em>) – Initial condition used for ODE solution. Default value is found as
+part of the ODE solution process. Must be positive.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ValueError</strong> – If invalid value is passed in.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>None</em></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ibl.analytic.FalknerSkan.delta_d">
+<span class="sig-name descname"><span class="pre">delta_d</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ibl.analytic.FalknerSkan.delta_d" title="Link to this definition"></a></dt>
+<dd><p>Calculate the displacement thickness.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>x</strong> (<em>numpy.ndarray</em>) – Streamwise location of points of interest.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Displacement thickness at the specified locations.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>numpy.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ibl.analytic.FalknerSkan.delta_k">
+<span class="sig-name descname"><span class="pre">delta_k</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ibl.analytic.FalknerSkan.delta_k" title="Link to this definition"></a></dt>
+<dd><p>Calculate the kinetic energy thickness.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>x</strong> (<em>numpy.ndarray</em>) – Streamwise location of points of interest.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Kinetic energy thickness at the specified locations.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>numpy.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ibl.analytic.FalknerSkan.delta_m">
+<span class="sig-name descname"><span class="pre">delta_m</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ibl.analytic.FalknerSkan.delta_m" title="Link to this definition"></a></dt>
+<dd><p>Calculate the momentum thickness.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>x</strong> (<em>numpy.ndarray</em>) – Streamwise location of points of interest.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Momentum thickness at the specified locations.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>numpy.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ibl.analytic.FalknerSkan.delta_s">
+<span class="sig-name descname"><span class="pre">delta_s</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ibl.analytic.FalknerSkan.delta_s" title="Link to this definition"></a></dt>
+<dd><p>Calculate the shear thickness.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>x</strong> (<em>numpy.ndarray</em>) – Streamwise location of points of interest.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Shear thickness at the specified locations.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>numpy.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ibl.analytic.FalknerSkan.dissipation">
+<span class="sig-name descname"><span class="pre">dissipation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rho_ref</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ibl.analytic.FalknerSkan.dissipation" title="Link to this definition"></a></dt>
+<dd><p>Calculate the dissipation integral.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> (<em>numpy.ndarray</em>) – Streamwise location of points of interest.</p></li>
+<li><p><strong>rho_ref</strong> (<em>float</em>) – Reference density.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Dissipation integral at the specified locations.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>numpy.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ibl.analytic.FalknerSkan.eta">
+<span class="sig-name descname"><span class="pre">eta</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ibl.analytic.FalknerSkan.eta" title="Link to this definition"></a></dt>
+<dd><p>Return the similarity coordinate corresponding to coordinates.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> (<em>numpy.ndarray</em>) – Streamwise location of points of interest.</p></li>
+<li><p><strong>x</strong> – Location normal to the streamwise direction of points of interest.</p></li>
+<li><p><strong>y</strong> (<em>float</em><em> | </em><em>floating</em><em> | </em><em>ndarray</em><em>[</em><em>Any</em><em>, </em><em>dtype</em><em>[</em><em>ScalarType</em><em>]</em><em>]</em>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Similarity coordinate at the Cartesian coordinates.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>numpy.ndarray</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>Both <cite>x</cite> and <cite>y</cite> must be the same shape.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="ibl.analytic.FalknerSkan.eta_d">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">eta_d</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#ibl.analytic.FalknerSkan.eta_d" title="Link to this definition"></a></dt>
+<dd><p>The displacement thickness in similarity coordinates.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="ibl.analytic.FalknerSkan.eta_inf">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">eta_inf</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#ibl.analytic.FalknerSkan.eta_inf" title="Link to this definition"></a></dt>
+<dd><p>Maximum similarity coordinate. Default value is found as part of the
+ODE solution process.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="ibl.analytic.FalknerSkan.eta_k">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">eta_k</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#ibl.analytic.FalknerSkan.eta_k" title="Link to this definition"></a></dt>
+<dd><p>The kinetic energy thickness in similarity coordinates.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="ibl.analytic.FalknerSkan.eta_m">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">eta_m</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#ibl.analytic.FalknerSkan.eta_m" title="Link to this definition"></a></dt>
+<dd><p>The momentum thickness in similarity coordinates.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="ibl.analytic.FalknerSkan.eta_s">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">eta_s</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#ibl.analytic.FalknerSkan.eta_s" title="Link to this definition"></a></dt>
+<dd><p>The shear thickness in similarity coordinates.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ibl.analytic.FalknerSkan.f">
+<span class="sig-name descname"><span class="pre">f</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">eta</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ibl.analytic.FalknerSkan.f" title="Link to this definition"></a></dt>
+<dd><p>Return the non-dimensional stream function from the solution.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>eta</strong> (<em>numpy.ndarray</em>) – Similarity coordinates to calculate the property.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Non-dimensional stream function values.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>numpy.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ibl.analytic.FalknerSkan.f_p">
+<span class="sig-name descname"><span class="pre">f_p</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">eta</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ibl.analytic.FalknerSkan.f_p" title="Link to this definition"></a></dt>
+<dd><p>Return the non-dimensional velocity from the solution.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>eta</strong> (<em>numpy.ndarray</em>) – Similarity coordinates to calculate the property.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Non-dimensional velocity values.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>numpy.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ibl.analytic.FalknerSkan.f_pp">
+<span class="sig-name descname"><span class="pre">f_pp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">eta</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ibl.analytic.FalknerSkan.f_pp" title="Link to this definition"></a></dt>
+<dd><p>Return the derivative of the non-dimensional velocity from solution.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>eta</strong> (<em>numpy.ndarray</em>) – Similarity coordinates to calculate the property.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Derivative of the non-dimensional velocity values.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>numpy.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="ibl.analytic.FalknerSkan.fw_pp">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">fw_pp</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#ibl.analytic.FalknerSkan.fw_pp" title="Link to this definition"></a></dt>
+<dd><p>Initial condition used for ODE solution.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="ibl.analytic.FalknerSkan.nu_ref">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">nu_ref</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#ibl.analytic.FalknerSkan.nu_ref" title="Link to this definition"></a></dt>
+<dd><p>Reference kinematic viscosity used in non-dimensionalization.
+Must be positive.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ibl.analytic.FalknerSkan.set_solution_parameters">
+<span class="sig-name descname"><span class="pre">set_solution_parameters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">eta_inf</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fw_pp</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ibl.analytic.FalknerSkan.set_solution_parameters" title="Link to this definition"></a></dt>
+<dd><p>Set the solver parameters to override the default values.</p>
+<p>If None is passed in to either parameter then that parameter is solved
+for, otherwise the value passed in will be used as is. This can cause
+instability and should only be used for circumstances that require the
+use of specific values.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>eta_inf</strong> (<em>Optional</em><em>[</em><em>float</em><em>]</em>) – Maximum similarity coordinate. Must be positive.</p></li>
+<li><p><strong>fw_pp</strong> (<em>Optional</em><em>[</em><em>float</em><em>]</em>) – Initial condition used for ODE solution. Default value is found as
+part of the ODE solution process. Must be positive.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ValueError</strong> – If invalid value is passed in.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>None</em></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ibl.analytic.FalknerSkan.shape_d">
+<span class="sig-name descname"><span class="pre">shape_d</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ibl.analytic.FalknerSkan.shape_d" title="Link to this definition"></a></dt>
+<dd><p>Calculate the displacement shape factor.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>x</strong> (<em>numpy.ndarray</em>) – Streamwise location of points of interest.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Displacement shape factor at the specified locations.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>numpy.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ibl.analytic.FalknerSkan.shape_k">
+<span class="sig-name descname"><span class="pre">shape_k</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ibl.analytic.FalknerSkan.shape_k" title="Link to this definition"></a></dt>
+<dd><p>Calculate the kinetic energy shape factor.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>x</strong> (<em>numpy.ndarray</em>) – Streamwise location of points of interest.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Kinetic energy shape factor at the specified locations.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>numpy.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ibl.analytic.FalknerSkan.tau_w">
+<span class="sig-name descname"><span class="pre">tau_w</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rho_ref</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ibl.analytic.FalknerSkan.tau_w" title="Link to this definition"></a></dt>
+<dd><p>Calculate the wall shear stress.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> (<em>numpy.ndarray</em>) – Streamwise location of points of interest.</p></li>
+<li><p><strong>rho_ref</strong> (<em>float</em>) – Reference density.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Wall shear stress at the specified locations.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>numpy.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ibl.analytic.FalknerSkan.u">
+<span class="sig-name descname"><span class="pre">u</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ibl.analytic.FalknerSkan.u" title="Link to this definition"></a></dt>
+<dd><p>Return the x-velocity that corresponds to the Cartesian coordinates.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> (<em>numpy.ndarray</em>) – Streamwise location of points of interest.</p></li>
+<li><p><strong>x</strong> – Location normal to the streamwise direction of points of interest.</p></li>
+<li><p><strong>y</strong> (<em>float</em><em> | </em><em>floating</em><em> | </em><em>ndarray</em><em>[</em><em>Any</em><em>, </em><em>dtype</em><em>[</em><em>ScalarType</em><em>]</em><em>]</em>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Velocity component in the x-direction at the coordinates.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>numpy.ndarray</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>Both <cite>x</cite> and <cite>y</cite> must be the same shape.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ibl.analytic.FalknerSkan.u_e">
+<span class="sig-name descname"><span class="pre">u_e</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ibl.analytic.FalknerSkan.u_e" title="Link to this definition"></a></dt>
+<dd><p>Return the inviscid edge velocity at specified locations.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>x</strong> (<em>numpy.ndarray</em>) – Streamwise location of points of interest.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Edge streamwise velocity at specified locations.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>numpy.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="ibl.analytic.FalknerSkan.u_ref">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">u_ref</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#ibl.analytic.FalknerSkan.u_ref" title="Link to this definition"></a></dt>
+<dd><p>Reference velocity used in non-dimensionalization.
+Must be positive.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ibl.analytic.FalknerSkan.v">
+<span class="sig-name descname"><span class="pre">v</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ibl.analytic.FalknerSkan.v" title="Link to this definition"></a></dt>
+<dd><p>Return the y-velocity that corresponds to the Cartesian coordinates.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> (<em>numpy.ndarray</em>) – Streamwise location of points of interest.</p></li>
+<li><p><strong>x</strong> – Location normal to the streamwise direction of points of interest.</p></li>
+<li><p><strong>y</strong> (<em>float</em><em> | </em><em>floating</em><em> | </em><em>ndarray</em><em>[</em><em>Any</em><em>, </em><em>dtype</em><em>[</em><em>ScalarType</em><em>]</em><em>]</em>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Velocity component in the y-direction at the coordinates.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>numpy.ndarray</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>Both <cite>x</cite> and <cite>y</cite> must be the same shape.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ibl.analytic.FalknerSkan.v_e">
+<span class="sig-name descname"><span class="pre">v_e</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ibl.analytic.FalknerSkan.v_e" title="Link to this definition"></a></dt>
+<dd><p>Calculate the transpiration velocity.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>x</strong> (<em>numpy.ndarray</em>) – Streamwise location of points of interest.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Transpiration velocity at specified locations.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>numpy.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="ibl.analytic.Blasius.html" class="btn btn-neutral float-left" title="ibl.analytic.Blasius" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="ibl.analytic.Analytic2dSimilarityIncompressible.html" class="btn btn-neutral float-right" title="ibl.analytic.Analytic2dSimilarityIncompressible" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023-2024, David D. Marshall.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
