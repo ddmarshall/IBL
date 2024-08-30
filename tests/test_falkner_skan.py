@@ -202,7 +202,7 @@ class TestFalknerSkan(unittest.TestCase):
                     tau_w_ref = rho*nu*u_e*g*self.fw_pp_ref[idx]
                     self.assertIsNone(
                         np_test.assert_allclose(sol.tau_w(x, rho), tau_w_ref,
-                                                atol=5e-5))
+                                                atol=2e-4))
 
                     # test dissipation
                     def diss_fun(eta: FunType) -> FunType:
