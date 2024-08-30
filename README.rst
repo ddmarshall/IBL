@@ -3,7 +3,7 @@ Summary
 
 This project provides a python library to model the viscous effects for thin boundary layers using the integral boundary layer method. Check out the `documentation <https://ddmarshall.github.io/IBL/index.html>`__ for more info.
 
-.. image:: https://github.com/ddmarshall/IBL/actions/workflows/tests.yml/badge.svg?branch=main
+.. image:: https://github.com/ddmarshall/IBL/actions/workflows/tests.yml/badge.svg?branch=develop
 .. image:: https://img.shields.io/badge/linting-pylint-yellowgreen
     :target: https://github.com/PyCQA/pylint
 .. image:: https://www.mypy-lang.org/static/mypy_badge.svg 
