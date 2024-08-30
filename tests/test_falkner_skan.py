@@ -1,6 +1,6 @@
 """Module to test the Falkner-Skan solution functionality."""
 
-import os
+import platform
 
 from typing import Union
 
@@ -55,7 +55,7 @@ class TestFalknerSkan(unittest.TestCase):
                          0.99879, 0.99940, 0.99972, 0.99987, 0.99995, 0.99998,
                          0.99999, 1.00000, 1.00000, 1.00000]])
     # Note: eta_inf_ref[0] is significantly different on MacOS
-    if os.name == 'Darwin':
+    if platform.system() == 'Darwin':
         eta_inf_ref = np.array([9.9113972, 7.9263214, 7.1451323, 6.7517934,
                                 6.0672747, 5.6670098])
     else:
