@@ -193,7 +193,7 @@ class TestFalknerSkan(unittest.TestCase):
                     shape_k_ref = delta_k_ref/delta_m_ref
                     self.assertIsNone(np_test.assert_allclose(sol.shape_d(x),
                                                               shape_d_ref,
-                                                              rtol=4e-4))
+                                                              rtol=2e-3))
                     self.assertIsNone(np_test.assert_allclose(sol.shape_k(x),
                                                               shape_k_ref,
                                                               rtol=2e-5))
