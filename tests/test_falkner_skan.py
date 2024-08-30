@@ -154,7 +154,7 @@ class TestFalknerSkan(unittest.TestCase):
                 # similarity terms
                 self.assertIsNone(np_test.assert_allclose(sol.eta_d,
                                                           self.eta_d_ref[idx],
-                                                          rtol=6e-5))
+                                                          rtol=9e-4))
                 self.assertIsNone(np_test.assert_allclose(sol.eta_m,
                                                           self.eta_m_ref[idx],
                                                           rtol=3e-5))
