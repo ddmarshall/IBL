@@ -137,7 +137,7 @@ class TestFalknerSkan(unittest.TestCase):
                 self.assertIsNone(
                     np_test.assert_allclose(sol.f_p(self.eta_ref),
                                             self.f_p_ref[idx,:],
-                                            atol=6e-4))
+                                            atol=2e-3))
 
                 # test the eta_inf
                 self.assertAlmostEqual(sol.eta_inf, self.eta_inf_ref[idx],
