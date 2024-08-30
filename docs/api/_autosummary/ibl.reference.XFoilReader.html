@@ -1,0 +1,941 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ibl.reference.XFoilReader &mdash; IBL 0.5.6 documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../_static/documentation_options.js?v=e6638a06"></script>
+        <script src="../../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="ibl.reference.XFoilAirfoilData" href="ibl.reference.XFoilAirfoilData.html" />
+    <link rel="prev" title="ibl.reference" href="ibl.reference.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: white" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            IBL
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../index.html">Home</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../examples/index.html">Examples</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../modules.html">API</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="ibl.html">ibl</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="ibl.analytic.html">ibl.analytic</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ibl.head_method.html">ibl.head_method</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ibl.ibl_method.html">ibl.ibl_method</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ibl.initial_condition.html">ibl.initial_condition</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="ibl.reference.html">ibl.reference</a><ul class="current">
+<li class="toctree-l4 current"><a class="current reference internal" href="#">ibl.reference.XFoilReader</a></li>
+<li class="toctree-l4"><a class="reference internal" href="ibl.reference.XFoilAirfoilData.html">ibl.reference.XFoilAirfoilData</a></li>
+<li class="toctree-l4"><a class="reference internal" href="ibl.reference.XFoilWakeData.html">ibl.reference.XFoilWakeData</a></li>
+<li class="toctree-l4"><a class="reference internal" href="ibl.reference.StanfordOlympics1968.html">ibl.reference.StanfordOlympics1968</a></li>
+<li class="toctree-l4"><a class="reference internal" href="ibl.reference.StanfordOlympics1968StationData.html">ibl.reference.StanfordOlympics1968StationData</a></li>
+<li class="toctree-l4"><a class="reference internal" href="ibl.reference.StanfordOlympics1968SmoothVel.html">ibl.reference.StanfordOlympics1968SmoothVel</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="ibl.skin_friction.html">ibl.skin_friction</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ibl.thwaites_method.html">ibl.thwaites_method</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ibl.typing.html">ibl.typing</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../developers/index.html">Developer Resources</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/ddmarshall/IBL">Project</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://ddmarshall.github.io/IBL">Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../license/index.html">License</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: white" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">IBL</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../modules.html">ibl</a></li>
+          <li class="breadcrumb-item"><a href="ibl.html">ibl</a></li>
+          <li class="breadcrumb-item"><a href="ibl.reference.html">ibl.reference</a></li>
+      <li class="breadcrumb-item active">ibl.reference.XFoilReader</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="ibl-reference-xfoilreader">
+<h1>ibl.reference.XFoilReader<a class="headerlink" href="#ibl-reference-xfoilreader" title="Link to this heading"></a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="ibl.reference.XFoilReader">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ibl.reference.</span></span><span class="sig-name descname"><span class="pre">XFoilReader</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ibl.reference.XFoilReader" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>XFoil dump file reader.</p>
+<p>This class is an interface to the dump file from XFoil. The data for the
+airfoil and wake are read in and processed into upper flow and lower flow
+at the stagnation point (not leading edge) and the wake. Each portion is
+stored separately and the parameters are obtained separately.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>filename</strong> (<em>str</em>)</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="ibl.reference.XFoilReader.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ibl.reference.XFoilReader.__init__" title="Link to this definition"></a></dt>
+<dd><p>Initialize class with filename.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>filename</strong> (<em>str</em><em>, </em><em>optional</em>) – Name of XFoil dump file to parse, by default “”</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><em>None</em></p>
+</dd>
+</dl>
+</dd></dl>
+
+<p class="rubric">Methods</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#ibl.reference.XFoilReader.__init__" title="ibl.reference.XFoilReader.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>([filename])</p></td>
+<td><p>Initialize class with filename.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#ibl.reference.XFoilReader.c_f_lower" title="ibl.reference.XFoilReader.c_f_lower"><code class="xref py py-obj docutils literal notranslate"><span class="pre">c_f_lower</span></code></a>()</p></td>
+<td><p>Return the skin friction coefficient for lower surface of airfoil.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#ibl.reference.XFoilReader.c_f_upper" title="ibl.reference.XFoilReader.c_f_upper"><code class="xref py py-obj docutils literal notranslate"><span class="pre">c_f_upper</span></code></a>()</p></td>
+<td><p>Return the skin friction coefficient for upper surface of airfoil.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#ibl.reference.XFoilReader.delta_d_lower" title="ibl.reference.XFoilReader.delta_d_lower"><code class="xref py py-obj docutils literal notranslate"><span class="pre">delta_d_lower</span></code></a>()</p></td>
+<td><p>Return the displacement thicknesses for lower surface of airfoil.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#ibl.reference.XFoilReader.delta_d_upper" title="ibl.reference.XFoilReader.delta_d_upper"><code class="xref py py-obj docutils literal notranslate"><span class="pre">delta_d_upper</span></code></a>()</p></td>
+<td><p>Return the displacement thicknesses for upper surface of airfoil.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#ibl.reference.XFoilReader.delta_d_wake" title="ibl.reference.XFoilReader.delta_d_wake"><code class="xref py py-obj docutils literal notranslate"><span class="pre">delta_d_wake</span></code></a>()</p></td>
+<td><p>Return the displacement thicknesses for airfoil wake.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#ibl.reference.XFoilReader.delta_k_lower" title="ibl.reference.XFoilReader.delta_k_lower"><code class="xref py py-obj docutils literal notranslate"><span class="pre">delta_k_lower</span></code></a>()</p></td>
+<td><p>Return the kinetic energy thicknesses for lower surface of airfoil.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#ibl.reference.XFoilReader.delta_k_upper" title="ibl.reference.XFoilReader.delta_k_upper"><code class="xref py py-obj docutils literal notranslate"><span class="pre">delta_k_upper</span></code></a>()</p></td>
+<td><p>Return the kinetic energy thicknesses for upper surface of airfoil.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#ibl.reference.XFoilReader.delta_m_lower" title="ibl.reference.XFoilReader.delta_m_lower"><code class="xref py py-obj docutils literal notranslate"><span class="pre">delta_m_lower</span></code></a>()</p></td>
+<td><p>Return the momentum thicknesses for lower surface of airfoil.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#ibl.reference.XFoilReader.delta_m_upper" title="ibl.reference.XFoilReader.delta_m_upper"><code class="xref py py-obj docutils literal notranslate"><span class="pre">delta_m_upper</span></code></a>()</p></td>
+<td><p>Return the momentum thicknesses for upper surface of airfoil.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#ibl.reference.XFoilReader.delta_m_wake" title="ibl.reference.XFoilReader.delta_m_wake"><code class="xref py py-obj docutils literal notranslate"><span class="pre">delta_m_wake</span></code></a>()</p></td>
+<td><p>Return the momentum thicknesses for airfoil wake.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#ibl.reference.XFoilReader.ke_defect_lower" title="ibl.reference.XFoilReader.ke_defect_lower"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ke_defect_lower</span></code></a>()</p></td>
+<td><p>Return the kinetic energy defect for lower surface of airfoil.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#ibl.reference.XFoilReader.ke_defect_upper" title="ibl.reference.XFoilReader.ke_defect_upper"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ke_defect_upper</span></code></a>()</p></td>
+<td><p>Return the kinetic energy defect for upper surface of airfoil.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#ibl.reference.XFoilReader.lower" title="ibl.reference.XFoilReader.lower"><code class="xref py py-obj docutils literal notranslate"><span class="pre">lower</span></code></a>(i)</p></td>
+<td><p>Return the specified data on the lower surface of airfoil.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#ibl.reference.XFoilReader.lower_count" title="ibl.reference.XFoilReader.lower_count"><code class="xref py py-obj docutils literal notranslate"><span class="pre">lower_count</span></code></a>()</p></td>
+<td><p>Return number of points on the lower surface of airofil.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#ibl.reference.XFoilReader.mass_defect_lower" title="ibl.reference.XFoilReader.mass_defect_lower"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mass_defect_lower</span></code></a>()</p></td>
+<td><p>Return the mass defect for lower surface of airfoil.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#ibl.reference.XFoilReader.mass_defect_upper" title="ibl.reference.XFoilReader.mass_defect_upper"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mass_defect_upper</span></code></a>()</p></td>
+<td><p>Return the mass defect for upper surface of airfoil.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#ibl.reference.XFoilReader.mom_defect_lower" title="ibl.reference.XFoilReader.mom_defect_lower"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mom_defect_lower</span></code></a>()</p></td>
+<td><p>Return the momentum defect for lower surface of airfoil.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#ibl.reference.XFoilReader.mom_defect_upper" title="ibl.reference.XFoilReader.mom_defect_upper"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mom_defect_upper</span></code></a>()</p></td>
+<td><p>Return the momentum defect for upper surface of airfoil.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#ibl.reference.XFoilReader.s_lower" title="ibl.reference.XFoilReader.s_lower"><code class="xref py py-obj docutils literal notranslate"><span class="pre">s_lower</span></code></a>()</p></td>
+<td><p>Return arc-length distances from stagnation point for lower surface.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#ibl.reference.XFoilReader.s_upper" title="ibl.reference.XFoilReader.s_upper"><code class="xref py py-obj docutils literal notranslate"><span class="pre">s_upper</span></code></a>()</p></td>
+<td><p>Return arc-length distances from stagnation point for upper surface.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#ibl.reference.XFoilReader.s_wake" title="ibl.reference.XFoilReader.s_wake"><code class="xref py py-obj docutils literal notranslate"><span class="pre">s_wake</span></code></a>()</p></td>
+<td><p>Return arc-length distances from airfoil trailing edge.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#ibl.reference.XFoilReader.shape_d_lower" title="ibl.reference.XFoilReader.shape_d_lower"><code class="xref py py-obj docutils literal notranslate"><span class="pre">shape_d_lower</span></code></a>()</p></td>
+<td><p>Return the displacement shape factor for lower surface of airfoil.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#ibl.reference.XFoilReader.shape_d_upper" title="ibl.reference.XFoilReader.shape_d_upper"><code class="xref py py-obj docutils literal notranslate"><span class="pre">shape_d_upper</span></code></a>()</p></td>
+<td><p>Return the displacement shape factor for upper surface of airfoil.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#ibl.reference.XFoilReader.shape_d_wake" title="ibl.reference.XFoilReader.shape_d_wake"><code class="xref py py-obj docutils literal notranslate"><span class="pre">shape_d_wake</span></code></a>()</p></td>
+<td><p>Return the displacement shape factor for airfoil wake.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#ibl.reference.XFoilReader.shape_k_lower" title="ibl.reference.XFoilReader.shape_k_lower"><code class="xref py py-obj docutils literal notranslate"><span class="pre">shape_k_lower</span></code></a>()</p></td>
+<td><p>Return the kinetic energy shape factor for lower surface of airfoil.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#ibl.reference.XFoilReader.shape_k_upper" title="ibl.reference.XFoilReader.shape_k_upper"><code class="xref py py-obj docutils literal notranslate"><span class="pre">shape_k_upper</span></code></a>()</p></td>
+<td><p>Return the kinetic energy shape factor for upper surface of airfoil.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#ibl.reference.XFoilReader.u_e_lower" title="ibl.reference.XFoilReader.u_e_lower"><code class="xref py py-obj docutils literal notranslate"><span class="pre">u_e_lower</span></code></a>()</p></td>
+<td><p>Return the velocities for lower surface of airfoil.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#ibl.reference.XFoilReader.u_e_upper" title="ibl.reference.XFoilReader.u_e_upper"><code class="xref py py-obj docutils literal notranslate"><span class="pre">u_e_upper</span></code></a>()</p></td>
+<td><p>Return the velocities for upper surface of airfoil.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#ibl.reference.XFoilReader.u_e_wake" title="ibl.reference.XFoilReader.u_e_wake"><code class="xref py py-obj docutils literal notranslate"><span class="pre">u_e_wake</span></code></a>()</p></td>
+<td><p>Return the velocities for airfoil wake.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#ibl.reference.XFoilReader.upper" title="ibl.reference.XFoilReader.upper"><code class="xref py py-obj docutils literal notranslate"><span class="pre">upper</span></code></a>(i)</p></td>
+<td><p>Return the specified data on the upper surface of airfoil.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#ibl.reference.XFoilReader.upper_count" title="ibl.reference.XFoilReader.upper_count"><code class="xref py py-obj docutils literal notranslate"><span class="pre">upper_count</span></code></a>()</p></td>
+<td><p>Return number of points on the upper surface of airofil.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#ibl.reference.XFoilReader.wake" title="ibl.reference.XFoilReader.wake"><code class="xref py py-obj docutils literal notranslate"><span class="pre">wake</span></code></a>(i)</p></td>
+<td><p>Return the specified airfoil wake data.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#ibl.reference.XFoilReader.wake_count" title="ibl.reference.XFoilReader.wake_count"><code class="xref py py-obj docutils literal notranslate"><span class="pre">wake_count</span></code></a>()</p></td>
+<td><p>Return number of points in the airofil wake.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#ibl.reference.XFoilReader.x_lower" title="ibl.reference.XFoilReader.x_lower"><code class="xref py py-obj docutils literal notranslate"><span class="pre">x_lower</span></code></a>()</p></td>
+<td><p>Return the chord locations for lower surface of airfoil.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#ibl.reference.XFoilReader.x_upper" title="ibl.reference.XFoilReader.x_upper"><code class="xref py py-obj docutils literal notranslate"><span class="pre">x_upper</span></code></a>()</p></td>
+<td><p>Return the chord locations for upper surface of airfoil.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#ibl.reference.XFoilReader.x_wake" title="ibl.reference.XFoilReader.x_wake"><code class="xref py py-obj docutils literal notranslate"><span class="pre">x_wake</span></code></a>()</p></td>
+<td><p>Return the chord locations for airfoil wake.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#ibl.reference.XFoilReader.y_lower" title="ibl.reference.XFoilReader.y_lower"><code class="xref py py-obj docutils literal notranslate"><span class="pre">y_lower</span></code></a>()</p></td>
+<td><p>Return the normal locations for lower surface of airfoil.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#ibl.reference.XFoilReader.y_upper" title="ibl.reference.XFoilReader.y_upper"><code class="xref py py-obj docutils literal notranslate"><span class="pre">y_upper</span></code></a>()</p></td>
+<td><p>Return the normal locations for upper surface of airfoil.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#ibl.reference.XFoilReader.y_wake" title="ibl.reference.XFoilReader.y_wake"><code class="xref py py-obj docutils literal notranslate"><span class="pre">y_wake</span></code></a>()</p></td>
+<td><p>Return the normal locations for airfoil wake.</p></td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Attributes</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#ibl.reference.XFoilReader.alpha" title="ibl.reference.XFoilReader.alpha"><code class="xref py py-obj docutils literal notranslate"><span class="pre">alpha</span></code></a></p></td>
+<td><p>Angle of attack, in radians, for case.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#ibl.reference.XFoilReader.c" title="ibl.reference.XFoilReader.c"><code class="xref py py-obj docutils literal notranslate"><span class="pre">c</span></code></a></p></td>
+<td><p>Chord length in [m] of airfoil.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#ibl.reference.XFoilReader.filename" title="ibl.reference.XFoilReader.filename"><code class="xref py py-obj docutils literal notranslate"><span class="pre">filename</span></code></a></p></td>
+<td><p>Name of file containing XFoil dump data.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#ibl.reference.XFoilReader.n_trans" title="ibl.reference.XFoilReader.n_trans"><code class="xref py py-obj docutils literal notranslate"><span class="pre">n_trans</span></code></a></p></td>
+<td><p>Amplification factor used in transition model.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#ibl.reference.XFoilReader.name" title="ibl.reference.XFoilReader.name"><code class="xref py py-obj docutils literal notranslate"><span class="pre">name</span></code></a></p></td>
+<td><p>Name airfoil being analyzed.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#ibl.reference.XFoilReader.reynolds" title="ibl.reference.XFoilReader.reynolds"><code class="xref py py-obj docutils literal notranslate"><span class="pre">reynolds</span></code></a></p></td>
+<td><p>Reynolds number based on airfoil chord length for case.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#ibl.reference.XFoilReader.u_ref" title="ibl.reference.XFoilReader.u_ref"><code class="xref py py-obj docutils literal notranslate"><span class="pre">u_ref</span></code></a></p></td>
+<td><p>Reference velocity in [m/s] for case.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#ibl.reference.XFoilReader.x_trans_lower" title="ibl.reference.XFoilReader.x_trans_lower"><code class="xref py py-obj docutils literal notranslate"><span class="pre">x_trans_lower</span></code></a></p></td>
+<td><p>Chord location of boundary layer transition on lower surface.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#ibl.reference.XFoilReader.x_trans_upper" title="ibl.reference.XFoilReader.x_trans_upper"><code class="xref py py-obj docutils literal notranslate"><span class="pre">x_trans_upper</span></code></a></p></td>
+<td><p>Chord location of boundary layer transition on upper surface.</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py property">
+<dt class="sig sig-object py" id="ibl.reference.XFoilReader.name">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#ibl.reference.XFoilReader.name" title="Link to this definition"></a></dt>
+<dd><p>Name airfoil being analyzed.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="ibl.reference.XFoilReader.alpha">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">alpha</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#ibl.reference.XFoilReader.alpha" title="Link to this definition"></a></dt>
+<dd><p>Angle of attack, in radians, for case.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="ibl.reference.XFoilReader.u_ref">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">u_ref</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#ibl.reference.XFoilReader.u_ref" title="Link to this definition"></a></dt>
+<dd><p>Reference velocity in [m/s] for case.
+Must be greater than zero.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="ibl.reference.XFoilReader.c">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">c</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#ibl.reference.XFoilReader.c" title="Link to this definition"></a></dt>
+<dd><p>Chord length in [m] of airfoil.
+Must be greater than zero.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="ibl.reference.XFoilReader.reynolds">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">reynolds</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#ibl.reference.XFoilReader.reynolds" title="Link to this definition"></a></dt>
+<dd><p>Reynolds number based on airfoil chord length for case.
+Must be greater than zero. If zero then the solution is assumed
+inviscid.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="ibl.reference.XFoilReader.n_trans">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">n_trans</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#ibl.reference.XFoilReader.n_trans" title="Link to this definition"></a></dt>
+<dd><p>Amplification factor used in transition model.
+Must be greater than zero.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="ibl.reference.XFoilReader.x_trans_upper">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">x_trans_upper</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#ibl.reference.XFoilReader.x_trans_upper" title="Link to this definition"></a></dt>
+<dd><p>Chord location of boundary layer transition on upper surface.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="ibl.reference.XFoilReader.x_trans_lower">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">x_trans_lower</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#ibl.reference.XFoilReader.x_trans_lower" title="Link to this definition"></a></dt>
+<dd><p>Chord location of boundary layer transition on lower surface.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="ibl.reference.XFoilReader.filename">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">filename</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#ibl.reference.XFoilReader.filename" title="Link to this definition"></a></dt>
+<dd><p>Name of file containing XFoil dump data.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ibl.reference.XFoilReader.upper_count">
+<span class="sig-name descname"><span class="pre">upper_count</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ibl.reference.XFoilReader.upper_count" title="Link to this definition"></a></dt>
+<dd><p>Return number of points on the upper surface of airofil.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Number of points on the upper surface of airfoil.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><em>int</em></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ibl.reference.XFoilReader.lower_count">
+<span class="sig-name descname"><span class="pre">lower_count</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ibl.reference.XFoilReader.lower_count" title="Link to this definition"></a></dt>
+<dd><p>Return number of points on the lower surface of airofil.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Number of points on the lower surface of airfoil.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><em>int</em></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ibl.reference.XFoilReader.wake_count">
+<span class="sig-name descname"><span class="pre">wake_count</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ibl.reference.XFoilReader.wake_count" title="Link to this definition"></a></dt>
+<dd><p>Return number of points in the airofil wake.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Number of points in the airfoil wake.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><em>int</em></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ibl.reference.XFoilReader.upper">
+<span class="sig-name descname"><span class="pre">upper</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">i</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ibl.reference.XFoilReader.upper" title="Link to this definition"></a></dt>
+<dd><p>Return the specified data on the upper surface of airfoil.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>i</strong> (<em>int</em>) – Index of point.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Upper airfoil surface data.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>AirfoilData</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ibl.reference.XFoilReader.lower">
+<span class="sig-name descname"><span class="pre">lower</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">i</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ibl.reference.XFoilReader.lower" title="Link to this definition"></a></dt>
+<dd><p>Return the specified data on the lower surface of airfoil.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>i</strong> (<em>int</em>) – Index of point.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Lower airfoil surface data.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>AirfoilData</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ibl.reference.XFoilReader.wake">
+<span class="sig-name descname"><span class="pre">wake</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">i</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ibl.reference.XFoilReader.wake" title="Link to this definition"></a></dt>
+<dd><p>Return the specified airfoil wake data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>i</strong> (<em>int</em>) – Index of point.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Airfoil wake data.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>AirfoilData</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ibl.reference.XFoilReader.s_upper">
+<span class="sig-name descname"><span class="pre">s_upper</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ibl.reference.XFoilReader.s_upper" title="Link to this definition"></a></dt>
+<dd><p>Return arc-length distances from stagnation point for upper surface.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Arc-length distances from the stagnation point for the upper
+surface.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>numpy.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ibl.reference.XFoilReader.s_lower">
+<span class="sig-name descname"><span class="pre">s_lower</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ibl.reference.XFoilReader.s_lower" title="Link to this definition"></a></dt>
+<dd><p>Return arc-length distances from stagnation point for lower surface.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Arc-length distances from the stagnation point for the lower
+surface.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>numpy.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ibl.reference.XFoilReader.s_wake">
+<span class="sig-name descname"><span class="pre">s_wake</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ibl.reference.XFoilReader.s_wake" title="Link to this definition"></a></dt>
+<dd><p>Return arc-length distances from airfoil trailing edge.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Arc-length distances from the airfoil trailing edge.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>numpy.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ibl.reference.XFoilReader.x_upper">
+<span class="sig-name descname"><span class="pre">x_upper</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ibl.reference.XFoilReader.x_upper" title="Link to this definition"></a></dt>
+<dd><p>Return the chord locations for upper surface of airfoil.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Chord locations for upper surface of airfoil.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>numpy.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ibl.reference.XFoilReader.x_lower">
+<span class="sig-name descname"><span class="pre">x_lower</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ibl.reference.XFoilReader.x_lower" title="Link to this definition"></a></dt>
+<dd><p>Return the chord locations for lower surface of airfoil.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Chord locations for lower surface of airfoil.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>numpy.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ibl.reference.XFoilReader.x_wake">
+<span class="sig-name descname"><span class="pre">x_wake</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ibl.reference.XFoilReader.x_wake" title="Link to this definition"></a></dt>
+<dd><p>Return the chord locations for airfoil wake.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Chord locations for airfoil wake.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>numpy.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ibl.reference.XFoilReader.y_upper">
+<span class="sig-name descname"><span class="pre">y_upper</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ibl.reference.XFoilReader.y_upper" title="Link to this definition"></a></dt>
+<dd><p>Return the normal locations for upper surface of airfoil.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Normal locations for upper surface of airfoil.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>numpy.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ibl.reference.XFoilReader.y_lower">
+<span class="sig-name descname"><span class="pre">y_lower</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ibl.reference.XFoilReader.y_lower" title="Link to this definition"></a></dt>
+<dd><p>Return the normal locations for lower surface of airfoil.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Normal locations for lower surface of airfoil.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>numpy.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ibl.reference.XFoilReader.y_wake">
+<span class="sig-name descname"><span class="pre">y_wake</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ibl.reference.XFoilReader.y_wake" title="Link to this definition"></a></dt>
+<dd><p>Return the normal locations for airfoil wake.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Normal locations for airfoil wake.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>numpy.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ibl.reference.XFoilReader.u_e_upper">
+<span class="sig-name descname"><span class="pre">u_e_upper</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ibl.reference.XFoilReader.u_e_upper" title="Link to this definition"></a></dt>
+<dd><p>Return the velocities for upper surface of airfoil.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Nondimensionalized velocities for upper surface of airfoil.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>numpy.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ibl.reference.XFoilReader.u_e_lower">
+<span class="sig-name descname"><span class="pre">u_e_lower</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ibl.reference.XFoilReader.u_e_lower" title="Link to this definition"></a></dt>
+<dd><p>Return the velocities for lower surface of airfoil.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Nondimensionalized velocities for lower surface of airfoil.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>numpy.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ibl.reference.XFoilReader.u_e_wake">
+<span class="sig-name descname"><span class="pre">u_e_wake</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ibl.reference.XFoilReader.u_e_wake" title="Link to this definition"></a></dt>
+<dd><p>Return the velocities for airfoil wake.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Nondimensionalized velocities for airfoil wake.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>numpy.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ibl.reference.XFoilReader.delta_d_upper">
+<span class="sig-name descname"><span class="pre">delta_d_upper</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ibl.reference.XFoilReader.delta_d_upper" title="Link to this definition"></a></dt>
+<dd><p>Return the displacement thicknesses for upper surface of airfoil.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Displacement thicknesses for upper surface of airfoil.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>numpy.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ibl.reference.XFoilReader.delta_d_lower">
+<span class="sig-name descname"><span class="pre">delta_d_lower</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ibl.reference.XFoilReader.delta_d_lower" title="Link to this definition"></a></dt>
+<dd><p>Return the displacement thicknesses for lower surface of airfoil.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Displacement thicknesses for lower surface of airfoil.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>numpy.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ibl.reference.XFoilReader.delta_d_wake">
+<span class="sig-name descname"><span class="pre">delta_d_wake</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ibl.reference.XFoilReader.delta_d_wake" title="Link to this definition"></a></dt>
+<dd><p>Return the displacement thicknesses for airfoil wake.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Displacement thicknesses for airfoil wake.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>numpy.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ibl.reference.XFoilReader.delta_m_upper">
+<span class="sig-name descname"><span class="pre">delta_m_upper</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ibl.reference.XFoilReader.delta_m_upper" title="Link to this definition"></a></dt>
+<dd><p>Return the momentum thicknesses for upper surface of airfoil.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Momentum thicknesses for upper surface of airfoil.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>numpy.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ibl.reference.XFoilReader.delta_m_lower">
+<span class="sig-name descname"><span class="pre">delta_m_lower</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ibl.reference.XFoilReader.delta_m_lower" title="Link to this definition"></a></dt>
+<dd><p>Return the momentum thicknesses for lower surface of airfoil.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Momentum thicknesses for lower surface of airfoil.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>numpy.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ibl.reference.XFoilReader.delta_m_wake">
+<span class="sig-name descname"><span class="pre">delta_m_wake</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ibl.reference.XFoilReader.delta_m_wake" title="Link to this definition"></a></dt>
+<dd><p>Return the momentum thicknesses for airfoil wake.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Momentum thicknesses for airfoil wake.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>numpy.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ibl.reference.XFoilReader.delta_k_upper">
+<span class="sig-name descname"><span class="pre">delta_k_upper</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ibl.reference.XFoilReader.delta_k_upper" title="Link to this definition"></a></dt>
+<dd><p>Return the kinetic energy thicknesses for upper surface of airfoil.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Kinetic energy thicknesses for upper surface of airfoil.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>numpy.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ibl.reference.XFoilReader.delta_k_lower">
+<span class="sig-name descname"><span class="pre">delta_k_lower</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ibl.reference.XFoilReader.delta_k_lower" title="Link to this definition"></a></dt>
+<dd><p>Return the kinetic energy thicknesses for lower surface of airfoil.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Kinetic energy thicknesses for lower surface of airfoil.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>numpy.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ibl.reference.XFoilReader.shape_d_upper">
+<span class="sig-name descname"><span class="pre">shape_d_upper</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ibl.reference.XFoilReader.shape_d_upper" title="Link to this definition"></a></dt>
+<dd><p>Return the displacement shape factor for upper surface of airfoil.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Displacement shape factor for upper surface of airfoil.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>numpy.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ibl.reference.XFoilReader.shape_d_lower">
+<span class="sig-name descname"><span class="pre">shape_d_lower</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ibl.reference.XFoilReader.shape_d_lower" title="Link to this definition"></a></dt>
+<dd><p>Return the displacement shape factor for lower surface of airfoil.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Displacement shape factor for lower surface of airfoil.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>numpy.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ibl.reference.XFoilReader.shape_d_wake">
+<span class="sig-name descname"><span class="pre">shape_d_wake</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ibl.reference.XFoilReader.shape_d_wake" title="Link to this definition"></a></dt>
+<dd><p>Return the displacement shape factor for airfoil wake.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Displacement shape factor for airfoil wake.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>numpy.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ibl.reference.XFoilReader.shape_k_upper">
+<span class="sig-name descname"><span class="pre">shape_k_upper</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ibl.reference.XFoilReader.shape_k_upper" title="Link to this definition"></a></dt>
+<dd><p>Return the kinetic energy shape factor for upper surface of airfoil.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Kinetic energy shape factor for upper surface of airfoil.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>numpy.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ibl.reference.XFoilReader.shape_k_lower">
+<span class="sig-name descname"><span class="pre">shape_k_lower</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ibl.reference.XFoilReader.shape_k_lower" title="Link to this definition"></a></dt>
+<dd><p>Return the kinetic energy shape factor for lower surface of airfoil.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Kinetic energy shape factor for lower surface of airfoil.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>numpy.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ibl.reference.XFoilReader.c_f_upper">
+<span class="sig-name descname"><span class="pre">c_f_upper</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ibl.reference.XFoilReader.c_f_upper" title="Link to this definition"></a></dt>
+<dd><p>Return the skin friction coefficient for upper surface of airfoil.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Skin friction coefficient for upper surface of airfoil.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>numpy.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ibl.reference.XFoilReader.c_f_lower">
+<span class="sig-name descname"><span class="pre">c_f_lower</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ibl.reference.XFoilReader.c_f_lower" title="Link to this definition"></a></dt>
+<dd><p>Return the skin friction coefficient for lower surface of airfoil.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Skin friction coefficient for lower surface of airfoil.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>numpy.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ibl.reference.XFoilReader.mass_defect_upper">
+<span class="sig-name descname"><span class="pre">mass_defect_upper</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ibl.reference.XFoilReader.mass_defect_upper" title="Link to this definition"></a></dt>
+<dd><p>Return the mass defect for upper surface of airfoil.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Mass defect for upper surface of airfoil.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>numpy.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ibl.reference.XFoilReader.mass_defect_lower">
+<span class="sig-name descname"><span class="pre">mass_defect_lower</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ibl.reference.XFoilReader.mass_defect_lower" title="Link to this definition"></a></dt>
+<dd><p>Return the mass defect for lower surface of airfoil.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Mass defect for lower surface of airfoil.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>numpy.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ibl.reference.XFoilReader.mom_defect_upper">
+<span class="sig-name descname"><span class="pre">mom_defect_upper</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ibl.reference.XFoilReader.mom_defect_upper" title="Link to this definition"></a></dt>
+<dd><p>Return the momentum defect for upper surface of airfoil.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Momentum defect for upper surface of airfoil.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>numpy.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ibl.reference.XFoilReader.mom_defect_lower">
+<span class="sig-name descname"><span class="pre">mom_defect_lower</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ibl.reference.XFoilReader.mom_defect_lower" title="Link to this definition"></a></dt>
+<dd><p>Return the momentum defect for lower surface of airfoil.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Momentum defect for lower surface of airfoil.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>numpy.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ibl.reference.XFoilReader.ke_defect_upper">
+<span class="sig-name descname"><span class="pre">ke_defect_upper</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ibl.reference.XFoilReader.ke_defect_upper" title="Link to this definition"></a></dt>
+<dd><p>Return the kinetic energy defect for upper surface of airfoil.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Kinetic energy defect for upper surface of airfoil.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>numpy.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ibl.reference.XFoilReader.ke_defect_lower">
+<span class="sig-name descname"><span class="pre">ke_defect_lower</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ibl.reference.XFoilReader.ke_defect_lower" title="Link to this definition"></a></dt>
+<dd><p>Return the kinetic energy defect for lower surface of airfoil.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Kinetic energy defect for lower surface of airfoil.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>numpy.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="ibl.reference.html" class="btn btn-neutral float-left" title="ibl.reference" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="ibl.reference.XFoilAirfoilData.html" class="btn btn-neutral float-right" title="ibl.reference.XFoilAirfoilData" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023-2024, David D. Marshall.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

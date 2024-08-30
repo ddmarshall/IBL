@@ -3,22 +3,27 @@ venvs/*
 !venvs/info.txt
 
 # IDEs
+.spyderproject/
 .spyproject/
 .vscode/
+*.code-workspace
 
-# Automated testing
-.tox
+# Automated testing with tox
+.tox/
 
-# Caches
+# Typing info with mypy
 .mypy_cache/
-**/__pycache__/
-pyBL.egg-info/
-build/
-
-# Documentation
-sphinx/build/
-sphinx/source/api/_autosummary/
 
 # Code coverage with coverage.py
 .coverage
 htmlcov
+
+# Caches
+**/__pycache__/
+
+# Distribution / packaging
+IBL.egg-info/
+
+# Documentation
+sphinx/build/
+sphinx/source/api/_autosummary/

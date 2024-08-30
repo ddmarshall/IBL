@@ -1,9 +1,7 @@
-.. include:: ../../README.rst
-
-Welcome to pyBL's documentation!
+Welcome to IBL's documentation!
 ================================
 
-**pyBL** is a Python library to model the viscous effects on surfaces using the
+**IBL** is a Python library to model the viscous effects on surfaces using the
 integral boundary layer method. This method is intended for flows with
 relatively thin boundary layers that are attached. It takes an inviscid boundary
 layer edge velocity (in a variety of forms) along with some configuration
@@ -14,6 +12,8 @@ velocity, and other parameters based on the model used.
 
    This project is under development and the API might change between releases.
 
+.. include:: ../../README.rst
+
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
@@ -23,6 +23,7 @@ velocity, and other parameters based on the model used.
    API <api/modules.rst>
    Developer Resources <developers/index.rst>
    Project <https://github.com/ddmarshall/IBL>
+   Documentation <https://ddmarshall.github.io/IBL>
    License <license/index.rst>
 
 Indices and tables

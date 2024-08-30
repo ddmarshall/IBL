@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 r"""
 Comparing approximations to Thwaites' tabular data.
 
@@ -8,57 +6,37 @@ tabular data from Thwaites for the function :math:`F(\lambda)`. It shows
 similar results to Figures 1.2 and 1.3 in Edland thesis.
 """
 
+# pyright: reportPrivateUsage=false
 # pylint: disable=protected-access
-# pylint: disable=too-many-locals
-# pylint: disable=too-many-statements
+
+from typing import Tuple
+
 import numpy as np
+import numpy.typing as npt
+
 import matplotlib.pyplot as plt
 from matplotlib.gridspec import GridSpec
 
-from pyBL.thwaites_method import _ThwaitesFunctionsWhite
-from pyBL.thwaites_method import _ThwaitesFunctionsCebeciBradshaw
-from pyBL.thwaites_method import _ThwaitesFunctionsSpline
+from ibl.thwaites_method import _ThwaitesFunctionsWhite
+from ibl.thwaites_method import _ThwaitesFunctionsCebeciBradshaw
+from ibl.thwaites_method import _ThwaitesFunctionsDrela
+from ibl.thwaites_method import _ThwaitesFunctionsSpline
+from ibl.thwaites_method import _ThwaitesFunctions
 
 
-def compare_thwaites_fits():
+def compare_thwaites_fits() -> None:
     """Compare the available fits to Thwaites' data."""
     # Set common plot properties
     plt.rcParams["figure.figsize"] = [8, 5]
     npts = 101
 
     # Create the various fit models
-    white = _ThwaitesFunctionsWhite()
-    cb = _ThwaitesFunctionsCebeciBradshaw()
-    spline = _ThwaitesFunctionsSpline()
+    models = [_ThwaitesFunctionsWhite(), _ThwaitesFunctionsCebeciBradshaw(),
+              _ThwaitesFunctionsDrela(), _ThwaitesFunctionsSpline()]
+    colors = ["red", "orange", "blue", "purple"]
+    labels = ["White", "Cebeci & Bradshaw", "Drela", "Spline"]
 
-    def F_linear(lam):
-        return 0.45-6*lam
-
-    # Plot the various fits
-    lambda_min = -0.1
-    lambda_max = 0.25
-    # would like same range of lambdas, but each scheme has different range on
-    # which it is defined.
-    linear_lambda = np.linspace(lambda_min, lambda_max, npts)
-    white_lambda = np.linspace(np.maximum(white.range()[0], lambda_min),
-                               np.minimum(white.range()[1], lambda_max), npts)
-    cb_lambda = np.linspace(np.maximum(cb.range()[0], lambda_min),
-                            np.minimum(cb.range()[1], lambda_max), npts)
-    spline_lambda = np.linspace(np.maximum(spline.range()[0], lambda_min),
-                                np.minimum(spline.range()[1], lambda_max),
-                                npts)
-
-    # calculate the corresponding F values
-    linear_F = F_linear(linear_lambda)
-    white_F = white.F(white_lambda)
-    cb_F = cb.F(cb_lambda)
-    spline_F = spline.F(spline_lambda)
-
-    # extract the original Thwaites tabular data for comparisons
-    tab_lambda = spline._tab_lambda
-    tab_F = spline._tab_F
-
-    # plot functions
+    # prepare plot functions
     fig = plt.figure()
     fig.set_figwidth(10)
     fig.set_figheight(15)
@@ -67,90 +45,117 @@ def compare_thwaites_fits():
     axis_zoom = fig.add_subplot(gs[1, 0])
     axis_err = fig.add_subplot(gs[2, 0])
 
+    lambda_min, lambda_max = -0.1, 0.25
+
+    # plot the reference Thwaites tabular data for comparisons
+    lam, f = get_thwaites_table_data(lambda_min=lambda_min,
+                                     lambda_max=lambda_max)
+    _ = axis_plot.plot(lam, f, marker='o', linestyle='', color="black",
+                       label="Thwaites Original")
+
+    # plot the linear fit
+    lam = np.linspace(lambda_min, lambda_max, npts)
+    f = f_linear(lam)
+    _ = axis_plot.plot(lam, f, color="green", label="Linear")
+
+    # plot the models
+    for model, color, label in zip(models, colors, labels):
+        lam, f = calculate_thwaites_values(lambda_min=lambda_min,
+                                           lambda_max=lambda_max, npts=npts,
+                                           model=model)
+        _ = axis_plot.plot(lam, f, color=color, label=label)
+
     # Plot functions compared to the Thwaites tabulated values
-    ax = axis_plot
-    ax.plot(tab_lambda, tab_F, marker='o', linestyle='', color="black",
-            label=r"Thwaites Original")
-    ax.plot(linear_lambda, linear_F, color="green", label=r"Linear")
-    ax.plot(white_lambda, white_F, color="red", label=r"White")
-    ax.plot(cb_lambda, cb_F, color="orange", label=r"Cebeci & Bradshaw")
-    ax.plot(spline_lambda, spline_F, color="purple", label=r"Spline")
-    ax.set_xlabel(r"$\lambda$")
-    ax.set_ylabel(r"$F\left(\lambda\right)$")
-    ax.grid(True)
-    ax.legend()
+    _ = axis_plot.set_xlabel(r"$\lambda$")
+    _ = axis_plot.set_ylabel(r"$F\left(\lambda\right)$")
+    axis_plot.grid(True)
+    _ = axis_plot.legend()
 
     # Zoom in on separation region of previous plot
-    lambda_zoom_min = -0.10
     lambda_zoom_max = -0.05
-    # Still need to set different minimums for each model's lambda range
-    linear_lambda_zoom = np.linspace(lambda_zoom_min, lambda_zoom_max, npts)
-    white_lambda_zoom = np.linspace(np.maximum(white.range()[0],
-                                               lambda_zoom_min),
-                                    lambda_zoom_max, npts)
-    cb_lambda_zoom = np.linspace(np.maximum(cb.range()[0], lambda_zoom_min),
-                                 lambda_zoom_max, npts)
-    spline_lambda_zoom = np.linspace(np.maximum(spline.range()[0],
-                                                lambda_zoom_min),
-                                     lambda_zoom_max, npts)
-
-    # calculate the corresponding F values
-    linear_F_zoom = F_linear(linear_lambda_zoom)
-    white_F_zoom = white.F(white_lambda_zoom)
-    cb_F_zoom = cb.F(cb_lambda_zoom)
-    spline_F_zoom = spline.F(spline_lambda_zoom)
 
     # extract the zoomed original Thwaites tabular data for comparisons
-    tab_lambda_zoom = tab_lambda[tab_lambda < lambda_zoom_max]
-    tab_F_zoom = tab_F[tab_lambda < lambda_zoom_max]
+    lam, f = get_thwaites_table_data(lambda_min=lambda_min,
+                                     lambda_max=lambda_zoom_max)
+    _ = axis_zoom.plot(lam, f, marker='o', linestyle='',
+                       color="black", label="Thwaites Original")
+
+    # plot the linear fit
+    lam = np.linspace(lambda_min, lambda_zoom_max, npts)
+    f = f_linear(lam)
+    _ = axis_zoom.plot(lam, f, color="green", label="Linear")
+
+    # plot the models
+    for model, color, label in zip(models, colors, labels):
+        lam, f = calculate_thwaites_values(lambda_min=lambda_min,
+                                           lambda_max=lambda_zoom_max,
+                                           npts=npts, model=model)
+        _ = axis_zoom.plot(lam, f, color=color, label=label)
 
     # Plot the zoomed in region
-    ax = axis_zoom
-    ax.plot(tab_lambda_zoom, tab_F_zoom, marker='o', linestyle='',
-            color="black", label=r"Thwaites Original")
-    ax.plot(linear_lambda_zoom, linear_F_zoom, color="green", label=r"Linear")
-    ax.plot(white_lambda_zoom, white_F_zoom, color="red", label=r"White")
-    ax.plot(cb_lambda_zoom, cb_F_zoom, color="orange",
-            label=r"Cebeci & Bradshaw")
-    ax.plot(spline_lambda_zoom, spline_F_zoom, color="purple",
-            label=r"Spline")
-    ax.set_xlabel(r"$\lambda$")
-    ax.set_ylabel(r"$F\left(\lambda\right)$")
-    ax.grid(True)
-    ax.legend()
+    _ = axis_zoom.set_xlabel(r"$\lambda$")
+    _ = axis_zoom.set_ylabel(r"$F\left(\lambda\right)$")
+    axis_zoom.grid(True)
+    _ = axis_zoom.legend()
 
     # Calculate the errors between tabular data and fits
     #
-    # Notes: * Only Cebeci & Bradshaw cannot compare all tabulated values
-    #        * The spline fit has errors because the spline uses the exact
+    # Notes: * The spline fit has errors because the spline uses the exact
     #          equation for the F, while the tabulated values are given in
     #          3 sig. figs. and roundoff error appears to be in Thwaites
     #          original data for F
-    linear_error = np.abs(1 - F_linear(tab_lambda)/tab_F)
-    white_error = np.abs(1 - white.F(tab_lambda)/tab_F)
-    cb_lambda_error = tab_lambda[(tab_lambda >= cb.range()[0])
-                                 & (tab_lambda <= cb.range()[1])]
-    cb_error = np.abs(1 - cb.F(cb_lambda_error)/tab_F[(tab_lambda
-                                                       >= cb.range()[0])
-                                                      & (tab_lambda
-                                                         <= cb.range()[1])])
-    spline_error = np.abs(1 - spline.F(tab_lambda)/tab_F)
+
+    # get the reference data for comparison
+    lam_ref, f_ref = get_thwaites_table_data(lambda_min=lambda_min,
+                                             lambda_max=lambda_max)
+
+    # plot the linear fit
+    f_err = np.abs(1 - f_linear(lam_ref)/f_ref)
+    _ = axis_err.plot(lam_ref, f_err, color="green", label="Linear")
+
+    # plot the models
+    for model, color, label in zip(models, colors, labels):
+        f_err = np.abs(1 - model.f(lam_ref)/f_ref)
+        _ = axis_err.plot(lam_ref, f_err, color=color, label=label)
 
     # Show relative errors
-    ax = axis_err
-    ax.plot(tab_lambda, linear_error, color="green", label=r"Linear")
-    ax.plot(tab_lambda, white_error, color="red", label=r"White")
-    ax.plot(cb_lambda_error, cb_error, color="orange",
-            label=r"Cebeci & Bradshaw")
-    ax.plot(tab_lambda, spline_error, color="purple", label=r"Spline")
-    ax.set_xlabel(r"$\lambda$")
-    ax.set_ylabel("Relative Error")
-    ax.set_xlim([-0.10, 0.25])
-    ax.set_ylim([.00001,1])
-    ax.set_yscale("log")
-    ax.grid(True)
-    ax.legend()
+    _ = axis_err.set_xlabel(r"$\lambda$")
+    _ = axis_err.set_ylabel("Relative Error")
+    _ = axis_err.set_xlim((-0.10, 0.25))
+    _ = axis_err.set_ylim((.00001,1))
+    axis_err.set_yscale("log")
+    axis_err.grid(True)
+    _ = axis_err.legend()
+
     plt.show()
+
+
+def f_linear(lam: npt.NDArray) -> npt.NDArray:
+    """Linear form of F function."""
+    return 0.45-6*lam
+
+
+def calculate_thwaites_values(lambda_min: float, lambda_max: float, npts: int,
+                              model: _ThwaitesFunctions) -> Tuple[npt.NDArray,
+                                                                  npt.NDArray]:
+    """Calculate the Thwaites values."""
+    lam = np.linspace(np.maximum(model.range()[0], lambda_min),
+                      np.minimum(model.range()[1], lambda_max), npts)
+    f = model.f(lam)
+    return lam, f
+
+
+def get_thwaites_table_data(lambda_min: float,
+                            lambda_max: float) -> Tuple[npt.NDArray,
+                                                        npt.NDArray]:
+    """Return the Thwaites tabular data."""
+
+    model = _ThwaitesFunctionsSpline()
+    lam = model.lambda_values
+    idx = np.nonzero((lam <= lambda_max) & (lam >= lambda_min))
+    lam = lam[idx]
+    f = model.f_values[idx]
+    return lam, f
 
 
 if __name__ == "__main__":

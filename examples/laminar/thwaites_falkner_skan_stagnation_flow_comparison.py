@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 """
 Comparing Thwaites' method solutions for stagnation point flow case.
 
@@ -8,208 +6,166 @@ Falkner-Skan solution to laminar flat plate boundary layer stagnation point
 flows. It shows similar results to Figures 3.4 to 3.6 in Edland thesis.
 """
 
-# pylint: disable=too-many-locals
-# pylint: disable=too-many-statements
+# pylint: disable=duplicate-code
 import numpy as np
+import numpy.typing as npt
+
 import matplotlib.pyplot as plt
 from matplotlib.gridspec import GridSpec
 
-from pyBL.falkner_skan import FalknerSkanSolution
-from pyBL.thwaites_method import ThwaitesMethodLinear
-from pyBL.thwaites_method import ThwaitesMethodNonlinear
+from ibl.analytic import FalknerSkan
+from ibl.thwaites_method import ThwaitesMethodLinear
+from ibl.thwaites_method import ThwaitesMethodNonlinear
+from ibl.typing import InputParam
 
 
-def compare_stagnation_solution():
+def compare_stagnation_solution() -> None:
     """Compare the various solutions to the Falkner-Skan solution."""
+    # pylint: disable=too-many-locals, too-many-statements
     # Set flow parameters
-    U_inf = 10
+    u_inf = 10
     m = 1
     nu_inf = 1.45e-5
     rho_inf = 1.2
     c = 2
     npts = 101
+    x = np.linspace(1e-6, c, npts)
 
     # Set up the velocity functions
-    def U_e_fun(x):
+    def u_e_fun(x: InputParam) -> npt.NDArray:
         x = np.asarray(x)
-        return U_inf*x**m
+        return u_inf*x**m
 
-    def dU_edx_fun(x):
+    def du_e_fun(x: InputParam) -> npt.NDArray:
         x = np.asarray(x)
-        if m == 0:
-            return np.zeros_like(x)
-        return m*U_inf*x**(m-1)
+        # if m == 0:
+        #     return np.zeros_like(x)
+        return m*u_inf*x**(m-1)
 
-    def d2U_edx2_fun(x):
+    def d2u_e_fun(x: InputParam) -> npt.NDArray:
         x = np.asarray(x)
         if m in (0, 1):
             return np.zeros_like(x)
-        return m*(m-1)*U_inf*x**(m-2)
+        return m*(m-1)*u_inf*x**(m-2)
 
-    # Get the solutions for comparisons
-    x = np.linspace(1e-3, c, npts)
-    fs = FalknerSkanSolution(U_ref=U_inf, m=m, nu=nu_inf)
-    tml = ThwaitesMethodLinear(nu=nu_inf, U_e=U_e_fun, dU_edx=dU_edx_fun,
-                               d2U_edx2=d2U_edx2_fun, data_fits="Spline")
-    tml.set_initial_parameters(delta_m0=fs.delta_m(x[0]))
-    rtn = tml.solve(x0=x[0], x_end=x[-1])
-    if not rtn.success:
-        print("Could not get solution for Thwaites method: " + rtn.message)
-        return
-
-    tmn = ThwaitesMethodNonlinear(nu=nu_inf, U_e=U_e_fun, dU_edx=dU_edx_fun,
-                                  d2U_edx2=d2U_edx2_fun, data_fits="Spline")
-    tmn.set_initial_parameters(delta_m0=fs.delta_m(x[0]))
-    rtn = tmn.solve(x0=x[0], x_end=x[-1])
-    if not rtn.success:
-        print("Could not get solution for Thwaites method: " + rtn.message)
-        return
-
-    # Calculate the boundary layer parameters
-    delta_d_exact = fs.delta_d(x)
-    delta_d_standard = tml.delta_d(x)
-    delta_d_nonlinear = tmn.delta_d(x)
-    delta_m_exact = fs.delta_m(x)
-    delta_m_standard = tml.delta_m(x)
-    delta_m_nonlinear = tmn.delta_m(x)
-    c_f_exact = fs.tau_w(x, rho_inf)/(0.5*rho_inf*U_inf**2)
-    c_f_standard = tml.tau_w(x, rho_inf)/(0.5*rho_inf*U_inf**2)
-    c_f_nonlinear = tmn.tau_w(x, rho_inf)/(0.5*rho_inf*U_inf**2)
-    H_d_exact = fs.H_d(x)
-    H_d_standard = tml.H_d(x)
-    H_d_nonlinear = tmn.H_d(x)
-    V_e_exact = fs.V_e(x)
-    V_e_standard = tml.V_e(x)
-    V_e_nonlinear = tmn.V_e(x)
-
-    # plot functions
+    # setup plot functions
     fig = plt.figure()
     fig.set_figwidth(10)
     fig.set_figheight(15)
     gs = GridSpec(5, 2, figure=fig)
-    axis_delta_d = fig.add_subplot(gs[0, 0])
-    axis_delta_d_error = fig.add_subplot(gs[0, 1])
-    axis_delta_m = fig.add_subplot(gs[1, 0])
-    axis_delta_m_error = fig.add_subplot(gs[1, 1])
-    axis_H_d = fig.add_subplot(gs[2, 0])
-    axis_H_d_error = fig.add_subplot(gs[2, 1])
-    axis_c_f = fig.add_subplot(gs[3, 0])
-    axis_c_f_error = fig.add_subplot(gs[3, 1])
-    axis_V_e = fig.add_subplot(gs[4, 0])
-    axis_V_e_error = fig.add_subplot(gs[4, 1])
+    axis_delta_d = [fig.add_subplot(gs[0, 0]), fig.add_subplot(gs[0, 1])]
+    axis_delta_m = [fig.add_subplot(gs[1, 0]), fig.add_subplot(gs[1, 1])]
+    axis_shape_d = [fig.add_subplot(gs[2, 0]), fig.add_subplot(gs[2, 1])]
+    axis_c_f = [fig.add_subplot(gs[3, 0]), fig.add_subplot(gs[3, 1])]
+    axis_v_e = [fig.add_subplot(gs[4, 0]), fig.add_subplot(gs[4, 1])]
+
+    # extract the Blasius (exact) solution
+    fs = FalknerSkan(beta=1.0, u_ref=u_inf, nu_ref=nu_inf)
+    delta_d_exact = fs.delta_d(x)
+    delta_m_exact = fs.delta_m(x)
+    c_f_exact = fs.tau_w(x, rho_inf)/(0.5*rho_inf*u_inf**2)
+    shape_d_exact = fs.shape_d(x)
+    v_e_exact = fs.v_e(x)
 
     exact_color = "black"
-    exact_label = "Blasius"
-    standard_color = "green"
-    standard_label = "Standard"
-    nonlinear_color = "red"
-    nonlinear_label = "Nonlinear"
+    curve_handles = [axis_delta_d[0].plot(x/c, delta_d_exact/c,
+                                          color=exact_color)[0]]
+    _ = axis_delta_m[0].plot(x/c, delta_m_exact/c, color=exact_color)
+    _ = axis_shape_d[0].plot(x/c, shape_d_exact, color=exact_color)
+    _ = axis_c_f[0].plot(x/c, c_f_exact, color=exact_color)
+    _ = axis_v_e[0].plot(x/c, v_e_exact/u_inf, color=exact_color)
+
+    # create the various models
+    colors = ["green", "red"]
+    labels = ["Falkner-Skan", "Standard", "Nonlinear"]
+
+    models = [ThwaitesMethodLinear(nu=nu_inf, U_e=u_e_fun, dU_edx=du_e_fun,
+                                   d2U_edx2=d2u_e_fun, data_fits="Spline"),
+              ThwaitesMethodNonlinear(nu=nu_inf, U_e=u_e_fun, dU_edx=du_e_fun,
+                                      d2U_edx2=d2u_e_fun, data_fits="Spline")]
+
+    for model, color in zip(models, colors):
+        model.initial_delta_m = float(fs.delta_m(x[0]))
+        rtn = model.solve(x0=x[0], x_end=x[-1])
+        if not rtn.success:
+            print("Could not get solution for Thwaites method: " + rtn.message)
+            return
+        delta_d = model.delta_d(x)
+        delta_m = model.delta_m(x)
+        c_f = model.tau_w(x, rho_inf)/(0.5*rho_inf*u_inf**2)
+        shape_d = model.shape_d(x)
+        v_e = model.v_e(x)
+
+        curve_handles.append(axis_delta_d[0].plot(x/c, delta_d/c,
+                                                  color=color)[0])
+        _ = axis_delta_d[1].plot(x/c, np.abs(1-delta_d/delta_d_exact),
+                                 color=color)
+        _ = axis_delta_m[0].plot(x/c, delta_m/c, color=color)
+        _ = axis_delta_m[1].plot(x/c, np.abs(1-delta_m/delta_m_exact),
+                                 color=color)
+        _ = axis_shape_d[0].plot(x/c, shape_d, color=color)
+        _ = axis_shape_d[1].plot(x/c, np.abs(1-shape_d/shape_d_exact),
+                                 color=color)
+        _ = axis_c_f[0].plot(x/c, c_f, color=color)
+        _ = axis_c_f[1].plot(x/c, np.abs(1-c_f/c_f_exact), color=color)
+        _ = axis_v_e[0].plot(x/c, v_e/u_inf, color=color)
+        _ = axis_v_e[1].plot(x/c, np.abs(1-v_e/v_e_exact), color=color)
 
     # Displacement thickness in 0,:
-    ax = axis_delta_d
-    exact_curve = ax.plot(x/c, delta_d_exact/c, color=exact_color,
-                          label=exact_label)
-    standard_curve = ax.plot(x/c, delta_d_standard/c, color=standard_color,
-                             label=standard_label)
-    nonlinear_curve = ax.plot(x/c, delta_d_nonlinear/c, color=nonlinear_color,
-                              label=nonlinear_label)
-    ax.set_ylim(0.00036, 0.00046)
-    ax.set_ylabel(r"$\delta_d/c$")
-    ax.grid(True)
+    _ = axis_delta_d[0].set_ylim((0.00026, 0.00046))
+    _ = axis_delta_d[0].set_ylabel(r"$\delta_d/c$")
+    axis_delta_d[0].grid(True)
 
-    ax = axis_delta_d_error
-    ax.plot(x/c, np.abs(1-delta_d_standard/delta_d_exact),
-            color=standard_color)
-    ax.plot(x/c, np.abs(1-delta_d_nonlinear/delta_d_exact),
-            color=nonlinear_color)
-    ax.set_ylabel("Relative Error")
-    ax.set_ylim([1e-4,1])
-    ax.set_yscale('log')
-    ax.grid(True)
+    _ = axis_delta_d[1].set_ylabel("Relative Error")
+    _ = axis_delta_d[1].set_ylim((1e-4,1))
+    axis_delta_d[1].set_yscale('log')
+    axis_delta_d[1].grid(True)
 
     # Momentum thickness in 1,:
-    ax = axis_delta_m
-    ax.plot(x/c, delta_m_exact/c, color=exact_color)
-    ax.plot(x/c, delta_m_standard/c, color=standard_color)
-    ax.plot(x/c, delta_m_nonlinear/c, color=nonlinear_color)
-    ax.set_ylim(0.0001, 0.0002)
-    ax.set_ylabel(r"$\delta_m/c$")
-    ax.grid(True)
+    _ = axis_delta_m[0].set_ylim((0.0001, 0.0002))
+    _ = axis_delta_m[0].set_ylabel(r"$\delta_m/c$")
+    axis_delta_m[0].grid(True)
 
-    ax = axis_delta_m_error
-    ax.plot(x/c, np.abs(1-delta_m_standard/delta_m_exact),
-            color=standard_color)
-    ax.plot(x/c, np.abs(1-delta_m_nonlinear/delta_m_exact),
-            color=nonlinear_color)
-    ax.set_ylabel("Relative Error")
-    ax.set_ylim([1e-4,1])
-    ax.set_yscale('log')
-    ax.grid(True)
+    _ = axis_delta_m[1].set_ylabel("Relative Error")
+    _ = axis_delta_m[1].set_ylim((1e-4,1))
+    axis_delta_m[1].set_yscale('log')
+    axis_delta_m[1].grid(True)
 
     # Displacement shape factor in 2,:
-    ax = axis_H_d
-    ax.plot(x/c, H_d_exact, color=exact_color)
-    ax.plot(x/c, H_d_standard, color=standard_color)
-    ax.plot(x/c, H_d_nonlinear, color=nonlinear_color)
-    ax.set_ylim(2.2, 2.4)
-    ax.set_ylabel(r"$H_d$")
-    ax.grid(True)
+    _ = axis_shape_d[0].set_ylim((2.2, 2.4))
+    _ = axis_shape_d[0].set_ylabel(r"$H_d$")
+    axis_shape_d[0].grid(True)
 
-    ax = axis_H_d_error
-    ax.plot(x/c, np.abs(1-H_d_standard/H_d_exact),
-            color=standard_color)
-    ax.plot(x/c, np.abs(1-H_d_nonlinear/H_d_exact),
-            color=nonlinear_color)
-    ax.set_ylabel("Relative Error")
-    ax.set_ylim([1e-4,1])
-    ax.set_yscale('log')
-    ax.grid(True)
+    _ = axis_shape_d[1].set_ylabel("Relative Error")
+    _ = axis_shape_d[1].set_ylim((1e-4,1))
+    axis_shape_d[1].set_yscale('log')
+    axis_shape_d[1].grid(True)
 
     # Skin friction coefficient in 3,:
-    ax = axis_c_f
-    ax.plot(x/c, c_f_exact, color=exact_color)
-    ax.plot(x/c, c_f_standard, color=standard_color)
-    ax.plot(x/c, c_f_nonlinear, color=nonlinear_color)
-    ax.set_ylim(0, 0.006)
-    ax.set_ylabel(r"$c_f$")
-    ax.grid(True)
+    _ = axis_c_f[0].set_ylim((0, 0.006))
+    _ = axis_c_f[0].set_ylabel(r"$c_f$")
+    axis_c_f[0].grid(True)
 
-    ax = axis_c_f_error
-    ax.plot(x/c, np.abs(1-c_f_standard/c_f_exact),
-            color=standard_color)
-    ax.plot(x/c, np.abs(1-c_f_nonlinear/c_f_exact),
-            color=nonlinear_color)
-    ax.set_ylabel("Relative Error")
-    ax.set_ylim([1e-4,1])
-    ax.set_yscale('log')
-    ax.grid(True)
+    _ = axis_c_f[1].set_ylabel("Relative Error")
+    _ = axis_c_f[1].set_ylim((1e-4,1))
+    axis_c_f[1].set_yscale('log')
+    axis_c_f[1].grid(True)
 
     # Transpiration velocity in 4,:
-    ax = axis_V_e
-    ax.plot(x/c, V_e_exact/U_inf, color=exact_color)
-    ax.plot(x/c, V_e_standard/U_inf, color=standard_color)
-    ax.plot(x/c, V_e_nonlinear/U_inf, color=nonlinear_color)
-    ax.set_ylim(0, 0.001)
-    ax.set_xlabel(r"$x/c$")
-    ax.set_ylabel(r"$V_e/U_\infty$")
-    ax.grid(True)
+    _ = axis_v_e[0].set_ylim((0, 0.01))
+    _ = axis_v_e[0].set_xlabel(r"$x/c$")
+    _ = axis_v_e[0].set_ylabel(r"$V_e/U_\infty$")
+    axis_v_e[0].grid(True)
 
-    ax = axis_V_e_error
-    ax.plot(x/c, np.abs(1-V_e_standard/V_e_exact),
-            color=standard_color)
-    ax.plot(x/c, np.abs(1-V_e_nonlinear/V_e_exact),
-            color=nonlinear_color)
-    ax.set_xlabel(r"$x/c$")
-    ax.set_ylabel("Relative Error")
-    ax.set_ylim([1e-4,1])
-    ax.set_yscale('log')
-    ax.grid(True)
+    _ = axis_v_e[1].set_xlabel(r"$x/c$")
+    _ = axis_v_e[1].set_ylabel("Relative Error")
+    _ = axis_v_e[1].set_ylim((1e-4,1))
+    axis_v_e[1].set_yscale('log')
+    axis_v_e[1].grid(True)
 
     fig.subplots_adjust(bottom=0.075, wspace=0.5)
-    fig.legend(handles=[exact_curve[0], standard_curve[0], nonlinear_curve[0]],
-               labels=[exact_label, standard_label, nonlinear_label],
-               loc="upper center", bbox_to_anchor=(0.45, 0.03), ncol=3,
-               borderaxespad=0.1)
+    _ = fig.legend(handles=curve_handles, labels=labels, loc="upper center",
+                   bbox_to_anchor=(0.45, 0.03), ncol=3, borderaxespad=0.1)
     plt.show()
 
 

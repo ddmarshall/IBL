@@ -1,9 +1,9 @@
-API
-====
+ibl
+===
 
 .. autosummary::
    :toctree: _autosummary
    :template: custom-module-template.rst
    :recursive:
 
-   pyBL
+   ibl

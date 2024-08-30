@@ -1,56 +1,74 @@
 Summary
 =======
 
-This project provides a python library to model the viscous effects for thin boundary layers using the integral boundary layer method.
+This project provides a python library to model the viscous effects for thin boundary layers using the integral boundary layer method. Check out the `documentation <https://ddmarshall.github.io/IBL/index.html>`__ for more info.
+
+.. image:: https://github.com/ddmarshall/IBL/actions/workflows/tests.yml/badge.svg?branch=main
+.. image:: https://img.shields.io/badge/linting-pylint-yellowgreen
+    :target: https://github.com/PyCQA/pylint
+.. image:: https://www.mypy-lang.org/static/mypy_badge.svg 
+    :target: https://mypy-lang.org/
+
+.. coverage.py badge goes here
 
 Example Usage
 -------------
 
-Currently there are a few concrete models to use. One is Thwaites' method [Thwaites1949]_, which is a single equation model for laminar boundary layers.
-Given an edge velocity distribution, ``U_e``, points along the boundary layer edge, ``s``, and initial momentum thickness, ``delta_m0``, the class will calculate the boundary layer properties.
+Currently there are a few concrete models to use.
+One is Thwaites' method [Thwaites1949]_, which is a single equation model for laminar boundary layers.
+Given an edge velocity distribution, ``u_e``, points along the boundary layer edge, ``s``, and initial momentum thickness, ``delta_m0``, the class will calculate the boundary layer properties.
 These properties can then be queried at any point along the body.
 For example:
 
 .. code-block:: python
 
-    from pyBL.thwaites_method import ThwaitesMethodNonlinear
+    from ibl.thwaites_method import ThwaitesMethodNonlinear
 
     # Configure edge information
-    U_e = ...
-    s = ...
-    rho_inf = ...
-    nu_inf = ...
+    u_e = ...  # edge velocity profile
+    s = ...  # arc-length distance from stagnation point
+    rho_inf = ...  # reference density
+    nu_inf = ...  # reference kinematic viscosity
 
-    # Set the initial coditions
-    delta_m0 = ...
+    # Calculate the initial coditions
+    delta_m0 = ...  # initial momentum thickness
 
-    tm = ThwaitesMethodNonlinear(U_e=U_e)
+    # Construct IBL model
+    tm = ThwaitesMethodNonlinear(U_e=u_e)
+    tm.initial_delta_m = delta_m0
     rtn = tm.solve(x0=s[0], x_end=s[-1])
+
+    # Obtain results
     if not rtn.success:
         print("Could not get solution for Thwaites method: " + rtn.message)
     else
         tau_wall = tm.tau_w(s, rho_inf)
 
 Similarly for a turbulent boundary layer, Head's method [Head1958]_ can be used to calculate the properties for a turbulent boundary layer.
-In addition to the initial momentum thickness, the initial displacement shape factor, ``H_d0`` is needed to initialize the model.
+In addition to the initial momentum thickness, the initial displacement shape factor, ``shape_d0``, is needed to initialize the model.
 Otherwise, the interface is the same as for Thwaites' method:
 
 .. code-block:: python
 
-    from pyBL.head_method import HeadMethod
+    from ibl.head_method import HeadMethod
 
     # Configure edge information
-    U_e = ...
-    s = ...
-    rho_inf = ...
-    nu_inf = ...
+    u_e = ...  # edge velocity profile
+    s = ...  # arc-length distance from stagnation point
+    rho_inf = ...  # reference density
+    nu_inf = ...  # reference kinematic viscosity
 
-    # Set the initial coditions
-    delta_m0 = ...
-    H_d0 = ...
+    # Calculate the initial coditions
+    delta_m0 = ...  # initial momentum thickness
+    shape_d0 = ...  # initial displacement shape factor
 
+    # Construct IBL model
     hm = ThwaitesMethodNonlinear(U_e=U_e)
+    hm.initial_delta_m = delta_m0
+    hm.initial_shape_d = shape_d0
     rtn = hm.solve(x0=s[0], x_end=s[-1])
+
+    # Obtain results
     if not rtn.success:
         print("Could not get solution for Thwaites method: " + rtn.message)
     else
@@ -72,6 +90,8 @@ The main contributors to this project are:
 Version History
 ---------------
 
+* 0.5.6 - Refactored reference data and analytic results classes and updated tests
+* 0.5.5 - Improved project infrastructure
 * 0.5.4 - Minor documentation updates
 * 0.5.3 - Fixed documentation to display on GitHub
 * 0.5.0 - Updated interface to IBL methods to simplify configuration and provided more features that can be obtained from the IBL methods. Added documentation and cleaned up the code.
@@ -92,4 +112,4 @@ WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General
 Public License for more details.
 
-You should have received a copy of the `GNU General Public License <license.md>`__ along with this program. If not, see http://www.gnu.org/licenses/.
+You should have received a copy of the `GNU General Public License <license.rst>`__ along with this program. If not, see http://www.gnu.org/licenses/.

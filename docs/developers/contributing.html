@@ -1,47 +1,109 @@
-
 <!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
-<html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
-
-    <title>Contributing &#8212; pyBL 0.5.4 documentation</title>
-    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css" />
-    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-    <script src="../_static/jquery.js"></script>
-    <script src="../_static/underscore.js"></script>
-    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
-    <script src="../_static/doctools.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Contributing &mdash; IBL 0.5.6 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=e6638a06"></script>
+        <script src="../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Contributor Covenant Code of Conduct" href="code_of_conduct.html" />
-    <link rel="prev" title="Developer Information" href="index.html" />
-   
-  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
-  
-  
-  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+    <link rel="prev" title="Developer Information" href="index.html" /> 
+</head>
 
-  </head><body>
-  
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: white" >
 
-    <div class="document">
-      <div class="documentwrapper">
-        <div class="bodywrapper">
           
+          
+          <a href="../index.html" class="icon icon-home">
+            IBL
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Home</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples/index.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/modules.html">API</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Developer Resources</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Contributing</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#code-of-conduct">Code of Conduct</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#style-guide">Style Guide</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#c-c-code">C/C++ Code</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#python-code">Python Code</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#matlab-code">Matlab Code</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#cmake-code">CMake Code</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#latex-files">LaTeX Files</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#scripts-other-files">Scripts/Other Files</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#submitting-changes">Submitting Changes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#bug-reports">Bug Reports</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#testing">Testing</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="code_of_conduct.html">Contributor Covenant Code of Conduct</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/ddmarshall/IBL">Project</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://ddmarshall.github.io/IBL">Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../license/index.html">License</a></li>
+</ul>
 
-          <div class="body" role="main">
-            
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: white" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">IBL</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">Developer Information</a></li>
+      <li class="breadcrumb-item active">Contributing</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
   <section id="contributing">
-<h1>Contributing<a class="headerlink" href="#contributing" title="Permalink to this heading">¶</a></h1>
+<h1>Contributing<a class="headerlink" href="#contributing" title="Link to this heading"></a></h1>
 <p>Welcome to the <strong>IBL</strong> project. The main <a class="reference external" href="https://github.com/ddmarshall/IBL">project
 repository</a> is located on GitHub.
 If you are interested in contributing, let <a class="reference external" href="mailto:ddmarshall&#37;&#52;&#48;gmail&#46;com">us
 know</a> what you would like to do.</p>
 <section id="code-of-conduct">
-<h2>Code of Conduct<a class="headerlink" href="#code-of-conduct" title="Permalink to this heading">¶</a></h2>
+<h2>Code of Conduct<a class="headerlink" href="#code-of-conduct" title="Link to this heading"></a></h2>
 <p>In the interest of fostering an open and welcoming environment, we as
 contributors and maintainers pledge to make participation in our project
 and our community a harassment-free experience for everyone, regardless
@@ -53,14 +115,14 @@ identity and orientation.</p>
 the root directory of this project.</p>
 </section>
 <section id="style-guide">
-<h2>Style Guide<a class="headerlink" href="#style-guide" title="Permalink to this heading">¶</a></h2>
+<h2>Style Guide<a class="headerlink" href="#style-guide" title="Link to this heading"></a></h2>
 <p><strong>To Do</strong></p>
 <section id="c-c-code">
-<h3>C/C++ Code<a class="headerlink" href="#c-c-code" title="Permalink to this heading">¶</a></h3>
+<h3>C/C++ Code<a class="headerlink" href="#c-c-code" title="Link to this heading"></a></h3>
 <p>TBD</p>
 </section>
 <section id="python-code">
-<h3>Python Code<a class="headerlink" href="#python-code" title="Permalink to this heading">¶</a></h3>
+<h3>Python Code<a class="headerlink" href="#python-code" title="Link to this heading"></a></h3>
 <p>For Python code, we follow the <em>Style Guide for Python Code</em>, <a class="reference external" href="https://www.python.org/dev/peps/pep-0008/">PEP
 8</a>. Code should should
 produce no warning when analyzed by
@@ -71,24 +133,24 @@ Both of these tools are common in most Python installations. They are
 also available from <a class="reference external" href="https://pypi.org">PyPI</a>.</p>
 </section>
 <section id="matlab-code">
-<h3>Matlab Code<a class="headerlink" href="#matlab-code" title="Permalink to this heading">¶</a></h3>
+<h3>Matlab Code<a class="headerlink" href="#matlab-code" title="Link to this heading"></a></h3>
 <p>TBD</p>
 </section>
 <section id="cmake-code">
-<h3>CMake Code<a class="headerlink" href="#cmake-code" title="Permalink to this heading">¶</a></h3>
+<h3>CMake Code<a class="headerlink" href="#cmake-code" title="Link to this heading"></a></h3>
 <p>TBD</p>
 </section>
 <section id="latex-files">
-<h3>LaTeX Files<a class="headerlink" href="#latex-files" title="Permalink to this heading">¶</a></h3>
+<h3>LaTeX Files<a class="headerlink" href="#latex-files" title="Link to this heading"></a></h3>
 <p>TBD</p>
 </section>
 <section id="scripts-other-files">
-<h3>Scripts/Other Files<a class="headerlink" href="#scripts-other-files" title="Permalink to this heading">¶</a></h3>
+<h3>Scripts/Other Files<a class="headerlink" href="#scripts-other-files" title="Link to this heading"></a></h3>
 <p>TBD</p>
 </section>
 </section>
 <section id="submitting-changes">
-<h2>Submitting Changes<a class="headerlink" href="#submitting-changes" title="Permalink to this heading">¶</a></h2>
+<h2>Submitting Changes<a class="headerlink" href="#submitting-changes" title="Link to this heading"></a></h2>
 <p>Before making contributions to this project, please discuss your plans
 with the maintainers. This is best done with an
 <a class="reference external" href="https://github.com/ddmarshall/IBL/issues">issue</a> on the project
@@ -96,94 +158,48 @@ repository or <a class="reference external" href="mailto:ddmarshall&#37;&#52;&#4
 maintainers.</p>
 </section>
 <section id="bug-reports">
-<h2>Bug Reports<a class="headerlink" href="#bug-reports" title="Permalink to this heading">¶</a></h2>
+<h2>Bug Reports<a class="headerlink" href="#bug-reports" title="Link to this heading"></a></h2>
 <p>Bug reports can be submitted via the
 <a class="reference external" href="https://github.com/ddmarshall/IBL/issues">issue</a> tracker. Please
 provide as much information as possible to reproduce the error. A
 minimal working example will make it easier to track down the problem.</p>
 </section>
 <section id="testing">
-<h2>Testing<a class="headerlink" href="#testing" title="Permalink to this heading">¶</a></h2>
+<h2>Testing<a class="headerlink" href="#testing" title="Link to this heading"></a></h2>
 <p>Most directories should have a testing directory that contains the unit
 tests and other tests used in the project.</p>
 </section>
 </section>
 
 
+           </div>
           </div>
-          
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="index.html" class="btn btn-neutral float-left" title="Developer Information" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="code_of_conduct.html" class="btn btn-neutral float-right" title="Contributor Covenant Code of Conduct" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023-2024, David D. Marshall.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
         </div>
       </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-        <div class="sphinxsidebarwrapper">
-<h1 class="logo"><a href="../index.html">pyBL</a></h1>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
 
-
-
-
-
-
-
-
-<h3>Navigation</h3>
-<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
-<ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="../index.html">Home</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../examples/index.html">Examples</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../api/modules.html">API</a></li>
-<li class="toctree-l1 current"><a class="reference internal" href="index.html">Developer Resources</a><ul class="current">
-<li class="toctree-l2 current"><a class="current reference internal" href="#">Contributing</a></li>
-<li class="toctree-l2"><a class="reference internal" href="code_of_conduct.html">Contributor Covenant Code of Conduct</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference external" href="https://github.com/ddmarshall/IBL">Project</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../license/index.html">License</a></li>
-</ul>
-
-<div class="relations">
-<h3>Related Topics</h3>
-<ul>
-  <li><a href="../index.html">Documentation overview</a><ul>
-  <li><a href="index.html">Developer Information</a><ul>
-      <li>Previous: <a href="index.html" title="previous chapter">Developer Information</a></li>
-      <li>Next: <a href="code_of_conduct.html" title="next chapter">Contributor Covenant Code of Conduct</a></li>
-  </ul></li>
-  </ul></li>
-</ul>
-</div>
-<div id="searchbox" style="display: none" role="search">
-  <h3 id="searchlabel">Quick search</h3>
-    <div class="searchformwrapper">
-    <form class="search" action="../search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
-      <input type="submit" value="Go" />
-    </form>
-    </div>
-</div>
-<script>document.getElementById('searchbox').style.display = "block"</script>
-
-
-
-
-
-
-
-
-        </div>
-      </div>
-      <div class="clearer"></div>
-    </div>
-    <div class="footer">
-      &copy;2022, David D. Marshall.
-      
-      |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 5.1.1</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
-      
-    </div>
-
-    
-
-    
-  </body>
+</body>
 </html>

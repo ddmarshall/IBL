@@ -4,8 +4,8 @@ Notes based on following sources:
 
 Also, this link has some tips on how to use GitHub Pages: https://python.plainenglish.io/how-to-host-your-sphinx-documentation-on-github-550254f325ae
 
-1. To get docs set up need to ensure the python modules needed by sphinx are included (requirements.txt)
+1. To get docs set up need to ensure the python modules needed by sphinx are included (pyproject.toml)
 2. run sphinx-quickstart
 3. Edit the ReStructuredText files as needed
-4. To generate rst files for new modules/code need to run sphinx-apidoc -f -o source/api ../..
+4. To generate rst files for new modules/code need to run sphinx-apidoc -f -o source/api ../ibl
 5. Run make to generate HTML documentation
