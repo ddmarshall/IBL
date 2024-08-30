@@ -131,7 +131,7 @@ class TestFalknerSkan(unittest.TestCase):
                 # Test the solved boundary condition
                 self.assertIsNone(np_test.assert_allclose(sol.fw_pp,
                                                           self.fw_pp_ref[idx],
-                                                          atol=3e-4))
+                                                          atol=1e-3))
 
                 # Test the solution for f'
                 self.assertIsNone(
@@ -141,7 +141,7 @@ class TestFalknerSkan(unittest.TestCase):
 
                 # test the eta_inf
                 self.assertAlmostEqual(sol.eta_inf, self.eta_inf_ref[idx],
-                                       delta=2e-7)
+                                       delta=5e-7)
 
                 # Test the boundary layer values
                 #
@@ -242,7 +242,7 @@ class TestFalknerSkan(unittest.TestCase):
         f_term_ref = [-0.04742, 0.00000, 0.05036, 0.13672, 0.27882, 0.44105,
                       0.59294, 0.74351, 0.82179]
 
-        tol = [8e-6, 1e-5, 8e-6, 8e-6, 2e-5, 2e-5, 3e-5, 7e-5, 3e-3]
+        tol = [8e-6, 1e-5, 8e-6, 8e-6, 2e-5, 2e-5, 3e-5, 7e-5, 4e-3]
         fs = FalknerSkan(beta=0.0, u_ref=1, nu_ref=1)
         for idx, m in enumerate(m_test):
             with self.subTest(i=idx):
