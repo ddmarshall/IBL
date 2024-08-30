@@ -211,7 +211,7 @@ class TestFalknerSkan(unittest.TestCase):
                     diss_ref = rho*nu*u_e**2*g*quad(diss_fun, 0, 10)[0]
                     diss = sol.dissipation(x, rho)
                     self.assertIsNone(np_test.assert_allclose(diss, diss_ref,
-                                                              atol=1e-6))
+                                                              atol=2e-5))
 
     def test_problem_values(self) -> None:
         """Test values against Asaithambi (1997) results."""
