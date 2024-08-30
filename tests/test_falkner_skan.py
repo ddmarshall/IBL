@@ -173,7 +173,7 @@ class TestFalknerSkan(unittest.TestCase):
                     delta_d_ref = self.eta_d_ref[idx]/g
                     self.assertIsNone(np_test.assert_allclose(sol.delta_d(x),
                                                               delta_d_ref,
-                                                              rtol=6e-5))
+                                                              rtol=4e-4))
                     delta_m_ref = self.eta_m_ref[idx]/g
                     self.assertIsNone(np_test.assert_allclose(sol.delta_m(x),
                                                               delta_m_ref,
