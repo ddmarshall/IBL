@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ibl.reference.StanfordOlympics1968StationData &mdash; IBL 0.5.6 documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../_static/documentation_options.js?v=e6638a06"></script>
+        <script src="../../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="ibl.reference.StanfordOlympics1968SmoothVel" href="ibl.reference.StanfordOlympics1968SmoothVel.html" />
+    <link rel="prev" title="ibl.reference.StanfordOlympics1968" href="ibl.reference.StanfordOlympics1968.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: white" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            IBL
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../index.html">Home</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../examples/index.html">Examples</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../modules.html">API</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="ibl.html">ibl</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="ibl.analytic.html">ibl.analytic</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ibl.head_method.html">ibl.head_method</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ibl.ibl_method.html">ibl.ibl_method</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ibl.initial_condition.html">ibl.initial_condition</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="ibl.reference.html">ibl.reference</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="ibl.reference.XFoilReader.html">ibl.reference.XFoilReader</a></li>
+<li class="toctree-l4"><a class="reference internal" href="ibl.reference.XFoilAirfoilData.html">ibl.reference.XFoilAirfoilData</a></li>
+<li class="toctree-l4"><a class="reference internal" href="ibl.reference.XFoilWakeData.html">ibl.reference.XFoilWakeData</a></li>
+<li class="toctree-l4"><a class="reference internal" href="ibl.reference.StanfordOlympics1968.html">ibl.reference.StanfordOlympics1968</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">ibl.reference.StanfordOlympics1968StationData</a></li>
+<li class="toctree-l4"><a class="reference internal" href="ibl.reference.StanfordOlympics1968SmoothVel.html">ibl.reference.StanfordOlympics1968SmoothVel</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="ibl.skin_friction.html">ibl.skin_friction</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ibl.thwaites_method.html">ibl.thwaites_method</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ibl.typing.html">ibl.typing</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../developers/index.html">Developer Resources</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/ddmarshall/IBL">Project</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://ddmarshall.github.io/IBL">Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../license/index.html">License</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: white" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">IBL</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../modules.html">ibl</a></li>
+          <li class="breadcrumb-item"><a href="ibl.html">ibl</a></li>
+          <li class="breadcrumb-item"><a href="ibl.reference.html">ibl.reference</a></li>
+      <li class="breadcrumb-item active">ibl.reference.StanfordOlympics1968StationData</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="ibl-reference-stanfordolympics1968stationdata">
+<h1>ibl.reference.StanfordOlympics1968StationData<a class="headerlink" href="#ibl-reference-stanfordolympics1968stationdata" title="Link to this heading"></a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="ibl.reference.StanfordOlympics1968StationData">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ibl.reference.</span></span><span class="sig-name descname"><span class="pre">StanfordOlympics1968StationData</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">si_unit</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">summ_data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stat_summ</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stat_data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ibl.reference.StanfordOlympics1968StationData" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Data from Stanford Olympics 1968 reported for each station in flow.</p>
+<p>This class is initialized with the row data associated with the
+summary table and a flag indicating whether the case is in SI units.</p>
+<p class="rubric">Notes</p>
+<p>See page ix of proceedings for precise definition of each term.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>ValueError</strong> – If invalid data is used.</p>
+</dd>
+<dt class="field-even">Parameters<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>si_unit</strong> (<em>bool</em>)</p></li>
+<li><p><strong>summ_data</strong> (<em>str</em>)</p></li>
+<li><p><strong>stat_summ</strong> (<em>str</em>)</p></li>
+<li><p><strong>stat_data</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>)</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="ibl.reference.StanfordOlympics1968StationData.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">si_unit</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">summ_data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stat_summ</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stat_data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ibl.reference.StanfordOlympics1968StationData.__init__" title="Link to this definition"></a></dt>
+<dd><p>Initialize class.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>si_unit</strong> (<em>bool</em>) – Flag indicating whether station data is SI or English units.</p></li>
+<li><p><strong>summ_data</strong> (<em>str</em>) – String containing the summary data from case.</p></li>
+<li><p><strong>stat_summ</strong> (<em>str</em>) – String containing the station specific data.</p></li>
+<li><p><strong>stat_data</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – Data at y-locations in the flow.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><em>None</em></p>
+</dd>
+</dl>
+</dd></dl>
+
+<p class="rubric">Methods</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#ibl.reference.StanfordOlympics1968StationData.__init__" title="ibl.reference.StanfordOlympics1968StationData.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>(si_unit, summ_data, stat_summ, ...)</p></td>
+<td><p>Initialize class.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#ibl.reference.StanfordOlympics1968StationData.reset" title="ibl.reference.StanfordOlympics1968StationData.reset"><code class="xref py py-obj docutils literal notranslate"><span class="pre">reset</span></code></a>(si_unit, summ_data, stat_summ, stat_data)</p></td>
+<td><p>Reset all data for this station.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#ibl.reference.StanfordOlympics1968StationData.sample_count" title="ibl.reference.StanfordOlympics1968StationData.sample_count"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sample_count</span></code></a>()</p></td>
+<td><p>Return number of boundary layer samples at this station.</p></td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Attributes</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#ibl.reference.StanfordOlympics1968StationData.beta_eq" title="ibl.reference.StanfordOlympics1968StationData.beta_eq"><code class="xref py py-obj docutils literal notranslate"><span class="pre">beta_eq</span></code></a></p></td>
+<td><p>Equilibrium parameter at this station.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#ibl.reference.StanfordOlympics1968StationData.c_f" title="ibl.reference.StanfordOlympics1968StationData.c_f"><code class="xref py py-obj docutils literal notranslate"><span class="pre">c_f</span></code></a></p></td>
+<td><p>Skin friction coefficient at this station.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#ibl.reference.StanfordOlympics1968StationData.c_f_exp" title="ibl.reference.StanfordOlympics1968StationData.c_f_exp"><code class="xref py py-obj docutils literal notranslate"><span class="pre">c_f_exp</span></code></a></p></td>
+<td><p>Skin friction coefficient reported by data originator.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#ibl.reference.StanfordOlympics1968StationData.c_f_lt" title="ibl.reference.StanfordOlympics1968StationData.c_f_lt"><code class="xref py py-obj docutils literal notranslate"><span class="pre">c_f_lt</span></code></a></p></td>
+<td><p>Skin friction coefficient from Ludwieg-Tillman formula.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#ibl.reference.StanfordOlympics1968StationData.delta_c" title="ibl.reference.StanfordOlympics1968StationData.delta_c"><code class="xref py py-obj docutils literal notranslate"><span class="pre">delta_c</span></code></a></p></td>
+<td><p>Clauser thickness in [m] at this station.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#ibl.reference.StanfordOlympics1968StationData.delta_d" title="ibl.reference.StanfordOlympics1968StationData.delta_d"><code class="xref py py-obj docutils literal notranslate"><span class="pre">delta_d</span></code></a></p></td>
+<td><p>Displacement thickness in [m] at this station.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#ibl.reference.StanfordOlympics1968StationData.delta_k" title="ibl.reference.StanfordOlympics1968StationData.delta_k"><code class="xref py py-obj docutils literal notranslate"><span class="pre">delta_k</span></code></a></p></td>
+<td><p>Kinetic energy thickness in [m] at this station.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#ibl.reference.StanfordOlympics1968StationData.delta_m" title="ibl.reference.StanfordOlympics1968StationData.delta_m"><code class="xref py py-obj docutils literal notranslate"><span class="pre">delta_m</span></code></a></p></td>
+<td><p>Momentum thickness in [m] at this station.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#ibl.reference.StanfordOlympics1968StationData.du_e" title="ibl.reference.StanfordOlympics1968StationData.du_e"><code class="xref py py-obj docutils literal notranslate"><span class="pre">du_e</span></code></a></p></td>
+<td><p>Rate of change in edge velocity in [1/s] at this station.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#ibl.reference.StanfordOlympics1968StationData.nu" title="ibl.reference.StanfordOlympics1968StationData.nu"><code class="xref py py-obj docutils literal notranslate"><span class="pre">nu</span></code></a></p></td>
+<td><p>Kinematic viscosity in [m^2/s] at this station.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#ibl.reference.StanfordOlympics1968StationData.re_delta_d" title="ibl.reference.StanfordOlympics1968StationData.re_delta_d"><code class="xref py py-obj docutils literal notranslate"><span class="pre">re_delta_d</span></code></a></p></td>
+<td><p>Displacement thickness Reynolds number at this station.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#ibl.reference.StanfordOlympics1968StationData.re_delta_m" title="ibl.reference.StanfordOlympics1968StationData.re_delta_m"><code class="xref py py-obj docutils literal notranslate"><span class="pre">re_delta_m</span></code></a></p></td>
+<td><p>Momentum thickness Reynolds number at this station.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#ibl.reference.StanfordOlympics1968StationData.shape_d" title="ibl.reference.StanfordOlympics1968StationData.shape_d"><code class="xref py py-obj docutils literal notranslate"><span class="pre">shape_d</span></code></a></p></td>
+<td><p>Displacement shape factor at this station.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#ibl.reference.StanfordOlympics1968StationData.shape_eq" title="ibl.reference.StanfordOlympics1968StationData.shape_eq"><code class="xref py py-obj docutils literal notranslate"><span class="pre">shape_eq</span></code></a></p></td>
+<td><p>Equilibrium shape factor at this station.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#ibl.reference.StanfordOlympics1968StationData.shape_k" title="ibl.reference.StanfordOlympics1968StationData.shape_k"><code class="xref py py-obj docutils literal notranslate"><span class="pre">shape_k</span></code></a></p></td>
+<td><p>Kinetic energy shape factor at this station.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#ibl.reference.StanfordOlympics1968StationData.u" title="ibl.reference.StanfordOlympics1968StationData.u"><code class="xref py py-obj docutils literal notranslate"><span class="pre">u</span></code></a></p></td>
+<td><p>Local velocities in [m/s] at this station.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#ibl.reference.StanfordOlympics1968StationData.u_defect" title="ibl.reference.StanfordOlympics1968StationData.u_defect"><code class="xref py py-obj docutils literal notranslate"><span class="pre">u_defect</span></code></a></p></td>
+<td><p>Non-dimensionalized velocity defect at this station.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#ibl.reference.StanfordOlympics1968StationData.u_e" title="ibl.reference.StanfordOlympics1968StationData.u_e"><code class="xref py py-obj docutils literal notranslate"><span class="pre">u_e</span></code></a></p></td>
+<td><p>Edge velocity in [m/s] at this station.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#ibl.reference.StanfordOlympics1968StationData.u_plus" title="ibl.reference.StanfordOlympics1968StationData.u_plus"><code class="xref py py-obj docutils literal notranslate"><span class="pre">u_plus</span></code></a></p></td>
+<td><p>Non-dimensionalized local turbulence velocities at this station.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#ibl.reference.StanfordOlympics1968StationData.u_star" title="ibl.reference.StanfordOlympics1968StationData.u_star"><code class="xref py py-obj docutils literal notranslate"><span class="pre">u_star</span></code></a></p></td>
+<td><p>Wall shear velocity in [m/s] at this station.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#ibl.reference.StanfordOlympics1968StationData.x" title="ibl.reference.StanfordOlympics1968StationData.x"><code class="xref py py-obj docutils literal notranslate"><span class="pre">x</span></code></a></p></td>
+<td><p>Streamwise coordinate in [m] of this station.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#ibl.reference.StanfordOlympics1968StationData.y" title="ibl.reference.StanfordOlympics1968StationData.y"><code class="xref py py-obj docutils literal notranslate"><span class="pre">y</span></code></a></p></td>
+<td><p>Distances from surface in [m] at this station.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#ibl.reference.StanfordOlympics1968StationData.y_c" title="ibl.reference.StanfordOlympics1968StationData.y_c"><code class="xref py py-obj docutils literal notranslate"><span class="pre">y_c</span></code></a></p></td>
+<td><p>Non-dimensionalized (by Clauser) distance from surface at this station.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#ibl.reference.StanfordOlympics1968StationData.y_plus" title="ibl.reference.StanfordOlympics1968StationData.y_plus"><code class="xref py py-obj docutils literal notranslate"><span class="pre">y_plus</span></code></a></p></td>
+<td><p>Non-dimensionalized turbulence distances from surface at this station.</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py property">
+<dt class="sig sig-object py" id="ibl.reference.StanfordOlympics1968StationData.x">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">x</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#ibl.reference.StanfordOlympics1968StationData.x" title="Link to this definition"></a></dt>
+<dd><p>Streamwise coordinate in [m] of this station.
+Original symbol: <cite>X</cite>.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="ibl.reference.StanfordOlympics1968StationData.u_e">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">u_e</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#ibl.reference.StanfordOlympics1968StationData.u_e" title="Link to this definition"></a></dt>
+<dd><p>Edge velocity in [m/s] at this station.
+Must be greater than zero.
+Original symbol: <cite>UI</cite>.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="ibl.reference.StanfordOlympics1968StationData.du_e">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">du_e</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#ibl.reference.StanfordOlympics1968StationData.du_e" title="Link to this definition"></a></dt>
+<dd><p>Rate of change in edge velocity in [1/s] at this station.
+Original symbol: <cite>DUI</cite>.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="ibl.reference.StanfordOlympics1968StationData.delta_d">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">delta_d</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#ibl.reference.StanfordOlympics1968StationData.delta_d" title="Link to this definition"></a></dt>
+<dd><p>Displacement thickness in [m] at this station.
+Must be greater than zero.
+Original symbol: <cite>DELS</cite>.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="ibl.reference.StanfordOlympics1968StationData.delta_m">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">delta_m</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#ibl.reference.StanfordOlympics1968StationData.delta_m" title="Link to this definition"></a></dt>
+<dd><p>Momentum thickness in [m] at this station.
+Must be greater than zero.
+Original symbol: <cite>THETA</cite>.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="ibl.reference.StanfordOlympics1968StationData.delta_k">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">delta_k</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#ibl.reference.StanfordOlympics1968StationData.delta_k" title="Link to this definition"></a></dt>
+<dd><p>Kinetic energy thickness in [m] at this station.
+Must be greater than zero.
+Original symbol: <cite>EN TH</cite>.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="ibl.reference.StanfordOlympics1968StationData.delta_c">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">delta_c</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#ibl.reference.StanfordOlympics1968StationData.delta_c" title="Link to this definition"></a></dt>
+<dd><p>Clauser thickness in [m] at this station.
+Must be greater than zero.
+Original symbol: <cite>CL TH</cite> or 1CD`.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="ibl.reference.StanfordOlympics1968StationData.shape_d">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">shape_d</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#ibl.reference.StanfordOlympics1968StationData.shape_d" title="Link to this definition"></a></dt>
+<dd><p>Displacement shape factor at this station.
+Must be greater than zero.
+Original symbol: <cite>H</cite>.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="ibl.reference.StanfordOlympics1968StationData.shape_k">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">shape_k</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#ibl.reference.StanfordOlympics1968StationData.shape_k" title="Link to this definition"></a></dt>
+<dd><p>Kinetic energy shape factor at this station.
+Must be greater than zero.
+Original symbol <cite>HS</cite>.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="ibl.reference.StanfordOlympics1968StationData.shape_eq">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">shape_eq</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#ibl.reference.StanfordOlympics1968StationData.shape_eq" title="Link to this definition"></a></dt>
+<dd><p>Equilibrium shape factor at this station.
+Must be greater than zero.
+Original symbol: <cite>G</cite>.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="ibl.reference.StanfordOlympics1968StationData.c_f">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">c_f</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#ibl.reference.StanfordOlympics1968StationData.c_f" title="Link to this definition"></a></dt>
+<dd><p>Skin friction coefficient at this station.
+Original symbol: <cite>CF</cite>.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="ibl.reference.StanfordOlympics1968StationData.c_f_lt">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">c_f_lt</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#ibl.reference.StanfordOlympics1968StationData.c_f_lt" title="Link to this definition"></a></dt>
+<dd><p>Skin friction coefficient from Ludwieg-Tillman formula.
+Original symbol: <cite>CFLT</cite>.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="ibl.reference.StanfordOlympics1968StationData.c_f_exp">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">c_f_exp</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#ibl.reference.StanfordOlympics1968StationData.c_f_exp" title="Link to this definition"></a></dt>
+<dd><p>Skin friction coefficient reported by data originator.
+Original symbol: <cite>CFE</cite>.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="ibl.reference.StanfordOlympics1968StationData.beta_eq">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">beta_eq</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#ibl.reference.StanfordOlympics1968StationData.beta_eq" title="Link to this definition"></a></dt>
+<dd><p>Equilibrium parameter at this station.
+Original symbol: <cite>BETA</cite>.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="ibl.reference.StanfordOlympics1968StationData.u_star">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">u_star</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#ibl.reference.StanfordOlympics1968StationData.u_star" title="Link to this definition"></a></dt>
+<dd><p>Wall shear velocity in [m/s] at this station.
+Must be greater than zero.
+Original symbol: <cite>US</cite>.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="ibl.reference.StanfordOlympics1968StationData.nu">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">nu</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#ibl.reference.StanfordOlympics1968StationData.nu" title="Link to this definition"></a></dt>
+<dd><p>Kinematic viscosity in [m^2/s] at this station.
+Must be greater than zero.
+Original symbol: V</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="ibl.reference.StanfordOlympics1968StationData.re_delta_d">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">re_delta_d</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#ibl.reference.StanfordOlympics1968StationData.re_delta_d" title="Link to this definition"></a></dt>
+<dd><p>Displacement thickness Reynolds number at this station.
+Must be greater than zero.
+Original symbol: <cite>RDELS</cite>.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="ibl.reference.StanfordOlympics1968StationData.re_delta_m">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">re_delta_m</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#ibl.reference.StanfordOlympics1968StationData.re_delta_m" title="Link to this definition"></a></dt>
+<dd><p>Momentum thickness Reynolds number at this station.
+Must be greater than zero.
+Original symbol: <cite>RTHETA</cite>.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="ibl.reference.StanfordOlympics1968StationData.y">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">y</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ndarray</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">dtype</span><span class="p"><span class="pre">[</span></span><span class="pre">ScalarType</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#ibl.reference.StanfordOlympics1968StationData.y" title="Link to this definition"></a></dt>
+<dd><p>Distances from surface in [m] at this station.
+Must be greater than or equal to zero.
+Original symbol: <cite>Y</cite>.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="ibl.reference.StanfordOlympics1968StationData.y_plus">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">y_plus</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ndarray</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">dtype</span><span class="p"><span class="pre">[</span></span><span class="pre">ScalarType</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#ibl.reference.StanfordOlympics1968StationData.y_plus" title="Link to this definition"></a></dt>
+<dd><p>Non-dimensionalized turbulence distances from surface at this station.
+Must be greater than or equal to zero.
+Original symbol: <cite>Y+</cite>.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="ibl.reference.StanfordOlympics1968StationData.y_c">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">y_c</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ndarray</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">dtype</span><span class="p"><span class="pre">[</span></span><span class="pre">ScalarType</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#ibl.reference.StanfordOlympics1968StationData.y_c" title="Link to this definition"></a></dt>
+<dd><p>Non-dimensionalized (by Clauser) distance from surface at this station.
+Must be greater than or equal to zero.
+Original symbol: <cite>Y/CD</cite>.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="ibl.reference.StanfordOlympics1968StationData.u">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">u</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ndarray</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">dtype</span><span class="p"><span class="pre">[</span></span><span class="pre">ScalarType</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#ibl.reference.StanfordOlympics1968StationData.u" title="Link to this definition"></a></dt>
+<dd><p>Local velocities in [m/s] at this station.
+Must be greater than or equal to zero.
+Original symbol: <cite>U/UI</cite>.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="ibl.reference.StanfordOlympics1968StationData.u_plus">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">u_plus</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ndarray</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">dtype</span><span class="p"><span class="pre">[</span></span><span class="pre">ScalarType</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#ibl.reference.StanfordOlympics1968StationData.u_plus" title="Link to this definition"></a></dt>
+<dd><p>Non-dimensionalized local turbulence velocities at this station.
+Must be greater than or equal to zero.
+Original symbol: <cite>U+</cite>.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="ibl.reference.StanfordOlympics1968StationData.u_defect">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">u_defect</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ndarray</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">dtype</span><span class="p"><span class="pre">[</span></span><span class="pre">ScalarType</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#ibl.reference.StanfordOlympics1968StationData.u_defect" title="Link to this definition"></a></dt>
+<dd><p>Non-dimensionalized velocity defect at this station.
+Must be greater than or equal to zero.
+Original symbol: <cite>UDEF</cite>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ibl.reference.StanfordOlympics1968StationData.reset">
+<span class="sig-name descname"><span class="pre">reset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">si_unit</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">summ_data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stat_summ</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stat_data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ibl.reference.StanfordOlympics1968StationData.reset" title="Link to this definition"></a></dt>
+<dd><p>Reset all data for this station.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>si_unit</strong> (<em>bool</em>) – Flag indicating whether station data is SI or English units.</p></li>
+<li><p><strong>summ_data</strong> (<em>str</em>) – String containing the summary data from case.</p></li>
+<li><p><strong>stat_summ</strong> (<em>str</em>) – String containing the station specific data.</p></li>
+<li><p><strong>stat_data</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – Data at y-locations in the flow.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ValueError</strong> – If invalid data is used.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>None</em></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ibl.reference.StanfordOlympics1968StationData.sample_count">
+<span class="sig-name descname"><span class="pre">sample_count</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ibl.reference.StanfordOlympics1968StationData.sample_count" title="Link to this definition"></a></dt>
+<dd><p>Return number of boundary layer samples at this station.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Number of samples</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><em>int</em></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="ibl.reference.StanfordOlympics1968.html" class="btn btn-neutral float-left" title="ibl.reference.StanfordOlympics1968" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="ibl.reference.StanfordOlympics1968SmoothVel.html" class="btn btn-neutral float-right" title="ibl.reference.StanfordOlympics1968SmoothVel" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023-2024, David D. Marshall.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
