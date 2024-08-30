@@ -1,5 +1,5 @@
-API
-====
+ibl
+===
 
 .. autosummary::
    :toctree: _autosummary

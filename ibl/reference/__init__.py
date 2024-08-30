@@ -28,8 +28,10 @@ solution of the integral boundary layer equation results from a solution. See
 XFOIL's `documentation
 file <https://web.mit.edu/drela/Public/web/xfoil/xfoil_doc.txt>`__ for more
 information.
-
 """
+__all__ = ['XFoilReader', 'XFoilAirfoilData', 'XFoilWakeData',
+           'StanfordOlympics1968', 'StanfordOlympics1968StationData',
+           'StanfordOlympics1968SmoothVel']
 
 # XFoil reader classes
 from ._xfoil_data import XFoilAirfoilData as XFoilAirfoilData
