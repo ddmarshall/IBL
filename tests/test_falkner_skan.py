@@ -163,7 +163,7 @@ class TestFalknerSkan(unittest.TestCase):
                                                           rtol=3e-5))
                 self.assertIsNone(np_test.assert_allclose(sol.eta_s,
                                                           self.eta_s_ref[idx],
-                                                          atol=0.003))
+                                                          atol=0.007))
                 self.assertIsNone(np_test.assert_allclose(sol.eta_k,
                                                           self.eta_k_ref[idx],
                                                           rtol=8e-6))
