@@ -34,13 +34,17 @@ __all__ = ['XFoilReader', 'XFoilAirfoilData', 'XFoilWakeData',
            'StanfordOlympics1968SmoothVel']
 
 # XFoil reader classes
-from ._xfoil_data import XFoilAirfoilData as XFoilAirfoilData
-from ._xfoil_data import XFoilWakeData as XFoilWakeData
-from ._xfoil_reader import XFoilReader as XFoilReader
+from ibl.reference.src.xfoil_data import (
+    XFoilAirfoilData as XFoilAirfoilData,
+    XFoilWakeData as XFoilWakeData
+)
+from ibl.reference.src.xfoil_reader import XFoilReader as XFoilReader
 
 # Stanford Olympics classes
-from ._stanford_1968_station import (StanfordOlympics1968StationData
-                                     as StanfordOlympics1968StationData)
-from ._stanford_1968_station import (StanfordOlympics1968SmoothVel
-                                     as StanfordOlympics1968SmoothVel)
-from ._stanford_1968 import StanfordOlympics1968 as StanfordOlympics1968
+from ibl.reference.src.stanford_1968_station import (
+    StanfordOlympics1968StationData as StanfordOlympics1968StationData,
+    StanfordOlympics1968SmoothVel as StanfordOlympics1968SmoothVel
+)
+from ibl.reference.src.stanford_1968 import (
+    StanfordOlympics1968 as StanfordOlympics1968
+)
