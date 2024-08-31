@@ -13,7 +13,8 @@ import numpy as np
 
 from ibl.typing import InputParam
 
-from ._analytic_2d_base import Analytic2dSimilarityIncompressible
+from ibl.analytic.src.analytic_2d_base import (
+    Analytic2dSimilarityIncompressible)
 
 
 class FalknerSkan(Analytic2dSimilarityIncompressible):
@@ -91,7 +92,7 @@ class FalknerSkan(Analytic2dSimilarityIncompressible):
         if (beta < -0.19884) or (beta > 2):
             raise ValueError("Invalid wedge angle parameter: "
                              + f"{beta}")
-        self._beta = beta
+        self._beta = beta  # pylint: disable=attribute-defined-outside-init
 
         self.set_solution_parameters(fw_pp=fw_pp, eta_inf=eta_inf)
 

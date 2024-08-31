@@ -32,9 +32,10 @@ from importlib.resources import files
 import numpy as np
 import numpy.typing as npt
 
-from ._stanford_1968_station import StanfordOlympics1968StationData
-from ._stanford_1968_station import StanfordOlympics1968SmoothVel
-from ._stanford_1968_station import FOOT_PER_METER
+from ibl.reference.src.stanford_1968_station import (
+    StanfordOlympics1968StationData, StanfordOlympics1968SmoothVel,
+    FOOT_PER_METER
+)
 
 
 class StanfordOlympics1968:

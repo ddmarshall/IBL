@@ -15,7 +15,7 @@ All integral boundary layer method classes return an instance of
 # pylint: disable=too-many-branches, too-many-statements
 
 from abc import ABC, abstractmethod
-from enum import IntEnum, auto
+from enum import Enum
 
 from typing import Union, Tuple, Callable, List, Optional, Any
 from typing_extensions import override
@@ -31,7 +31,7 @@ from ibl.initial_condition import FalknerSkanStagCondition
 from ibl.typing import InputParam
 
 
-class TermReason(IntEnum):
+class TermReason(Enum):
     """
     Reasons for the integration process to complete.
     """
@@ -50,13 +50,13 @@ class TermReason(IntEnum):
     REACHED_END = 0
     """Integration completed at given end point."""
 
-    SEPARATED = auto()
+    SEPARATED = 1
     """Integration ended early because boundary layer separated."""
 
-    TRANSITIONED = auto()
+    TRANSITIONED = 10
     """Integration ended early because laminar boundary layer transitioned."""
 
-    UNKNOWN = auto()
+    UNKNOWN = -1
     """Integration ended early for unknown reason."""
 
 

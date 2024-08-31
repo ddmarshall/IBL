@@ -677,7 +677,7 @@ class TestEdgeVelocity(unittest.TestCase):
         iblb.y0 = ref_fun(x_start)
         rtn = iblb.solve(x_start, x_end)
         self.assertTrue(rtn.success)
-        self.assertEqual(rtn.status, 0)
+        self.assertEqual(rtn.status, TermReason(0))
         self.assertEqual(rtn.message, "Completed")
         self.assertEqual(rtn.x_end, x_end)
         self.assertIsNone(np_type.assert_allclose(rtn.f_end, ref_fun(x_end)))

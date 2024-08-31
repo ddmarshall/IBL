@@ -10,8 +10,7 @@ from typing import List, Tuple
 import numpy as np
 import numpy.typing as npt
 
-from ._xfoil_data import XFoilAirfoilData
-from ._xfoil_data import XFoilWakeData
+from ibl.reference.src.xfoil_data import XFoilAirfoilData, XFoilWakeData
 
 class XFoilReader:
     """

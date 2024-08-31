@@ -21,6 +21,13 @@ class TestSkinFrictionCalculations(unittest.TestCase):
         def fun(re_delta_m: InputParam, shape_d: InputParam) -> InputParam:
             return 0.246/(re_delta_m**0.268*10**(0.678*shape_d))
 
+        # calculate one displacement shape factor and one Reynolds number
+        re_delta_m = re_delta_m_range[0]
+        shape_d = shape_d_range[0]
+        c_f_ref = fun(re_delta_m, shape_d)
+        c_f = ludwieg_tillman(re_delta_m, shape_d)
+        self.assertIsNone(np_test.assert_allclose(c_f_ref, c_f))
+
         # calculate range of displacement shape parameter
         re_delta_m = np.average(re_delta_m_range)
         shape_d = np.linspace(shape_d_range[0], shape_d_range[-1])
@@ -44,6 +51,13 @@ class TestSkinFrictionCalculations(unittest.TestCase):
         def fun(re_delta_m: InputParam, shape_d: InputParam) -> InputParam:
             return 0.058*(0.93
                           - 1.95*np.log10(shape_d))**1.705/(re_delta_m**0.268)
+
+        # calculate one displacement shape factor and one Reynolds number
+        re_delta_m = re_delta_m_range[0]
+        shape_d = shape_d_range[0]
+        c_f_ref = fun(re_delta_m, shape_d)
+        c_f = felsch(re_delta_m, shape_d)
+        self.assertIsNone(np_test.assert_allclose(c_f_ref, c_f))
 
         # calculate range of displacement shape parameter
         re_delta_m = np.average(re_delta_m_range)
@@ -74,6 +88,13 @@ class TestSkinFrictionCalculations(unittest.TestCase):
         def fun(re_delta_m: InputParam, shape_d: InputParam) -> InputParam:
             return 0.3/(np.exp(1.33*shape_d)
                         * np.log10(re_delta_m)**(1.74+0.31*shape_d))
+
+        # calculate one displacement shape factor and one Reynolds number
+        re_delta_m = re_delta_m_range[0]
+        shape_d = shape_d_range[0]
+        c_f_ref = fun(re_delta_m, shape_d)
+        c_f = white(re_delta_m, shape_d)
+        self.assertIsNone(np_test.assert_allclose(c_f_ref, c_f))
 
         # calculate range of displacement shape parameter
         re_delta_m = np.average(re_delta_m_range)

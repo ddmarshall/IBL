@@ -13,7 +13,8 @@ import numpy as np
 
 from ibl.typing import InputParam
 
-from ._analytic_2d_base import Analytic2dSimilarityIncompressible
+from ibl.analytic.src.analytic_2d_base import (
+    Analytic2dSimilarityIncompressible)
 
 
 class Blasius(Analytic2dSimilarityIncompressible):
