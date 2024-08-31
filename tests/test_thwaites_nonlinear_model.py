@@ -12,6 +12,7 @@ import numpy.testing as np_test
 # pylint: disable-next=line-too-long
 from _thwaites_linear_analytic import ThwaitesLinearAnalytic  # pyright: ignore[reportImplicitRelativeImport]
 
+from ibl.ibl_method import TermReason
 from ibl.thwaites_method import ThwaitesMethodNonlinear
 from ibl.typing import InputParam
 
@@ -63,7 +64,7 @@ class TestNonlinearThwaites(unittest.TestCase):
                 tm.initial_delta_m = float(tm_ref.delta_m(x[0]))
                 rtn = tm.solve(x0=x[0], x_end=x[-1])
                 self.assertTrue(rtn.success)
-                self.assertEqual(rtn.status, 0)
+                self.assertEqual(rtn.status, TermReason(0))
                 self.assertEqual(rtn.message, "Completed")
                 self.assertEqual(rtn.x_end, x[-1])
                 self.assertIsNone(np_test.assert_allclose(tm.delta_d(x),
@@ -122,7 +123,7 @@ class TestNonlinearThwaites(unittest.TestCase):
                 tm.initial_delta_m = float(tm_ref.delta_m(x[0]))
                 rtn = tm.solve(x0=x[0], x_end=x[-1])
                 self.assertTrue(rtn.success)
-                self.assertEqual(rtn.status, 0)
+                self.assertEqual(rtn.status, TermReason(0))
                 self.assertEqual(rtn.message, "Completed")
                 self.assertEqual(rtn.x_end, x[-1])
                 self.assertIsNone(np_test.assert_allclose(tm.delta_d(x),
@@ -175,7 +176,7 @@ class TestNonlinearThwaites(unittest.TestCase):
                 tm.initial_delta_m = float(tm_ref.delta_m(x[0]))
                 rtn = tm.solve(x0=x[0], x_end=x[-1])
                 self.assertTrue(rtn.success)
-                self.assertEqual(rtn.status, 0)
+                self.assertEqual(rtn.status, TermReason(0))
                 self.assertEqual(rtn.message, "Completed")
                 self.assertEqual(rtn.x_end, x[-1])
                 self.assertIsNone(np_test.assert_allclose(tm.delta_d(x),
@@ -229,7 +230,7 @@ class TestNonlinearThwaites(unittest.TestCase):
                 tm.initial_delta_m = float(tm_ref.delta_m(x[0]))
                 rtn = tm.solve(x0=x[0], x_end=x[-1])
                 self.assertTrue(rtn.success)
-                self.assertEqual(rtn.status, 0)
+                self.assertEqual(rtn.status, TermReason(0))
                 self.assertEqual(rtn.message, "Completed")
                 self.assertEqual(rtn.x_end, x[-1])
                 self.assertIsNone(np_test.assert_allclose(tm.delta_d(x),
@@ -283,7 +284,7 @@ class TestNonlinearThwaites(unittest.TestCase):
                 tm.initial_delta_m = float(tm_ref.delta_m(x[0]))
                 rtn = tm.solve(x0=x[0], x_end=x[-1])
                 self.assertTrue(rtn.success)
-                self.assertEqual(rtn.status, 0)
+                self.assertEqual(rtn.status, TermReason(0))
                 self.assertEqual(rtn.message, "Completed")
                 self.assertEqual(rtn.x_end, x[-1])
                 self.assertIsNone(np_test.assert_allclose(tm.delta_d(x),
