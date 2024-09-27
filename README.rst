@@ -63,14 +63,14 @@ Otherwise, the interface is the same as for Thwaites' method:
     shape_d0 = ...  # initial displacement shape factor
 
     # Construct IBL model
-    hm = ThwaitesMethodNonlinear(U_e=U_e)
+    hm = HeadMethodNonlinear(U_e=U_e)
     hm.initial_delta_m = delta_m0
     hm.initial_shape_d = shape_d0
     rtn = hm.solve(x0=s[0], x_end=s[-1])
 
     # Obtain results
     if not rtn.success:
-        print("Could not get solution for Thwaites method: " + rtn.message)
+        print("Could not get solution for Head method: " + rtn.message)
     else
         tau_wall = hm.tau_w(s, rho_inf)
 
