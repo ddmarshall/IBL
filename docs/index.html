@@ -141,14 +141,14 @@ Otherwise, the interface is the same as for Thwaites’ method:</p>
 <span class="n">shape_d0</span> <span class="o">=</span> <span class="o">...</span>  <span class="c1"># initial displacement shape factor</span>
 
 <span class="c1"># Construct IBL model</span>
-<span class="n">hm</span> <span class="o">=</span> <span class="n">ThwaitesMethodNonlinear</span><span class="p">(</span><span class="n">U_e</span><span class="o">=</span><span class="n">U_e</span><span class="p">)</span>
+<span class="n">hm</span> <span class="o">=</span> <span class="n">HeadMethodNonlinear</span><span class="p">(</span><span class="n">U_e</span><span class="o">=</span><span class="n">U_e</span><span class="p">)</span>
 <span class="n">hm</span><span class="o">.</span><span class="n">initial_delta_m</span> <span class="o">=</span> <span class="n">delta_m0</span>
 <span class="n">hm</span><span class="o">.</span><span class="n">initial_shape_d</span> <span class="o">=</span> <span class="n">shape_d0</span>
 <span class="n">rtn</span> <span class="o">=</span> <span class="n">hm</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">x0</span><span class="o">=</span><span class="n">s</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">x_end</span><span class="o">=</span><span class="n">s</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
 
 <span class="c1"># Obtain results</span>
 <span class="k">if</span> <span class="ow">not</span> <span class="n">rtn</span><span class="o">.</span><span class="n">success</span><span class="p">:</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Could not get solution for Thwaites method: &quot;</span> <span class="o">+</span> <span class="n">rtn</span><span class="o">.</span><span class="n">message</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Could not get solution for Head method: &quot;</span> <span class="o">+</span> <span class="n">rtn</span><span class="o">.</span><span class="n">message</span><span class="p">)</span>
 <span class="k">else</span>
     <span class="n">tau_wall</span> <span class="o">=</span> <span class="n">hm</span><span class="o">.</span><span class="n">tau_w</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">rho_inf</span><span class="p">)</span>
 </pre></div>
