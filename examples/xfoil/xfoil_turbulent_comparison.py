@@ -15,6 +15,7 @@ import matplotlib.pyplot as plt
 from matplotlib.gridspec import GridSpec
 
 from ibl.head_method import HeadMethod
+from ibl.ibl_method import TermReason
 from ibl.reference import XFoilReader
 
 
@@ -67,7 +68,7 @@ def compare_xfoil_turbulent() -> None:
         print("Could not get solution for Head method: " + rtn.message)
         return
     s_sep_visc = np.inf
-    if rtn.status == -1:
+    if rtn.status == TermReason.SEPARATED:
         s_sep_visc = rtn.x_end
 
     hm_inv = HeadMethod(nu=nu_inf, U_e=[s_ref, u_e_inv])
@@ -80,7 +81,7 @@ def compare_xfoil_turbulent() -> None:
         print("Could not get solution for Head method: " + rtn.message)
         return
     s_sep_inv = np.inf
-    if rtn.status == -1:
+    if rtn.status == TermReason.SEPARATED:
         s_sep_inv = rtn.x_end
 
     # Calculate the boundary layer parameters
